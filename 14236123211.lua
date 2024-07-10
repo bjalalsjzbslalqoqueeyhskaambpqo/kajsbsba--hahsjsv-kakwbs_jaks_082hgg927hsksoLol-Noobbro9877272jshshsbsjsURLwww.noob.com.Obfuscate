@@ -1,12 +1,863 @@
-local v0=string.char;local v1=string.byte;local v2=string.sub;local v3=bit32 or bit ;local v4=v3.bxor;local v5=table.concat;local v6=table.insert;local function v7(v24,v25) local v26={};for v41=1, #v24 do v6(v26,v0(v4(v1(v2(v24,v41,v41 + 1 )),v1(v2(v25,1 + (v41% #v25) ,1 + (v41% #v25) + 1 )))%256 ));end return v5(v26);end local v8=tonumber;local v9=string.byte;local v10=string.char;local v11=string.sub;local v12=string.gsub;local v13=string.rep;local v14=table.concat;local v15=table.insert;local v16=math.ldexp;local v17=getfenv or function() return _ENV;end ;local v18=setmetatable;local v19=pcall;local v20=select;local v21=unpack or table.unpack ;local v22=tonumber;local function v23(v27,v28,...) local v29=1;local v30;v27=v12(v11(v27,5),v7("\58\241","\203\20\223\223\37"),function(v42) if (v9(v42,2)==79) then v30=v8(v11(v42,2 -1 ,1));return "";else local v102=v10(v8(v42,16));if v30 then local v109=0;local v110;while true do if (v109==1) then return v110;end if (v109==0) then v110=v13(v102,v30);v30=nil;v109=1;end end else return v102;end end end);local function v31(v43,v44,v45) if v45 then local v103=0;local v104;while true do if (v103==0) then v104=(v43/((5 -3)^(v44-1)))%(2^(((v45-1) -(v44-1)) + 1)) ;return v104-(v104%1) ;end end else local v105=0;local v106;while true do if (0==v105) then v106=2^(v44-(1 -0)) ;return (((v43%(v106 + v106))>=v106) and 1) or (0 -0) ;end end end end local function v32() local v46=0;local v47;while true do if (v46==1) then return v47;end if (v46==0) then v47=v9(v27,v29,v29);v29=v29 + (2 -1) ;v46=1;end end end local function v33() local v48=0;local v49;local v50;while true do if (v48==1) then return (v50 * 256) + v49 ;end if (v48==0) then v49,v50=v9(v27,v29,v29 + 2 );v29=v29 + 2 ;v48=1;end end end local function v34() local v51=0;local v52;local v53;local v54;local v55;while true do if (v51==0) then v52,v53,v54,v55=v9(v27,v29,v29 + 3 );v29=v29 + 4 ;v51=1;end if (v51==1) then return (v55 * 16777216) + (v54 * 65536) + (v53 * 256) + v52 ;end end end local function v35() local v56=v34();local v57=v34();local v58=1;local v59=(v31(v57,1,639 -(555 + 64) ) * ((933 -(857 + 74))^32)) + v56 ;local v60=v31(v57,589 -(367 + 201) ,31);local v61=((v31(v57,32)==1) and  -1) or 1 ;if (v60==(442 -(416 + 26))) then if (v59==0) then return v61 * 0 ;else local v111=0;while true do if (0==v111) then v60=1;v58=0 -0 ;break;end end end elseif (v60==2047) then return ((v59==0) and (v61 * (1/(927 -(214 + 713))))) or (v61 * NaN) ;end return v16(v61,v60-1023 ) * (v58 + (v59/(2^52))) ;end local function v36(v62) local v63=0;local v64;local v65;while true do if (v63==0) then v64=nil;if  not v62 then local v119=0;while true do if (v119==0) then v62=v34();if (v62==(0 -0)) then return "";end break;end end end v63=1;end if (1==v63) then v64=v11(v27,v29,(v29 + v62) -1 );v29=v29 + v62 ;v63=2;end if (v63==3) then return v14(v65);end if (v63==2) then v65={};for v112=1, #v64 do v65[v112]=v10(v9(v11(v64,v112,v112)));end v63=3;end end end local v37=v34;local function v38(...) return {...},v20("#",...);end local function v39() local v66={};local v67={};local v68={};local v69={v66,v67,nil,v68};local v70=v34();local v71={};for v79=1 + 0 ,v70 do local v80=0;local v81;local v82;while true do if (v80==0) then v81=v32();v82=nil;v80=1;end if (v80==1) then if (v81==1) then v82=v32()~=(438 -(145 + 293)) ;elseif (v81==2) then v82=v35();elseif (v81==3) then v82=v36();end v71[v79]=v82;break;end end end v69[433 -(44 + 386) ]=v32();for v83=1,v34() do local v84=0;local v85;while true do if (v84==0) then v85=v32();if (v31(v85,1,1)==0) then local v122=0;local v123;local v124;local v125;while true do if (v122==0) then v123=v31(v85,2,3);v124=v31(v85,4,6);v122=1;end if (3==v122) then if (v31(v124,3,3 -0 )==1) then v125[4]=v71[v125[4]];end v66[v83]=v125;break;end if (v122==1) then v125={v33(),v33(),nil,nil};if (v123==0) then local v129=0;while true do if (v129==0) then v125[3]=v33();v125[4]=v33();break;end end elseif (v123==1) then v125[3]=v34();elseif (v123==(879 -(282 + 595))) then v125[3]=v34() -(2^16) ;elseif (v123==3) then local v138=0;while true do if (v138==0) then v125[3]=v34() -((1488 -(998 + 488))^(1653 -(1523 + 114))) ;v125[4]=v33();break;end end end v122=2;end if (v122==2) then if (v31(v124,1,1)==1) then v125[2]=v71[v125[2]];end if (v31(v124,2,2)==1) then v125[3 + 0 ]=v71[v125[3]];end v122=3;end end end break;end end end for v86=1066 -(68 + 997) ,v34() do v67[v86-(1 + 0) ]=v39();end return v69;end local function v40(v73,v74,v75) local v76=v73[1 + 0 ];local v77=v73[2];local v78=v73[3];return function(...) local v88=v76;local v89=v77;local v90=v78;local v91=v38;local v92=1;local v93= -1;local v94={};local v95={...};local v96=v20("#",...) -1 ;local v97={};local v98={};for v107=772 -(201 + 571) ,v96 do if (v107>=v90) then v94[v107-v90 ]=v95[v107 + 1 ];else v98[v107]=v95[v107 + 1 ];end end local v99=(v96-v90) + 1 ;local v100;local v101;while true do local v108=0;while true do if (v108==1) then if (v101<=31) then if (v101<=15) then if (v101<=7) then if (v101<=3) then if (v101<=1) then if (v101==0) then local v139=0;local v140;while true do if (0==v139) then v140=v100[8 -6 ];v98[v140](v21(v98,v140 + (118 -(32 + 85)) ,v93));break;end end else v98[v100[2]]= #v98[v100[3]];end elseif (v101>2) then v98[v100[8 -6 ]]=v98[v100[3]][v100[4]];else local v144=0;local v145;local v146;local v147;local v148;while true do if (v144==2) then for v302=v145,v93 do local v303=0;while true do if (v303==0) then v148=v148 + 1 ;v98[v302]=v146[v148];break;end end end break;end if (1==v144) then v93=(v147 + v145) -(1 + 0) ;v148=0;v144=2;end if (v144==0) then v145=v100[2];v146,v147=v91(v98[v145](v21(v98,v145 + 1 + 0 ,v100[3])));v144=1;end end end elseif (v101<=(2 + 3)) then if (v101==(14 -10)) then v98[v100[2]]=v75[v100[10 -7 ]];else v98[v100[2]]={};end elseif (v101==6) then v98[v100[2]]();else v98[v100[861 -(814 + 45) ]]();end elseif (v101<=11) then if (v101<=(21 -12)) then if (v101==8) then if  not v98[v100[2]] then v92=v92 + 1 + 0 ;else v92=v100[3];end else local v152=0;local v153;local v154;local v155;local v156;while true do if (v152==2) then for v304=v153,v93 do local v305=0;while true do if (v305==0) then v156=v156 + 1 ;v98[v304]=v154[v156];break;end end end break;end if (v152==0) then v153=v100[2];v154,v155=v91(v98[v153](v21(v98,v153 + 1 ,v100[3])));v152=1;end if (v152==1) then v93=(v155 + v153) -1 ;v156=0;v152=2;end end end elseif (v101==10) then local v157=0;local v158;local v159;local v160;local v161;while true do if (v157==2) then for v306=v158,v93 do local v307=0;while true do if (v307==0) then v161=v161 + 1 + 0 ;v98[v306]=v159[v161];break;end end end break;end if (v157==1) then v93=(v160 + v158) -1 ;v161=0;v157=2;end if (v157==0) then v158=v100[2];v159,v160=v91(v98[v158](v21(v98,v158 + 1 ,v93)));v157=1;end end else v98[v100[2]]=v98[v100[3]]%v100[4] ;end elseif (v101<=13) then if (v101==12) then v98[v100[959 -(892 + 65) ]]=v98[v100[3]] + v100[4] ;else for v258=v100[2],v100[3] do v98[v258]=nil;end end elseif (v101==14) then if  not v98[v100[4 -2 ]] then v92=v92 + (1 -0) ;else v92=v100[3];end else local v164=v100[2];v98[v164](v21(v98,v164 + 1 ,v93));end elseif (v101<=23) then if (v101<=19) then if (v101<=17) then if (v101>16) then local v165=0;local v166;while true do if (v165==0) then v166=v100[2];v98[v166]=v98[v166](v21(v98,v166 + (886 -(261 + 624)) ,v93));break;end end else local v167=0;local v168;local v169;local v170;while true do if (v167==2) then for v308=1,v100[4] do local v309=0;local v310;while true do if (0==v309) then v92=v92 + 1 ;v310=v88[v92];v309=1;end if (1==v309) then if (v310[1]==(1107 -(1020 + 60))) then v170[v308-(1424 -(630 + 793)) ]={v98,v310[9 -6 ]};else v170[v308-(1 -0) ]={v74,v310[3]};end v97[ #v97 + 1 ]=v170;break;end end end v98[v100[2]]=v40(v168,v169,v75);break;end if (1==v167) then v170={};v169=v18({},{[v7("\133\178\161\220\190\136\176","\178\218\237\200")]=function(v311,v312) local v313=0;local v314;while true do if (v313==0) then v314=v170[v312];return v314[1][v314[3 -1 ]];end end end,[v7("\137\138\232\213\161\188\232\212\179\173","\176\214\213\134")]=function(v315,v316,v317) local v318=0;local v319;while true do if (0==v318) then v319=v170[v316];v319[1][v319[2]]=v317;break;end end end});v167=2;end if (0==v167) then v168=v89[v100[3]];v169=nil;v167=1;end end end elseif (v101==(85 -67)) then local v171=v100[2];do return v21(v98,v171,v93);end else v98[v100[2]]=v100[3] + v98[v100[4]] ;end elseif (v101<=21) then if (v101==20) then v98[v100[2]]=v74[v100[3]];else local v175=0;local v176;while true do if (v175==0) then v176=v100[2];v98[v176]=v98[v176](v21(v98,v176 + (351 -(87 + 263)) ,v93));break;end end end elseif (v101==22) then v98[v100[2]]=v98[v100[3]];else local v179=0;local v180;local v181;while true do if (v179==0) then v180=v100[2];v181=v98[v180];v179=1;end if (v179==1) then for v320=v180 + 1 ,v93 do v15(v181,v98[v320]);end break;end end end elseif (v101<=27) then if (v101<=(205 -(67 + 113))) then if (v101>24) then local v182=0;local v183;while true do if (v182==0) then v183=v100[2];v98[v183]=v98[v183](v21(v98,v183 + 1 ,v100[3 + 0 ]));break;end end elseif (v98[v100[4 -2 ]]==v100[4]) then v92=v92 + (3 -2) ;else v92=v100[1750 -(760 + 987) ];end elseif (v101==26) then if v98[v100[2]] then v92=v92 + 1 + 0 ;else v92=v100[3];end else v98[v100[2]]=v98[v100[1916 -(1789 + 124) ]];end elseif (v101<=29) then if (v101==28) then local v186=0;local v187;local v188;local v189;local v190;while true do if (v186==0) then v187=v100[2];v188,v189=v91(v98[v187](v98[v187 + 1 ]));v186=1;end if (2==v186) then for v321=v187,v93 do local v322=0;while true do if (v322==0) then v190=v190 + 1 ;v98[v321]=v188[v190];break;end end end break;end if (v186==1) then v93=(v189 + v187) -1 ;v190=0;v186=2;end end else v98[v100[2]]=v100[3];end elseif (v101==30) then local v193=0;local v194;local v195;while true do if (0==v193) then v194=v100[7 -5 ];v195=v98[v194];v193=1;end if (v193==1) then for v323=v194 + (953 -(802 + 150)) ,v93 do v15(v195,v98[v323]);end break;end end else v98[v100[2]]=v100[769 -(745 + 21) ] + v98[v100[2 + 2 ]] ;end elseif (v101<=47) then if (v101<=39) then if (v101<=(96 -61)) then if (v101<=33) then if (v101>32) then do return;end else v92=v100[3];end elseif (v101==34) then local v198=0;local v199;while true do if (v198==0) then v199=v100[2];do return v21(v98,v199,v93);end break;end end else v98[v100[2]]=v100[3];end elseif (v101<=37) then if (v101==(96 -60)) then v98[v100[2]]=v98[v100[3]] + v100[4] ;elseif v98[v100[2]] then v92=v92 + 1 ;else v92=v100[3];end elseif (v101>38) then if (v98[v100[2]]==v100[4]) then v92=v92 + 1 ;else v92=v100[3];end else v98[v100[2]]={};end elseif (v101<=43) then if (v101<=41) then if (v101==40) then do return v98[v100[2]]();end else local v204=0;local v205;local v206;local v207;while true do if (v204==0) then v205=v100[3 -1 ];v206=v98[v205];v204=1;end if (v204==1) then v207=v98[v205 + 2 ];if (v207>0) then if (v206>v98[v205 + 1 ]) then v92=v100[3];else v98[v205 + (11 -8) ]=v206;end elseif (v206<v98[v205 + 1 ]) then v92=v100[3];else v98[v205 + 3 ]=v206;end break;end end end elseif (v101==42) then v98[v100[1 + 1 ]]=v75[v100[3 + 0 ]];else v92=v100[3];end elseif (v101<=(36 + 9)) then if (v101>44) then do return;end else local v211=0;local v212;while true do if (v211==0) then v212=v100[2];do return v98[v212](v21(v98,v212 + 1 ,v100[3]));end break;end end end elseif (v101==46) then local v213=0;local v214;while true do if (v213==0) then v214=v100[999 -(915 + 82) ];do return v98[v214](v21(v98,v214 + (2 -1) ,v100[3]));end break;end end else for v260=v100[2],v100[3] do v98[v260]=nil;end end elseif (v101<=55) then if (v101<=51) then if (v101<=(1104 -(87 + 968))) then if (v101>48) then local v215=0;local v216;local v217;local v218;while true do if (v215==1) then v218={};v217=v18({},{[v7("\203\146\191\218\172\83\65","\57\148\205\214\180\200\54")]=function(v324,v325) local v326=0;local v327;while true do if (v326==0) then v327=v218[v325];return v327[1][v327[2]];end end end,[v7("\45\194\59\49\97\27\243\49\49\110","\22\114\157\85\84")]=function(v328,v329,v330) local v331=0;local v332;while true do if (v331==0) then v332=v218[v329];v332[1 -0 ][v332[1189 -(1069 + 118) ]]=v330;break;end end end});v215=2;end if (v215==2) then for v333=1,v100[4] do local v334=0;local v335;while true do if (v334==1) then if (v335[1]==27) then v218[v333-(4 -3) ]={v98,v335[3]};else v218[v333-1 ]={v74,v335[3]};end v97[ #v97 + 1 ]=v218;break;end if (v334==0) then v92=v92 + 1 ;v335=v88[v92];v334=1;end end end v98[v100[2]]=v40(v216,v217,v75);break;end if (v215==0) then v216=v89[v100[2 + 1 ]];v217=nil;v215=1;end end else local v219=v100[2];local v220=v98[v219];local v221=v98[v219 + (4 -2) ];if (v221>0) then if (v220>v98[v219 + 1 ]) then v92=v100[3];else v98[v219 + (6 -3) ]=v220;end elseif (v220<v98[v219 + 1 ]) then v92=v100[3];else v98[v219 + 3 ]=v220;end end elseif (v101>50) then v98[v100[3 -1 ]]= #v98[v100[3]];else v98[v100[2]]=v98[v100[3]]%v98[v100[4]] ;end elseif (v101<=53) then if (v101==52) then local v224=v100[2];local v225=v98[v224 + 2 ];local v226=v98[v224] + v225 ;v98[v224]=v226;if (v225>0) then if (v226<=v98[v224 + 1 ]) then local v340=0;while true do if (v340==0) then v92=v100[3];v98[v224 + 3 ]=v226;break;end end end elseif (v226>=v98[v224 + 1 ]) then local v341=0;while true do if (v341==0) then v92=v100[3];v98[v224 + 3 ]=v226;break;end end end else local v228=0;local v229;local v230;local v231;local v232;while true do if (v228==1) then v93=(v231 + v229) -(2 -1) ;v232=0;v228=2;end if (v228==0) then v229=v100[2];v230,v231=v91(v98[v229](v98[v229 + (1414 -(447 + 966)) ]));v228=1;end if (v228==2) then for v342=v229,v93 do local v343=0;while true do if (v343==0) then v232=v232 + 1 ;v98[v342]=v230[v232];break;end end end break;end end end elseif (v101>54) then local v233=0;local v234;local v235;while true do if (v233==0) then v234=v100[2];v235=v98[v100[3]];v233=1;end if (1==v233) then v98[v234 + 1 ]=v235;v98[v234]=v235[v100[4]];break;end end else local v236=v100[2];local v237=v98[v236 + 1 + 1 ];local v238=v98[v236] + v237 ;v98[v236]=v238;if (v237>0) then if (v238<=v98[v236 + 1 ]) then local v344=0;while true do if (v344==0) then v92=v100[4 -1 ];v98[v236 + 3 ]=v238;break;end end end elseif (v238>=v98[v236 + 1 ]) then v92=v100[3];v98[v236 + 3 ]=v238;end end elseif (v101<=(760 -(376 + 325))) then if (v101<=57) then if (v101>56) then local v240=0;local v241;local v242;local v243;local v244;while true do if (1==v240) then v93=(v243 + v241) -1 ;v244=0;v240=2;end if (v240==2) then for v347=v241,v93 do local v348=0;while true do if (0==v348) then v244=v244 + (1 -0) ;v98[v347]=v242[v244];break;end end end break;end if (v240==0) then v241=v100[2 + 0 ];v242,v243=v91(v98[v241](v21(v98,v241 + 1 ,v93)));v240=1;end end else v98[v100[793 -(368 + 423) ]]=v98[v100[3]]%v100[4] ;end elseif (v101==58) then v98[v100[2]]=v74[v100[3]];else v98[v100[2]]=v98[v100[3]]%v98[v100[4]] ;end elseif (v101<=61) then if (v101>(188 -128)) then local v249=v100[2];local v250=v98[v100[8 -5 ]];v98[v249 + 1 ]=v250;v98[v249]=v250[v100[4]];else do return v98[v100[2]]();end end elseif (v101>62) then local v254=v100[2];v98[v254]=v98[v254](v21(v98,v254 + 1 ,v100[3]));else v98[v100[2]]=v98[v100[3]][v100[4]];end v92=v92 + 1 ;break;end if (0==v108) then v100=v88[v92];v101=v100[1271 -(226 + 1044) ];v108=1;end end end end;end return v40(v39(),{},v28)(...);end return v23("LOL!0D3O0003063O00737472696E6703043O006368617203043O00627974652O033O0073756203053O0062697433322O033O0062697403043O0062786F7203053O007461626C6503063O00636F6E63617403063O00696E7365727403053O006D6174636803083O00746F6E756D62657203053O007063612O6C00243O0012043O00013O0020035O0002001204000100013O002003000100010003001204000200013O002003000200020004001204000300053O0006080003000A000100010004203O000A0001001204000300063O002003000400030007001204000500083O002003000500050009001204000600083O00200300060006000A00061000073O000100062O001B3O00064O001B8O001B3O00044O001B3O00014O001B3O00024O001B3O00053O001204000800013O00200300080008000B0012040009000C3O001204000A000D3O000610000B0001000100052O001B3O00074O001B3O00094O001B3O00084O001B3O000A4O001B3O000B4O0016000C000B4O003C000C00014O0022000C6O002D3O00013O00023O00023O00026O00F03F026O00704002264O000500025O00121D000300014O000100045O00121D000500013O0004300003002100012O003A00076O0016000800024O003A000900014O003A000A00024O003A000B00034O003A000C00044O0016000D6O0016000E00063O00200C000F000600012O0009000C000F4O0015000B3O00022O003A000C00034O003A000D00044O0016000E00014O0001000F00014O0032000F0006000F00101F000F0001000F2O0001001000014O003200100006001000101F00100001001000200C0010001000012O0009000D00104O000A000C6O0015000A3O0002002038000A000A00022O00350009000A4O000F00073O00010004340003000500012O003A000300054O0016000400024O002C000300044O002200036O002D3O00017O00043O00027O004003053O003A25642B3A2O033O0025642B026O00F03F001C3O0006105O000100012O00148O003A000100014O003A000200024O003A000300024O000500046O003A000500034O001600066O000D000700074O0009000500074O001700043O000100200300040004000100121D000500024O001900030005000200121D000400034O0009000200044O001500013O000200261800010018000100040004203O001800012O001600016O000500026O002C000100024O002200015O0004203O001B00012O003A000100044O003C000100014O002200016O002D3O00013O00013O00063O00030A3O006C6F6164737472696E6703043O0067616D6503073O00482O747047657403663O00D9D7CF35F5E18851C3C2CC6BE1B2D316C4C1CE36E3A9C411DFD7DE2BF2F5C411DC8CF42BE398D51BD0D7D437DEF4E810D4E0C920E7AFC80CE98CD624EFB5882DD2D1D235F2A8882BF6E0DD37E3BE8830D8CDDC6AD6AEC91DD9F0D228F3B7C60ADED19529F3BA03083O007EB1A3BB4586DBA7026O00F03F010F3O0006253O000D00013O0004203O000D0001001204000100013O001204000200023O0020370002000200032O003A00045O00121D000500043O00121D000600054O0009000400064O000A00026O001500013O00022O00060001000100010004203O000E000100200300013O00062O002D3O00017O00",v17(),...);
--- âš ï¸ WARNING: integrity protected!
---[[
- .____                  ________ ___.    _____                           __                
- |    |    __ _______   \_____  \\_ |___/ ____\_ __  ______ ____ _____ _/  |_  ___________ 
- |    |   |  |  \__  \   /   |   \| __ \   __\  |  \/  ___// ___\\__  \\   __\/  _ \_  __ \
- |    |___|  |  // __ \_/    |    \ \_\ \  | |  |  /\___ \\  \___ / __ \|  | (  <_> )  | \/
- |_______ \____/(____  /\_______  /___  /__| |____//____  >\___  >____  /__|  \____/|__|   
-         \/          \/         \/    \/                \/     \/     \/                   
-          \_Welcome to LuaObfuscator.com   (Alpha 0.10.6) ~  Much Love, Ferib 
 
-]]--
+local UL = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/MyLibrery.lua"))()
+
+local gameName = ""
+if gameName == "" then
+    gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+end
+
+local function cleanGameName(name)
+    name = name:gsub("%b[]", "")
+    name = name:match("^[^:]*")
+    return name:match("^%s*(.-)%s*$")
+end
+
+gameName = cleanGameName(gameName)
+
+local p = game.Players.LocalPlayer
+local sg = UL:CrSG("Defauld")
+local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
+local pp = p.PlayerGui
+
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+playerGui:WaitForChild("WishingwellUI").Enabled = true
+playerGui:WaitForChild("WishingwellUI"):WaitForChild("Frame").Visible = false
+local wishingWellLabel = playerGui:WaitForChild("WishingwellUI"):WaitForChild("Frame"):WaitForChild("top"):WaitForChild("WISH")
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TimeRemainingGui"
+screenGui.Parent = playerGui
+screenGui.ResetOnSpawn = false
+
+local frame = Instance.new("Frame")
+frame.Name = "TimeFrame"
+frame.Size = UDim2.new(0, 350, 0, 20)
+frame.Position = UDim2.new(0.6, 0, 0.96, 0)
+frame.BackgroundTransparency = 0.5
+frame.BackgroundColor3 = Color3.new(0, 0, 0)
+frame.Parent = screenGui
+
+local textLabel = Instance.new("TextLabel")
+textLabel.Name = "TimeLabel"
+textLabel.Size = UDim2.new(1, 0, 1, 0)
+textLabel.Position = UDim2.new(0, 0, 0, 0)
+textLabel.TextColor3 = Color3.new(1, 1, 1)
+textLabel.BackgroundTransparency = 1
+textLabel.Font = Enum.Font.SourceSansBold
+textLabel.TextScaled = true
+textLabel.Text = "No Have Wish"
+textLabel.Parent = frame
+
+local auto = false
+
+local wis = "Small"
+local myOptionsButton, myOptionsFrame = UL:AddOBtn(cfrm, "Options Wishingwell")
+
+UL:AddTBtn(myOptionsFrame, "Auto Buy Wish", false, function() auto = not auto textLabel.Text = "No Have - Wish Auto buy: " .. tostring(auto) .. " Select: " .. wis end)
+UL:AddBtn(myOptionsFrame, " Select Small 15 minutes - 2 Wish", function() wis = "Small" local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Wish Select Small",
+    Text = "Proce 50 Gems",
+    Duration = 5,
+})
+ end)
+UL:AddBtn(myOptionsFrame, "Select Medium 1 hs - 3 Wish", function() wis = "Medium"
+ local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Wish Select Medium",
+    Text = "Price 200 Gems",
+    Duration = 5,
+})
+ end)
+UL:AddBtn(myOptionsFrame, "Select Mega 3 hs - 4 Wish", function() wis = "Mega" 
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Wish Select Mega",
+    Text = "Price 1000 Gems",
+    Duration = 5,
+})
+ end)
+UL:AddBtn(myOptionsFrame, "Buy Wish Select", function() local args = {
+            [1] = tostring(wis)
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("WishingWell"):FireServer(unpack(args)) end)
+
+local function updateTimeRemaining()
+    local text = wishingWellLabel.Text
+    -- Utilizamos una expresión regular más flexible para capturar el tiempo restante
+    local timeRemaining = string.match(text, "<font size='200'>(%d+%s*h%s*%d+%s*m%s*%d+%s*s)%s*REMAINING!</font>")
+    
+    if not timeRemaining then
+        -- Si no se encuentra el formato con horas, intentamos con minutos y segundos
+        timeRemaining = string.match(text, "<font size='200'>(%d+%s*m%s*%d+%s*s)%s*REMAINING!</font>")
+    end
+    
+    if timeRemaining then
+        textLabel.Text = "Time Wish: " .. timeRemaining .. " Auto buy: " .. tostring(auto) .. " Select: "  .. wis
+    elseif wishingWellLabel.Text == "None. Feed me gems for a surprise!" and auto then
+        local args = {
+            [1] = tostring(wis)
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("WishingWell"):FireServer(unpack(args))
+    else
+        textLabel.Text = "No Have Wish:  Auto buy: " .. tostring(auto) .. " Select: "  .. wis
+    end
+end
+
+-- Conectar la función al cambio de propiedad del texto
+wishingWellLabel:GetPropertyChangedSignal("Text"):Connect(updateTimeRemaining)
+
+-- Llamar a la función una vez al inicio para asegurarnos de que se actualice
+updateTimeRemaining()
+
+function goi()
+    local player = game.Players.LocalPlayer
+    local wishingWellUI = player.PlayerGui:FindFirstChild("WishingwellUI")
+    
+    if wishingWellUI then
+        local textObject = wishingWellUI:FindFirstChild("Frame")
+        
+        if textObject and textObject:FindFirstChild("top") and textObject.top:FindFirstChild("WISH") then
+            local text = textObject.top.WISH.Text
+            
+            local trimmedText = text:match("^%s*(.-)%s*$")
+            trimmedText = trimmedText:gsub("%s+", " ")
+            
+            if trimmedText == "None. Feed me gems for a surprise!" then
+                print("Encontró la frase 'None. Feed me gems for a surprise!'")
+                local args = { tostring(wis) }
+                game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("WishingWell"):FireServer(unpack(args))
+            end
+        end
+    end
+
+end
+
+function yaw()
+    while true do
+        if auto then
+         goi()
+wait(3)
+        end
+        wait(1)
+    end
+end
+
+
+local function showAllFrames(gui)
+    if gui and gui:IsA("ScreenGui") then
+        for _, frame in ipairs(gui:GetChildren()) do
+            if frame:IsA("Frame") then
+                frame.Visible = true
+            end
+        end
+    end
+end
+
+local MOB, MOF = UL:AddOBtn(cfrm, "UI Structures")
+UL:AddBtn(MOF, "AltarUI", function() 
+    pp.AltarUI.Enabled = true 
+    showAllFrames(pp.AltarUI)
+end)
+UL:AddBtn(MOF, "GemShop", function() 
+    pp.GemShop.Enabled = true 
+    showAllFrames(pp.GemShop)
+end)
+UL:AddBtn(MOF, "Hacker", function() 
+    pp.Hacker.Enabled = true 
+    showAllFrames(pp.Hacker)
+end)
+UL:AddBtn(MOF, "PerksShop", function() 
+    pp.PerksShop.Enabled = true 
+    showAllFrames(pp.PerksShop)
+end)
+UL:AddBtn(MOF, "MergeEquipment", function() 
+    pp.MergeEquipment.Enabled = true 
+    showAllFrames(pp.MergeEquipment)
+end)
+UL:AddBtn(MOF, "TempleUI", function() 
+    pp.TempleUI.Enabled = true 
+    showAllFrames(pp.TempleUI)
+end)
+
+UL:AddBtn(MOF, "JesterUi", function() 
+    pp.JesterUi.Enabled = true 
+    showAllFrames(pp.JesterUi)
+        local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Visible all efects",
+    Text = "5s",
+    Duration = 5,
+})
+        
+    wait(0.5)
+    for i = 1, 10 do
+        local cardFrame = pp.JesterUi.Frame.cardframe[i]
+        local lockedElement = cardFrame:FindFirstChild("Locked")
+
+        if lockedElement and lockedElement.Visible then
+            lockedElement.Visible = false
+            
+spawn(function()
+            wait(5)
+            lockedElement.Visible = true
+end)
+        end
+    end
+end)
+
+
+local function copy(text)
+    if syn then
+        syn.write_clipboard(text)
+    else
+        setclipboard(text)
+    end
+end
+
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local StarterGui = game:GetService("StarterGui")
+local RunService = game:GetService("RunService")
+
+local function sendNotification(title, text, duration)
+    game.StarterGui:SetCore("SendNotification", {
+        Title = title,
+        Text = text,
+        Duration = duration
+    })
+end
+local OP, OF = UL:AddOBtn(cfrm, "Options Items >")
+
+local sendCount = nil
+
+UL:AddTBox(OF, "Item Purchase Multiplier: 1", function(text)
+    local input = tonumber(text)
+    if input and input > 0 then
+        sendCount = input
+        
+    else
+        sendCount = nil
+        
+    end
+end)
+
+local kyo = false
+    UL:AddTBtn(cfrm, "Auto Get Gift time", false, function()
+         kyo = not kyo
+        while kyo do
+            wait(1)
+            for i = 1, 12 do
+                local args = {
+    [1] = i
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("PlaytimeRewardUpdateEvent"):FireServer(unpack(args))
+                wait(1)
+            end
+        end
+    end)
+
+local enviarAlServidor = false
+
+local function getFullName(instance)
+    return instance:GetFullName()
+end
+
+local function tableToString(t, indent)
+    indent = indent or 0
+    local result = "{\n"
+    local padding = string.rep(" ", indent + 2)
+    for k, v in pairs(t) do
+        if typeof(v) == "Instance" then
+            result = result .. padding .. tostring(k) .. " = " .. getFullName(v) .. ",\n"
+        elseif type(v) == "table" then
+            result = result .. padding .. tostring(k) .. " = " .. tableToString(v, indent + 2) .. ",\n"
+        else
+            result = result .. padding .. tostring(k) .. " = " .. tostring(v) .. ",\n"
+        end
+    end
+    return result .. string.rep(" ", indent) .. "}"
+end
+
+local function decryptArguments(...)
+    local decryptedArgs = {}
+    for _, arg in ipairs({...}) do
+        if type(arg) == "table" then
+            decryptedArgs[#decryptedArgs + 1] = tableToString(arg)
+        elseif typeof(arg) == "Instance" then
+            decryptedArgs[#decryptedArgs + 1] = getFullName(arg)
+        else
+            decryptedArgs[#decryptedArgs + 1] = tostring(arg)
+        end
+    end
+    return decryptedArgs
+end
+
+local remote = game.ReplicatedStorage:WaitForChild("Events"):WaitForChild("GenerateEquipment")
+local mergeRemote = game.ReplicatedStorage:WaitForChild("Events"):WaitForChild("PlayerMergeEquipment")
+
+remote.OnClientEvent:Connect(function(...)
+    if enviarAlServidor then 
+        local args = {...}
+        local decryptedArgs = decryptArguments(...)
+
+        local groupedItems = {}
+        for _, arg in ipairs(args) do
+            if type(arg) == "table" then
+                for id, item in pairs(arg) do
+                    if type(item) == "table" and item.equipped == false and item.rarity ~= "Demonic" then
+                        local key = item.name .. "_" .. item.rarity
+                        if not groupedItems[key] then
+                            groupedItems[key] = {}
+                        end
+                        table.insert(groupedItems[key], {id = id, item = item})
+                    end
+                end
+            end
+        end
+
+        for key, items in pairs(groupedItems) do
+            if #items >= 3 then
+                local idsToSend = {tostring(items[1].id), tostring(items[2].id), tostring(items[3].id)}
+                local args = {[1] = idsToSend}
+                
+                mergeRemote:FireServer(unpack(args))
+            end
+        end
+    end
+end)
+
+UL:AddTBtn(OF, "Auto Merge Items", false, function()
+    enviarAlServidor = not enviarAlServidor
+end)
+
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Events = ReplicatedStorage:WaitForChild("Events")
+local CraftingEvent = Events:WaitForChild("CraftingEvent")
+
+local isCallingFireServer = false
+
+local function nuevaFuncionFireServer(...)
+    local args = {...}
+    isCallingFireServer = true
+    if sendCount and sendCount > 0 then
+        for i = 1, sendCount do
+            CraftingEvent:FireServer(unpack(args))
+        end
+    else
+        CraftingEvent:FireServer(unpack(args))
+    end
+    isCallingFireServer = false
+end
+
+local mt = getrawmetatable(game)
+local oldNamecall = mt.__namecall
+setreadonly(mt, false)
+
+mt.__namecall = newcclosure(function(self, ...)
+    local method = getnamecallmethod()
+    local args = {...}
+    if method == "FireServer" and self == CraftingEvent and not isCallingFireServer then
+        spawn(function()
+            nuevaFuncionFireServer(unpack(args))
+        end)
+        return oldNamecall(self, unpack(args))
+    end
+    return oldNamecall(self, unpack(args))
+end)
+
+setreadonly(mt, true)
+
+local running = false
+local world = ""
+local worldd
+
+local function startOpeningEggs(world)
+    running = true
+    
+    while running do
+        local args = {
+            [1] = tostring(world)
+        }
+
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("PlayerPressedKeyOnEgg"):FireServer(unpack(args))
+
+        wait(0.3)
+    end
+end
+
+game.Players.LocalPlayer.PlayerScripts:FindFirstChild("PlayerPetHandler").Enabled = false
+sendNotification("Animation Egg Oppen", "Desabled Default", 5)
+
+UL:AddTBox(cfrm, "Auto Egg-number world or 'stop", function(value) 
+worldd = value
+    if value == "" or value:lower() == "stop" then
+        running = false
+        sendNotification("Stop Open Egg", "Egg opening stopped", 5)
+        return
+    end
+
+    local newWorld = tonumber(value)
+    if newWorld then
+        world = newWorld
+        running = false
+        sendNotification("Open Egg", "Starting to open eggs in world: " .. world, 5)
+        wait(0.1)
+        startOpeningEggs(world)
+    else
+        -- handle invalid input
+        end
+end)
+
+UL:AddBtn(cfrm, "Tp Egg Worl", function()
+    local tp = workspace.EggVendors[worldd]:GetModelCFrame().Position + Vector3.new(0, 15, 0)
+    game.Players.LocalPlayer.Character:MoveTo(tp)
+    wait(0.2)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
+    wait(2)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
+end)
+
+
+local ah = false
+UL:AddTBtn(cfrm, "Auto Fast Train", false, function(state)
+    ah = not ah
+    while ah do
+        wait()
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("DamageIncreaseOnClickEvent"):FireServer()
+        end
+    end)
+
+
+game.Players.LocalPlayer.PlayerScripts.DeathEffectsHandler.Disabled = true
+         game.Players.LocalPlayer.PlayerScripts.CameraHandler.Disabled = true
+
+UL:AddText(crFrm, "By Script: OneCreatorX ")
+UL:AddText(crFrm, "Create Script: 20/05/24 ")
+UL:AddText(crFrm, "Update Script: 17/06/24")
+UL:AddText(crFrm, "Script Version: 0.7")
+UL:AddBtn(crFrm, "Send text for Discord", function() loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX/OneCreatorX/main/Scripts/MsgDev.lua"))() end)
+UL:AddBtn(crFrm, "Copy link YouTube", function() copy("https://youtube.com/@onecreatorx") end)
+UL:AddBtn(crFrm, "Copy link Discord", function() copy("https://discord.com/invite/UNJpdJx7c4") end)
+
+
+
+local arg2, arg3 = 1, 1
+local ja = false
+local function ah()
+    wait(0.1)
+if ja then
+       
+    local args = {[1] = true}
+    game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("PushEvent"):FireServer(unpack(args))
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("PushEvent"):FireServer(unpack(args))
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("PushEvent"):FireServer(unpack(args))
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("PushEvent"):FireServer(unpack(args))
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("PushEvent"):FireServer(unpack(args))
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("PushEvent"):FireServer(unpack(args))
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("PushEvent"):FireServer(unpack(args))
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("PushEvent"):FireServer(unpack(args))
+    wait(0.5)
+        
+   game.Players.LocalPlayer.Character:MoveTo(workspace.BreakableParts["Stage" .. arg2][arg3]:GetModelCFrame().Position)
+end
+end
+
+local mt = getrawmetatable(game)
+local oldNamecall = mt.__namecall
+setreadonly(mt, false)
+
+
+UL:AddTBtn(cfrm, "Fast Auto Fight", false, function() 
+ja = not ja
+if not ja then
+local args = {
+    [1] = "StopFight"
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("dEvents"):WaitForChild("AutoFight"):FireServer(unpack(args))
+else
+sendNotification("Use Auto Fight", "Button Game for farm", 5)
+end
+end)    
+
+
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Events = ReplicatedStorage:WaitForChild("Events")
+local AutoFight = Events:WaitForChild("AutoFight")
+local originalFireServer = AutoFight.FireServer
+
+local function newFireServer(self, ...)
+    local args = {...}
+    arg2 = args[2]
+    arg3 = args[3]
+    
+    if args[1] == "StopFight" then
+        return oldNamecall(self, ...)
+    else
+        spawn(ah)
+        return originalFireServer(self, unpack(args))
+    end
+end
+
+mt.__namecall = newcclosure(function(self, ...)
+    local method = getnamecallmethod()
+    if method == "FireServer" and self == AutoFight then
+        return newFireServer(self, ...)
+    end
+    return oldNamecall(self, ...)
+end)
+
+setreadonly(mt, true)
+
+
+local walkSpeed = 40
+local safeDistance = 9
+local attackDistance = 9
+local remoteEvent = game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("PunchEvent")
+
+local Player = game:GetService("Players").LocalPlayer
+
+local function findClosestNPC()
+    local character = Player.Character or Player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    
+    local closestNPC = nil
+    local closestDistance = math.huge
+
+    for _, NPC in pairs(workspace.BreakableParts.Dungeon:GetChildren()) do
+        if NPC:IsA("Model") and NPC.PrimaryPart then
+            local distance = (NPC.PrimaryPart.Position - humanoidRootPart.Position).Magnitude
+            if distance < closestDistance then
+                closestDistance = distance
+                closestNPC = NPC
+            end
+        end
+    end
+
+    return closestNPC
+end
+
+local function attackAndMove()
+    local character = Player.Character or Player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+        
+    local closestNPC = findClosestNPC()
+    if closestNPC then
+        local direction = (closestNPC.PrimaryPart.Position - humanoidRootPart.Position).unit
+        local distance = (closestNPC.PrimaryPart.Position - humanoidRootPart.Position).Magnitude
+        local newPosition = humanoidRootPart.Position + direction * math.min(distance - attackDistance, safeDistance - 1)
+
+        character:MoveTo(newPosition)
+        remoteEvent:FireServer(closestNPC)
+    end
+end
+
+
+local a = false
+
+local limite = 1000
+
+UL:AddTBox(cfrm, "Number Limite Wave", function(userInput) 
+    if userInput == "" then
+        limite = 1000
+        sendNotification("Wave limit appl", "Max limit waves: " .. limite, 5)
+    else
+        limite = tonumber(userInput)
+        if limite then
+            sendNotification("Wave limit appl", "Max limit waves: " .. limite, 5)
+        else
+            sendNotification("Error", "Invalid input for wave limit", 5)
+        end
+        end
+end)
+
+
+local function startNewDungeon()
+    if a then
+        wait(2)
+        local args = {
+            [1] = "StartDungeon"
+        }
+
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("DungeonEvent"):FireServer(unpack(args))
+    end
+end
+
+function Start()
+    a = not a
+    if a then
+        local args = {
+            [1] = "StartDungeon"
+        }
+
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("DungeonEvent"):FireServer(unpack(args))
+    
+    else
+        local args = {
+            [1] = "Exit"
+        }
+
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("DungeonEvent"):FireServer(unpack(args))
+wait(1)
+Player.PlayerGui.DungeonFinishUI.Enabled = true
+    end
+end
+
+UL:AddTBtn(cfrm, "Start - Auto: Dungeon", false, function(state) 
+Start()
+ end)
+
+local targetRemoteEventName = "PartyEvent"
+local PartyEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild(targetRemoteEventName)
+
+local mt = getrawmetatable(game)
+local oldNamecall = mt.__namecall
+setreadonly(mt, false)
+
+mt.__namecall = newcclosure(function(self, ...)
+    local method = getnamecallmethod()
+    if method == "FireServer" and self.Name == targetRemoteEventName then
+        spawn(startNewDungeon)
+        return oldNamecall(self, ...)
+    end
+    return oldNamecall(self, ...)
+end)
+
+setreadonly(mt, true)
+
+local claim = false
+local currentEvent = nil
+local eventStats = nil
+
+function claimUGC()
+if claim then
+    local args = { currentEvent }
+    game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("NewUGCEvents"):WaitForChild("ClickedEventClaimButton"):FireServer(unpack(args))
+end
+end
+
+function reintentar()
+    wait(1)
+if claim then
+        if currentEvent == nil then
+            sendNotification("Click in Event UGC", "or not Working", 5)
+            reintentar()
+        else
+    local args = { currentEvent }
+    game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("NewUGCEvents"):WaitForChild("RequestEventData"):FireServer(unpack(args))
+end
+    
+end
+end
+
+local function hookRequestEventData()
+    local mt = getrawmetatable(game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("NewUGCEvents"):WaitForChild("RequestEventData"))
+    local oldFireServer = mt.__namecall
+
+    setreadonly(mt, false)
+
+    mt.__namecall = newcclosure(function(self, ...)
+        local args = {...}
+        local method = getnamecallmethod()
+
+        if method == "FireServer" and self.Name == "RequestEventData" and claim then
+            currentEvent = args[1]
+        end
+
+        return oldFireServer(self, ...)
+    end)
+
+    setreadonly(mt, true)
+end
+
+local function hookSendEventQuestStats()
+    game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("NewUGCEvents"):WaitForChild("SendEventQuestStats").OnClientEvent:Connect(function(eventName, stats)
+        if eventName == currentEvent and claim then
+            eventStats = stats
+            
+            local allQuestsComplete = true
+            for _, quest in pairs(stats) do
+                if quest.current < quest.required then
+                    allQuestsComplete = false
+                    spawn(reintentar)
+                    break
+                end
+            end
+            
+            if allQuestsComplete then
+                spawn(claimUGC)
+            end
+        end
+    end)
+end
+
+
+    
+    UL:AddTBtn(cfrm, "Auto GET and Claim UGC", false, function(state)
+ claim = not claim 
+        if claim then
+    reintentar()
+            spawn(function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/oneDev/Scripts/Auto%20Buyer.lua"))()
+                end)
+        end
+end)
+
+hookRequestEventData()
+hookSendEventQuestStats()
+
+local function onPlayerDeath()
+    wait(0.8)
+    local args = { [1] = "LeaveParty" }
+    game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("PartyEvent"):FireServer(unpack(args))
+    Player.PlayerGui.DungeonFinishUI.Enabled = false
+    wait(1)
+end
+
+local function monitorPlayerHealth(humanoid)
+    humanoid.HealthChanged:Connect(function(health)
+        if health <= 0 then
+            onPlayerDeath()
+        end
+    end)
+end
+
+local function setupCharacterMonitoring(player)
+    player.CharacterAdded:Connect(function(character)
+        local humanoid = character:WaitForChild("Humanoid")
+        monitorPlayerHealth(humanoid)
+    end)
+
+    if player.Character then
+        local humanoid = player.Character:WaitForChild("Humanoid")
+        monitorPlayerHealth(humanoid)
+    end
+end
+
+local player = game.Players.LocalPlayer
+setupCharacterMonitoring(player)
+spawn(function()
+while true do
+    local success, err = pcall(function()
+        local maxText = Player.PlayerGui.DungeonMain.Frame.Wave.WaveNumber.Text
+        local max = tonumber(maxText:match("%d+"))
+        
+        if a then
+            if limite ~= nil and max and max <= limite then
+                attackAndMove()
+                wait()
+            elseif limite ~= nil and max and max >= limite and workspace:FindFirstChild("Dungeon") then
+                local args = { [1] = "Exit" }
+                game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("DungeonEvent"):FireServer(unpack(args))
+                wait(2)
+            elseif limite ~= nil and not workspace:FindFirstChild("Dungeon") then
+                wait(0.8)
+                local args = { [1] = "LeaveParty" }
+                game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("PartyEvent"):FireServer(unpack(args))
+                Player.PlayerGui.DungeonFinishUI.Enabled = false
+                wait(1)
+            else
+                wait(0.1)
+                -- no hacer nada
+            end
+        else
+            wait(0.1)
+            -- no hacer nada
+        end
+    end)
+    
+    if not success then
+        
+    end
+end
+    end)
+
+
+
+local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+
+local notificationSent = {
+    buyButton = false,
+    cancelButton = false
+}
+
+local function sendNotification(title, text, duration)
+    if not notificationSent[title] then
+        StarterGui:SetCore("SendNotification", {
+            Title = title,
+            Text = text,
+            Duration = duration,
+        })
+        notificationSent[title] = true
+    end
+end
+
+local function clickCancelButton(purchasePrompt)
+    local cancelButtonText = nil
+    local zeroTextButton = nil
+
+    for _, descendant in ipairs(purchasePrompt:GetDescendants()) do
+        if descendant:IsA("TextLabel") and descendant.Name == "Text" then
+            local text = descendant.Text:lower()
+            if text == "cancelar" or text == "cancel" then
+                cancelButtonText = text
+            elseif text == "0" then
+                zeroTextButton = descendant
+            end
+        end
+    end
+
+    if zeroTextButton and claim then
+        local buttonCenterX = zeroTextButton.AbsolutePosition.X + zeroTextButton.AbsoluteSize.X / 0.5
+        local buttonCenterY = zeroTextButton.AbsolutePosition.Y + zeroTextButton.AbsoluteSize.Y / 0.5
+        
+        game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, true, game, 1)
+        game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, false, game, 1)
+        sendNotification("FREE UGC Available", "Auto Claim Accept. By:OneCreatorX", 5)
+    elseif cancelButtonText then
+        for _, descendant in ipairs(purchasePrompt:GetDescendants()) do
+            if descendant:IsA("TextLabel") and descendant.Name == "Text" and descendant.Text:lower() == cancelButtonText then
+                local buttonCenterX = descendant.AbsolutePosition.X + descendant.AbsoluteSize.X / 0.5
+                local buttonCenterY = descendant.AbsolutePosition.Y + descendant.AbsoluteSize.Y / 0.5
+                
+                game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, true, game, 1)
+                game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, false, game, 1)
+                sendNotification("NO FREE UGC", "Auto Claim Decline. By:OneCreatorX", 5)
+                break
+            end
+        end
+    end
+end
+
+local coreGui = game:GetService("CoreGui")
+local purchasePrompt = coreGui:WaitForChild("PurchasePrompt")
+ local claimm = false
+
+RunService.Heartbeat:Connect(function()
+if claimm then
+    local buttonsFound = false
+
+    for _, descendant in ipairs(purchasePrompt:GetDescendants()) do
+        if descendant:IsA("TextLabel") and descendant.Name == "Text" then
+            buttonsFound = true
+            break
+        end
+    end
+
+    if not buttonsFound then
+        notificationSent = {
+            buyButton = false,
+            cancelButton = false
+        }
+    end
+
+    clickCancelButton(purchasePrompt)
+end
+end)
+yaw()
