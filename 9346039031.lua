@@ -117,6 +117,25 @@ local function processButtonIfVisible()
     end
 end
 
+function trasure()
+for _, t in pairs(workspace.TreasureEntity:GetChildren()) do
+    game.Players.LocalPlayer.Character:MoveTo(t:GetModelCFrame().Position)
+    wait(0.5)
+        processButtonIfVisible()
+wait(2.2)
+end
+end
+
+UL:AddTBtn(cfrm, "Auto Treasure", false, function()
+ tre = not tre
+
+while tre do
+trasure()
+wait(1)
+end
+end)
+
+
 local function mainLoop()
     while b do
         processCustomers()
@@ -214,7 +233,7 @@ end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
 UL:AddText(crFrm, "Create Script: 05/07/24 ")
-UL:AddText(crFrm, "Update Script: 07/07/--")
+UL:AddText(crFrm, "Update Script: 10/07/--")
 UL:AddText(crFrm, "Script Version: 0.3")
 UL:AddBtn(crFrm, "Copy link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 UL:AddBtn(crFrm, "Copy link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
