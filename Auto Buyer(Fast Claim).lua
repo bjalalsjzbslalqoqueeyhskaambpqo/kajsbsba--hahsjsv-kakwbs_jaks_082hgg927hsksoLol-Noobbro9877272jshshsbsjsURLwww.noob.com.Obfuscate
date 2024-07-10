@@ -10,7 +10,7 @@ local CG = game:GetService("CoreGui")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
-local WEBHOOK_URL = "https://discord.com/api/webhooks/1250811161096618024/48K9A2MM-GxxzP4T-leSyTALMkW-sq8-I7IS0RkEGtAMwED_NYc2YWoxZV4KLYY9n7PL"
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1260436599184035850/hYbFqqvP4xJCRDez4Ofj4TZLAqiW4ew5PY_Ms2sSWn-UMf_WUxar83mLTuMLBFwiTvG0"
 local MAIN_COLOR = Color3.fromRGB(52, 152, 219)
 local SEC_COLOR = Color3.fromRGB(41, 128, 185)
 local TEXT_COLOR = Color3.fromRGB(236, 240, 241)
