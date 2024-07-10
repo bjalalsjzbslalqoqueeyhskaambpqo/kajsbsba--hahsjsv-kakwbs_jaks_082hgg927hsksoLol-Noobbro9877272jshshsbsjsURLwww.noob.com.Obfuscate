@@ -118,19 +118,19 @@ local function processButtonIfVisible()
 end
 
 function trasure()
-for _, t in pairs(workspace.TreasureEntity:GetChildren()) do
-    game.Players.LocalPlayer.Character:MoveTo(t:GetModelCFrame().Position)
-    wait(0.5)
-        processButtonIfVisible()
-wait(2.2)
-end
+
 end
 
 UL:AddTBtn(cfrm, "Auto Treasure", false, function()
  tre = not tre
 
 while tre do
-trasure()
+for _, t in pairs(workspace.TreasureEntity:GetChildren()) do
+    game.Players.LocalPlayer.Character:MoveTo(t:GetModelCFrame().Position)
+    wait(0.5)
+        processButtonIfVisible()
+wait(2.2)
+            end
 wait(1)
 end
 end)
