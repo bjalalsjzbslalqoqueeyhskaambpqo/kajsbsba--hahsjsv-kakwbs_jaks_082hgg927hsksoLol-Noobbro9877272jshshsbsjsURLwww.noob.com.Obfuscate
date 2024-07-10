@@ -295,4 +295,11 @@ end
 Sec:CreateToggle("Auto Click", click)
 Sec:CreateToggle("Auto Chest", cofre)
 Sec:CreateToggle("Auto Tokens", Tokens)
-Sec:
+Sec:CreateToggle("Auto Tokens(2)", Tokenss)
+Sec:CreateToggle("Auto Rebirth", Rebirth)
+Sec:CreateToggle("Auto Spin", Spin)
+Sec:CreateToggle("Auto Jump", jump)
+Sec3:CreateButton("Update: 03/07/24", a)
+Sec3:CreateButton("Version 6", a)
+Sec2:CreateButton("Copy Link YouTube", copyy)
+Sec2:CreateButton("Copy Link Discord", copyd)
