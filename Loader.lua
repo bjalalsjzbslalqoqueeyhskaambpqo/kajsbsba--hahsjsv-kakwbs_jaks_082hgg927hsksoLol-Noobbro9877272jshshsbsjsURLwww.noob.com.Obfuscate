@@ -12,7 +12,7 @@ return function(id)
     local function loadScript()
         local url = "https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/" .. id .. ".lua"
         local success, result = pcall(function()
-            return game:HttpGet(url)
+            return game:HttpGet(tostring(url))
         end)
         
         if success then
