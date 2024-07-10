@@ -126,10 +126,13 @@ UL:AddTBtn(cfrm, "Auto Treasure", false, function()
 
 while tre do
 for _, t in pairs(workspace.TreasureEntity:GetChildren()) do
+                if tre then
     game.Players.LocalPlayer.Character:MoveTo(t:GetModelCFrame().Position)
     wait(0.5)
         processButtonIfVisible()
 wait(2.2)
+                end
+
             end
 wait(1)
 end
