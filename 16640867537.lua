@@ -17,7 +17,12 @@ local p = game.Players.LocalPlayer
 local sg = UL:CrSG("Default")
 local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
 
-spawn(function()
+
+
+UL:AddTBtn(cfrm, "Inf Coins", false, function() 
+a = not a
+        if a then 
+            spawn(function()
 
         wait(35)
 local TeleportService = game:GetService("TeleportService")
@@ -26,9 +31,6 @@ local Pa = game.Players.LocalPlayer
                 wait()
                 TeleportService:Teleport(16640867537, Pa)
     end)
-
-UL:AddTBtn(cfrm, "Inf Coins", false, function() 
-a = not a
 while a do
 wait()
 spawn(function()
@@ -121,11 +123,17 @@ local args = {
 
 game:GetService("ReplicatedStorage"):WaitForChild("remnantsofsiren_bridgenet2@1.0.1"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
 end)
-end end)
+end end end)
 
 UL:AddBtn(cfrm, "TP UGCs", function() 
 p.Character:MoveTo(Vector3.new(-477, 7, -397))
     end)
+
+
+UL:AddBtn(cfrm, "TP UGCs zone 2", function() 
+p.Character:MoveTo(Vector3.new(115, 7, -257))
+    end)
+
 
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
