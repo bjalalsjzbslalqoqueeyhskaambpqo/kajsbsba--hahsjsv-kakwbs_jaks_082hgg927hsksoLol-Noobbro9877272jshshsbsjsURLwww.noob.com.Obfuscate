@@ -5,12 +5,15 @@ local Sec3 = Win:NewSection("Info Script")
 local Sec2 = Win:NewSection("Credits: OneCreatorX")
 
 spawn(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/info.lua"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX/OneCreatorX/main/Scripts/UGCfree/Ning/Info.lua"))()
 end)
 
 local tF = workspace:WaitForChild("Tokens")
 local pp = game.Players.LocalPlayer
 local gates = workspace.Scriptables.Gates
+local chests = workspace.Scriptables.Chests
+local destinationThreshold = 15
+local PathfindingService = game:GetService("PathfindingService")
 
 local function copyToClipboard(text)
     if syn then
@@ -60,20 +63,7 @@ local function tkk()
             movePartsToPlayerPosition2(zone)
         end
     end
-end 
-
-local p = game.Players.LocalPlayer
-local c = workspace.Scriptables.Chests
-local g = workspace.Scriptables.Gates
-local n = { "Chest1", "Chest2", "Chest3", "Chest4", "Chest5" }
-
-local player = game.Players.LocalPlayer
-local chests = workspace.Scriptables.Chests
-local gates = workspace.Scriptables.Gates
-local autoChest = false
-
-local destinationThreshold = 15
-local PathfindingService = game:GetService("PathfindingService")
+end
 
 local function isStuck(character)
     local rayOrigin = character.HumanoidRootPart.Position
@@ -126,7 +116,6 @@ local function moveToDestination(destination)
                 return
             end
         end
-    else
     end
 end
 
@@ -162,6 +151,26 @@ local function moveToChest()
     end
 end
 
+local function moveToClosestTokenZone()
+    local closestZone = nil
+    local lowestNumber = math.huge
+
+    for i = 1, 5 do
+        local zone = tF:FindFirstChild("Zone" .. i)
+        local gate = gates:FindFirstChild("Gate" .. (i - 1))
+
+        if zone and not gate and i < lowestNumber then
+            closestZone = zone
+            lowestNumber = i
+        end
+    end
+
+    if closestZone then
+        local destinationPosition = closestZone.Position
+        moveToDestination(destinationPosition)
+    end
+end
+
 local a = false
 local function cofre()
     a = not a
@@ -172,11 +181,11 @@ local function cofre()
         end)
 
         if not success then
-        else
+            -- Si no hay cofres disponibles, mover al jugador a la zona de tokens más cercana
+            moveToClosestTokenZone()
         end
     end
 end
-
 
 local a = false
 local function click()
@@ -200,24 +209,7 @@ local a = false
 local function Tokens()
     a = not a
     while a do
-        local chestsAvailable = false
-        
-        -- Verificar si aún hay cofres disponibles
-        for i = 2, 5 do
-            local chest = chests:FindFirstChild("Chest" .. i)
-            local gate = gates:FindFirstChild("Gate" .. (i - 1))
-    
-            if chest and not gate then
-                chestsAvailable = true
-                break
-            end
-        end
-        
-        -- Mover al jugador hacia las zonas de tokens solo si no hay cofres disponibles
-        if not chestsAvailable then
-            tk()
-        end
-        
+        tk()
         task.wait(5)
     end
 end
@@ -226,24 +218,7 @@ local a = false
 local function Tokenss()
     a = not a
     while a do
-        local chestsAvailable = false
-        
-        -- Verificar si aún hay cofres disponibles
-        for i = 2, 5 do
-            local chest = chests:FindFirstChild("Chest" .. i)
-            local gate = gates:FindFirstChild("Gate" .. (i - 1))
-    
-            if chest and not gate then
-                chestsAvailable = true
-                break
-            end
-        end
-        
-        -- Mover al jugador hacia las zonas de tokens solo si no hay cofres disponibles
-        if not chestsAvailable then
-            tkk()
-        end
-        
+        tkk()
         task.wait(5)
     end
 end
@@ -282,14 +257,13 @@ function copyy()
 end
 
 function jump()
-jumty = not jumty
-while jumty do
-
-game.Players.LocalPlayer.Character.Humanoid.Jump = true
-wait(0.3)
-game.Players.LocalPlayer.Character.Humanoid.Jump = false
-wait()
-end
+    jumty = not jumty
+    while jumty do
+        game.Players.LocalPlayer.Character.Humanoid.Jump = true
+        wait(0.3)
+        game.Players.LocalPlayer.Character.Humanoid.Jump = false
+        wait()
+    end
 end
 
 Sec:CreateToggle("Auto Click", click)
@@ -299,7 +273,7 @@ Sec:CreateToggle("Auto Tokens(2)", Tokenss)
 Sec:CreateToggle("Auto Rebirth", Rebirth)
 Sec:CreateToggle("Auto Spin", Spin)
 Sec:CreateToggle("Auto Jump", jump)
-Sec3:CreateButton("Update: 03/07/24", a)
-Sec3:CreateButton("Version 6", a)
+Sec3:CreateButton("Update: 10/07/24", a)
+Sec3:CreateButton("Version 7", a)
 Sec2:CreateButton("Copy Link YouTube", copyy)
 Sec2:CreateButton("Copy Link Discord", copyd)
