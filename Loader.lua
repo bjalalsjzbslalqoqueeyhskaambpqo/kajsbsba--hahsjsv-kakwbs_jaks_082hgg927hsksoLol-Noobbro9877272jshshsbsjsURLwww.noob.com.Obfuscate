@@ -2,7 +2,7 @@ return function(id)
     local function notify(message)
         pcall(function()
             game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "Notificación",
+                Title = "Notify",
                 Text = message,
                 Duration = 5
             })
@@ -16,7 +16,7 @@ return function(id)
         if success then
             loadstring(result)()
         else
-            notify("Error al cargar el script: " .. tostring(result))
+            notify("Error loaded Script " .. tostring(result))
         end
     end
 
