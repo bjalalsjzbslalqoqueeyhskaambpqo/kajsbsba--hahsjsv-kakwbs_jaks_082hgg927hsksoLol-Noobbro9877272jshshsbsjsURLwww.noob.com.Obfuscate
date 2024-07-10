@@ -5,8 +5,8 @@ local Sec3 = Win:NewSection("Info Script")
 local Sec2 = Win:NewSection("Credits: OneCreatorX")
 
 spawn(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX/OneCreatorX/main/Scripts/UGCfree/Ning/Info.lua"))()
-    end)
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX/OneCreatorX/main/Scripts/UGCfree/Ning/Info.lua"))()
+end)
 
 local tF = workspace:WaitForChild("Tokens")
 local pp = game.Players.LocalPlayer
@@ -24,9 +24,9 @@ local function movePartsToPlayerPosition(zone)
     for _, part in ipairs(zone:GetDescendants()) do
         if part:IsA("BasePart") then
             local plr = game.Players.LocalPlayer
-firetouchinterest(plr.Character.HumanoidRootPart, part, 0)
-        wait()
-        firetouchinterest(plr.Character.HumanoidRootPart, part, 1)
+            firetouchinterest(plr.Character.HumanoidRootPart, part, 0)
+            wait()
+            firetouchinterest(plr.Character.HumanoidRootPart, part, 1)
         end
     end
 end
@@ -35,12 +35,10 @@ local function movePartsToPlayerPosition2(zone)
     for _, part in ipairs(zone:GetDescendants()) do
         if part:IsA("BasePart") then
             local plr = game.Players.LocalPlayer
-part.Position = plr.Character.HumanoidRootPart.Position
+            part.Position = plr.Character.HumanoidRootPart.Position
         end
     end
 end
-
-
 
 local function tk()
     for i = 1, 5 do
@@ -202,7 +200,24 @@ local a = false
 local function Tokens()
     a = not a
     while a do
-        tk()
+        local chestsAvailable = false
+        
+        -- Verificar si aún hay cofres disponibles
+        for i = 2, 5 do
+            local chest = chests:FindFirstChild("Chest" .. i)
+            local gate = gates:FindFirstChild("Gate" .. (i - 1))
+    
+            if chest and not gate then
+                chestsAvailable = true
+                break
+            end
+        end
+        
+        -- Mover al jugador hacia las zonas de tokens solo si no hay cofres disponibles
+        if not chestsAvailable then
+            tk()
+        end
+        
         task.wait(5)
     end
 end
@@ -211,7 +226,24 @@ local a = false
 local function Tokenss()
     a = not a
     while a do
-        tkk()
+        local chestsAvailable = false
+        
+        -- Verificar si aún hay cofres disponibles
+        for i = 2, 5 do
+            local chest = chests:FindFirstChild("Chest" .. i)
+            local gate = gates:FindFirstChild("Gate" .. (i - 1))
+    
+            if chest and not gate then
+                chestsAvailable = true
+                break
+            end
+        end
+        
+        -- Mover al jugador hacia las zonas de tokens solo si no hay cofres disponibles
+        if not chestsAvailable then
+            tkk()
+        end
+        
         task.wait(5)
     end
 end
@@ -224,8 +256,6 @@ local function Spin()
         task.wait(5)
     end
 end
-
-
 
 game:GetService('Players').LocalPlayer.Idled:Connect(function()
     game:GetService('VirtualUser'):CaptureController()
@@ -262,15 +292,7 @@ wait()
 end
 end
 
-
 Sec:CreateToggle("Auto Click", click)
 Sec:CreateToggle("Auto Chest", cofre)
 Sec:CreateToggle("Auto Tokens", Tokens)
-Sec:CreateToggle("Auto Tokens(2)", Tokenss)
-Sec:CreateToggle("Auto Rebirth", Rebirth)
-Sec:CreateToggle("Auto Spin", Spin)
-Sec:CreateToggle("Auto Jump", jump)
-Sec3:CreateButton("Update: 03/07/24", a)
-Sec3:CreateButton("Version 6", a)
-Sec2:CreateButton("Copy Link YouTube", copyy)
-Sec2:CreateButton("Copy Link Discord", copyd)
+Sec:
