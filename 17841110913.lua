@@ -83,6 +83,7 @@ coin = player.Character.HumanoidRootPart
 
             else
                 humanoid.WalkToPoint = coinPos
+                      humanoid.WalkSpeed = 18
 
             end
         end)
