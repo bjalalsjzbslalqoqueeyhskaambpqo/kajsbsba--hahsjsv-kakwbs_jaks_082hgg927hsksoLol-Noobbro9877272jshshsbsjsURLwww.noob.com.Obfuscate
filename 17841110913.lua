@@ -77,15 +77,13 @@ humanoid.WalkToPoint = coinPos
 end)     
     humanoid.WalkSpeed = speedp
 ja = false
-firetouchinterest(player.Character.HumanoidRootPart, coin, 0)
-        wait()
-        firetouchinterest(player.Character.HumanoidRootPart, coin, 1)
-
+coin = player.Character.HumanoidRootPart
+        
                 ja = true
 
             else
                 humanoid.WalkToPoint = coinPos
-                humanoid.WalkSpeed = 20
+
             end
         end)
         wait()
