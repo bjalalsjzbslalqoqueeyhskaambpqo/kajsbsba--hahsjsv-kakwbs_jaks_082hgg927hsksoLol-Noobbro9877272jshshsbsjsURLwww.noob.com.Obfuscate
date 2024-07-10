@@ -1,27 +1,28 @@
 return function(id)
-    local success, result = pcall(function()
-        local url = "https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/" .. id .. ".lua"
-        return game:HttpGet(url)
-    end)
+    local function notify(message)
+        pcall(function()
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "Notificación",
+                Text = message,
+                Duration = 5
+            })
+        end)
+    end
 
-    if not success then
-        print("Error: No se pudo cargar el archivo.")
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Error",
-            Text = "No se pudo cargar el archivo.",
-            Duration = 5
-        })
-        return
+    local function loadScript()
+        local url = "https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/" .. id .. ".lua"
+        local success, result = pcall(game.HttpGet, game, url)
+        
+        if success then
+            loadstring(result)()
+        else
+            notify("Error al cargar el script: " .. tostring(result))
+        end
     end
 
     if tonumber(id) and tonumber(id) ~= game.PlaceId then
-        print("Advertencia: El ID del juego no coincide.")
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Advertencia",
-            Text = "El ID del juego no coincide. Posible script incorrecto.",
-            Duration = 5
-        })
+        notify("Posible script de otro juego")
     end
 
-    loadstring(result)()
+    loadScript()
 end
