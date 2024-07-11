@@ -703,7 +703,7 @@ end
         if claim then
     reintentar()
             spawn(function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/oneDev/Scripts/Auto%20Buyer.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/Auto%20Buyer(Fast%20Claim).lua"))()
                 end)
         end
 end)
