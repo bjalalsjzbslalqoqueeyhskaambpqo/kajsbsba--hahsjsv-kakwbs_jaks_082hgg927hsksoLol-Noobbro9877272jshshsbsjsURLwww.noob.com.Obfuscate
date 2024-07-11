@@ -20,14 +20,9 @@ local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
 local a = false
 
 local function touch()
-    for _, obj in ipairs(workspace:GetChildren()) do
-        if a and obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") then
-            local plr = game.Players.LocalPlayer
-            firetouchinterest(plr.Character.HumanoidRootPart, obj, 0)
-            wait(0.3)
-            firetouchinterest(plr.Character.HumanoidRootPart, obj, 1)
-            wait(0.1)
-        end
+    for _, t in (workspace.GameDebris.Tickets:GetChildren()) do
+t.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+wait(1.5)
     end
 wait(0.1)
 touch()
@@ -43,16 +38,10 @@ end)
 local a = false
 
 local function touch()
-    for _, obj in ipairs(workspace:GetChildren()) do
-        if a and obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") then
-            local plr = game.Players.LocalPlayer
-            firetouchinterest(plr.Character.HumanoidRootPart, obj, 0)
-            wait(0.5)
-            firetouchinterest(plr.Character.HumanoidRootPart, obj, 1)
-            wait(1.5)
-        end
+    for _, t in (workspace.GameDebris.Tickets:GetChildren()) do
+t.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+wait(2)
     end
-wait(0.1)
 touch()
 end
 
