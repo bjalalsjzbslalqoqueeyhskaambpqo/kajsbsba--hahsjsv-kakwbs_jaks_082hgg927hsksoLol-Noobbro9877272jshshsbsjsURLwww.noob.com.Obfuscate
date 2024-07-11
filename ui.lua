@@ -1,5 +1,5 @@
 local UL = {}
-print("Version UI 3.0")
+print("Version UI 3.1")
 print("Loading OneLib Enhanced")
 
 local TweenService = game:GetService("TweenService")
@@ -163,7 +163,7 @@ function UL:CrFrm(parent, title)
     crLbl.TextSize = 18
     crLbl.TextWrapped = true
     crLbl.TextXAlignment = Enum.TextXAlignment.Center
-    crLbl.TextYAlignment = Enum.TextYAlignment.Center
+    crLbl.TextYAlignment = Enum.TextXAlignment.Center
 
     local crLblCorner = Instance.new("UICorner")
     crLblCorner.CornerRadius = UDim.new(0, 8)
@@ -250,23 +250,28 @@ function UL:AddTBtn(parent, text, state, callback)
     btnCorner.CornerRadius = UDim.new(0, 6)
     btnCorner.Parent = btn
 
+    local pulseEffect
+
     local function updateButtonState()
         btn.Text = text .. " [" .. (state and "ON" or "OFF") .. "]"
         local targetColor = state and Color3.fromRGB(85, 170, 85) or Color3.fromRGB(65, 65, 65)
         TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = targetColor}):Play()
         
-        -- Add pulsing effect when active
+        if pulseEffect then
+            pulseEffect:Disconnect()
+            pulseEffect = nil
+        end
+        
         if state then
-            spawn(function()
-                while state do
-                    TweenService:Create(btn, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundColor3 = Color3.fromRGB(100, 200, 100)}):Play()
-                    wait(1)
-                    TweenService:Create(btn, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundColor3 = Color3.fromRGB(85, 170, 85)}):Play()
-                    wait(1)
-end
+            pulseEffect = game:GetService("RunService").Heartbeat:Connect(function()
+                local t = tick() % 2 / 2
+                local color = Color3.new(
+                    0.333 + 0.056 * math.sin(t * math.pi * 2),
+                    0.666 + 0.111 * math.sin(t * math.pi * 2),
+                    0.333 + 0.056 * math.sin(t * math.pi * 2)
+                )
+                btn.BackgroundColor3 = color
             end)
-        else
-            TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(65, 65, 65)}):Play()
         end
     end
 
@@ -363,6 +368,10 @@ function UL:AddOBtn(parent, name)
     oLayout.Parent = oContentFrame
     oLayout.SortOrder = Enum.SortOrder.LayoutOrder
     oLayout.Padding = UDim.new(0, 5)
+
+    oContentFrame:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+        oFrm.CanvasSize = UDim2.new(0, 0, 0, oContentFrame.AbsoluteSize.Y + 40)
+    end)
 
     local btn = Instance.new("TextButton")
     btn.Parent = parent
