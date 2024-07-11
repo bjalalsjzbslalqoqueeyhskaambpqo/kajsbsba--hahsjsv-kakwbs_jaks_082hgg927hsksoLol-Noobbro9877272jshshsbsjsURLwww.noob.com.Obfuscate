@@ -21,7 +21,7 @@ return function(id)
     end
 
     if tonumber(id) and tonumber(id) ~= game.PlaceId then
-        notify("Posible script de otro juego")
+        notify("Posible script other game")
     end
 
     loadScript()
