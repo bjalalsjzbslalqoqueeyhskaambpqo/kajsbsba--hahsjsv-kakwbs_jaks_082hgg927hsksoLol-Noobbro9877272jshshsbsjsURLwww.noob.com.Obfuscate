@@ -19,53 +19,21 @@ local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
 local a = false
 
 local function createPath(destination)
-    local PathfindingService = game:GetService("PathfindingService")
-    local player = game.Players.LocalPlayer
-    local humanoid = player.Character:WaitForChild("Humanoid")
-    local rootPart = player.Character:WaitForChild("HumanoidRootPart")
-
-    local path = PathfindingService:CreatePath({
-        AgentRadius = 2,
-        AgentHeight = 1,
-        AgentCanJump = true,
-        AgentMaxSlope = 45,
-        WaypointSpacing = 5,
-    })
-    
-    local success = path:ComputeAsync(rootPart.Position, destination.Position)
-    
-    if success then
-        local waypoints = path:GetWaypoints()
-        for _, waypoint in ipairs(waypoints) do
-            humanoid:MoveTo(waypoint.Position)
-            humanoid.MoveToFinished:Wait()
-            -- Comprobar distancia al destino
-            if (rootPart.Position - destination.Position).magnitude <= 7 then
-                destination.Position = rootPart.Position
-                break
-            end
-        end
-    else
-        -- Si no se puede calcular el camino, busca otro ticket cercano
-        local nearestTicket = getNearestTicketExcluding(destination)
-        if nearestTicket then
-            createPath(nearestTicket)
-        end
-    end
+spawn(function()
+destination.Position = p.Character.HumanoidRootPart.Position
+end)
 end
 
-local function getNearestTicketExcluding(excludeTicket)
+local function getNearestTicket()
     local playerPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
     local nearestTicket
     local shortestDistance = math.huge
     
     for _, ticket in ipairs(workspace.GameDebris.Tickets:GetChildren()) do
-        if ticket ~= excludeTicket then
-            local distance = (ticket.Position - playerPosition).magnitude
-            if distance < shortestDistance then
-                nearestTicket = ticket
-                shortestDistance = distance
-            end
+        local distance = (ticket.Position - playerPosition).magnitude
+        if distance < shortestDistance then
+            nearestTicket = ticket
+            shortestDistance = distance
         end
     end
     
@@ -77,12 +45,13 @@ local function touch()
         local nearestTicket = getNearestTicket()
         if nearestTicket then
             createPath(nearestTicket)
-            wait(1.5)
+            wait(2)
         else
             wait(0.1)
         end
     end
 end
+
 
 local function moveTicketsAndKick()
     local player = game.Players.LocalPlayer
@@ -94,56 +63,58 @@ local function moveTicketsAndKick()
             ticket.Position = playerPosition
 
             ticketsMoved = ticketsMoved + 1
-            wait(0.3)
+wait(0.3)
         else
             break
         end
     end
     
+
     player:Kick("Rejoin - Avoid Ban")
-    spawn(function()
-        wait(0.2)
-        local HttpService = game:GetService("HttpService")
-        local TeleportService = game:GetService("TeleportService")
-        local Players = game:GetService("Players")
+spawn(function()
+wait(0.2)
+   local HttpService = game:GetService("HttpService")
+local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
 
-        local player = Players.LocalPlayer
-        local placeId = game.PlaceId
-        local maxPlayers = 10
+local player = Players.LocalPlayer
+local placeId = game.PlaceId
+local maxPlayers = 10
 
-        local function getServers()
-            local servers = {}
-            local cursor = ""
+local function getServers()
+    local servers = {}
+    local cursor = ""
 
-            repeat
-                local url = "https://games.roblox.com/v1/games/" .. placeId .. "/servers/Public?limit=100&cursor=" .. cursor
-                local response = HttpService:JSONDecode(game:HttpGet(url))
-                
-                for _, server in ipairs(response.data) do
-                    if server.playing < maxPlayers and server.id ~= game.JobId then
-                        table.insert(servers, server.id)
-                    end
-                end
-                
-                cursor = response.nextPageCursor or ""
-            until cursor == nil or cursor == ""
-
-            return servers
-        end
-
-        local function rejoin()
-            local servers = getServers()
-            if #servers > 0 then
-                local randomServer = servers[math.random(1, #servers)]
-                TeleportService:TeleportToPlaceInstance(placeId, randomServer, player)
-            else
-                warn("No servers found with less than " .. maxPlayers .. " players.")
-                TeleportService:Teleport(placeId, player)
+    repeat
+        local url = "https://games.roblox.com/v1/games/" .. placeId .. "/servers/Public?limit=100&cursor=" .. cursor
+        local response = HttpService:JSONDecode(game:HttpGet(url))
+        
+        for _, server in ipairs(response.data) do
+            if server.playing < maxPlayers and server.id ~= game.JobId then
+                table.insert(servers, server.id)
             end
         end
+        
+        cursor = response.nextPageCursor or ""
+    until cursor == nil or cursor == ""
 
-        spawn(rejoin)
-    end)
+    return servers
+end
+
+local function rejoin()
+    local servers = getServers()
+    if #servers > 0 then
+        local randomServer = servers[math.random(1, #servers)]
+        TeleportService:TeleportToPlaceInstance(placeId, randomServer, player)
+    else
+        warn("No servers found with less than " .. maxPlayers .. " players.")
+        TeleportService:Teleport(placeId, player)
+    end
+end
+
+spawn(rejoin)
+end)
+
 end
 
 UL:AddTBtn(cfrm, "Auto Walk(Public-Priv)", false, function(b)
@@ -165,13 +136,11 @@ UL:AddBtn(crFrm, "Copy link YouTube", function() setclipboard("https://youtube.c
 UL:AddBtn(crFrm, "Copy link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
 spawn(function()
-    for _, h in ipairs(workspace.Models:GetChildren()) do
-        if h:IsA("Model") then 
-            h:Destroy()
-        end
-    end
+for _, h in (workspace.Models:GetChildren()) do
+if h:IsA("Model") then 
+h:Destroy()
+end end
 end)
-
 game:GetService('Players').LocalPlayer.Idled:Connect(function()
     game:GetService('VirtualUser'):CaptureController()
     game:GetService('VirtualUser'):ClickButton2(Vector2.new())
