@@ -117,7 +117,7 @@ end)
 
 end
 
-UL:AddTBtn(cfrm, "Auto Walk(Public-Priv)", false, function(b)
+UL:AddTBtn(cfrm, "Slow (Public-Priv)", false, function(b)
     a = not a
     if a then 
         spawn(touch)
