@@ -1,8 +1,9 @@
 local UL = {}
-print("Version UI 1.1")
+print("Version UI 2.0")
 print("Loading OneLib Enhanced")
 
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
 local uiProperties = {
     BackgroundColor3 = Color3.fromRGB(45, 45, 45),
@@ -131,7 +132,7 @@ function UL:CrFrm(parent, title)
     crBtnCorner.CornerRadius = UDim.new(0, 6)
     crBtnCorner.Parent = crBtn
 
-    local crFrm = Instance.new("Frame")
+    local crFrm = Instance.new("ScrollingFrame")
     crFrm.Parent = parent
     crFrm.Size = UDim2.new(0.25, 0, 0.4, 60)
     crFrm.Position = UDim2.new(0.685, 0, 0.3, 0)
@@ -139,6 +140,9 @@ function UL:CrFrm(parent, title)
     crFrm.BackgroundTransparency = 0.2
     crFrm.BorderSizePixel = 0
     crFrm.Visible = false
+    crFrm.ScrollBarThickness = 4
+    crFrm.ScrollingDirection = Enum.ScrollingDirection.Y
+    crFrm.CanvasSize = UDim2.new(0, 0, 0, 0)
 
     CreateGradient(crFrm)
     CreateShadow(crFrm)
@@ -165,15 +169,12 @@ function UL:CrFrm(parent, title)
     crLblCorner.CornerRadius = UDim.new(0, 8)
     crLblCorner.Parent = crLbl
 
-    local crInfoContentFrame = Instance.new("ScrollingFrame")
+    local crInfoContentFrame = Instance.new("Frame")
     crInfoContentFrame.Name = "InfoContentFrame"
     crInfoContentFrame.Parent = crFrm
     crInfoContentFrame.BackgroundTransparency = 1
     crInfoContentFrame.Size = UDim2.new(1, -10, 1, -40)
     crInfoContentFrame.Position = UDim2.new(0, 5, 0, 35)
-    crInfoContentFrame.ScrollBarThickness = 4
-    crInfoContentFrame.ScrollingDirection = Enum.ScrollingDirection.Y
-    crInfoContentFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 
     local infoLayout = Instance.new("UIListLayout")
     infoLayout.Parent = crInfoContentFrame
@@ -224,6 +225,14 @@ function UL:AddBtn(parent, text, callback)
 
     btn.MouseButton1Click:Connect(callback)
     
+    -- Add hover effect
+    btn.MouseEnter:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(75, 75, 75)}):Play()
+    end)
+    btn.MouseLeave:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
+    end)
+
     return btn
 end
 
@@ -241,12 +250,33 @@ function UL:AddTBtn(parent, text, state, callback)
     btnCorner.CornerRadius = UDim.new(0, 6)
     btnCorner.Parent = btn
 
+    local function updateButtonState()
+        btn.Text = text .. " [" .. (state and "ON" or "OFF") .. "]"
+        local targetColor = state and Color3.fromRGB(85, 170, 85) or Color3.fromRGB(65, 65, 65)
+        TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = targetColor}):Play()
+        
+        -- Add pulsing effect when active
+        if state then
+            spawn(function()
+                while state do
+                    TweenService:Create(btn, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundColor3 = Color3.fromRGB(100, 200, 100)}):Play()
+                    wait(1)
+                    TweenService:Create(btn, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {BackgroundColor3 = Color3.fromRGB(85, 170, 85)}):Play()
+                    wait(1)
+end
+            end)
+        else
+            TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(65, 65, 65)}):Play()
+        end
+    end
+
     btn.MouseButton1Click:Connect(function()
         state = not state
-        btn.Text = text .. " [" .. (state and "ON" or "OFF") .. "]"
-        TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = state and Color3.fromRGB(85, 170, 85) or Color3.fromRGB(65, 65, 65)}):Play()
+        updateButtonState()
         callback(state)
     end)
+
+    updateButtonState()
 
     return btn
 end
@@ -275,7 +305,12 @@ function UL:AddTBox(parent, placeholder, callback)
     
     CreateShadow(box)
 
+    box.Focused:Connect(function()
+        TweenService:Create(box, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
+    end)
+
     box.FocusLost:Connect(function(enterPressed)
+        TweenService:Create(box, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(35, 35, 35)}):Play()
         if enterPressed then
             callback(box.Text)
         end
@@ -285,7 +320,7 @@ function UL:AddTBox(parent, placeholder, callback)
 end
 
 function UL:AddOBtn(parent, name)
-    local oFrm = Instance.new("Frame")
+    local oFrm = Instance.new("ScrollingFrame")
     oFrm.Parent = parent.Parent
     oFrm.Size = UDim2.new(0.9, 0, 1, 0) 
     oFrm.Position = UDim2.new(parent.Position.X.Scale + 1, 0, parent.Position.Y.Scale - 0.184, parent.Position.Y.Offset)
@@ -293,6 +328,9 @@ function UL:AddOBtn(parent, name)
     oFrm.BackgroundTransparency = 0.2
     oFrm.BorderSizePixel = 0
     oFrm.Visible = false
+    oFrm.ScrollBarThickness = 4
+    oFrm.ScrollingDirection = Enum.ScrollingDirection.Y
+    oFrm.CanvasSize = UDim2.new(0, 0, 0, 0)
 
     CreateGradient(oFrm)
     CreateShadow(oFrm)
@@ -314,15 +352,12 @@ function UL:AddOBtn(parent, name)
     lblCorner.CornerRadius = UDim.new(0, 8)
     lblCorner.Parent = lbl
 
-    local oContentFrame = Instance.new("ScrollingFrame")
+    local oContentFrame = Instance.new("Frame")
     oContentFrame.Name = "OptionContentFrame"
     oContentFrame.Parent = oFrm
     oContentFrame.BackgroundTransparency = 1
     oContentFrame.Size = UDim2.new(1, -10, 1, -40)
     oContentFrame.Position = UDim2.new(0, 5, 0, 35)
-    oContentFrame.ScrollBarThickness = 4
-    oContentFrame.ScrollingDirection = Enum.ScrollingDirection.Y
-    oContentFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 
     local oLayout = Instance.new("UIListLayout")
     oLayout.Parent = oContentFrame
@@ -434,20 +469,24 @@ function UL:AddSlider(parent, text, min, max, default, callback)
         callback(value)
     end
 
+    local isDragging = false
+
     sliderButton.MouseButton1Down:Connect(function()
-        local connection
-        connection = game:GetService("UserInputService").InputChanged:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        isDragging = true
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            isDragging = false
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            if isDragging then
                 updateSlider(input)
             end
-        end)
-        game:GetService("UserInputService").InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                if connection then
-                    connection:Disconnect()
-                end
-            end
-        end)
+        end
     end)
 
     -- Set default value
