@@ -1,5 +1,5 @@
 local Lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
-local Win = Lib:NewWindow("Survive The Killer v1.9")
+local Win = Lib:NewWindow("Survive The Killer v1.6")
 local Sec = Win:NewSection("General")
 local Ki = Win:NewSection("Killer")
 local Su = Win:NewSection("Survivor")
@@ -821,7 +821,7 @@ task.wait(0.3)
 end
 end
 
-local b = game.workspace._Lobby.Bench.Seat
+local b = game.workspace._Lobby.Benches.Bench.Seat
 
 local function seat()
     if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") and  Player.Character:FindFirstChild("LeftFoot") then
