@@ -5,6 +5,7 @@ print("Loading OneLib")
 local rl = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/info.lua")) spawn(rl)
 
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
 local uiProperties = {
     BackgroundColor3 = Color3.fromRGB(35, 35, 35),
@@ -13,6 +14,14 @@ local uiProperties = {
     Font = Enum.Font.GothamSemibold,
     TextSize = 14
 }
+
+local function scaleUI(value)
+    return UDim2.new(value[1], value[2], value[3], value[4])
+end
+
+local function getScreenSize()
+    return workspace.CurrentCamera.ViewportSize
+end
 
 function UL:CrSG(name)
     for _, gui in ipairs(game.Players.LocalPlayer:WaitForChild("PlayerGui"):GetChildren()) do
@@ -35,10 +44,11 @@ function UL:CrSG(name)
 end
 
 function UL:CrFrm(parent, title)
+    local screenSize = getScreenSize()
     local frm = Instance.new("Frame")
     frm.Parent = parent
-    frm.Size = UDim2.new(0.25, 0, 0, 70)
-    frm.Position = UDim2.new(0.2, 0, 0.3, 0)
+    frm.Size = scaleUI({0.9, 0, 0.4, 0})
+    frm.Position = scaleUI({0.05, 0, 0.3, 0})
     frm.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     frm.BackgroundTransparency = 0.1
     frm.BorderSizePixel = 0
@@ -72,6 +82,13 @@ function UL:CrFrm(parent, title)
     labelCorner.Parent = lbl
     labelCorner.CornerRadius = UDim.new(0, 8)
 
+    local padding = Instance.new("UIPadding")
+    padding.Parent = lbl
+    padding.PaddingLeft = UDim.new(0, 5)
+    padding.PaddingRight = UDim.new(0, 5)
+    padding.PaddingTop = UDim.new(0, 5)
+    padding.PaddingBottom = UDim.new(0, 5)
+
     local tbtn = Instance.new("TextButton")
     tbtn.Parent = frm
     tbtn.Text = "+"
@@ -85,12 +102,14 @@ function UL:CrFrm(parent, title)
     buttonCorner.Parent = tbtn
     buttonCorner.CornerRadius = UDim.new(0, 15)
 
-    local cfrm = Instance.new("Frame")
+    local cfrm = Instance.new("ScrollingFrame")
     cfrm.Parent = frm
-    cfrm.Size = UDim2.new(1, -10, 1, -50)
-    cfrm.Position = UDim2.new(0, 5, 0, 45)
+    cfrm.Size = UDim2.new(1, 0, 1, -40)
+    cfrm.Position = UDim2.new(0, 0, 0, 40)
     cfrm.BackgroundTransparency = 1
-    cfrm.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    cfrm.ScrollBarThickness = 4
+    cfrm.CanvasSize = UDim2.new(0, 0, 0, 0)
+    cfrm.AutomaticCanvasSize = Enum.AutomaticSize.Y
     cfrm.Visible = false
 
     local crBtn = Instance.new("TextButton")
@@ -108,8 +127,8 @@ function UL:CrFrm(parent, title)
 
     local crFrm = Instance.new("Frame")
     crFrm.Parent = parent
-    crFrm.Size = UDim2.new(0.25, 0, 0.4, 0)
-    crFrm.Position = UDim2.new(frm.Position.X.Scale + frm.Size.X.Scale + 0.01, 0, frm.Position.Y.Scale, 0)
+    crFrm.Size = scaleUI({0.9, 0, 0.4, 0})
+    crFrm.Position = scaleUI({0.05, 0, 0.55, 0})
     crFrm.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     crFrm.BackgroundTransparency = 0.1
     crFrm.BorderSizePixel = 0
@@ -125,7 +144,7 @@ function UL:CrFrm(parent, title)
     crLbl.BackgroundTransparency = 0.1
     crLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
     crLbl.Text = "Info/Updates/Credits"
-    crLbl.Size = UDim2.new(1, 0, 0, 40)
+    crLbl.Size = UDim2.new(1, 0, 0, 30)
     crLbl.Position = UDim2.new(0, 0, 0, 0)
     crLbl.Font = Enum.Font.GothamBold 
     crLbl.TextSize = 18
@@ -137,16 +156,17 @@ function UL:CrFrm(parent, title)
     crLblCorner.Parent = crLbl
     crLblCorner.CornerRadius = UDim.new(0, 8)
 
-    local crContent = Instance.new("Frame")
-    crContent.Parent = crFrm
-    crContent.Size = UDim2.new(1, -10, 1, -50)
-    crContent.Position = UDim2.new(0, 5, 0, 45)
-    crContent.BackgroundTransparency = 1
+    local padding = Instance.new("UIPadding")
+    padding.Parent = crLbl
+    padding.PaddingLeft = UDim.new(0, 5)
+    padding.PaddingRight = UDim.new(0, 5)
+    padding.PaddingTop = UDim.new(0, 5)
+    padding.PaddingBottom = UDim.new(0, 5)
 
     local minimized = true
     tbtn.MouseButton1Click:Connect(function()
         minimized = not minimized
-        local targetSize = minimized and UDim2.new(0.25, 0, 0, 70) or UDim2.new(0.25, 0, 0, 70 + #cfrm:GetChildren() * 35)
+        local targetSize = minimized and scaleUI({0.9, 0, 0.1, 0}) or scaleUI({0.9, 0, 0.4, 0})
         local targetRotation = minimized and 0 or 45
         
         TweenService:Create(frm, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = targetSize}):Play()
@@ -162,21 +182,21 @@ function UL:CrFrm(parent, title)
     end)
 
     local function syncFrames()
-        crFrm.Position = UDim2.new(frm.Position.X.Scale + frm.Size.X.Scale + 0.01, 0, frm.Position.Y.Scale, 0)
+        crFrm.Position = UDim2.new(frm.Position.X.Scale, frm.Position.X.Offset, frm.Position.Y.Scale + frm.Size.Y.Scale, frm.Position.Y.Offset)
     end
 
     frm:GetPropertyChangedSignal("Position"):Connect(syncFrames)
     frm:GetPropertyChangedSignal("Size"):Connect(syncFrames)
 
-    return frm, cfrm, crContent
+    return frm, cfrm, crFrm
 end
 
 function UL:AddBtn(parent, text, callback)
     local btn = Instance.new("TextButton")
     btn.Parent = parent
     btn.Text = text
-    btn.Size = UDim2.new(1, 0, 0, 30)
-    btn.Position = UDim2.new(0, 0, 0, #parent:GetChildren() * 35)
+    btn.Size = UDim2.new(1, -10, 0, 40)
+    btn.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 45 - 45)
     for prop, value in pairs(uiProperties) do
         btn[prop] = value
     end
@@ -194,9 +214,9 @@ function UL:AddBtn(parent, text, callback)
     end)
 
     btn.MouseButton1Click:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.1), {Size = UDim2.new(0.98, 0, 0, 28)}):Play()
+        TweenService:Create(btn, TweenInfo.new(0.1), {Size = UDim2.new(1, -14, 0, 36)}):Play()
         wait(0.1)
-        TweenService:Create(btn, TweenInfo.new(0.1), {Size = UDim2.new(1, 0, 0, 30)}):Play()
+        TweenService:Create(btn, TweenInfo.new(0.1), {Size = UDim2.new(1, -10, 0, 40)}):Play()
         callback()
     end)
     
@@ -221,8 +241,8 @@ function UL:AddTBox(parent, placeholder, callback)
     box.PlaceholderText = placeholder
     box.Text = ""
     box.BorderSizePixel = 0
-    box.Size = UDim2.new(1, 0, 0, 30)
-    box.Position = UDim2.new(0, 0, 0, #parent:GetChildren() * 35)
+    box.Size = UDim2.new(1, -10, 0, 40)
+    box.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 45 - 45)
 
     box.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     box.TextColor3 = Color3.fromRGB(250, 250, 250)
@@ -265,10 +285,11 @@ function UL:AddTBox(parent, placeholder, callback)
 end
 
 function UL:AddOBtn(parent, name)
+    local screenSize = getScreenSize()
     local oFrm = Instance.new("Frame")
     oFrm.Parent = parent.Parent
-    oFrm.Size = UDim2.new(0.25, 0, 0.4, 0)
-    oFrm.Position = UDim2.new(parent.Position.X.Scale + parent.Size.X.Scale + 0.01, 0, parent.Position.Y.Scale, 0)
+    oFrm.Size = scaleUI({0.9, 0, 0.4, 0})
+    oFrm.Position = scaleUI({0.05, 0, 0.55, 0})
     oFrm.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     oFrm.BackgroundTransparency = 0.1
     oFrm.BorderSizePixel = 0
@@ -283,7 +304,7 @@ function UL:AddOBtn(parent, name)
     lbl.Text = name
     lbl.Size = UDim2.new(1, 0, 0, 40)
     lbl.Position = UDim2.new(0, 0, 0, 0)
-      for prop, value in pairs(uiProperties) do
+    for prop, value in pairs(uiProperties) do
         lbl[prop] = value
     end
 
@@ -291,17 +312,11 @@ function UL:AddOBtn(parent, name)
     lblCorner.Parent = lbl
     lblCorner.CornerRadius = UDim.new(0, 8)
 
-    local oContent = Instance.new("Frame")
-    oContent.Parent = oFrm
-    oContent.Size = UDim2.new(1, -10, 1, -50)
-    oContent.Position = UDim2.new(0, 5, 0, 45)
-    oContent.BackgroundTransparency = 1
-
     local btn = Instance.new("TextButton")
     btn.Parent = parent
     btn.Text = name
-    btn.Size = UDim2.new(1, 0, 0, 30)
-    btn.Position = UDim2.new(0, 0, 0, #parent:GetChildren() * 35)
+    btn.Size = UDim2.new(1, -10, 0, 40)
+    btn.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 45 - 45)
     for prop, value in pairs(uiProperties) do
         btn[prop] = value
     end
@@ -328,15 +343,15 @@ function UL:AddOBtn(parent, name)
         end
     end)
 
-    return btn, oContent
+    return btn, oFrm
 end
 
 function UL:AddText(parent, text, color)
     local label = Instance.new("TextLabel")
     label.Parent = parent
     label.Text = text
-    label.Size = UDim2.new(1, 0, 0, 30)
-    label.Position = UDim2.new(0, 0, 0, #parent:GetChildren() * 35)
+    label.Size = UDim2.new(1, -10, 0, 40)
+    label.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 45 - 45)
     label.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     label.BackgroundTransparency = 0.5
     label.TextColor3 = color or Color3.fromRGB(255, 255, 255)
@@ -351,13 +366,11 @@ function UL:AddText(parent, text, color)
     return label
 end
 
--- Función para crear una animación de desvanecimiento
 local function fadeEffect(object, goal)
     local tween = TweenService:Create(object, TweenInfo.new(0.5), {BackgroundTransparency = goal})
     tween:Play()
 end
 
--- Función para crear un efecto de onda al hacer clic
 local function rippleEffect(button)
     local ripple = Instance.new("Frame")
     ripple.Name = "ripple"
@@ -395,6 +408,35 @@ for _, v in pairs(UL) do
         end
     end
 end
+
+-- Función para ajustar la UI en función del tamaño de la pantalla
+local function adjustUI()
+    local screenSize = getScreenSize()
+    local scale = math.min(screenSize.X, screenSize.Y) / 1080 -- Asumiendo 1080p como base
+    
+    for _, v in pairs(game.Players.LocalPlayer.PlayerGui:GetDescendants()) do
+        if v:IsA("Frame") or v:IsA("TextButton") or v:IsA("TextBox") or v:IsA("TextLabel") then
+            if v:GetAttribute("OriginalSize") == nil then
+                v:SetAttribute("OriginalSize", v.Size)
+                v:SetAttribute("OriginalPosition", v.Position)
+            end
+            
+            local originalSize = v:GetAttribute("OriginalSize")
+            local originalPosition = v:GetAttribute("OriginalPosition")
+            
+            v.Size = UDim2.new(originalSize.X.Scale, originalSize.X.Offset * scale, originalSize.Y.Scale, originalSize.Y.Offset * scale)
+            v.Position = UDim2.new(originalPosition.X.Scale, originalPosition.X.Offset * scale, originalPosition.Y.Scale, originalPosition.Y.Offset * scale)
+            
+            if v:IsA("TextButton") or v:IsA("TextBox") or v:IsA("TextLabel") then
+                v.TextSize = v.TextSize * scale
+            end
+        end
+    end
+end
+
+-- Conectar la función de ajuste al evento de cambio de tamaño de la ventana
+UserInputService.WindowFocusReleased:Connect(adjustUI)
+UserInputService.WindowFocused:Connect(adjustUI)
 
 game:GetService('Players').LocalPlayer.Idled:Connect(function()
     game:GetService('VirtualUser'):CaptureController()
