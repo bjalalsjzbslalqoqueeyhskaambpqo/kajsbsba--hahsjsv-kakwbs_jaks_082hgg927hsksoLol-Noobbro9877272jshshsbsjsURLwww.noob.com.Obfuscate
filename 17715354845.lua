@@ -41,10 +41,9 @@ for _, obj in ipairs(a.Loaded:GetDescendants()) do
         if obj.Parent.Name:find("Button") then
             local plr = game.Players.LocalPlayer
             local y = obj.Position
-            obj.Position = plr.Character.HumanoidRootPart.Position
-            wait(0.2)
-            obj.Position = y
-            wait(1)
+            firetouchinterest(plr.Character.HumanoidRootPart.CFrame = obj.CFrame
+        
+wait(2)
         end
     end
             end
