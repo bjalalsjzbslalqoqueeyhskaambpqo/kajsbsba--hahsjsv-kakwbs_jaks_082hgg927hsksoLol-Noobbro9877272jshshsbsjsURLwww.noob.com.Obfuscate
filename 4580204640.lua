@@ -21,6 +21,43 @@ local function clickButton(btn)
     game:GetService("VirtualInputManager"):SendMouseButtonEvent(centerX, centerY, 0, false, game, 1)
 end
 
+local function detectAndFireButtonEvents(button)
+    local activeEvents = {}
+    local commonEvents = {"Activated", "MouseButton1Click", "MouseButton1Down", "MouseButton1Up", "InputBegan", "InputEnded"}
+
+    for _, eventName in ipairs(commonEvents) do
+        if typeof(button[eventName]) == "RBXScriptSignal" then
+            local connections = getconnections(button[eventName])
+            if #connections > 0 then
+                table.insert(activeEvents, {name = eventName, connections = connections})
+            end
+        end
+    end
+
+    for _, child in ipairs(button:GetChildren()) do
+        if child:IsA("BindableEvent") or child:IsA("CustomEvent") then
+            local connections = getconnections(child.Event)
+            if #connections > 0 then
+                table.insert(activeEvents, {name = child.Name, connections = connections})
+            end
+        end
+    end
+
+    if #activeEvents > 0 then
+        for _, eventInfo in ipairs(activeEvents) do
+            for i, connection in ipairs(eventInfo.connections) do
+                if connection.Function and connection.Enabled then
+                    pcall(function()
+                        connection:Fire()
+                    end)
+                end
+            end
+        end
+    else
+
+    end
+end
+
 
 local function copyToClipboard(text)
     if syn then
@@ -185,7 +222,13 @@ else
             end
             if targetPlayer then
  targetPlayer.Character:SetPrimaryPartCFrame(CFrame.new(Player.Character.HumanoidRootPart.Position))  
-clickButton(Player.PlayerGui.TouchGui.TouchControlFrame.CarryButton)
+local button = game.Players.LocalPlayer.PlayerGui.GameHUD.DropPlayer.Button
+
+if button and button:IsA("GuiButton") then
+    detectAndFireButtonEvents(button)
+else
+
+end
             end
         end
         task.wait()
@@ -798,7 +841,13 @@ clickButton(Player.PlayerGui.TouchGui.TouchControlFrame.CarryButton)
 task.wait(0.1)
                 Player.Character:SetPrimaryPartCFrame(ss)
 task.wait(0.3)
-clickButton(game.Players.LocalPlayer.PlayerGui.GameHUD.DropPlayer.Button)
+local button = game.Players.LocalPlayer.PlayerGui.GameHUD.DropPlayer.Button
+
+if button and button:IsA("GuiButton") then
+    detectAndFireButtonEvents(button)
+else
+
+end
             end
         end
     end
