@@ -1,5 +1,5 @@
 local UL = {}
-print("Version UI 1.0")
+print("Version UI 1.1")
 print("Loading OneLib")
 
 local rl = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/info.lua")) spawn(rl)
@@ -37,8 +37,8 @@ end
 function UL:CrFrm(parent, title)
     local frm = Instance.new("Frame")
     frm.Parent = parent
-    frm.Size = UDim2.new(0.25, 0, 0, 60)
-    frm.Position = UDim2.new(0.2, 0, 0.2, 0)
+    frm.Size = UDim2.new(0.25, 0, 0, 70)
+    frm.Position = UDim2.new(0.2, 0, 0.3, 0)
     frm.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     frm.BackgroundTransparency = 0.1
     frm.BorderSizePixel = 0
@@ -57,7 +57,7 @@ function UL:CrFrm(parent, title)
     local lbl = Instance.new("TextLabel")
     lbl.Parent = frm
     lbl.Text = title
-    lbl.Size = UDim2.new(1, 0, 0, 33)
+    lbl.Size = UDim2.new(1, 0, 0, 40)
     lbl.Position = UDim2.new(0, 0, 0, 0)
     lbl.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     lbl.BackgroundTransparency = 0.1
@@ -72,18 +72,11 @@ function UL:CrFrm(parent, title)
     labelCorner.Parent = lbl
     labelCorner.CornerRadius = UDim.new(0, 8)
 
-    local padding = Instance.new("UIPadding")
-    padding.Parent = lbl
-    padding.PaddingLeft = UDim.new(0, 5)
-    padding.PaddingRight = UDim.new(0, 5)
-    padding.PaddingTop = UDim.new(0, 5)
-    padding.PaddingBottom = UDim.new(0, 5)
-
     local tbtn = Instance.new("TextButton")
     tbtn.Parent = frm
     tbtn.Text = "+"
     tbtn.Size = UDim2.new(0, 30, 0, 30)
-    tbtn.Position = UDim2.new(1, -35, 0, 2)
+    tbtn.Position = UDim2.new(1, -35, 0, 5)
     for prop, value in pairs(uiProperties) do
         tbtn[prop] = value
     end
@@ -94,8 +87,8 @@ function UL:CrFrm(parent, title)
 
     local cfrm = Instance.new("Frame")
     cfrm.Parent = frm
-    cfrm.Size = UDim2.new(1, 0, 1, -30)
-    cfrm.Position = UDim2.new(0, 0, 0, 30)
+    cfrm.Size = UDim2.new(1, -10, 1, -50)
+    cfrm.Position = UDim2.new(0, 5, 0, 45)
     cfrm.BackgroundTransparency = 1
     cfrm.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     cfrm.Visible = false
@@ -115,8 +108,8 @@ function UL:CrFrm(parent, title)
 
     local crFrm = Instance.new("Frame")
     crFrm.Parent = parent
-    crFrm.Size = UDim2.new(0.25, 0, 0.4, 60)
-    crFrm.Position = UDim2.new(0.685, 0, 0.3, 0)
+    crFrm.Size = UDim2.new(0.25, 0, 0.4, 0)
+    crFrm.Position = UDim2.new(frm.Position.X.Scale + frm.Size.X.Scale + 0.01, 0, frm.Position.Y.Scale, 0)
     crFrm.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     crFrm.BackgroundTransparency = 0.1
     crFrm.BorderSizePixel = 0
@@ -132,7 +125,7 @@ function UL:CrFrm(parent, title)
     crLbl.BackgroundTransparency = 0.1
     crLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
     crLbl.Text = "Info/Updates/Credits"
-    crLbl.Size = UDim2.new(1, 0, 0, 30)
+    crLbl.Size = UDim2.new(1, 0, 0, 40)
     crLbl.Position = UDim2.new(0, 0, 0, 0)
     crLbl.Font = Enum.Font.GothamBold 
     crLbl.TextSize = 18
@@ -144,17 +137,16 @@ function UL:CrFrm(parent, title)
     crLblCorner.Parent = crLbl
     crLblCorner.CornerRadius = UDim.new(0, 8)
 
-    local padding = Instance.new("UIPadding")
-    padding.Parent = crLbl
-    padding.PaddingLeft = UDim.new(0, 5)
-    padding.PaddingRight = UDim.new(0, 5)
-    padding.PaddingTop = UDim.new(0, 5)
-    padding.PaddingBottom = UDim.new(0, 5)
+    local crContent = Instance.new("Frame")
+    crContent.Parent = crFrm
+    crContent.Size = UDim2.new(1, -10, 1, -50)
+    crContent.Position = UDim2.new(0, 5, 0, 45)
+    crContent.BackgroundTransparency = 1
 
     local minimized = true
     tbtn.MouseButton1Click:Connect(function()
         minimized = not minimized
-        local targetSize = minimized and UDim2.new(0.25, 0, 0, 60) or UDim2.new(0.25, 0, 0, 60 + #cfrm:GetChildren() * 30)
+        local targetSize = minimized and UDim2.new(0.25, 0, 0, 70) or UDim2.new(0.25, 0, 0, 70 + #cfrm:GetChildren() * 35)
         local targetRotation = minimized and 0 or 45
         
         TweenService:Create(frm, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = targetSize}):Play()
@@ -170,21 +162,21 @@ function UL:CrFrm(parent, title)
     end)
 
     local function syncFrames()
-        crFrm.Position = UDim2.new(frm.Position.X.Scale + frm.Size.X.Scale, frm.Position.X.Offset, frm.Position.Y.Scale, frm.Position.Y.Offset)
+        crFrm.Position = UDim2.new(frm.Position.X.Scale + frm.Size.X.Scale + 0.01, 0, frm.Position.Y.Scale, 0)
     end
 
     frm:GetPropertyChangedSignal("Position"):Connect(syncFrames)
     frm:GetPropertyChangedSignal("Size"):Connect(syncFrames)
 
-    return frm, cfrm, crFrm
+    return frm, cfrm, crContent
 end
 
 function UL:AddBtn(parent, text, callback)
     local btn = Instance.new("TextButton")
     btn.Parent = parent
     btn.Text = text
-    btn.Size = UDim2.new(1, -10, 0, 30)
-    btn.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35 - 35)
+    btn.Size = UDim2.new(1, 0, 0, 30)
+    btn.Position = UDim2.new(0, 0, 0, #parent:GetChildren() * 35)
     for prop, value in pairs(uiProperties) do
         btn[prop] = value
     end
@@ -202,9 +194,9 @@ function UL:AddBtn(parent, text, callback)
     end)
 
     btn.MouseButton1Click:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.1), {Size = UDim2.new(1, -14, 0, 26)}):Play()
+        TweenService:Create(btn, TweenInfo.new(0.1), {Size = UDim2.new(0.98, 0, 0, 28)}):Play()
         wait(0.1)
-        TweenService:Create(btn, TweenInfo.new(0.1), {Size = UDim2.new(1, -10, 0, 30)}):Play()
+        TweenService:Create(btn, TweenInfo.new(0.1), {Size = UDim2.new(1, 0, 0, 30)}):Play()
         callback()
     end)
     
@@ -229,8 +221,8 @@ function UL:AddTBox(parent, placeholder, callback)
     box.PlaceholderText = placeholder
     box.Text = ""
     box.BorderSizePixel = 0
-    box.Size = UDim2.new(1, -10, 0, 30)
-    box.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35 - 35)
+    box.Size = UDim2.new(1, 0, 0, 30)
+    box.Position = UDim2.new(0, 0, 0, #parent:GetChildren() * 35)
 
     box.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     box.TextColor3 = Color3.fromRGB(250, 250, 250)
@@ -275,8 +267,8 @@ end
 function UL:AddOBtn(parent, name)
     local oFrm = Instance.new("Frame")
     oFrm.Parent = parent.Parent
-    oFrm.Size = UDim2.new(0.9, 0, 1, 0) 
-    oFrm.Position = UDim2.new(parent.Position.X.Scale + 1, 0, parent.Position.Y.Scale - 0.184, parent.Position.Y.Offset)
+    oFrm.Size = UDim2.new(0.25, 0, 0.4, 0)
+    oFrm.Position = UDim2.new(parent.Position.X.Scale + parent.Size.X.Scale + 0.01, 0, parent.Position.Y.Scale, 0)
     oFrm.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     oFrm.BackgroundTransparency = 0.1
     oFrm.BorderSizePixel = 0
@@ -289,9 +281,9 @@ function UL:AddOBtn(parent, name)
     local lbl = Instance.new("TextLabel")
     lbl.Parent = oFrm
     lbl.Text = name
-    lbl.Size = UDim2.new(1, 0, 0, 30)
+    lbl.Size = UDim2.new(1, 0, 0, 40)
     lbl.Position = UDim2.new(0, 0, 0, 0)
-    for prop, value in pairs(uiProperties) do
+      for prop, value in pairs(uiProperties) do
         lbl[prop] = value
     end
 
@@ -299,11 +291,17 @@ function UL:AddOBtn(parent, name)
     lblCorner.Parent = lbl
     lblCorner.CornerRadius = UDim.new(0, 8)
 
+    local oContent = Instance.new("Frame")
+    oContent.Parent = oFrm
+    oContent.Size = UDim2.new(1, -10, 1, -50)
+    oContent.Position = UDim2.new(0, 5, 0, 45)
+    oContent.BackgroundTransparency = 1
+
     local btn = Instance.new("TextButton")
     btn.Parent = parent
     btn.Text = name
-    btn.Size = UDim2.new(1, -10, 0, 30)
-    btn.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35 - 35)
+    btn.Size = UDim2.new(1, 0, 0, 30)
+    btn.Position = UDim2.new(0, 0, 0, #parent:GetChildren() * 35)
     for prop, value in pairs(uiProperties) do
         btn[prop] = value
     end
@@ -330,15 +328,15 @@ function UL:AddOBtn(parent, name)
         end
     end)
 
-    return btn, oFrm
+    return btn, oContent
 end
 
 function UL:AddText(parent, text, color)
     local label = Instance.new("TextLabel")
     label.Parent = parent
     label.Text = text
-    label.Size = UDim2.new(1, -10, 0, 30)
-    label.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35 - 35)
+    label.Size = UDim2.new(1, 0, 0, 30)
+    label.Position = UDim2.new(0, 0, 0, #parent:GetChildren() * 35)
     label.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     label.BackgroundTransparency = 0.5
     label.TextColor3 = color or Color3.fromRGB(255, 255, 255)
