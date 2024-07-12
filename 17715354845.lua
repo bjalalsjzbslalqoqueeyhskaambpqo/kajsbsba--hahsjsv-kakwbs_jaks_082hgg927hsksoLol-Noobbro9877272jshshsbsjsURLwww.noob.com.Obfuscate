@@ -35,18 +35,19 @@ UL:AddTBtn(cfrm, "Auto Buttons", false, function()
 yay = not yay
 while yay do
 local a = workspace.Tiers.Bakery.Plot
+
 for _, obj in ipairs(a.Loaded:GetDescendants()) do
     if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") then
-if obj.Parent.Name:string.find("Button") then
-
-local plr = game.Players.LocalPlayer
-y = obj.Position
- obj.Position = plr.Character.HumanoidRootPart.Position
-wait(0.2)
-obj.Position = y
-wait(1)
-end end
-end
+        if obj.Parent.Name:find("Button") then
+            local plr = game.Players.LocalPlayer
+            local y = obj.Position
+            obj.Position = plr.Character.HumanoidRootPart.Position
+            wait(0.2)
+            obj.Position = y
+            wait(1)
+        end
+    end
+            end
 wait()
 end
 end)
