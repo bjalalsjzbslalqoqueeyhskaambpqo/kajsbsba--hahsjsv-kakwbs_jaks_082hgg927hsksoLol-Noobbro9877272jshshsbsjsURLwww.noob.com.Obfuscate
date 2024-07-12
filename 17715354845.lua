@@ -36,14 +36,18 @@ yay = not yay
 while yay do
 local a = workspace.Tiers.Bakery.Plot
 
+local a = workspace.Tiers.Bakery.Plot
+
 for _, obj in ipairs(a.Loaded:GetDescendants()) do
     if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") then
-        if obj.Parent.Name:find("Button") then
+        local parentName = obj.Parent.Name
+        if parentName:find("Button") and parentName:match("^Button%d+$") then
             local plr = game.Players.LocalPlayer
             local y = obj.Position
+            
             plr.Character.HumanoidRootPart.CFrame = obj.CFrame
         
-wait(2)
+wait(1)
         end
     end
             end
