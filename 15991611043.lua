@@ -19,9 +19,27 @@ local p = game.Players.LocalPlayer
 local sg = UL:CrSG("Default")
 local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
 
+local mainOptionsButton, mainOptionsFrame = UL:AddOBtn(cfrm, "Main Options")
+for _, child in ipairs(game.Workspace.Map.Eggs:GetChildren()) do
+    if child:FindFirstChild("EggValue") then
+        local buttonName = child.Name .. " (" .. child.EggValue.Value .. ")"
+        UL:AddTBtn(mainOptionsFrame, buttonName, false, function() 
+local name = child.Name
 
+er = not er
+while er do
+local args = {
+    [1] = tostring(name),
+    [2] = 1
+}
 
-local active = false
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Egg"):InvokeServer(unpack(args))
+wait(1)
+
+end
+        end)
+    end
+end
 
 
 local active = false
