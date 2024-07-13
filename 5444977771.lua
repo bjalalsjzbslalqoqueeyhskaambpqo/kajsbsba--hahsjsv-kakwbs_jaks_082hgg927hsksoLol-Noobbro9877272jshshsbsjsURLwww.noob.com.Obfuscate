@@ -70,7 +70,7 @@ setreadonly(mt, false)
 mt.__namecall = function(self, ...)
     local method = getnamecallmethod()
 
-    if method == "FireServer" and (self.Name == "Replicate" or self.Name == "Hook") and a then
+    if method == "FireServer" and (self.Name == "Replicate") and a then
         return nil
     end
 
