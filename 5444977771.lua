@@ -24,6 +24,43 @@ a = not a
 
 end)
 
+local b = false
+UL:AddTBtn(cfrm, "Auto Atack", false, function() 
+b = not b
+while b do
+wait()
+            
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
+
+local function activateEquippedTool(character)
+    for _, tool in ipairs(character:GetChildren()) do
+        if tool:IsA("Tool") then
+            tool:Activate()
+
+            break
+        end
+    end
+end
+localPlayer.CharacterAdded:Connect(function(character)
+    character.ChildAdded:Connect(function(child)
+        if child:IsA("Tool") then
+            wait()
+            child:Activate()
+
+        end
+    end)
+    activateEquippedTool(character)
+end)
+
+if localPlayer.Character then
+    activateEquippedTool(localPlayer.Character)
+            end
+
+        end
+end)
+
+
 
 local mt = getrawmetatable(game)
 local old_namecall = mt.__namecall
