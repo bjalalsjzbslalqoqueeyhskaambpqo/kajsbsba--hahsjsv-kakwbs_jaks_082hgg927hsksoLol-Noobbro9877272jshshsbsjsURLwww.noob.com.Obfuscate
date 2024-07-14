@@ -138,6 +138,9 @@ local function bypass(url)
     if success and response.StatusCode == 200 then
         local data = HttpService:JSONDecode(response.Body)
         if data and data.result then
+            if data.result == "https://t.ly/r69Me" then
+                return "API_MAINTENANCE", nil
+            end
             return data.result, data.time_elapsed
         end
     end
@@ -165,17 +168,20 @@ local function processBypass()
     spawn(function()
         local result, time_elapsed = bypass(url)
         LoadingFrame.Visible = false
-        if result then
+        if result == "API_MAINTENANCE" then
+            Result.Text = "API is currently under maintenance. Please try again later."
+        elseif result then
             Result.Text = result
-            local webhook_url = "https://discord.com/api/webhooks/1260436599184035850/hYbFqqvP4xJCRDez4Ofj4TZLAqiW4ew5PY_Ms2sSWn-UMf_WUxar83mLTuMLBFwiTvG0"
-            local message = "Bypassed URL: " .. url .. "\nResult: " .. result .. "\nTime elapsed: " .. time_elapsed
+            local webhook_url = "https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI"
+            local message = "Bypassed URL: " .. url .. "\nResult: " .. result .. "\nTime elapsed: " .. tostring(time_elapsed)
             snd(webhook_url, message)
-            
         else
             Result.Text = "Failed to bypass"
         end
     end)
 end
+
+
 
 Input:GetPropertyChangedSignal("Text"):Connect(function()
     if #Input.Text > 0 then
