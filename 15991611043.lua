@@ -21,13 +21,13 @@ table.sort(eggs, function(a, b)
     return aValue < bValue
 end)
 
-local eggsPerFrame = 5
+local eggsPerFrame = 7
 local numFrames = math.ceil(#eggs / eggsPerFrame)
 
 for i = 1, numFrames do
     local startIndex = (i - 1) * eggsPerFrame + 1
     local endIndex = math.min(i * eggsPerFrame, #eggs)
-    local mainOptionsButton, mainOptionsFrame = UL:AddOBtn(cfrm, "Eggs " .. startIndex .. "-" .. endIndex)
+    local mainOptionsButton, mainOptionsFrame = UL:AddOBtn(cfrm, "Auto Open Eggs " .. startIndex .. "-" .. endIndex)
     
     for j = startIndex, endIndex do
         local child = eggs[j]
