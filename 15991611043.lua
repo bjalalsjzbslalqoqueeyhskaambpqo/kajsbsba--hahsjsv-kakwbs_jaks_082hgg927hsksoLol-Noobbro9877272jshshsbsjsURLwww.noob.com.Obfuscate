@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 local UL = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/MyLibrery.lua"))()
 local gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
 
@@ -19,28 +12,43 @@ local p = game.Players.LocalPlayer
 local sg = UL:CrSG("Default")
 local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
 
-local mainOptionsButton, mainOptionsFrame = UL:AddOBtn(cfrm, "Main Options")
-for _, child in ipairs(game.Workspace.Map.Eggs:GetChildren()) do
-    if child:FindFirstChild("EggValue") then
-        local buttonName = child.Name .. " (" .. child.EggValue.Value .. ")"
-        UL:AddTBtn(mainOptionsFrame, buttonName, false, function() 
-local name = child.Name
+local eggs = game.Workspace.Map.Eggs:GetChildren()
 
-er = not er
-while er do
-local args = {
-    [1] = tostring(name),
-    [2] = 1
-}
+-- Filtrar y ordenar los huevos por EggValue
+table.sort(eggs, function(a, b)
+    local aValue = a:FindFirstChild("EggValue") and a.EggValue.Value or 0
+    local bValue = b:FindFirstChild("EggValue") and b.EggValue.Value or 0
+    return aValue < bValue
+end)
 
-game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Egg"):InvokeServer(unpack(args))
-wait(1)
+local eggsPerFrame = 5
+local numFrames = math.ceil(#eggs / eggsPerFrame)
 
-end
-        end)
+for i = 1, numFrames do
+    local startIndex = (i - 1) * eggsPerFrame + 1
+    local endIndex = math.min(i * eggsPerFrame, #eggs)
+    local mainOptionsButton, mainOptionsFrame = UL:AddOBtn(cfrm, "Eggs " .. startIndex .. "-" .. endIndex)
+    
+    for j = startIndex, endIndex do
+        local child = eggs[j]
+        if child and child:FindFirstChild("EggValue") then
+            local buttonName = child.Name .. " (" .. child.EggValue.Value .. ")"
+            UL:AddTBtn(mainOptionsFrame, buttonName, false, function() 
+                local name = child.Name
+                local er = false
+                er = not er
+                while er do
+                    local args = {
+                        [1] = tostring(name),
+                        [2] = 1
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Egg"):InvokeServer(unpack(args))
+                    wait(1)
+                end
+            end)
+        end
     end
 end
-
 
 local active = false
 
@@ -73,22 +81,21 @@ UL:AddTBtn(cfrm, "Auto Hit Block", false, function()
         for _, obj in ipairs(area:GetDescendants()) do
             if obj:IsA("ClickDetector") then
                 obj.MaxActivationDistance = 10000
-spawn(function()
-pcall(function()
-if tp and obj.Parent.Transparency == 0 and not obj.Parent.BillboardGui.Frame.HealthText.Text :find("Cooldown") then
-           p.Character.PrimaryPart.CFrame = obj.Parent.CFrame + Vector3.new(0, 2, 0)
-
-end
-end)
-end)
+                spawn(function()
+                    pcall(function()
+                        if tp and obj.Parent.Transparency == 0 and not obj.Parent.BillboardGui.Frame.HealthText.Text:find("Cooldown") then
+                            p.Character.PrimaryPart.CFrame = obj.Parent.CFrame + Vector3.new(0, 2, 0)
+                        end
+                    end)
+                end)
                 fireclickdetector(obj)
-wait()
+                wait()
             end
         end
     end
 end)
 UL:AddTBtn(cfrm, "TP Block", false, function() 
-tp = not tp
+    tp = not tp
 end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
