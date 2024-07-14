@@ -11,6 +11,11 @@ gameName = cleanGameName(gameName)
 local p = game.Players.LocalPlayer
 local sg = UL:CrSG("Default")
 local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
+local xxx = 1
+
+UL:AddTBox(cfrm, "Multi buy egg: 1/1s", function(xxx) 
+    
+    end)
 
 local eggs = game.Workspace.Map.Eggs:GetChildren()
 
@@ -32,17 +37,17 @@ for i = 1, numFrames do
         local child = eggs[j]
         if child and child:FindFirstChild("EggValue") then
             local buttonName = child.Name .. " (" .. child.EggValue.Value .. ")"
-            UL:AddTBtn(mainOptionsFrame, buttonName, false, function() 
+            UL:AddTBtn(mainOptionsFrame, buttonName, er, function(err) 
                 local name = child.Name
-                local er = false
-                er = not er
+                
+                er = err
                 while er do
                     local args = {
                         [1] = tostring(name),
-                        [2] = 1
+                        [2] = xxx
                     }
                     game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Egg"):InvokeServer(unpack(args))
-                    wait(0.1)
+                    wait(1)
                 end
             end)
         end
