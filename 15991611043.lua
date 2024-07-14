@@ -26,7 +26,7 @@ local numFrames = math.ceil(#eggs / eggsPerFrame)
 for i = 1, numFrames do
     local startIndex = (i - 1) * eggsPerFrame + 1
     local endIndex = math.min(i * eggsPerFrame, #eggs)
-    local mainOptionsButton, mainOptionsFrame = UL:AddOBtn(cfrm, "Auto Open Eggs " .. startIndex .. "-" .. endIndex)
+    local mainOptionsButton, mainOptionsFrame = UL:AddOBtn(cfrm, "Fast Open Eggs " .. startIndex .. "-" .. endIndex)
     
     for j = startIndex, endIndex do
         local child = eggs[j]
@@ -42,7 +42,7 @@ for i = 1, numFrames do
                         [2] = 1
                     }
                     game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Egg"):InvokeServer(unpack(args))
-                    wait(1)
+                    wait(0.1)
                 end
             end)
         end
