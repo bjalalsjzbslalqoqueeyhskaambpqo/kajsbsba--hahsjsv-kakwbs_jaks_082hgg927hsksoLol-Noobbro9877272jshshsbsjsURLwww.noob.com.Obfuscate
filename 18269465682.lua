@@ -17,7 +17,6 @@ local p = game.Players.LocalPlayer
 local sg = UL:CrSG("Default")
 local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
 
-
 local Players = game:GetService("Players")
 local PathfindingService = game:GetService("PathfindingService")
 local player = Players.LocalPlayer
@@ -40,38 +39,49 @@ local function findClosestHeart()
     return closestHeart
 end
 
+local a = false
+
 local function moveToHeart()
     local closestHeart = findClosestHeart()
     if closestHeart then
         local humanoid = player.Character.Humanoid
         humanoid:MoveTo(closestHeart.Position)
-    else
     end
 end
 
-UL:AddTBtn(cfrm, "Auto Walk-Collect", false, function(state) 
-
-a = not a
-while a do
-moveToHeart()
-wait(0.5)
-end
- end)
-
-spawn(function()
-    if workspace:FindFirstChild("Clouds") then
-        workspace:FindFirstChild("Clouds"):Destroy()
-    else
-    end
-
-    if workspace:FindFirstChild("cutecore!!!") then
-        workspace:FindFirstChild("cutecore!!!"):Destroy()
-    else
+UL:AddTBtn(cfrm, "Auto Walk-Collect", false, function(state)
+    a = not a
+    while a do
+        moveToHeart()
+        wait(0.5)
     end
 end)
 
-UL:AddText(crFrm, "By Script: OneCreatorX ")
-UL:AddText(crFrm, "Create Script: 07/07/24 ")
+spawn(function()
+    local function destroyIfFound(name)
+        local obj = workspace:FindFirstChild(name)
+        if obj then
+            obj:Destroy()
+        else
+            warn("No '" .. name .. "' found in workspace")
+        end
+    end
+
+    destroyIfFound("Clouds")
+    destroyIfFound("cutecore!!!")
+    destroyIfFound("VIPDoor")
+end)
+
+spawn(function()
+    for _, t in ipairs(workspace:GetChildren()) do
+        if t.Name == "Arbusto" then
+            t:Destroy()
+        end
+    end
+end)
+
+UL:AddText(crFrm, "By Script: OneCreatorX")
+UL:AddText(crFrm, "Create Script: 07/07/24")
 UL:AddText(crFrm, "Update Script: --/--/--")
 UL:AddText(crFrm, "Script Version: 0.1")
 UL:AddBtn(crFrm, "Copy link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
