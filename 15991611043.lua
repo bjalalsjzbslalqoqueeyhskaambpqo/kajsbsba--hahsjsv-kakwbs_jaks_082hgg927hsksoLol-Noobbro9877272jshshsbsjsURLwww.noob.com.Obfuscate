@@ -11,11 +11,7 @@ gameName = cleanGameName(gameName)
 local p = game.Players.LocalPlayer
 local sg = UL:CrSG("Default")
 local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
-local xxx = 1
-
--- UL:AddTBox(cfrm, "Multi buy egg: 1/1s", function(xxx) 
-    
-    end)
+local xxx = 3
 
 local eggs = game.Workspace.Map.Eggs:GetChildren()
 
