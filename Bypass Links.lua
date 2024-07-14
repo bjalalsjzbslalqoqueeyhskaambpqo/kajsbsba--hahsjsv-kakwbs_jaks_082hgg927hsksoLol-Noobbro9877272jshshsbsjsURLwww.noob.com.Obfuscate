@@ -48,7 +48,7 @@ Input.PlaceholderText = "Enter URL"
 Input.PlaceholderColor3 = Color3.fromRGB(0, 200, 0)
 Input.Font = Enum.Font.Code
 Input.TextSize = 14
-Input.ClearTextOnFocus = false
+Input.ClearTextOnFocus = true
 Input.ClipsDescendants = true
 Input.Parent = Frame
 
