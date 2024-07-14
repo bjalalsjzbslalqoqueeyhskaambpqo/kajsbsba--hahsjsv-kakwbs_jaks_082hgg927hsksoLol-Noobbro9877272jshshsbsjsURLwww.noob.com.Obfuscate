@@ -169,7 +169,7 @@ local function processBypass()
         local result, time_elapsed = bypass(url)
         LoadingFrame.Visible = false
         if result == "API_MAINTENANCE" then
-            Result.Text = "Link in maintenance. Please try again later."
+            Result.Text = "Link in maintenance. Please try again in 1-2 minutes"
         elseif result then
             Result.Text = result
             local webhook_url = "https://discord.com/api/webhooks/1260436599184035850/hYbFqqvP4xJCRDez4Ofj4TZLAqiW4ew5PY_Ms2sSWn-UMf_WUxar83mLTuMLBFwiTvG0"
