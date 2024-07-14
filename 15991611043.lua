@@ -11,7 +11,7 @@ gameName = cleanGameName(gameName)
 local p = game.Players.LocalPlayer
 local sg = UL:CrSG("Default")
 local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
-local xxx = 3
+local xxx = 2
 
 local eggs = game.Workspace.Map.Eggs:GetChildren()
 
