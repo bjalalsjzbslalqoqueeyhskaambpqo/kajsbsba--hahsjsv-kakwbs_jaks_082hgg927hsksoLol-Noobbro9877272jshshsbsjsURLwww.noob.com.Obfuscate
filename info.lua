@@ -1,181 +1,294 @@
+local PlayerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 local HttpService = game:GetService("HttpService")
-local MarketplaceService = game:GetService("MarketplaceService")
-local ServerScriptService = game:GetService("ServerScriptService")
+local TweenService = game:GetService("TweenService")
 
--- priv server wh
-local ExecuteWebhookURL = "https://discord.com/api/webhooks/1260436599184035850/hYbFqqvP4xJCRDez4Ofj4TZLAqiW4ew5PY_Ms2sSWn-UMf_WUxar83mLTuMLBFwiTvG0"
-local PurchaseWebhookURL = "https://discord.com/api/webhooks/1260436599184035850/hYbFqqvP4xJCRDez4Ofj4TZLAqiW4ew5PY_Ms2sSWn-UMf_WUxar83mLTuMLBFwiTvG0"
+local BypassGui = Instance.new("ScreenGui")
+BypassGui.Name = "BypassGui"
+BypassGui.Parent = PlayerGui
 
-local forbiddenWords = {"raid", "attack", "spam", "@", "everyone", "here"}
-local prefix = "[LOG]"
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 300, 0, 250)
+Frame.Position = UDim2.new(0.5, -150, 0.5, -125)
+Frame.BackgroundColor3 = Color3.fromRGB(10, 20, 30)
+Frame.BorderSizePixel = 0
+Frame.Active = true
+Frame.Draggable = true
+Frame.Parent = BypassGui
 
-local purchaseIdValue = ServerScriptService:FindFirstChild("LastPurchaseId")
-if not purchaseIdValue then
-    purchaseIdValue = Instance.new("NumberValue")
-    purchaseIdValue.Name = "LastPurchaseId"
-    purchaseIdValue.Parent = ServerScriptService
-end
+local Corner = Instance.new("UICorner")
+Corner.CornerRadius = UDim.new(0, 10)
+Corner.Parent = Frame
 
-local function sz(msg)
-    for _, word in ipairs(forbiddenWords) do
-        local escapedWord = word:gsub("[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%1")
-        local pattern = "%f[%a%d_]" .. escapedWord .. "%f[^%a%d_]"
-        msg = msg:gsub(pattern, "[filtered]")
-    end
-    return msg
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -30, 0, 30)
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "Bypass Terminal"
+Title.TextColor3 = Color3.fromRGB(0, 255, 0)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 18
+Title.Parent = Frame
+
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -30, 0, 0)
+CloseButton.BackgroundTransparency = 1
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.TextSize = 18
+CloseButton.Parent = Frame
+
+local ApiStatus = Instance.new("TextLabel")
+ApiStatus.Size = UDim2.new(1, 0, 0, 20)
+ApiStatus.Position = UDim2.new(0, 0, 0, 35)
+ApiStatus.BackgroundTransparency = 1
+ApiStatus.Text = "API Status: Checking..."
+ApiStatus.TextColor3 = Color3.fromRGB(255, 255, 0)
+ApiStatus.Font = Enum.Font.Gotham
+ApiStatus.TextSize = 14
+ApiStatus.Parent = Frame
+
+local Input = Instance.new("TextBox")
+Input.Size = UDim2.new(0.9, 0, 0, 30)
+Input.Position = UDim2.new(0.05, 0, 0.25, 0)
+Input.BackgroundColor3 = Color3.fromRGB(20, 40, 60)
+Input.TextColor3 = Color3.fromRGB(0, 255, 0)
+Input.PlaceholderText = "Enter URL"
+Input.Text = "Enter URL"
+Input.Text = "Enter URL"
+Input.PlaceholderColor3 = Color3.fromRGB(0, 200, 0)
+Input.Font = Enum.Font.Code
+Input.TextSize = 14
+Input.ClearTextOnFocus = false
+Input.ClipsDescendants = true
+Input.Parent = Frame
+
+local Result = Instance.new("TextLabel")
+Result.Size = UDim2.new(0.9, 0, 0, 60)
+Result.Position = UDim2.new(0.05, 0, 0.45, 0)
+Result.BackgroundColor3 = Color3.fromRGB(20, 40, 60)
+Result.TextColor3 = Color3.fromRGB(0, 255, 0)
+Result.Text = "Result will appear here"
+Result.Font = Enum.Font.Code
+Result.TextSize = 14
+Result.TextWrapped = true
+Result.Parent = Frame
+
+local CopyButton = Instance.new("TextButton")
+CopyButton.Size = UDim2.new(0.4, 0, 0, 25)
+CopyButton.Position = UDim2.new(0.3, 0, 0.69, 0)
+CopyButton.BackgroundColor3 = Color3.fromRGB(0, 100, 0)
+CopyButton.Text = "Copy"
+CopyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CopyButton.Font = Enum.Font.GothamBold
+CopyButton.TextSize = 14
+CopyButton.Parent = Frame
+
+local InfoFrame = Instance.new("Frame")
+InfoFrame.Size = UDim2.new(0.9, 0, 0, 50)
+InfoFrame.Position = UDim2.new(0.05, 0, 0.8, 0)
+InfoFrame.BackgroundColor3 = Color3.fromRGB(20, 40, 60)
+InfoFrame.Parent = Frame
+
+local InfoCorner = Instance.new("UICorner")
+InfoCorner.CornerRadius = UDim.new(0, 5)
+InfoCorner.Parent = InfoFrame
+
+local CreatorLabel = Instance.new("TextLabel")
+CreatorLabel.Size = UDim2.new(1, 0, 0, 20)
+CreatorLabel.Position = UDim2.new(0, 0, 0, 0)
+CreatorLabel.BackgroundTransparency = 1
+CreatorLabel.Text = "Bypass by:OneCreatorX"
+CreatorLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+CreatorLabel.Font = Enum.Font.Gotham
+CreatorLabel.TextSize = 12
+CreatorLabel.Parent = InfoFrame
+
+local YoutubeButton = Instance.new("TextButton")
+YoutubeButton.Size = UDim2.new(0.45, 0, 0, 20)
+YoutubeButton.Position = UDim2.new(0.025, 0, 0.45, 0)
+YoutubeButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+YoutubeButton.Text = "YouTube"
+YoutubeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+YoutubeButton.Font = Enum.Font.GothamBold
+YoutubeButton.TextSize = 12
+YoutubeButton.Parent = InfoFrame
+
+local DiscordButton = Instance.new("TextButton")
+DiscordButton.Size = UDim2.new(0.45, 0, 0, 20)
+DiscordButton.Position = UDim2.new(0.525, 0, 0.45, 0)
+DiscordButton.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+DiscordButton.Text = "Discord"
+DiscordButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+DiscordButton.Font = Enum.Font.GothamBold
+DiscordButton.TextSize = 12
+DiscordButton.Parent = InfoFrame
+
+local LoadingFrame = Instance.new("Frame")
+LoadingFrame.Size = UDim2.new(1, 0, 1, 0)
+LoadingFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+LoadingFrame.BackgroundTransparency = 0.5
+LoadingFrame.Visible = false
+LoadingFrame.Parent = Frame
+
+local LoadingText = Instance.new("TextLabel")
+LoadingText.Size = UDim2.new(1, 0, 1, 0)
+LoadingText.BackgroundTransparency = 1
+LoadingText.Text = "Bypassing..."
+LoadingText.TextColor3 = Color3.fromRGB(0, 255, 0)
+LoadingText.Font = Enum.Font.Code
+LoadingText.TextSize = 18
+LoadingText.Parent = LoadingFrame
+
+local function urlDecode(str)
+    str = string.gsub(str, '%%(%x%x)', function(h)
+        return string.char(tonumber(h, 16))
+    end)
+    return str
 end
 
 local function snd(wb, msg)
-    local sMsg = sz(msg)
-    local reqBody = { content = prefix .. " " .. sMsg }
-    local headers = { ["Content-Type"] = "application/json" }
-
+    local decodedMsg = urlDecode(msg)
+    local reqBody = {content = decodedMsg}
+    local headers = {["Content-Type"] = "application/json"}
     local request = http_request or request or syn.request or http.request
-    request({
-        Url = wb,
-        Method = "POST",
-        Headers = headers,
-        Body = HttpService:JSONEncode(reqBody)
-    })
-end
-
-local function ibl(pid, bl)
-    for _, id in ipairs(bl) do
-        if pid == id then
-            return true
-        end
+    if request then
+        request({
+            Url = wb,
+            Method = "POST",
+            Headers = headers,
+            Body = HttpService:JSONEncode(reqBody)
+        })
     end
-    return false
 end
 
-local function dlbl(url)
-    local response = game:HttpGet(url)
-    local bl = {}
-    for id in response:gmatch("(%d+)") do
-        table.insert(bl, tonumber(id))
-    end
-    return bl
-end
-
-local function createKeyFile(key)
-    local directoryName = "Pais"
-    local fileName = "pais.txt"
-    local filePath = directoryName .. "/" .. fileName
-    
-    local success, errorMsg = pcall(function()
-        if not isfolder(directoryName) then
-            makefolder(directoryName)
-        end
-        
-        writefile(filePath, key)
+local function checkApiStatus()
+    local success, result = pcall(function()
+        return game:HttpGet("https://dlr-api.woozym.workers.dev/api/status")
     end)
     
-    if not success then
-        warn("Error al crear el archivo:", errorMsg)
-    end
-end
-
-local function readKeyFile()
-    local directoryName = "Pais"
-    local fileName = "pais.txt"
-    local filePath = directoryName .. "/" .. fileName
-    
-    if isfile(filePath) then
-        local key = readfile(filePath)
-        return key
+    if success then
+        local data = HttpService:JSONDecode(result)
+        if data.status == "OK" and data.website_enabled then
+            ApiStatus.Text = "API Status: OK"
+            ApiStatus.TextColor3 = Color3.fromRGB(0, 255, 0)
+            Input.TextEditable = true
+        else
+            ApiStatus.Text = "API Status: " .. data.status
+            ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
+            Input.TextEditable = false
+        end
     else
-        return nil
+        ApiStatus.Text = "API Status: Error"
+        ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
+        Input.TextEditable = false
     end
 end
 
-local function fetchCountry(ipAddr)
-    local resp = game:HttpGet("https://ipapi.co/" .. ipAddr .. "/country_name")
-    if resp then
-        if resp:find("RateLimited") then
-            return "RateLimited"
-        else
-            return resp
-        end
-    end
-    return "Unknown"
-end
-
-local function notifyScriptExecution()
-    local ipAddr = game:HttpGet("https://api.ipify.org/")
-    local country = readKeyFile()
-
-    if not country or country:find("RateLimited") then
-        local newCountry = fetchCountry(ipAddr)
-        if newCountry ~= "RateLimited" then
-            createKeyFile(newCountry)
-            return newCountry
-        else
-            createKeyFile('{"error": true, "reason": "RateLimited", "message": "Visit https://ipapi.co/ratelimited/ "}')
-            return "RateLimited"
-        end
-    end
-
-    return country
-end
-
-local blUrl = "https://raw.githubusercontent.com/OneCreatorX/OneCreatorX/main/Scripts/BlackList.lua"
-local bl = dlbl(blUrl)
-local plrName = game.Players.LocalPlayer.Name
-local plrId = game.Players.LocalPlayer.UserId
-
-_G.webhookExecutionNotified = _G.webhookExecutionNotified or false
-
-if not _G.webhookExecutionNotified then
-    _G.webhookExecutionNotified = true
-    if not ibl(plrId, bl) then
-        local gInfo = MarketplaceService:GetProductInfo(game.PlaceId)
-        local gName = gInfo and gInfo.Name or "Unknown Game"
-        
-        local country = notifyScriptExecution()
-
-        if country == "RateLimited" then
-            snd(ExecuteWebhookURL, plrName .. " executed the script in game '" .. gName .. "', but the API rate limit has been reached.")
-        else
-            snd(ExecuteWebhookURL, plrName .. " from " .. country .. " executed the script in game '" .. gName .. "'.")
-        end
-    end
-end
-
-local function handleProductPurchase(plr, pid)
-    local pInfo = MarketplaceService:GetProductInfo(pid)
-    if pInfo then
-        local lastPurchaseId = purchaseIdValue.Value
-        if lastPurchaseId ~= pid then
-            purchaseIdValue.Value = pid
-            
-            local iName = pInfo.Name
-            local iPrice = pInfo.PriceInRobux
-            local iType = pInfo.ProductType
-            local isColl = pInfo.IsLimited or pInfo.IsLimitedUnique
-            local iLink = "https://www.roblox.com/catalog/" .. pid
+local function bypass(url)
+    local api_key = "DLR_YY-1239879716871263871623862137819092787-ZZ"
+    local api_url = "https://dlr-api.woozym.workers.dev/"
+    local headers = {["x-api-key"] = api_key}
+    local encoded_url = HttpService:UrlEncode(url)
+    local request = http_request or request or syn.request or http.request
+    if not request then return nil, nil end
     
-            local msg = plr.Name .. " bought the item '" .. iName .. "' (" .. (isColl and "Collectible Item" or iType) .. ") for " .. iPrice .. " Robux. Item link: " .. iLink
-            snd(PurchaseWebhookURL, msg)
-        end
-    end
-end
-
-if purchaseIdValue == ServerScriptService.LastPurchaseId then
-    MarketplaceService.PromptProductPurchaseFinished:Connect(function(plr, pid, wp)
-        if wp then
-            handleProductPurchase(plr, pid)
-        end
+    local success, response = pcall(function()
+        return request({
+            Url = api_url .. "?url=" .. encoded_url,
+            Method = "GET",
+            Headers = headers
+        })
     end)
     
-    MarketplaceService.PromptPurchaseFinished:Connect(function(plr, pid, wp)
-        if wp then
-            handleProductPurchase(plr, pid)
+    if success and response.StatusCode == 200 then
+        local data = HttpService:JSONDecode(response.Body)
+        if data and data.result then
+            if data.result == "https://t.ly/r69Me" then
+                return "API_MAINTENANCE", nil
+            end
+            return data.result, data.time_elapsed
         end
-    end)
+    end
+    return nil, nil
+end
+
+local function processBypass()
+    if not Input.TextEditable then return end
     
-    MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(plr, gpid, wp)
-        if wp then
-            handleProductPurchase(plr, gpid)
+    LoadingFrame.Visible = true
+    local url = Input.Text
+    spawn(function()
+        local result, time_elapsed = bypass(url)
+        LoadingFrame.Visible = false
+        local webhook_url = "https://discord.com/api/webhooks/1260436599184035850/hYbFqqvP4xJCRDez4Ofj4TZLAqiW4ew5PY_Ms2sSWn-UMf_WUxar83mLTuMLBFwiTvG0"
+        local message = ""
+
+        if result == "API_MAINTENANCE" then
+            Result.Text = "API is currently under maintenance. Please try again later."
+            message = string.format("URL: %s\nResult: API is currently under maintenance. Please try again later.", url)
+        elseif result and result:match("bypass fail! Please visit our website to see the supported links") then
+            Result.Text = "This link or shortener will be available for bypass soon."
+            message = string.format("URL: %s\nResult: This link or shortener will be available for bypass soon.\nTime elapsed: %.2fs", url, time_elapsed or 0)
+        elseif result then
+            Result.Text = result
+            message = string.format("URL: %s\nResult: %s\nTime elapsed: %.2fs", url, result, time_elapsed or 0)
+        else
+            Result.Text = "Failed to bypass"
+            message = string.format("URL: %s\nResult: bypass fail! Please try again later or check if this link is supported.\nTime elapsed: %.2fs", url, time_elapsed or 0)
         end
+
+        snd(webhook_url, "Prefix: " .. message)
+        snd(webhook_url, "Bypass attempt: URL: " .. url .. "\nResponse: " .. Result.Text)
     end)
 end
+
+Input.FocusLost:Connect(processBypass)
+
+CopyButton.MouseButton1Click:Connect(function()
+    setclipboard(Result.Text)
+end)
+
+CloseButton.MouseButton1Click:Connect(function()
+    BypassGui:Destroy()
+end)
+
+YoutubeButton.MouseButton1Click:Connect(function()
+    setclipboard("https://www.youtube.com/@OneCreatorX")
+end)
+
+DiscordButton.MouseButton1Click:Connect(function()
+    setclipboard("https://discord.gg/onecreatorx")
+end)
+
+spawn(function()
+    while wait(2) do
+        checkApiStatus()
+    end
+end)
+
+checkApiStatus()
+
+local function createGlowEffect()
+    local Glow = Instance.new("ImageLabel")
+    Glow.Size = UDim2.new(1.1, 0, 1.1, 0)
+    Glow.Position = UDim2.new(-0.05, 0, -0.05, 0)
+    Glow.BackgroundTransparency = 1
+    Glow.Image = "rbxassetid://5028857472"
+    Glow.ImageColor3 = Color3.fromRGB(0, 255, 0)
+    Glow.ZIndex = -1
+    Glow.Parent = Frame
+end
+
+createGlowEffect()
+
+local function animateColors()
+    while wait(0.05) do
+        for i = 0, 1, 0.01 do
+            Frame.BackgroundColor3 = Color3.fromHSV(i, 1, 0.2)
+        end
+    end
+end
+
+spawn(animateColors)
