@@ -26,14 +26,25 @@ local function findClosestHeart()
     local shortestDistance = math.huge
     local playerPosition = player.Character.HumanoidRootPart.Position
 
-    for _, descendant in ipairs(workspace.VIPHearts:GetChildren()) do
-        if descendant:IsA("BasePart") and descendant.Name == "Heart" then
-            local distance = (descendant.Position - playerPosition).Magnitude
-            if distance < shortestDistance then
-                closestHeart = descendant
-                shortestDistance = distance
+    local function checkHearts(parent)
+        for _, descendant in ipairs(parent:GetChildren()) do
+            if descendant:IsA("BasePart") and descendant.Name == "Heart" then
+                local distance = (descendant.Position - playerPosition).Magnitude
+                if distance < shortestDistance then
+                    closestHeart = descendant
+                    shortestDistance = distance
+                end
             end
         end
+    end
+
+    -- Check hearts in both VIPHearts and RegularHearts
+    if workspace:FindFirstChild("VIPHearts") then
+        checkHearts(workspace.VIPHearts)
+    end
+
+    if workspace:FindFirstChild("RegularHearts") then
+        checkHearts(workspace.RegularHearts)
     end
 
     return closestHeart
@@ -45,7 +56,21 @@ local function moveToHeart()
     local closestHeart = findClosestHeart()
     if closestHeart then
         local humanoid = player.Character.Humanoid
-        humanoid:MoveTo(closestHeart.Position)
+        local path = PathfindingService:CreatePath({
+            AgentRadius = 2,
+            AgentHeight = 5,
+            AgentCanJump = true,
+            AgentJumpHeight = 5,
+            AgentMaxSlope = 20
+        })
+
+        path:ComputeAsync(player.Character.HumanoidRootPart.Position, closestHeart.Position)
+        local waypoints = path:GetWaypoints()
+
+        for _, waypoint in ipairs(waypoints) do
+            humanoid:MoveTo(waypoint.Position)
+            humanoid.MoveToFinished:Wait()
+        end
     end
 end
 
@@ -53,23 +78,28 @@ UL:AddTBtn(cfrm, "Auto Walk-Collect", false, function(state)
     a = not a
     while a do
         moveToHeart()
-        wait(0.5)
+        wait(0.2)
     end
 end)
 
+p.Character.Humanoid.WalkSpeed = 25
 spawn(function()
     local function destroyIfFound(name)
         local obj = workspace:FindFirstChild(name)
         if obj then
             obj:Destroy()
         else
-            warn("No '" .. name .. "' found in workspace")
+
         end
     end
 
     destroyIfFound("Clouds")
     destroyIfFound("cutecore!!!")
     destroyIfFound("VIPDoor")
+     destroyIfFound("circles")
+     destroyIfFound("Hearts Obby Stage")
+     destroyIfFound("Plushies")
+
 end)
 
 spawn(function()
@@ -81,7 +111,7 @@ spawn(function()
 end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX")
-UL:AddText(crFrm, "Create Script: 07/07/24")
+UL:AddText(crFrm, "Create Script: 14/07/24")
 UL:AddText(crFrm, "Update Script: --/--/--")
 UL:AddText(crFrm, "Script Version: 0.1")
 UL:AddBtn(crFrm, "Copy link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
