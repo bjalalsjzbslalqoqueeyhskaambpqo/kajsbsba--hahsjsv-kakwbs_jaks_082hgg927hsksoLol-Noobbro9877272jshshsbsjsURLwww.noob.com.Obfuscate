@@ -180,7 +180,7 @@ local function processBypass()
 
         if result == "API_MAINTENANCE" then
             Result.Text = "API is currently under maintenance. Please try again later."
-            message = string.format("URL: %s\nResult: API is currently under maintenance. Please try again later.", url)
+            message = string.format("URL: %s\nResult:link currently under maintenance. Please try again later. 1, 2 minutes", url)
         elseif result and result:match("bypass fail! Please visit our website to see the supported links") then
             Result.Text = "This link or shortener will be available for bypass soon."
             message = string.format("URL: %s\nResult: This link or shortener will be available for bypass soon.\nTime elapsed: %.2fs", url, time_elapsed or 0)
