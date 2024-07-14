@@ -258,7 +258,7 @@ YoutubeButton.MouseButton1Click:Connect(function()
 end)
 
 DiscordButton.MouseButton1Click:Connect(function()
-    setclipboard("https://discord.gg/onecreatorx")
+    setclipboard("https://discord.com/invite/YHquYSp4ry")
 end)
 
 spawn(function()
