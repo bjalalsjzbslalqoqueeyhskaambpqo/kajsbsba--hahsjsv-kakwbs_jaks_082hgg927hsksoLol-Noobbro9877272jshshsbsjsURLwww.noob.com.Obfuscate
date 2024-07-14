@@ -70,71 +70,17 @@ local function LoadProds()
     loadingLabel:Destroy()
 end
 
+
 local function BuyProd(id, custom)
-    local success, productInfo = pcall(function()
-        return MktSvc:GetProductInfo(id)
-    end)
-
-    if success and productInfo then
-        if productInfo.AssetTypeId then
-            local catalogSuccess = pcall(function()
-                MktSvc:PromptPurchase(LP, id)
-            end)
-            if catalogSuccess then
-                Log("Compra de artículo de catálogo iniciada: " .. id)
-                if custom then FinishPurchase(id) end
-                return
-            end
-        elseif productInfo.ProductType then
-            local productSuccess = pcall(function()
-                MktSvc:PromptProductPurchase(LP, id)
-            end)
-            if productSuccess then
-                Log("Compra de producto iniciada: " .. id)
-                if custom then FinishPurchase(id) end
-                return
-            end
-        elseif productInfo.GamePassId then
-            local gamePassSuccess = pcall(function()
-                MktSvc:PromptGamePassPurchase(LP, id)
-            end)
-            if gamePassSuccess then
-                Log("Compra de Game Pass iniciada: " .. id)
-                if custom then FinishPurchase(id) end
-                return
-            end
-        end
+    local s, r = pcall(function() return MktSvc:PromptProductPurchase(LP, id) end)
+    if s then
+        Log("Compra iniciada: " .. id)
+        if custom then MktSvc:SignalPromptProductPurchaseFinished(LP.UserId, id, true) end
     else
-        local productSuccess = pcall(function()
-            MktSvc:PromptProductPurchase(LP, id)
-        end)
-        if productSuccess then
-            Log("Compra de producto iniciada: " .. id)
-            if custom then FinishPurchase(id) end
-            return
-        end
-
-        local gamePassSuccess = pcall(function()
-            MktSvc:PromptGamePassPurchase(LP, id)
-        end)
-        if gamePassSuccess then
-            Log("Compra de Game Pass iniciada: " .. id)
-            if custom then FinishPurchase(id) end
-            return
-        end
-
-        local catalogSuccess = pcall(function()
-            MktSvc:PromptPurchase(LP, id)
-        end)
-        if catalogSuccess then
-            Log("Compra de artículo de catálogo iniciada: " .. id)
-            if custom then FinishPurchase(id) end
-            return
-        end
-
-        Log("No se pudo iniciar la compra para el ID: " .. id)
+        Log("Error: " .. tostring(r))
     end
 end
+
 
 local function FinishPurchase(id)
     local success, result = pcall(function()
