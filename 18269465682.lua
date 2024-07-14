@@ -58,6 +58,17 @@ wait(0.5)
 end
  end)
 
+spawn(function()
+    if workspace:FindFirstChild("Clouds") then
+        workspace:FindFirstChild("Clouds"):Destroy()
+    else
+    end
+
+    if workspace:FindFirstChild("cutecore!!!") then
+        workspace:FindFirstChild("cutecore!!!"):Destroy()
+    else
+    end
+end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
 UL:AddText(crFrm, "Create Script: 07/07/24 ")
