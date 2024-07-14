@@ -1,11 +1,7 @@
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local TS = game:GetService("TweenService")
-local MPS = game:GetService("MarketplaceService")
-local HTTP = game:GetService("HttpService")
 local RS = game:GetService("RunService")
-local SG = game:GetService("StarterGui")
-local CG = game:GetService("CoreGui")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -30,6 +26,7 @@ local function createGui()
     mf.Position = UDim2.new(0.5, -150, 0.5, -215)
     mf.BackgroundColor3 = BG_COLOR
     mf.BorderSizePixel = 0
+    mf.ClipsDescendants = true
     mf.Parent = sg
 
     local cr = Instance.new("UICorner")
@@ -99,7 +96,6 @@ local function createGui()
     mpi.Font = Enum.Font.SourceSans
     mpi.Parent = content
 
-    
     local cmb = Instance.new("TextButton")
     cmb.Name = "ClickMethodButton"
     cmb.Size = UDim2.new(1, 0, 0, 30)
@@ -114,8 +110,8 @@ local function createGui()
 
     local cf = Instance.new("ScrollingFrame")
     cf.Name = "ConsoleFrame"
-    cf.Size = UDim2.new(1, 0, 1.3, -120)
-    cf.Position = UDim2.new(0, 0, 0, 70)
+    cf.Size = UDim2.new(1, 0, 1, -80)
+    cf.Position = UDim2.new(0, 0, 0, 80)
     cf.BackgroundColor3 = Color3.fromRGB(44, 62, 80)
     cf.BorderSizePixel = 0
     cf.ScrollBarThickness = 6
@@ -126,7 +122,7 @@ local function createGui()
     cl.Padding = UDim.new(0, 5)
     cl.Parent = cf
 
-    return sg, mf, tb, mb, cb, mpi, abb, cmb, cf
+    return sg, mf, tb, mb, cb, mpi, cmb, cf, content
 end
 
 local function addMsg(cf, msg, color)
@@ -145,21 +141,77 @@ local function addMsg(cf, msg, color)
     cf.CanvasPosition = Vector2.new(0, cf.CanvasSize.Y.Offset - cf.AbsoluteSize.Y)
 end
 
+local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+
+local notificationSent = {
+    buyButton = false,
+    cancelButton = false
+}
+
+local function clickCancelButton(purchasePrompt)
+    local cancelButtonText = nil
+    local zeroTextButton = nil
+
+    for _, descendant in ipairs(purchasePrompt:GetDescendants()) do
+        if descendant:IsA("TextLabel") and descendant.Name == "Text" then
+            local text = descendant.Text:lower()
+            if text == "cancelar" or text == "cancel" or text == "accept" or text == "aceptar" then
+                cancelButtonText = text
+            elseif text <= tostring(maxPrice) then
+                zeroTextButton = descendant
+            end
+        end
+    end
+
+    if zeroTextButton then
+        local buttonCenterX = zeroTextButton.AbsolutePosition.X + zeroTextButton.AbsoluteSize.X / 0.5
+        local buttonCenterY = zeroTextButton.AbsolutePosition.Y + zeroTextButton.AbsoluteSize.Y / 0.5
+        
+        game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, true, game, 1)
+        game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, false, game, 1)
+        addMsg(cf, "Toggle 'Click Button Buy", Color3.fromRGB(46, 204, 113))
+    elseif cancelButtonText then
+        for _, descendant in ipairs(purchasePrompt:GetDescendants()) do
+            if descendant:IsA("TextLabel") and descendant.Name == "Text" and descendant.Text:lower() == cancelButtonText then
+                local buttonCenterX = descendant.AbsolutePosition.X + descendant.AbsoluteSize.X / 0.5
+                local buttonCenterY = descendant.AbsolutePosition.Y + descendant.AbsoluteSize.Y / 0.5
+                
+                game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, true, game, 1)
+                game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, false, game, 1)
+                addMsg(cf, "Click acept or cancel.", Color3.fromRGB(46, 204, 113))
+                break
+            end
+        end
+    end
+end
+
 
 local function initAutoBuyer()
-    local sg, mf, tb, mb, cb, mpi, abb, cmb, cf = createGui()
+    local sg, mf, tb, mb, cb, mpi, cmb, cf, content = createGui()
+
+    local minimized = false
+    local originalSize = mf.Size
+    local originalPosition = mf.Position
 
     local function toggleMinimize()
+        minimized = not minimized
         local targetSize, targetPos
-        if mf.Size.Y.Offset > 35 then
-            targetSize = UDim2.new(0, 300, 0, 35)
-            targetPos = UDim2.new(0.5, -150, 1, -35)
+
+        if minimized then
+            targetSize = UDim2.new(0, mf.Size.X.Offset, 0, tb.Size.Y.Offset)
+            targetPos = UDim2.new(mf.Position.X.Scale, mf.Position.X.Offset, 1, -tb.Size.Y.Offset)
         else
-            targetSize = UDim2.new(0, 300, 0, 430)
-            targetPos = UDim2.new(0.5, -150, 0.5, -215)
+            targetSize = originalSize
+            targetPos = originalPosition
         end
 
-        TS:Create(mf, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = targetSize, Position = targetPos}):Play()
+        TS:Create(mf, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+            Size = targetSize,
+            Position = targetPos
+        }):Play()
+
+        content.Visible = not minimized
     end
 
     mb.MouseButton1Click:Connect(toggleMinimize)
@@ -211,53 +263,6 @@ local function initAutoBuyer()
         end
     end)
 
-    
-
-local RunService = game:GetService("RunService")
-local StarterGui = game:GetService("StarterGui")
-
-local notificationSent = {
-    buyButton = false,
-    cancelButton = false
-}
-
-local function clickCancelButton(purchasePrompt)
-    local cancelButtonText = nil
-    local zeroTextButton = nil
-
-    for _, descendant in ipairs(purchasePrompt:GetDescendants()) do
-        if descendant:IsA("TextLabel") and descendant.Name == "Text" then
-            local text = descendant.Text:lower()
-            if text == "cancelar" or text == "cancel" or text == "accept" or text == "aceptar" then
-                cancelButtonText = text
-            elseif text <= tostring(maxPrice) then
-                zeroTextButton = descendant
-            end
-        end
-    end
-
-    if zeroTextButton then
-        local buttonCenterX = zeroTextButton.AbsolutePosition.X + zeroTextButton.AbsoluteSize.X / 0.5
-        local buttonCenterY = zeroTextButton.AbsolutePosition.Y + zeroTextButton.AbsoluteSize.Y / 0.5
-        
-        game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, true, game, 1)
-        game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, false, game, 1)
-        addMsg(cf, "Toggle 'Click Button Buy", Color3.fromRGB(46, 204, 113))
-    elseif cancelButtonText then
-        for _, descendant in ipairs(purchasePrompt:GetDescendants()) do
-            if descendant:IsA("TextLabel") and descendant.Name == "Text" and descendant.Text:lower() == cancelButtonText then
-                local buttonCenterX = descendant.AbsolutePosition.X + descendant.AbsoluteSize.X / 0.5
-                local buttonCenterY = descendant.AbsolutePosition.Y + descendant.AbsoluteSize.Y / 0.5
-                
-                game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, true, game, 1)
-                game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, false, game, 1)
-                addMsg(cf, "Click acept or cancel.", Color3.fromRGB(46, 204, 113))
-                break
-            end
-        end
-    end
-end
-
     cmb.MouseButton1Click:Connect(function()
         useClickMethod = not useClickMethod
         cmb.Text = "Click Method: " .. (useClickMethod and "On" or "Off")
@@ -268,8 +273,23 @@ end
     local function updateGuiSize()
         local viewportSize = workspace.CurrentCamera.ViewportSize
         local scale = math.min(viewportSize.X / 1920, viewportSize.Y / 1080)
-        mf.Size = UDim2.new(0, 300 * scale, 0, 430 * scale)
-        mf.Position = UDim2.new(0.5, -150 * scale, 0.5, -215 * scale)
+        
+        originalSize = UDim2.new(0, 300 * scale, 0, 430 * scale)
+        originalPosition = UDim2.new(0.5, -150 * scale, 0.5, -215 * scale)
+        
+        if not minimized then
+            mf.Size = originalSize
+            mf.Position = originalPosition
+        else
+            mf.Size = UDim2.new(0, 300 * scale, 0, tb.Size.Y.Offset)
+            mf.Position = UDim2.new(0.5, -150 * scale, 1, -tb.Size.Y.Offset)
+        end
+        
+        tb.Size = UDim2.new(1, 0, 0, 30 * scale)
+        mb.Size = UDim2.new(0, 30 * scale, 1, 0)
+        cb.Size = UDim2.new(0, 30 * scale, 1, 0)
+        mb.Position = UDim2.new(1, -60 * scale, 0, 0)
+        cb.Position = UDim2.new(1, -30 * scale, 0, 0)
     end
 
     workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(updateGuiSize)
@@ -278,7 +298,7 @@ end
     addMsg(cf, "Welcome to Auto Buyer!", Color3.fromRGB(52, 152, 219))
     addMsg(cf, "By OneCreatorX", Color3.fromRGB(52, 152, 219))
 
-    RS.Heartbeat:Connect(function()
+RS.Heartbeat:Connect(function()
         if useClickMethod then
             local coreGui = game:GetService("CoreGui")
 local purchasePrompt = coreGui:WaitForChild("PurchasePrompt")
