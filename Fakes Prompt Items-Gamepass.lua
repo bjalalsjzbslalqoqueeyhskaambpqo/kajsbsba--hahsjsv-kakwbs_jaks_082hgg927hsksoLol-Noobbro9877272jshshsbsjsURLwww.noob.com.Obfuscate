@@ -85,17 +85,48 @@ local function FinishPurchase(id)
     Log("Finalización enviada: " .. id)
 end
 
-local function ProcessProds(action, sel, loop)
+local activeLoops = {}
+
+local function ProcessProds(action, sel, loop, btn)
     local count, prds = 0, sel == "selected" and selProds or prods
     for id, _ in pairs(prds) do
         count = count + 1
         if loop then
-            spawn(function() while true do action(id) wait(1) end end)
+            if not activeLoops[id] then
+                activeLoops[id] = true
+                spawn(function()
+                    while activeLoops[id] do
+                        action(id)
+                        wait(1)
+                    end
+                end)
+            else
+                activeLoops[id] = nil
+            end
         else
             action(id)
         end
     end
-    Log(string.format("%s %s para %d producto(s)", action == BuyProd and "Compra(s)" or "Finalización(es)", loop and "iniciada(s) en bucle" or "completada(s)", count))
+    if loop then
+        btn.BackgroundColor3 = activeLoops[next(prds)] and Color3.new(0, 0.8, 0) or Color3.new(0.3, 0.3, 0.3)
+        Log(string.format("%s en bucle %s para %d producto(s)", action == BuyProd and "Compras" or "Finalizaciones", activeLoops[next(prds)] and "iniciadas" or "detenidas", count))
+    else
+        Log(string.format("%s completadas para %d producto(s)", action == BuyProd and "Compras" or "Finalizaciones", count))
+    end
+end
+
+local function SelectAll(select)
+    for _, child in ipairs(PL:GetChildren()) do
+        if child:IsA("TextButton") and child.Text ~= "Add ID" then
+            local id = prods[child.Text].ProductId
+            if select then
+                selProds[id], child.BackgroundColor3 = prods[child.Text], Color3.new(0, 0.5, 0)
+            else
+                selProds[id], child.BackgroundColor3 = nil, Color3.new(0.3, 0.3, 0.3)
+            end
+        end
+    end
+    Log(select and "Todos los productos seleccionados" or "Todos los productos deseleccionados")
 end
 
 local function CreateActBtns(title, yOff, actions)
@@ -104,23 +135,19 @@ local function CreateActBtns(title, yOff, actions)
     tl.TextColor3, tl.BackgroundTransparency, tl.Parent = Color3.new(1, 1, 1), 1, BF
     for i, a in ipairs(actions) do
         local btn = CreateBtn(BF, a.text, UDim2.new(0, 5, 0, yOff + 25 + (i-1)*35), nil, a.color)
-        btn.MouseButton1Click:Connect(a.func)
+        btn.MouseButton1Click:Connect(function() a.func(btn) end)
     end
     return yOff + 25 + (#actions * 35)
 end
 
-local pOff = CreateActBtns("Iniciar Compras", 0, {
-    {text = "Buy Select", func = function() ProcessProds(BuyProd, "selected", false) end, color = Color3.new(0.2, 0.6, 0.2)},
-    {text = "Buy Select (bucle)", func = function() ProcessProds(BuyProd, "selected", true) end, color = Color3.new(0.2, 0.5, 0.2)},
-    {text = "Buy all", func = function() ProcessProds(BuyProd, "all", false) end, color = Color3.new(0.2, 0.4, 0.2)},
-    {text = "Buy all (bucle)", func = function() ProcessProds(BuyProd, "all", true) end, color = Color3.new(0.2, 0.3, 0.2)}
+local pOff = CreateActBtns("Acciones de Compra", 0, {
+    {text = "Comprar Seleccionados", func = function() ProcessProds(BuyProd, "selected", false) end, color = Color3.new(0.2, 0.6, 0.2)},
+    {text = "Comprar Seleccionados (bucle)", func = function(btn) ProcessProds(BuyProd, "selected", true, btn) end, color = Color3.new(0.2, 0.5, 0.2)}
 })
 
-CreateActBtns("Finalizar Compras", pOff + 10, {
-    {text = "Finish Gamepass", func = function() ProcessProds(FinishPurchase, "selected", false) end, color = Color3.new(0.6, 0.2, 0.2)},
-    {text = "Finish Selects (bucle)", func = function() ProcessProds(FinishPurchase, "selected", true) end, color = Color3.new(0.5, 0.2, 0.2)},
-    {text = "Finish all", func = function() ProcessProds(FinishPurchase, "all", false) end, color = Color3.new(0.4, 0.2, 0.2)},
-    {text = "Finish All (bucle)", func = function() ProcessProds(FinishPurchase, "all", true) end, color = Color3.new(0.3, 0.2, 0.2)}
+CreateActBtns("Acciones de Finalización", pOff + 10, {
+    {text = "Finalizar Seleccionados", func = function() ProcessProds(FinishPurchase, "selected", false) end, color = Color3.new(0.6, 0.2, 0.2)},
+    {text = "Finalizar Seleccionados (bucle)", func = function(btn) ProcessProds(FinishPurchase, "selected", true, btn) end, color = Color3.new(0.5, 0.2, 0.2)}
 })
 
 BF.CanvasSize = UDim2.new(0, 0, 0, pOff + 180)
