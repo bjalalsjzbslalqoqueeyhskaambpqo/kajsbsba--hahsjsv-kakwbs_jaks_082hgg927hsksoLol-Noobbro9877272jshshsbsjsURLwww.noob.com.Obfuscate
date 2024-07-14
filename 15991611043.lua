@@ -14,7 +14,6 @@ local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
 
 local eggs = game.Workspace.Map.Eggs:GetChildren()
 
--- Filtrar y ordenar los huevos por EggValue
 table.sort(eggs, function(a, b)
     local aValue = a:FindFirstChild("EggValue") and a.EggValue.Value or 0
     local bValue = b:FindFirstChild("EggValue") and b.EggValue.Value or 0
@@ -100,7 +99,7 @@ end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
 UL:AddText(crFrm, "Create Script: 20/06/24 ")
-UL:AddText(crFrm, "Update Script: 23/06/24")
+UL:AddText(crFrm, "Update Script: 13/07/24")
 UL:AddText(crFrm, "Script Version: 0.4")
 UL:AddBtn(crFrm, "Copy link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 UL:AddBtn(crFrm, "Copy link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
