@@ -71,19 +71,105 @@ local function LoadProds()
 end
 
 local function BuyProd(id, custom)
-    local s, r = pcall(function() return MktSvc:PromptProductPurchase(LP, id) end)
-    if s then
-        Log("Compra iniciada: " .. id)
-        if custom then MktSvc:SignalPromptProductPurchaseFinished(LP.UserId, id, true) end
+    local success, productInfo = pcall(function()
+        return MktSvc:GetProductInfo(id)
+    end)
+
+    if success and productInfo then
+        if productInfo.AssetTypeId then
+            local catalogSuccess = pcall(function()
+                MktSvc:PromptPurchase(LP, id)
+            end)
+            if catalogSuccess then
+                Log("Compra de artículo de catálogo iniciada: " .. id)
+                if custom then FinishPurchase(id) end
+                return
+            end
+        elseif productInfo.ProductType then
+            local productSuccess = pcall(function()
+                MktSvc:PromptProductPurchase(LP, id)
+            end)
+            if productSuccess then
+                Log("Compra de producto iniciada: " .. id)
+                if custom then FinishPurchase(id) end
+                return
+            end
+        elseif productInfo.GamePassId then
+            local gamePassSuccess = pcall(function()
+                MktSvc:PromptGamePassPurchase(LP, id)
+            end)
+            if gamePassSuccess then
+                Log("Compra de Game Pass iniciada: " .. id)
+                if custom then FinishPurchase(id) end
+                return
+            end
+        end
     else
-        Log("Error: " .. tostring(r))
+        local productSuccess = pcall(function()
+            MktSvc:PromptProductPurchase(LP, id)
+        end)
+        if productSuccess then
+            Log("Compra de producto iniciada: " .. id)
+            if custom then FinishPurchase(id) end
+            return
+        end
+
+        local gamePassSuccess = pcall(function()
+            MktSvc:PromptGamePassPurchase(LP, id)
+        end)
+        if gamePassSuccess then
+            Log("Compra de Game Pass iniciada: " .. id)
+            if custom then FinishPurchase(id) end
+            return
+        end
+
+        local catalogSuccess = pcall(function()
+            MktSvc:PromptPurchase(LP, id)
+        end)
+        if catalogSuccess then
+            Log("Compra de artículo de catálogo iniciada: " .. id)
+            if custom then FinishPurchase(id) end
+            return
+        end
+
+        Log("No se pudo iniciar la compra para el ID: " .. id)
     end
 end
 
 local function FinishPurchase(id)
-    MktSvc:SignalPromptProductPurchaseFinished(LP.UserId, id, true)
-    Log("Finalización enviada: " .. id)
+    local success, result = pcall(function()
+        local productSuccess = pcall(function()
+            MktSvc:SignalPromptProductPurchaseFinished(LP.UserId, id, true)
+        end)
+        if productSuccess then
+            Log("Finalización de compra de producto enviada: " .. id)
+            return
+        end
+
+        local gamePassSuccess = pcall(function()
+            MktSvc:SignalPromptGamePassPurchaseFinished(LP.UserId, id, true)
+        end)
+        if gamePassSuccess then
+            Log("Finalización de compra de Game Pass enviada: " .. id)
+            return
+        end
+
+        local catalogSuccess = pcall(function()
+            MktSvc:SignalPromptPurchaseFinished(LP.UserId, id, true)
+        end)
+        if catalogSuccess then
+            Log("Finalización de compra de catálogo enviada: " .. id)
+            return
+        end
+
+        Log("No se pudo finalizar la compra para el ID: " .. id)
+    end)
+
+    if not success then
+        Log("Error al intentar finalizar la compra: " .. result)
+    end
 end
+
 
 local activeLoops = {}
 
@@ -115,19 +201,6 @@ local function ProcessProds(action, sel, loop, btn)
     end
 end
 
-local function SelectAll(select)
-    for _, child in ipairs(PL:GetChildren()) do
-        if child:IsA("TextButton") and child.Text ~= "Add ID" then
-            local id = prods[child.Text].ProductId
-            if select then
-                selProds[id], child.BackgroundColor3 = prods[child.Text], Color3.new(0, 0.5, 0)
-            else
-                selProds[id], child.BackgroundColor3 = nil, Color3.new(0.3, 0.3, 0.3)
-            end
-        end
-    end
-    Log(select and "Todos los productos seleccionados" or "Todos los productos deseleccionados")
-end
 
 local function CreateActBtns(title, yOff, actions)
     local tl = Instance.new("TextLabel")
@@ -140,12 +213,12 @@ local function CreateActBtns(title, yOff, actions)
     return yOff + 25 + (#actions * 35)
 end
 
-local pOff = CreateActBtns("Acciones de Compra", 0, {
+local pOff = CreateActBtns("Prompt Buy", 0, {
     {text = "Comprar Seleccionados", func = function() ProcessProds(BuyProd, "selected", false) end, color = Color3.new(0.2, 0.6, 0.2)},
     {text = "Comprar Seleccionados (bucle)", func = function(btn) ProcessProds(BuyProd, "selected", true, btn) end, color = Color3.new(0.2, 0.5, 0.2)}
 })
 
-CreateActBtns("Acciones de Finalización", pOff + 10, {
+CreateActBtns("Prompt Finish", pOff + 10, {
     {text = "Finalizar Seleccionados", func = function() ProcessProds(FinishPurchase, "selected", false) end, color = Color3.new(0.6, 0.2, 0.2)},
     {text = "Finalizar Seleccionados (bucle)", func = function(btn) ProcessProds(FinishPurchase, "selected", true, btn) end, color = Color3.new(0.5, 0.2, 0.2)}
 })
@@ -203,32 +276,29 @@ idInput.PlaceholderText = "ID Item or Gamepass"
 idInput.Text = "ID Item or Gamepass"
 idInput.Parent = PL
 
+
 local addBtn = CreateBtn(PL, "Add ID", UDim2.new(0.55, 0, 0, 5), UDim2.new(0.4, 0, 0, 30), Color3.new(0.2, 0.6, 0.2))
+
 addBtn.MouseButton1Click:Connect(function()
     local id = tonumber(idInput.Text)
     if id then
-        local success, result = pcall(function() return MktSvc:GetProductInfo(id, Enum.InfoType.Product) end)
-        if success then
-            local newProd = {ProductId = id, Name = result.Name}
-            table.insert(prods, 1, newProd)
-            local btn = CreateBtn(PL, newProd.Name, UDim2.new(0, 5, 0, 40))
-            btn.MouseButton1Click:Connect(function()
-                if selProds[id] then
-                    selProds[id], btn.BackgroundColor3 = nil, Color3.new(0.3, 0.3, 0.3)
-                else
-                    selProds[id], btn.BackgroundColor3 = newProd, Color3.new(0, 0.5, 0)
-                end
-            end)
-            for i, child in ipairs(PL:GetChildren()) do
-                if child:IsA("TextButton") and child ~= addBtn then
-                    child.Position = UDim2.new(0, 5, 0, i * 35 + 5)
-                end
+        local newProd = {ProductId = id, Name = tostring(id)}
+        table.insert(prods, 1, newProd)
+        local btn = CreateBtn(PL, newProd.Name, UDim2.new(0, 5, 0, 40))
+        btn.MouseButton1Click:Connect(function()
+            if selProds[id] then
+                selProds[id], btn.BackgroundColor3 = nil, Color3.new(0.3, 0.3, 0.3)
+            else
+                selProds[id], btn.BackgroundColor3 = newProd, Color3.new(0, 0.5, 0)
             end
-            PL.CanvasSize = UDim2.new(0, 0, 0, #PL:GetChildren() * 35 + 45)
-            Log("Producto agregado: " .. result.Name)
-        else
-            Log("Error al obtener información del producto")
+        end)
+        for i, child in ipairs(PL:GetChildren()) do
+            if child:IsA("TextButton") and child ~= addBtn then
+                child.Position = UDim2.new(0, 5, 0, i * 35 + 5)
+            end
         end
+        PL.CanvasSize = UDim2.new(0, 0, 0, #PL:GetChildren() * 35 + 45)
+        Log("Producto agregado: " .. newProd.Name)
     else
         Log("ID de producto inválido")
     end
