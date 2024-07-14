@@ -45,6 +45,7 @@ Input.Position = UDim2.new(0.05, 0, 0.2, 0)
 Input.BackgroundColor3 = Color3.fromRGB(20, 40, 60)
 Input.TextColor3 = Color3.fromRGB(0, 255, 0)
 Input.PlaceholderText = "Enter URL"
+Input.Text = "Enter URL"
 Input.PlaceholderColor3 = Color3.fromRGB(0, 200, 0)
 Input.Font = Enum.Font.Code
 Input.TextSize = 14
