@@ -19,7 +19,7 @@ local TB = Instance.new("Frame")
 TB.Size, TB.BackgroundColor3, TB.Parent = UDim2.new(1, 0, 0, 30), Color3.new(0.2, 0.2, 0.2), MF
 
 local TT = Instance.new("TextLabel")
-TT.Size, TT.Position, TT.Text = UDim2.new(0.7, 0, 1, 0), UDim2.new(0, 5, 0, 0), "Sistema de Compras"
+TT.Size, TT.Position, TT.Text = UDim2.new(0.7, 0, 1, 0), UDim2.new(0, 5, 0, 0), "System Fakes Prompt"
 TT.TextColor3, TT.TextXAlignment, TT.BackgroundTransparency, TT.Parent = Color3.new(1, 1, 1), Enum.TextXAlignment.Left, 1, TB
 
 local CF = Instance.new("Frame")
@@ -170,10 +170,13 @@ UIS.InputChanged:Connect(function(input)
 end)
 
 local idInput = Instance.new("TextBox")
-idInput.Size, idInput.Position = UDim2.new(0.5, 0, 0, 30), UDim2.new(0, 5, 0, 5)
-idInput.PlaceholderText, idInput.Parent = "Ingrese ID del producto", PL
+idInput.Size = UDim2.new(0.5, 0, 0, 30)
+idInput.Position = UDim2.new(0, 5, 0, 5)
+idInput.PlaceholderText = "ID Item or Gamepass"
+idInput.Text = "ID Item or Gamepass"
+idInput.Parent = PL
 
-local addBtn = CreateBtn(PL, "Agregar", UDim2.new(0.55, 0, 0, 5), UDim2.new(0.4, 0, 0, 30), Color3.new(0.2, 0.6, 0.2))
+local addBtn = CreateBtn(PL, "Add ID", UDim2.new(0.55, 0, 0, 5), UDim2.new(0.4, 0, 0, 30), Color3.new(0.2, 0.6, 0.2))
 addBtn.MouseButton1Click:Connect(function()
     local id = tonumber(idInput.Text)
     if id then
