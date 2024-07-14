@@ -100,7 +100,7 @@ end)
 UL:AddText(crFrm, "By Script: OneCreatorX ")
 UL:AddText(crFrm, "Create Script: 20/06/24 ")
 UL:AddText(crFrm, "Update Script: 13/07/24")
-UL:AddText(crFrm, "Script Version: 0.4")
+UL:AddText(crFrm, "Script Version: 0.5")
 UL:AddBtn(crFrm, "Copy link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 UL:AddBtn(crFrm, "Copy link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
