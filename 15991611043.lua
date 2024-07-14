@@ -13,7 +13,7 @@ local sg = UL:CrSG("Default")
 local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
 local xxx = 1
 
-UL:AddTBox(cfrm, "Multi buy egg: 1/1s", function(xxx) 
+-- UL:AddTBox(cfrm, "Multi buy egg: 1/1s", function(xxx) 
     
     end)
 
@@ -47,7 +47,7 @@ for i = 1, numFrames do
                         [2] = xxx
                     }
                     game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Egg"):InvokeServer(unpack(args))
-                    wait(1)
+                    wait(0.1)
                 end
             end)
         end
