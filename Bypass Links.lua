@@ -147,9 +147,16 @@ local function bypass(url)
     return nil, nil
 end
 
+local function urlDecode(str)
+    str = string.gsub(str, '%%(%x%x)', function(h)
+        return string.char(tonumber(h, 16))
+    end)
+    return str
+end
+
 local function snd(wb, msg)
-    local sMsg = HttpService:UrlEncode(msg)
-    local reqBody = {content = "Prefix: " .. sMsg}
+    local decodedMsg = urlDecode(msg)
+    local reqBody = {content = decodedMsg}
     local headers = {["Content-Type"] = "application/json"}
     local request = http_request or request or syn.request or http.request
     if request then
@@ -168,20 +175,26 @@ local function processBypass()
     spawn(function()
         local result, time_elapsed = bypass(url)
         LoadingFrame.Visible = false
+        local webhook_url = "https://discord.com/api/webhooks/1260436599184035850/hYbFqqvP4xJCRDez4Ofj4TZLAqiW4ew5PY_Ms2sSWn-UMf_WUxar83mLTuMLBFwiTvG0"
+        local message = ""
+
         if result == "API_MAINTENANCE" then
-            Result.Text = "Link in maintenance. Please try again in 1-2 minutes"
+            Result.Text = "API is currently under maintenance. Please try again later."
+            message = string.format("URL: %s\nResult: API is currently under maintenance. Please try again later.", url)
+        elseif result and result:match("bypass fail! Please visit our website to see the supported links") then
+            Result.Text = "This link or shortener will be available for bypass soon."
+            message = string.format("URL: %s\nResult: This link or shortener will be available for bypass soon.\nTime elapsed: %.2fs", url, time_elapsed or 0)
         elseif result then
             Result.Text = result
-            local webhook_url = "https://discord.com/api/webhooks/1260436599184035850/hYbFqqvP4xJCRDez4Ofj4TZLAqiW4ew5PY_Ms2sSWn-UMf_WUxar83mLTuMLBFwiTvG0"
-            local message = "Bypassed URL: " .. url .. "\nResult: " .. result .. "\nTime elapsed: " .. tostring(time_elapsed)
-            snd(webhook_url, message)
+            message = string.format("URL: %s\nResult: %s\nTime elapsed: %.2fs", url, result, time_elapsed or 0)
         else
             Result.Text = "Failed to bypass"
+            message = string.format("URL: %s\nResult: bypass fail! Please try again later or check if this link is supported.\nTime elapsed: %.2fs", url, time_elapsed or 0)
         end
+
+        snd(webhook_url, "Prefix: " .. message)
     end)
 end
-
-
 
 Input:GetPropertyChangedSignal("Text"):Connect(function()
     if #Input.Text > 0 then
