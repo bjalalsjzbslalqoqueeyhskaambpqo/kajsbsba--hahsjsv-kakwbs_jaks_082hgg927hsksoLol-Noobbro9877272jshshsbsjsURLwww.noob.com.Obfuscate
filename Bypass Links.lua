@@ -204,6 +204,16 @@ local function checkApiStatus()
             Input.TextEditable = true
 
             snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: OK")
+             elseif response.StatusCode == 429 then
+                local StarterGui = game:GetService("StarterGui")
+            StarterGui:SetCore("SendNotification", {
+                Title = "Limit for hour",
+                Text = "limit was reached ",
+                Duration = 5,
+            })
+                ApiStatus.Text = "Status: Limit teached for hour"
+            snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: OK")
+          
         else
             ApiStatus.Text = "Status: " .. data.status
             local StarterGui = game:GetService("StarterGui")
@@ -275,6 +285,14 @@ local function bypass(url)
             if data.result == "https://t.ly/r69Me" then
                 sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API_MAINTENANCE", url)
                 return "API_MAINTENANCE", nil
+            elseif success and response.StatusCode == 429 then
+                local StarterGui = game:GetService("StarterGui")
+            StarterGui:SetCore("SendNotification", {
+                Title = "Limit for hour",
+                Text = "limit was reached ",
+                Duration = 5,
+            })
+                ApiStatus.Text = "Status: Limit teached for hour"
             elseif data.result == "Invalid API key, join https://discord.gg/Ah8hQwvMYh to get a valid API key" then
                 sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "Invalid API key", url)
                 return "Invalid API key", nil
