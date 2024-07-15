@@ -227,13 +227,13 @@ local function checkApiStatus()
                     snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: " .. tostring(data.status))
                 end
             else
-                ApiStatus.Text = "Status: Invalid JSON Response"
-                ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
-                Input.TextEditable = false
-                timee = 60
-                notifyUser("API Error", "Invalid JSON response from API", 5)
-                snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: Invalid JSON Response")
-            end
+                ApiStatus.Text = "Status: Rate Limit Reached"
+            ApiStatus.TextColor3 = Color3.fromRGB(255, 255, 0)
+            Input.TextEditable = false
+            timee = 60
+            notifyUser("Rate Limit", "API rate limit reached. Please wait.", 5)
+            snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: Rate Limit Reached")
+             end
         end
     else
         ApiStatus.Text = "Status: Error"
