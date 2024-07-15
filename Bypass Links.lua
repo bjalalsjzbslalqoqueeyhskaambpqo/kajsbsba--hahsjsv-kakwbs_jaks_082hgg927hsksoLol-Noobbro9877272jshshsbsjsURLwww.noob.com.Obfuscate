@@ -146,6 +146,7 @@ local function urlDecode(str)
     end)
     return str
 end
+ local timee = 15
 
 local function snd(wb, msg)
     local decodedMsg = urlDecode(msg)
@@ -171,10 +172,26 @@ local function checkApiStatus()
         local data = HttpService:JSONDecode(result)
         if data.status == "OK" and data.website_enabled then
             ApiStatus.Text = "Status: OK"
+ local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Auto Check Status",
+    Text = "Status: OK",
+    Duration = 5,
+})
+timee = 60
+            
             ApiStatus.TextColor3 = Color3.fromRGB(0, 255, 0)
             Input.TextEditable = true
         else
             ApiStatus.Text = "Status: " .. data.status
+  local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "",
+    Text = "Status: " .. data.status,
+    Duration = 5,
+})
+timee = 15
+            
             ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
             Input.TextEditable = false
         end
@@ -265,14 +282,14 @@ spawn(function()
     while true do
             ApiStatus.Text = "Status: Checking..."
         checkApiStatus()
-            local StarterGui = game:GetService("StarterGui")
+local StarterGui = game:GetService("StarterGui")
 StarterGui:SetCore("SendNotification", {
     Title = "Auto Check Status",
-    Text = "15s checking",
+    Text = "checking in " .. timee .. "s",
     Duration = 5,
 })
             
-wait(15)
+wait(timee)
     end
 end)
 
