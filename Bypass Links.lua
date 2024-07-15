@@ -385,6 +385,22 @@ local function animateColors()
     end
 end
 
+local function onVisibilityChanged()
+    if loadingFrame.Visible then
+        wait(10)
+        if loadingFrame.Visible then
+            local StarterGui = game:GetService("StarterGui")
+            StarterGui:SetCore("SendNotification", {
+                Title = "Bypass Low?",
+                Text = "Re Send URL",
+                Duration = 5,
+            })
+        end
+    end
+end
+
+LoadingFrame:GetPropertyChangedSignal("Visible"):Connect(onVisibilityChanged)
+
 spawn(animateColors)
 
 spawn(function()
