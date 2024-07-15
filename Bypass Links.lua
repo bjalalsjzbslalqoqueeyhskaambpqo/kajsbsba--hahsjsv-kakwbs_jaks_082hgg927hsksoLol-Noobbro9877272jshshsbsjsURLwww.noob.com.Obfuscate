@@ -265,7 +265,7 @@ spawn(function()
     while true do
             ApiStatus.Text = "Status: Checking..."
         checkApiStatus()
-wait(30)
+wait(15)
     end
 end)
 
