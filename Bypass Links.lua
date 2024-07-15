@@ -255,9 +255,12 @@ local function bypass(url)
         if data and data.result then
             if data.result == "https://t.ly/r69Me" then
                 return "API_MAINTENANCE", nil
+            elseif data.result == "Invalid API key, join https://discord.gg/Ah8hQwvMYh to get a valid API key" then
+                return "API_MAINTENANCE", nil
+            else
+                snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", data.result)
+                return data.result, data.time_elapsed
             end
-            snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", data.result)
-            return data.result, data.time_elapsed
         end
     end
     return nil, nil
