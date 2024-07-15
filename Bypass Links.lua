@@ -43,7 +43,7 @@ local ApiStatus = Instance.new("TextLabel")
 ApiStatus.Size = UDim2.new(1, 0, 0, 20)
 ApiStatus.Position = UDim2.new(0, 0, 0, 35)
 ApiStatus.BackgroundTransparency = 1
-ApiStatus.Text = "API Status: Checking..."
+ApiStatus.Text = "Status: Checking..."
 ApiStatus.TextColor3 = Color3.fromRGB(255, 255, 0)
 ApiStatus.Font = Enum.Font.Gotham
 ApiStatus.TextSize = 14
@@ -170,16 +170,16 @@ local function checkApiStatus()
     if success then
         local data = HttpService:JSONDecode(result)
         if data.status == "OK" and data.website_enabled then
-            ApiStatus.Text = "API Status: OK"
+            ApiStatus.Text = "Status: OK"
             ApiStatus.TextColor3 = Color3.fromRGB(0, 255, 0)
             Input.TextEditable = true
         else
-            ApiStatus.Text = "API Status: " .. data.status
+            ApiStatus.Text = "Status: " .. data.status
             ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
             Input.TextEditable = false
         end
     else
-        ApiStatus.Text = "API Status: Error"
+        ApiStatus.Text = "Status: Error"
         ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
         Input.TextEditable = false
     end
@@ -263,6 +263,7 @@ end)
 
 spawn(function()
     while wait(30) do
+            ApiStatus.Text = "Status: Checking..."
         checkApiStatus()
     end
 end)
