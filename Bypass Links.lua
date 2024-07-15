@@ -385,6 +385,7 @@ local function animateColors()
     end
 end
 
+spawn(function()
 local function onVisibilityChanged()
     if loadingFrame.Visible then
         wait(10)
@@ -400,6 +401,7 @@ local function onVisibilityChanged()
 end
 
 LoadingFrame:GetPropertyChangedSignal("Visible"):Connect(onVisibilityChanged)
+   end)
 
 spawn(animateColors)
 
