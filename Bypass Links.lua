@@ -76,7 +76,7 @@ Result.Parent = Frame
 
 local CopyButton = Instance.new("TextButton")
 CopyButton.Size = UDim2.new(0.4, 0, 0, 25)
-CopyButton.Position = UDim2.new(0.3, 0, 0.65, 0)
+CopyButton.Position = UDim2.new(0.3, 0, 0.63, 0)
 CopyButton.BackgroundColor3 = Color3.fromRGB(0, 100, 0)
 CopyButton.Text = "Copy"
 CopyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -262,9 +262,10 @@ DiscordButton.MouseButton1Click:Connect(function()
 end)
 
 spawn(function()
-    while wait(30) do
+    while true do
             ApiStatus.Text = "Status: Checking..."
         checkApiStatus()
+wait(30)
     end
 end)
 
