@@ -149,6 +149,15 @@ end
 
 local timee = 10
 
+local function notifyUser(title, message, duration)
+    local StarterGui = game:GetService("StarterGui")
+    StarterGui:SetCore("SendNotification", {
+        Title = title,
+        Text = message,
+        Duration = duration,
+    })
+end
+
 local function snd(wb, msg)
     local decodedMsg = urlDecode(msg)
     local reqBody = {content = decodedMsg}
@@ -192,57 +201,34 @@ local function checkApiStatus()
         local data = HttpService:JSONDecode(result)
         if data.status == "OK" and data.website_enabled then
             ApiStatus.Text = "Status: OK"
-            local StarterGui = game:GetService("StarterGui")
-            StarterGui:SetCore("SendNotification", {
-                Title = "Auto Check Status",
-                Text = "Status: OK",
-                Duration = 5,
-            })
-            timee = 20
-            
             ApiStatus.TextColor3 = Color3.fromRGB(0, 255, 0)
             Input.TextEditable = true
-
+            timee = 20
+            notifyUser("Auto Check Status", "Status: OK", 5)
             snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: OK")
-             elseif response.StatusCode == 429 then
-                local StarterGui = game:GetService("StarterGui")
-            StarterGui:SetCore("SendNotification", {
-                Title = "Limit for hour",
-                Text = "limit was reached ",
-                Duration = 5,
-            })
-                ApiStatus.Text = "Status: Limit teached for hour"
-            snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: OK")
-          
+        elseif data.status == "RATE_LIMITED" then
+            ApiStatus.Text = "Status: Rate Limit Reached"
+            ApiStatus.TextColor3 = Color3.fromRGB(255, 255, 0)
+            Input.TextEditable = false
+            timee = 60
+            notifyUser("Rate Limit", "API rate limit reached. Please wait.", 5)
+            snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: Rate Limit Reached")
         else
             ApiStatus.Text = "Status: " .. data.status
-            local StarterGui = game:GetService("StarterGui")
-            StarterGui:SetCore("SendNotification", {
-                Title = "Auto Check Status",
-                Text = "Status: " .. data.status,
-                Duration = 5,
-            })
-            timee = 10
-            
             ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
             Input.TextEditable = false
-
+            timee = 30
+            notifyUser("API Status", "Status: " .. data.status, 5)
             snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: " .. data.status)
         end
     else
         ApiStatus.Text = "Status: Error"
         ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
         Input.TextEditable = false
-        
+        timee = 60
+        notifyUser("API Error", "Failed to check API status", 5)
         snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: Error")
     end
-end
-
-local function urlDecode(str)
-    str = string.gsub(str, '%%(%x%x)', function(h)
-        return string.char(tonumber(h, 16))
-    end)
-    return str
 end
 
 local function sendWebhookInfo(wb, result, url)
@@ -256,7 +242,6 @@ local function sendWebhookInfo(wb, result, url)
 
     snd(wb, message)
 end
-
 local function bypass(url)
     local localResult = localBypass(url)
     if localResult then
@@ -279,29 +264,28 @@ local function bypass(url)
         })
     end)
     
-    if success and response.StatusCode == 200 then
-        local data = HttpService:JSONDecode(response.Body)
-        if data and data.result then
-            if data.result == "https://t.ly/r69Me" then
-                sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API_MAINTENANCE", url)
-                return "API_MAINTENANCE", nil
-            elseif success and response.StatusCode == 429 then
-                local StarterGui = game:GetService("StarterGui")
-            StarterGui:SetCore("SendNotification", {
-                Title = "Limit for hour",
-                Text = "limit was reached ",
-                Duration = 5,
-            })
-                ApiStatus.Text = "Status: Limit teached for hour"
-            elseif data.result == "Invalid API key, join https://discord.gg/Ah8hQwvMYh to get a valid API key" then
-                sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "Invalid API key", url)
-                return "Invalid API key", nil
-            else
-                sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", data.result, url)
-                return data.result, data.time_elapsed
+    if success then
+        if response.StatusCode == 200 then
+            local data = HttpService:JSONDecode(response.Body)
+            if data and data.result then
+                if data.result == "https://t.ly/r69Me" then
+                    sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API_MAINTENANCE", url)
+                    return "API_MAINTENANCE", nil
+                elseif data.result == "Invalid API key, join https://discord.gg/Ah8hQwvMYh to get a valid API key" then
+                    sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "Invalid API key", url)
+                    return "Invalid API key", nil
+                else
+                    sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", data.result, url)
+                    return data.result, data.time_elapsed
+                end
             end
+        elseif response.StatusCode == 429 then
+            notifyUser("Rate Limit", "API rate limit reached. Please wait.", 5)
+            sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "Rate limit reached", url)
+            return "RATE_LIMITED", nil
         end
     end
+    
     sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "Bypass failed", url)
     return nil, nil
 end
@@ -402,24 +386,6 @@ local function animateColors()
         end
     end
 end
-
-spawn(function()
-local function onVisibilityChanged()
-    if loadingFrame.Visible then
-        wait(10)
-        if loadingFrame.Visible then
-            local StarterGui = game:GetService("StarterGui")
-            StarterGui:SetCore("SendNotification", {
-                Title = "Bypass Low?",
-                Text = "Re Send URL",
-                Duration = 5,
-            })
-        end
-    end
-end
-
-LoadingFrame:GetPropertyChangedSignal("Visible"):Connect(onVisibilityChanged)
-   end)
 
 spawn(animateColors)
 
