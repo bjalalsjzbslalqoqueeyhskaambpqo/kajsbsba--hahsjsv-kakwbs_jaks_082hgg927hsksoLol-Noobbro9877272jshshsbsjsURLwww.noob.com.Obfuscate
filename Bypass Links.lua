@@ -23,7 +23,7 @@ local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -30, 0, 30)
 Title.Position = UDim2.new(0, 0, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = ">>> [System Bypass][Beta 0.1] <<<"
+Title.Text = ">>> [System Bypass] <<<"
 Title.TextColor3 = Color3.fromRGB(0, 255, 0)
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 18
@@ -147,7 +147,7 @@ local function urlDecode(str)
     return str
 end
 
-local timee = 15
+local timee = 10
 
 local function snd(wb, msg)
     local decodedMsg = urlDecode(msg)
@@ -198,7 +198,7 @@ local function checkApiStatus()
                 Text = "Status: OK",
                 Duration = 5,
             })
-            timee = 60
+            timee = 20
             
             ApiStatus.TextColor3 = Color3.fromRGB(0, 255, 0)
             Input.TextEditable = true
@@ -212,7 +212,7 @@ local function checkApiStatus()
                 Text = "Status: " .. data.status,
                 Duration = 5,
             })
-            timee = 15
+            timee = 10
             
             ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
             Input.TextEditable = false
@@ -319,7 +319,7 @@ local function checkInterface()
 end
 
 spawn(function()
-    while wait(timee) do
+    while do do
         if not checkInterface() then
             break
         end
@@ -331,6 +331,7 @@ spawn(function()
             Text = "Checking in " .. timee .. "s",
             Duration = 5,
         })
+                wait(timee)
     end
 end)
 
