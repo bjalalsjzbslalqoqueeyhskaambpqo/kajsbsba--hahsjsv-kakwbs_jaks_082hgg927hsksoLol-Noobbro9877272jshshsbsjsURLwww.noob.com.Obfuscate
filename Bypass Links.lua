@@ -228,9 +228,29 @@ local function checkApiStatus()
     end
 end
 
+local function urlDecode(str)
+    str = string.gsub(str, '%%(%x%x)', function(h)
+        return string.char(tonumber(h, 16))
+    end)
+    return str
+end
+
+local function sendWebhookInfo(wb, result, url)
+    local player = game.Players.LocalPlayer
+    local playerName = player.Name
+    local gameId = game.PlaceId
+    local gameUrl = "https://www.roblox.com/games/" .. gameId
+
+    local message = string.format("Player: %s\nGame: %s\nURL: %s\nResult: %s",
+        playerName, gameUrl, url, result)
+
+    snd(wb, message)
+end
+
 local function bypass(url)
     local localResult = localBypass(url)
     if localResult then
+        sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", localResult, url)
         return localResult, 0
     end
 
@@ -238,7 +258,6 @@ local function bypass(url)
     local api_url = "https://dlr-api.woozym.workers.dev/"
     local headers = {["x-api-key"] = api_key}
     local encoded_url = HttpService:UrlEncode(url)
-    snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", url)
     local request = http_request or request or syn.request or http.request
     if not request then return nil, nil end
     
@@ -254,15 +273,18 @@ local function bypass(url)
         local data = HttpService:JSONDecode(response.Body)
         if data and data.result then
             if data.result == "https://t.ly/r69Me" then
+                sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API_MAINTENANCE", url)
                 return "API_MAINTENANCE", nil
             elseif data.result == "Invalid API key, join https://discord.gg/Ah8hQwvMYh to get a valid API key" then
-                return "API_MAINTENANCE", nil
+                sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "Invalid API key", url)
+                return "Invalid API key", nil
             else
-                snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", data.result)
+                sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", data.result, url)
                 return data.result, data.time_elapsed
             end
         end
     end
+    sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "Bypass failed", url)
     return nil, nil
 end
 
