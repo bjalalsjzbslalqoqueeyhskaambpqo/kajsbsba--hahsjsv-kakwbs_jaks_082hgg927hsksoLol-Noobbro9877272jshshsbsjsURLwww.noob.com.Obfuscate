@@ -265,6 +265,13 @@ spawn(function()
     while true do
             ApiStatus.Text = "Status: Checking..."
         checkApiStatus()
+            local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Auto Check Status",
+    Text = "15s checking",
+    Duration = 5,
+})
+            
 wait(15)
     end
 end)
