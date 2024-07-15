@@ -193,20 +193,12 @@ local function localBypass(url)
 end
 
 local function checkApiStatus()
-    local success, result = pcall(function()
+    local success, response = pcall(function()
         return game:HttpGet("https://dlr-api.woozym.workers.dev/api/status")
     end)
     
     if success then
-        local data = HttpService:JSONDecode(result)
-        if data.status == "OK" and data.website_enabled then
-            ApiStatus.Text = "Status: OK"
-            ApiStatus.TextColor3 = Color3.fromRGB(0, 255, 0)
-            Input.TextEditable = true
-            timee = 20
-            notifyUser("Auto Check Status", "Status: OK", 5)
-            snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: OK")
-        elseif data.status == "RATE_LIMITED" then
+        if response == "Too Many Requests" then
             ApiStatus.Text = "Status: Rate Limit Reached"
             ApiStatus.TextColor3 = Color3.fromRGB(255, 255, 0)
             Input.TextEditable = false
@@ -214,12 +206,34 @@ local function checkApiStatus()
             notifyUser("Rate Limit", "API rate limit reached. Please wait.", 5)
             snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: Rate Limit Reached")
         else
-            ApiStatus.Text = "Status: " .. data.status
-            ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
-            Input.TextEditable = false
-            timee = 30
-            notifyUser("API Status", "Status: " .. data.status, 5)
-            snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: " .. data.status)
+            local parseSuccess, data = pcall(function()
+                return HttpService:JSONDecode(response)
+            end)
+            
+            if parseSuccess then
+                if data.status == "OK" and data.website_enabled then
+                    ApiStatus.Text = "Status: OK"
+                    ApiStatus.TextColor3 = Color3.fromRGB(0, 255, 0)
+                    Input.TextEditable = true
+                    timee = 20
+                    notifyUser("Auto Check Status", "Status: OK", 5)
+                    snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: OK")
+                else
+                    ApiStatus.Text = "Status: " .. tostring(data.status)
+                    ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
+                    Input.TextEditable = false
+                    timee = 30
+                    notifyUser("API Status", "Status: " .. tostring(data.status), 5)
+                    snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: " .. tostring(data.status))
+                end
+            else
+                ApiStatus.Text = "Status: Invalid JSON Response"
+                ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
+                Input.TextEditable = false
+                timee = 60
+                notifyUser("API Error", "Invalid JSON response from API", 5)
+                snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: Invalid JSON Response")
+            end
         end
     else
         ApiStatus.Text = "Status: Error"
