@@ -71,22 +71,15 @@ end
 
 game.Players.LocalPlayer.x2Luck.Value = true
 while a do
+            spawn(function()
 local button = game.Players.LocalPlayer.PlayerGui.ScreenGui.GuiBackground.TextButton.TextLabel
 clickButton(button)
-
+                end)
 spawn(function()
 local button = game.Players.LocalPlayer.PlayerGui.ScreenGui.GuiBackground.TextButton
 button.Visible = true
 detectAndFireButtonEvents(button)
 end)
-spawn(function()
-                    local args = {
-    [1] = "Spin"
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("Spin"):InvokeServer(unpack(args))
-
-                end)
 wait()
 end
  end)
