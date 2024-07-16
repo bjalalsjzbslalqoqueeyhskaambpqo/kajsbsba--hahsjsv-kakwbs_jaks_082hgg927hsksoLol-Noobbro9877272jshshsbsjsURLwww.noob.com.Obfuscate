@@ -222,7 +222,7 @@ local function checkApiStatus()
                     ApiStatus.Text = "Status: " .. tostring(data.status)
                     ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
                     Input.TextEditable = false
-                    timee = 30
+                    timee = 10
                     notifyUser("API Status", "Status: " .. tostring(data.status), 5)
                     snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: " .. tostring(data.status))
                 end
