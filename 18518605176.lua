@@ -78,9 +78,15 @@ spawn(function()
 local button = game.Players.LocalPlayer.PlayerGui.ScreenGui.GuiBackground.TextButton
 button.Visible = true
 detectAndFireButtonEvents(button)
-
 end)
+spawn(function()
+                    local args = {
+    [1] = "Spin"
+}
 
+game:GetService("ReplicatedStorage"):WaitForChild("Spin"):InvokeServer(unpack(args))
+
+                end)
 wait()
 end
  end)
