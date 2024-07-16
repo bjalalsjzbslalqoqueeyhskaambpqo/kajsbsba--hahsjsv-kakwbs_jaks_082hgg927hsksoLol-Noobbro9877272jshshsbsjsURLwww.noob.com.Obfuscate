@@ -72,12 +72,11 @@ end
 while a do
 local button = game.Players.LocalPlayer.PlayerGui.ScreenGui.GuiBackground.TextButton.TextLabel
 clickButton(button)
-
 spawn(function()
 local button = game.Players.LocalPlayer.PlayerGui.ScreenGui.GuiBackground.TextButton
+button.Visible = true
 detectAndFireButtonEvents(button)
 end)
-
 wait()
 end
  end)
