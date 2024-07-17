@@ -99,22 +99,26 @@ local function handleFileCreation(newChild)
         local actions = {"Fed", "Bathed", "Hugged"}
         for _, action in ipairs(actions) do
             local args = {
-                {
-                    "PetInteractAction",
-                    "'",
-                    {
-                        "\1",
-                        {
-                            modelName,
-                            action
-                        }
-                    },
-                    "\28"
-                }
+                        [1] = {
+        [1] = "PetInteractAction",
+        [2] = "'",
+        [3] = {
+            [1] = "\1",
+            [2] = {
+                [1] = tostring(modelName),
+                [2] = tostring(action)
             }
+        },
+        [4] = "\28"
+                        }
+                    }
             
-            replicatedStorage:WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
+            game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
             wait(0.1)
+                    
+    
+
+                    
         end
         wait()
     end
@@ -123,7 +127,6 @@ end
 local function connectSignal()
     local userDirectory = workspace:FindFirstChild(userDirectoryName)
     if userDirectory then
-        -- Conectar señal a cada hijo de userDirectory
         for _, child in ipairs(userDirectory:GetChildren()) do
             if not child.Name:find("_Accessories") then
                 local chatList = child:FindFirstChild("RootPart"):FindFirstChild("ChatMessageUI"):FindFirstChild("ChatList")
@@ -133,7 +136,6 @@ local function connectSignal()
                     end)
                 end
                 
-                -- Guardar el nombre del hijo en la tabla
                 existingChildren[child.Name] = true
             end
         end
@@ -145,7 +147,6 @@ local function connectSignal()
 
 local userDirectory = workspace:FindFirstChild(userDirectoryName)
     if userDirectory then
-        -- Conectar señal a cada hijo de userDirectory
         for _, child in ipairs(userDirectory:GetChildren()) do
             if not child.Name:find("_Accessories") then
                 local chatList = child:FindFirstChild("RootPart"):FindFirstChild("ChatMessageUI"):FindFirstChild("ChatList")
@@ -154,8 +155,7 @@ local userDirectory = workspace:FindFirstChild(userDirectoryName)
                         handleFileCreation(newChild.Parent.Parent.Parent.Parent)
                     end)
                 end
-                
-                -- Guardar el nombre del hijo en la tabla
+
                 existingChildren[child.Name] = true
                             end
         end
@@ -190,7 +190,6 @@ local function adjustAnimationSpeedInAnimator(animator)
         for i = 1, numAnimations do
             local animationTrack = animator:GetPlayingAnimationTracks()[i]
             if animationTrack then
-                -- Ajustar la velocidad de la animación a 2 veces
                 animationTrack:AdjustSpeed(100)
             end
         end
