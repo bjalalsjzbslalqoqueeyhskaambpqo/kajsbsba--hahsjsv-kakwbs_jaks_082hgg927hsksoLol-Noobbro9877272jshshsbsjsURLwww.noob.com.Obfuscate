@@ -1,0 +1,67 @@
+local UL = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/MyLibrery.lua"))()
+
+local gameName = ""
+if gameName == "" then
+    gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+end
+
+local function cleanGameName(name)
+    name = name:gsub("%b[]", "")
+    name = name:match("^[^:]*")
+    return name:match("^%s*(.-)%s*$")
+end
+
+gameName = cleanGameName(gameName)
+
+local p = game.Players.LocalPlayer
+local sg = UL:CrSG("Default")
+local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
+
+
+UL:AddTBtn(cfrm, "Kill Players", false, function(state) 
+a = not a
+
+while a do
+local plr = game.Players.LocalPlayer
+
+for _, player in ipairs(game.Players:GetPlayers()) do
+    if player ~= plr then
+        local success, character = pcall(function()
+            return player.Character
+        end)
+
+        if success and character then
+            for _, part in ipairs(character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    local sword = nil
+                    local success2, err = pcall(function()
+                        sword = plr.Character:FindFirstChild("ClassicSword")
+                    end)
+
+                    if success2 and sword then
+                        pcall(function()
+                            firetouchinterest(sword.Handle, part, 0)
+                            wait()
+                            firetouchinterest(sword.Handle, part, 1)
+                        end)
+                    end
+                end
+            end
+        end
+    end
+end
+end
+wait()
+ end)
+
+UL:AddText(crFrm, "By Script: OneCreatorX ")
+UL:AddText(crFrm, "Create Script: 07/07/24 ")
+UL:AddText(crFrm, "Update Script: --/--/--")
+UL:AddText(crFrm, "Script Version: 0.1")
+UL:AddBtn(crFrm, "Copy link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
+UL:AddBtn(crFrm, "Copy link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
+
+game:GetService('Players').LocalPlayer.Idled:Connect(function()
+    game:GetService('VirtualUser'):CaptureController()
+    game:GetService('VirtualUser'):ClickButton2(Vector2.new())
+end)
