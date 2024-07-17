@@ -18,10 +18,11 @@ local sg = UL:CrSG("Default")
 local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
 
 
-UL:AddTBtn(cfrm, "Kill Players", false, function(state) 
+UL:AddTBtn(cfrm, "Kill all Players", false, function(state) 
 a = not a
 
 while a do
+            wait()
 local plr = game.Players.LocalPlayer
 
 for _, player in ipairs(game.Players:GetPlayers()) do
@@ -53,6 +54,48 @@ end
 end
 wait()
  end)
+
+local plr = game.Players.LocalPlayer
+local character = plr.Character or plr.CharacterAdded:Wait()
+local sword = character:FindFirstChild("ClassicSword")
+local range = 30
+
+local function getNearestPlayer()
+    local nearestPlayer = nil
+    local shortestDistance = range
+
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        if player ~= plr and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local distance = (character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
+            if distance < shortestDistance then
+                shortestDistance = distance
+                nearestPlayer = player
+            end
+        end
+    end
+
+    return nearestPlayer
+end
+UL:AddTBtn(cfrm, "Kill Aura", false, function(state) 
+        b = not b
+while b do
+            wait()
+    local targetPlayer = getNearestPlayer()
+
+    if targetPlayer then
+        local targetCharacter = targetPlayer.Character
+        for _, part in ipairs(targetCharacter:GetDescendants()) do
+            if part:IsA("BasePart") then
+                pcall(function()
+                    firetouchinterest(sword.Handle, part, 0)
+                    wait()
+                    firetouchinterest(sword.Handle, part, 1)
+                end)
+            end
+        end
+    end
+end
+    end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
 UL:AddText(crFrm, "Create Script: 07/07/24 ")
