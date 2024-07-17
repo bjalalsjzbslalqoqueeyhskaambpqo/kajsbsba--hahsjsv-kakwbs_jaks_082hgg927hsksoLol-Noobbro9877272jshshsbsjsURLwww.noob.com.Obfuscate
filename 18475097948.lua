@@ -129,6 +129,18 @@ UL:AddTBtn(cfrm, "Kill Aura", false, function(state)
     end
 end)
 
+UL:AddTBtn(cfrm, "Kill Aura", false, function(state)
+ra = not ra
+        while ra do
+
+            pcall(function()
+                    game.Players.LocalPlayer.Character:MoveTo(workspace["Buy my UGC!"].Handle.Position)
+wait(0.4)
+fireproximityprompt(workspace["Buy my UGC!"].Handle.ProximityPrompt)
+                end)
+            wait()
+        end
+    end)
 UL:AddText(crFrm, "By Script: OneCreatorX")
 UL:AddText(crFrm, "Create Script: 07/07/24")
 UL:AddText(crFrm, "Update Script: --/--/--")
