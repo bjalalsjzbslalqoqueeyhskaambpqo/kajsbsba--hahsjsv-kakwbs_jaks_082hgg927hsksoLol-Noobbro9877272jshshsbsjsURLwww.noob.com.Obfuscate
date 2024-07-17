@@ -72,6 +72,7 @@ local args = {
 
 game:GetService("ReplicatedStorage"):WaitForChild("__flowNet"):WaitForChild("Tycoon"):WaitForChild("Buttons"):WaitForChild("Collect"):FireServer(unpack(args))
 wait(0.5)
+            character.Humanoid.Jump = true
 end
  end)
 
