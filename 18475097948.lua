@@ -129,7 +129,7 @@ UL:AddTBtn(cfrm, "Kill Aura", false, function(state)
     end
 end)
 
-UL:AddTBtn(cfrm, "Kill Aura", false, function(state)
+UL:AddTBtn(cfrm, "Auto Claim UGC, false, function(state)
 ra = not ra
         while ra do
 
