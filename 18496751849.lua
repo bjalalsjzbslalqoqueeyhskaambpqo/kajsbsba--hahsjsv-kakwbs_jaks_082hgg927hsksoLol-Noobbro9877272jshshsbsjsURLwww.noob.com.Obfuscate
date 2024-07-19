@@ -39,7 +39,7 @@ function h()
     local descendants = workspace.Tracks:GetDescendants()
     for i = 1, #descendants do
         local c = descendants[i]
-        if c:IsA("Model") and c.Name == "Coins" amd a then 
+        if c:IsA("Model") and c.Name == "Coins" and a then 
             game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
             game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 0
             local targetPosition = c:GetModelCFrame().Position - Vector3.new(0, 4, 0) 
