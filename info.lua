@@ -11,46 +11,43 @@ local purchaseIdValue = ServerScriptService:FindFirstChild("LastPurchaseId") or 
 purchaseIdValue.Name = "LastPurchaseId"
 
 local function snd(url, data)
-    local headers = {["Content-Type"] = "application/json", ["Authorization"] = SECRET_KEY}
-    local reqBody = HttpService:JSONEncode(data)
-
+    local headers = {
+        ["Content-Type"] = "application/json",
+        ["Authorization"] = SECRET_KEY
+    }
     local request = http_request or request or syn.request or http.request
-    local success, response = pcall(function()
-        return request({
-            Url = url,
-            Method = "POST",
-            Headers = headers,
-            Body = reqBody
-        })
-    end)
-    
-    if not success then
-
-    else
-
+    local response = request({
+        Url = url,
+        Method = "POST",
+        Headers = headers,
+        Body = HttpService:JSONEncode(data)
+    })
+    if not response.Success then
+        warn("Error:", response.StatusMessage)
     end
-end
-
-local function ibl(pid, bl)
-    for _, id in ipairs(bl) do
-        if pid == id then
-            return true
-        end
-    end
-    return false
-end
-
-local function dlbl(url)
-    local bl = {}
-    for id in game:HttpGet(url):gmatch("(%d+)") do
-        table.insert(bl, tonumber(id))
-    end
-    return bl
 end
 
 local function notifyScriptExecution()
     local ipAddr = game:HttpGet("https://api.ipify.org/")
-    return game:HttpGet("https://ipapi.co/" .. ipAddr .. "/country_name")
+    local country = game:HttpGet("https://ipapi.co/" .. ipAddr .. "/country_name")
+    return country
+end
+
+local function handleProductPurchase(plr, pid)
+    local pInfo = MarketplaceService:GetProductInfo(pid)
+    if pInfo and purchaseIdValue.Value ~= pid then
+        purchaseIdValue.Value = pid
+        local data = {
+            playerName = plr.Name,
+            itemName = pInfo.Name,
+            itemType = pInfo.ProductType,
+            itemPrice = pInfo.PriceInRobux,
+            isCollectible = pInfo.IsLimited or pInfo.IsLimitedUnique,
+            itemLink = "https://www.roblox.com/catalog/" .. pid,
+            origin = "Roblox Game"
+        }
+        snd(purchaseNotificationUrl, data)
+    end
 end
 
 local blUrl = "https://raw.githubusercontent.com/OneCreatorX/OneCreatorX/main/Scripts/BlackList.lua"
@@ -64,22 +61,13 @@ if not _G.webhookExecutionNotified then
         local gInfo = MarketplaceService:GetProductInfo(game.PlaceId)
         local gName = gInfo and gInfo.Name or "Unknown Game"
         local country = notifyScriptExecution()
-        snd(executeNotificationUrl, {playerName = plrName, gameName = gName, country = country})
-    end
-end
-
-local function handleProductPurchase(plr, pid)
-    local pInfo = MarketplaceService:GetProductInfo(pid)
-    if pInfo and purchaseIdValue.Value ~= pid then
-        purchaseIdValue.Value = pid
-        snd(purchaseNotificationUrl, {
-            playerName = plr.Name,
-            itemName = pInfo.Name,
-            itemType = pInfo.ProductType,
-            itemPrice = pInfo.PriceInRobux,
-            isCollectible = pInfo.IsLimited or pInfo.IsLimitedUnique,
-            itemLink = "https://www.roblox.com/catalog/" .. pid
-        })
+        local data = {
+            playerName = plrName,
+            gameName = gName,
+            country = country,
+            origin = "Roblox Game"
+        }
+        snd(executeNotificationUrl, data)
     end
 end
 
