@@ -149,7 +149,7 @@ local function bp2(u)
         if rp.StatusCode == 200 then
             local d = HS:JSONDecode(rp.Body)
             if d and d.bypassed then return d.bypassed
-            else return "Invalid response" end
+            else return "Invalid link" end
         elseif rp.StatusCode == 429 then
             nt("Rate Limit", "API rate limit reached. Please wait.", 5)
             return "RATE_LIMITED"
