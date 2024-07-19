@@ -22,7 +22,7 @@ local function snd(url, data)
         Body = HttpService:JSONEncode(data)
     }
     local success, response = pcall(function()
-        return HttpService:RequestAsync(requestData)
+        return http_request(requestData)
     end)
     if not success then
         print("Error:", response)
