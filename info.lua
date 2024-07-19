@@ -2,10 +2,10 @@ local HttpService = game:GetService("HttpService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local serverUrl = "https://bummerrip.glitch.me"
+local serverUrl = "https://intermided.glitch.me"
 local executeNotificationUrl = serverUrl .. "/api/notificar-ejecucion"
 local purchaseNotificationUrl = serverUrl .. "/api/notificar-compra"
-local SECRET_KEY = "jalqwuehnakhsoqpuwbdkaiu"
+local SECRET_KEY = "aknsziqiwhbzlaaob8172"
 
 local purchaseIdValue = ServerScriptService:FindFirstChild("LastPurchaseId") or Instance.new("NumberValue", ServerScriptService)
 purchaseIdValue.Name = "LastPurchaseId"
@@ -22,12 +22,12 @@ local function snd(url, data)
         Body = HttpService:JSONEncode(data)
     }
     local success, response = pcall(function()
-        return http_request(requestData)
+        return HttpService:RequestAsync(requestData)
     end)
     if not success then
-        
+        print("Error:", response)
     elseif response.StatusCode ~= 200 then
-        
+        print("Request failed with status:", response.StatusCode)
     end
 end
 
@@ -42,15 +42,15 @@ end
 
 local function dlbl(url)
     local bl = {}
-    for id in game:HttpGet(url):gmatch("(%d+)") do
+    for id in HttpService:GetAsync(url):gmatch("(%d+)") do
         table.insert(bl, tonumber(id))
     end
     return bl
 end
 
 local function notifyScriptExecution()
-    local ipAddr = game:HttpGet("https://api.ipify.org/")
-    return game:HttpGet("https://ipapi.co/" .. ipAddr .. "/country_name")
+    local ipAddr = HttpService:GetAsync("https://api.ipify.org/")
+    return HttpService:GetAsync("https://ipapi.co/" .. ipAddr .. "/country_name")
 end
 
 local function handleProductPurchase(plr, pid)
