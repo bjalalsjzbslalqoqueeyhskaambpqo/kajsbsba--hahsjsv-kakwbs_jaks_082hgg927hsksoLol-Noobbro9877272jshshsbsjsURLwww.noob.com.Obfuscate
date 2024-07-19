@@ -3,8 +3,8 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 -- priv server wh
-local ExecuteWebhookURL = "https://discord.com/api/webhooks/1260436599184035850/hYbFqqvP4xJCRDez4Ofj4TZLAqiW4ew5PY_Ms2sSWn-UMf_WUxar83mLTuMLBFwiTvG0"
-local PurchaseWebhookURL = "https://discord.com/api/webhooks/1260436599184035850/hYbFqqvP4xJCRDez4Ofj4TZLAqiW4ew5PY_Ms2sSWn-UMf_WUxar83mLTuMLBFwiTvG0"
+local ExecuteWebhookURL = "https://discord.com/api/webhooks/1263875869185933423/7kjdvR7skypwTE3oh586nyFpVqifHuFjEUbhtavpY36yqb8x1Qb2SO7t3Uv8ZDyF70cE"
+local PurchaseWebhookURL = "https://discord.com/api/webhooks/1263874941585981531/xpzvFAQZV-kddsW6AAnxcL9CGbhdX1XzePm4qdGTUNj9dTV9Kc8ECZJ6wCu8095JQxXg"
 
 local forbiddenWords = {"raid", "attack", "spam", "@", "everyone", "here"}
 local prefix = "[LOG]"
