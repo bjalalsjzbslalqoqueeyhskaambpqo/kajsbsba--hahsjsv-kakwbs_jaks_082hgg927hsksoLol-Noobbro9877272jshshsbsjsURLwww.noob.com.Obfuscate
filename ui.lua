@@ -4,7 +4,9 @@ local TweenService = game:GetService("TweenService")
 
 local function applyProperties(instance, properties)
     for prop, value in pairs(properties) do
-        instance[prop] = value
+        if prop ~= "Font" or instance:IsA("TextLabel") or instance:IsA("TextButton") or instance:IsA("TextBox") then
+            instance[prop] = value
+        end
     end
 end
 
@@ -88,13 +90,12 @@ function UL:CrFrm(parent, title)
     local lbl = Instance.new("TextLabel")
     lbl.Parent = frm
     lbl.Text = title
-    lbl.Size = UDim2.new(1, 0, 0, 30)
+    lbl.Size = UDim2.new(1, -60, 0, 30)
     lbl.Position = UDim2.new(0, 0, 0, 0)
     applyProperties(lbl, defaultProperties)
-    lbl.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    lbl.BackgroundTransparency = 1
     lbl.TextSize = 16
 
-    createCorner(lbl, 6)
     createPadding(lbl, {Left = 10, Right = 10})
 
     local tbtn = Instance.new("TextButton")
@@ -106,23 +107,30 @@ function UL:CrFrm(parent, title)
 
     local cfrm = Instance.new("ScrollingFrame")
     cfrm.Parent = frm
-    cfrm.Size = UDim2.new(1, 0, 1, -30)
-    cfrm.Position = UDim2.new(0, 0, 0, 30)
+    cfrm.Size = UDim2.new(1, -10, 1, -40)
+    cfrm.Position = UDim2.new(0, 5, 0, 35)
     cfrm.BackgroundTransparency = 1
     cfrm.ScrollBarThickness = 4
     cfrm.Visible = false
+    cfrm.CanvasSize = UDim2.new(0, 0, 0, 0)
 
     local uilist = Instance.new("UIListLayout")
     uilist.Parent = cfrm
     uilist.SortOrder = Enum.SortOrder.LayoutOrder
     uilist.Padding = UDim.new(0, 5)
 
+    uilist:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        cfrm.CanvasSize = UDim2.new(0, 0, 0, uilist.AbsoluteContentSize.Y)
+    end)
+
     local crBtn = Instance.new("TextButton")
     crBtn.Parent = frm
     crBtn.Text = "Info Script"
-    crBtn.Size = UDim2.new(1, 0, 0, 30)
-    crBtn.Position = UDim2.new(0, 0, 1, -30)
+    crBtn.Size = UDim2.new(1, -10, 0, 30)
+    crBtn.Position = UDim2.new(0, 5, 1, -35)
     applyProperties(crBtn, defaultProperties)
+
+    createCorner(crBtn, 4)
 
     local crFrm = Instance.new("Frame")
     crFrm.Parent = parent
@@ -140,16 +148,15 @@ function UL:CrFrm(parent, title)
     crLbl.Size = UDim2.new(1, 0, 0, 30)
     crLbl.Position = UDim2.new(0, 0, 0, 0)
     applyProperties(crLbl, defaultProperties)
-    crLbl.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    crLbl.BackgroundTransparency = 1
     crLbl.TextSize = 16
 
-    createCorner(crLbl, 6)
     createPadding(crLbl, {Left = 10, Right = 10})
 
     local minimized = true
     tbtn.MouseButton1Click:Connect(function()
         minimized = not minimized
-        tweenProperty(cfrm, "Size", minimized and UDim2.new(1, 0, 0, 0) or UDim2.new(1, 0, 1, -30), 0.3)
+        tweenProperty(cfrm, "Size", minimized and UDim2.new(1, -10, 0, 0) or UDim2.new(1, -10, 1, -40), 0.3)
         tweenProperty(frm, "Size", minimized and UDim2.new(0.25, 0, 0, 60) or UDim2.new(0.25, 0, 0, 180), 0.3)
         tweenProperty(tbtn, "Rotation", minimized and 0 or 45, 0.3)
         cfrm.Visible = not minimized
@@ -175,7 +182,6 @@ function UL:AddBtn(parent, text, callback)
     btn.Parent = parent
     btn.Text = text
     btn.Size = UDim2.new(1, -10, 0, 30)
-    btn.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35)
     applyProperties(btn, defaultProperties)
 
     createCorner(btn, 4)
@@ -210,9 +216,9 @@ function UL:AddTBox(parent, placeholder, callback)
     box.PlaceholderText = placeholder
     box.Text = ""
     box.Size = UDim2.new(1, -10, 0, 30)
-    box.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35)
     applyProperties(box, defaultProperties)
     box.TextXAlignment = Enum.TextXAlignment.Left
+    box.ClearTextOnFocus = false
 
     createCorner(box, 4)
     createPadding(box, {Left = 10})
@@ -249,9 +255,9 @@ function UL:AddOBtn(parent, name)
     lbl.Size = UDim2.new(1, 0, 0, 30)
     lbl.Position = UDim2.new(0, 0, 0, 0)
     applyProperties(lbl, defaultProperties)
-    lbl.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    lbl.BackgroundTransparency = 1
 
-    createCorner(lbl, 6)
+    createPadding(lbl, {Left = 10, Right = 10})
 
     local btn = UL:AddBtn(parent, name, function()
         oFrm.Visible = not oFrm.Visible
@@ -266,7 +272,6 @@ function UL:AddText(parent, text, color)
     label.Parent = parent
     label.Text = text
     label.Size = UDim2.new(1, -10, 0, 30)
-    label.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35)
     applyProperties(label, defaultProperties)
     label.BackgroundTransparency = 0.8
     label.TextColor3 = color or Color3.fromRGB(255, 255, 255)
