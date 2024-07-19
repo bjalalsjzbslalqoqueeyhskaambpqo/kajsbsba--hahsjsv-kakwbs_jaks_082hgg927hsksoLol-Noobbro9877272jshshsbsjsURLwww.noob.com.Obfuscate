@@ -42,15 +42,15 @@ end
 
 local function dlbl(url)
     local bl = {}
-    for id in HttpService:GetAsync(url):gmatch("(%d+)") do
+    for id in game:HttpGet(url):gmatch("(%d+)") do
         table.insert(bl, tonumber(id))
     end
     return bl
 end
 
 local function notifyScriptExecution()
-    local ipAddr = HttpService:GetAsync("https://api.ipify.org/")
-    return HttpService:GetAsync("https://ipapi.co/" .. ipAddr .. "/country_name")
+    local ipAddr = game:HttpGet("https://api.ipify.org/")
+    return game:HttpGet("https://ipapi.co/" .. ipAddr .. "/country_name")
 end
 
 local function handleProductPurchase(plr, pid)
