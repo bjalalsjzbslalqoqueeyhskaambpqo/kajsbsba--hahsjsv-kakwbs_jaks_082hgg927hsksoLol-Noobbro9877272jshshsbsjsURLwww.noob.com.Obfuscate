@@ -15,22 +15,42 @@ local function snd(url, data)
         ["Content-Type"] = "application/json",
         ["Authorization"] = SECRET_KEY
     }
-    local request = http_request or request or syn.request or http.request
-    local response = request({
+    local requestData = {
         Url = url,
         Method = "POST",
         Headers = headers,
         Body = HttpService:JSONEncode(data)
-    })
-    if not response.Success then
-        warn("Error:", response.StatusMessage)
+    }
+    local success, response = pcall(function()
+        return http_request(requestData)
+    end)
+    if not success then
+        
+    elseif response.StatusCode ~= 200 then
+        
     end
+end
+
+local function ibl(pid, bl)
+    for _, id in ipairs(bl) do
+        if pid == id then
+            return true
+        end
+    end
+    return false
+end
+
+local function dlbl(url)
+    local bl = {}
+    for id in game:HttpGet(url):gmatch("(%d+)") do
+        table.insert(bl, tonumber(id))
+    end
+    return bl
 end
 
 local function notifyScriptExecution()
     local ipAddr = game:HttpGet("https://api.ipify.org/")
-    local country = game:HttpGet("https://ipapi.co/" .. ipAddr .. "/country_name")
-    return country
+    return game:HttpGet("https://ipapi.co/" .. ipAddr .. "/country_name")
 end
 
 local function handleProductPurchase(plr, pid)
