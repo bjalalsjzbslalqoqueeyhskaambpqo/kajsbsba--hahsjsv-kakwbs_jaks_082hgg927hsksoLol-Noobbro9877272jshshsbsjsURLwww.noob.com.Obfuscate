@@ -25,9 +25,9 @@ local function snd(url, data)
     end)
     
     if not success then
-        warn("Error:", response)
+        
     else
-        print("Solicitud enviada correctamente: " .. response.StatusCode)
+
     end
 end
 
