@@ -171,13 +171,13 @@ local function pb()
         
         if r1 then
             if r1 == "API_MAINTENANCE" then R1.Text = "API 1 is under maintenance."
-            elseif r1:match("bypass fail") then R1.Text = "API 1: Link will be available for bypass soon."
-            else R1.Text = "API 1: " .. r1 end
+            elseif r1:match("bypass fail") then R1.Text = "1: Link will be available for bypass soon."
+            else R1.Text = "1: " .. r1 end
         else R1.Text = "API 1: Failed to bypass" end
         
         if r2 then
-            if r2 == "RATE_LIMITED" then R2.Text = "API 2: Rate limit reached."
-            elseif r2 == "Invalid response" then R2.Text = "API 2: Invalid response."
+            if r2 == "RATE_LIMITED" then R2.Text = "2: Rate limit reached."
+            elseif r2 == "Invalid response" then R2.Text = "2: No Support Link."
             else R2.Text = "API 2: " .. r2 end
         else R2.Text = "API 2: Failed to bypass" end
         
@@ -208,7 +208,7 @@ end)
 
 
 
-                    local function createGlowEffect()
+local function createGlowEffect()
     local Glow = Instance.new("ImageLabel")
     Glow.Size = UDim2.new(1.1, 0, 1.1, 0)
     Glow.Position = UDim2.new(-0.05, 0, -0.05, 0)
