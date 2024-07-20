@@ -23,7 +23,8 @@ UL:AddTBtn(cfrm, "Auto Join Runway", a, function(b)
 a = b
 while a do
 wait(1)
-game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.4.2"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("CatWalkService"):WaitForChild("__comm__"):WaitForChild("RF"):WaitForChild("JoinParade"):InvokeServer()
+game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("FashionShowService"):WaitForChild("RF"):WaitForChild("Join"):InvokeServer()
+            
 end
 end)
 
@@ -33,10 +34,10 @@ while h do
 for i = 1, 12 do
 local args = {
     [1] = "Gift" .. i
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.4.2"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("GiftsService"):WaitForChild("__comm__"):WaitForChild("RF"):WaitForChild("OnGiftClaimRequest"):InvokeServer(unpack(args))
-wait(1)
+                }
+game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("GiftsService"):WaitForChild("RF"):WaitForChild("OnGiftClaimRequest"):InvokeServer(unpack(args))
+               
+wait(0.5)
 end
 wait(1)
 end
@@ -45,8 +46,8 @@ end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
 UL:AddText(crFrm, "Create Script: 01/07/24 ")
-UL:AddText(crFrm, "Update Script: --/--/--")
-UL:AddText(crFrm, "Script Version: 0.1")
+UL:AddText(crFrm, "Update Script: 19/07/24")
+UL:AddText(crFrm, "Script Version: 0.3")
 UL:AddBtn(crFrm, "Copy link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 UL:AddBtn(crFrm, "Copy link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
