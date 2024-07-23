@@ -164,14 +164,23 @@ end
 
 local function moveToDoor(door)
     if door and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        player.Character.HumanoidRootPart.CFrame = door.CFrame
+   pcall(function()     
+player.Character:FindFirstChild("HumanoidRootPart").CFrame = door.CFrame
+            end)
     end
 end
-
+local a = true
+local rj = true
 local function moveToFinalPosition()
     local pos = Vector3.new(1404, 3, 1)
     if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
         player.Character.HumanoidRootPart.CFrame = CFrame.new(pos)
+        wait(9)
+        if rj then
+            game.Players.LocalPlayer:kick("rejoin")
+            wait()
+game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId)
+        end
     end
 end
 
@@ -202,8 +211,10 @@ local function checkAndMove()
         end
     end
 end
-
-UL:AddTBtn(cfrm, "Auto Doors", false, function(state) 
+spawn(function()
+        checkAndMove()
+    end)
+UL:AddTBtn(cfrm, "Auto Doors[TP]", true, function(state) 
     a = not a
     if a then
         checkAndMove()
@@ -219,6 +230,112 @@ end
 wait(0.5)
 end
 end)
+
+
+local players = game:GetService("Players")
+local stages = workspace:WaitForChild("Stages")
+local player = players.LocalPlayer
+local stageValue = player:WaitForChild("Stage"):WaitForChild("Current")
+
+local function getGoodDoor(stage)
+    local s = stages:FindFirstChild("Stage" .. stage)
+    if not s then 
+        return nil 
+    end
+
+    local doors = s:FindFirstChild("Doors")
+    if not doors then 
+        return nil 
+    end
+
+    for _, d in ipairs(doors:GetChildren()) do
+        if d:IsA("BasePart") and d:FindFirstChild("IsSafe") and d.IsSafe.Value then
+            return d
+        end
+    end
+    return nil
+end
+
+local function moveToDoor(door)
+    if door and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+   pcall(function()     
+firetouchinterest(player.Character:FindFirstChild("HumanoidRootPart"), door, 0)
+        wait()
+        firetouchinterest(player.Character:FindFirstChild("HumanoidRootPart"), door, 1)
+            end)
+    end
+end
+
+local b = false
+local function moveToFinalPosition()
+    local pos = Vector3.new(1404, 3, 1)
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        
+local plr = game.Players.LocalPlayer
+        pcall(function()
+firetouchinterest(player.Character:FindFirstChild("HumanoidRootPart"), Workspace.WinPad.PrimaryPart, 0)
+        wait()
+        firetouchinterest(player.Character:FindFirstChild("HumanoidRootPart"), Workspace.WinPad.PrimaryPart, 1)
+            end)
+        wait(8)
+        if rj then
+game.Players.LocalPlayer:kick("rejoin")
+            wait()
+game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId)
+        end
+    end
+end
+
+local function waitForReset()
+    while stageValue.Value ~= 0 do
+        wait(1)
+    end
+end
+
+local function checkAndMov()
+    if b then
+        local currStage = stageValue.Value
+        local nextStage = currStage + 1
+        
+        if nextStage <= 40 then
+            local door = getGoodDoor(nextStage)
+            if door then
+                moveToDoor(door)
+                wait(0.5)
+                checkAndMov()
+            else
+                wait(0.5)
+                checkAndMov()
+            end
+        else
+            moveToFinalPosition()
+            waitForReset()
+        end
+    end
+end
+
+UL:AddTBtn(cfrm, "Auto Doors[No TP]", false, function(state) 
+    b = not b
+    if b then
+        checkAndMov()
+    end
+end)
+
+spawn(function()
+while true do
+if b and game.Players.LocalPlayer:WaitForChild("Stage"):WaitForChild("Current").Value == 0 then
+checkAndMov()
+wait(0.4)
+end
+wait(0.5)
+end
+end)
+
+UL:AddTBtn(cfrm, "Auto Rejoin", true, function(state) 
+    rj = not rj
+end)
+
+
 
 UL:AddTBtn(cfrm, "Auto Spin", false, function() 
 b = not b
@@ -236,8 +353,8 @@ end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
 UL:AddText(crFrm, "Create Script: 22/07/24 ")
-UL:AddText(crFrm, "Update Script: --/--/--")
-UL:AddText(crFrm, "Script Version: 0.1")
+UL:AddText(crFrm, "Update Script: 23/07/24")
+UL:AddText(crFrm, "Script Version: 0.4")
 UL:AddBtn(crFrm, "Copy link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 UL:AddBtn(crFrm, "Copy link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
