@@ -17,6 +17,36 @@ local p = game.Players.LocalPlayer
 local sg = UL:CrSG("Default")
 local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
 
+local folderName = "DoorScript"
+local fileName = "DoorData.txt"
+local filePath = folderName .. "/" .. fileName
+
+local function ensureFolder()
+    if not isfolder(folderName) then
+        makefolder(folderName)
+    end
+end
+
+local function saveLocalData(data)
+    ensureFolder()
+    writefile(filePath, game:GetService("HttpService"):JSONEncode(data))
+end
+
+local function loadLocalData()
+    ensureFolder()
+    if isfile(filePath) then
+        local success, data = pcall(function()
+            return game:GetService("HttpService"):JSONDecode(readfile(filePath))
+        end)
+        if success then
+            return data
+        end
+    end
+    return {}
+end
+
+local doorData = loadLocalData()
+
 spawn(function()
     local ws = workspace
     local stgs = ws:WaitForChild("Stages")
@@ -36,15 +66,18 @@ spawn(function()
         m.Name = "SafeMarker"
         m.Parent = d
         m.CFrame = d.CFrame * CFrame.new(0, 5, 0)
-        m.Transparency = d:FindFirstChild("IsSafe") and (d.IsSafe.Value and 0 or 1) or 1
+        local isSafe = doorData[d:GetFullName()]
+        m.Transparency = isSafe and 0 or 1
     end
 
     local function updateDoorSafety(d, safe)
-        d.IsSafe.Value = safe
+        doorData[d:GetFullName()] = safe
+        saveLocalData(doorData)
         updateMarker(d)
         local oppositeDoor = d.Parent:FindFirstChild(d.Name == "LeftDoor" and "RightDoor" or "LeftDoor")
         if oppositeDoor then
-            oppositeDoor.IsSafe.Value = not safe
+            doorData[oppositeDoor:GetFullName()] = not safe
+            saveLocalData(doorData)
             updateMarker(oppositeDoor)
         end
     end
@@ -59,11 +92,9 @@ spawn(function()
             if ds then
                 local rnd = math.random(2)
                 for _, d in pairs(ds:GetChildren()) do
-                    if not d:FindFirstChild("IsSafe") then
-                        local is = Instance.new("BoolValue")
-                        is.Name = "IsSafe"
-                        is.Value = d.Name == (rnd == 1 and "LeftDoor" or "RightDoor")
-                        is.Parent = d
+                    if doorData[d:GetFullName()] == nil then
+                        doorData[d:GetFullName()] = d.Name == (rnd == 1 and "LeftDoor" or "RightDoor")
+                        saveLocalData(doorData)
                     end
                     updateMarker(d)
                 end
@@ -155,7 +186,7 @@ local function getGoodDoor(stage)
     end
 
     for _, d in ipairs(doors:GetChildren()) do
-        if d:IsA("BasePart") and d:FindFirstChild("IsSafe") and d.IsSafe.Value then
+        if d:IsA("BasePart") and doorData[d:GetFullName()] then
             return d
         end
     end
@@ -169,8 +200,10 @@ player.Character:FindFirstChild("HumanoidRootPart").CFrame = door.CFrame
             end)
     end
 end
+
 local a = true
 local rj = true
+
 local function moveToFinalPosition()
     local pos = Vector3.new(1404, 3, 1)
     if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
@@ -211,9 +244,11 @@ local function checkAndMove()
         end
     end
 end
+
 spawn(function()
         checkAndMove()
     end)
+
 UL:AddTBtn(cfrm, "Auto Doors[TP]", true, function(state) 
     a = not a
     if a then
@@ -230,7 +265,6 @@ end
 wait(0.5)
 end
 end)
-
 
 local players = game:GetService("Players")
 local stages = workspace:WaitForChild("Stages")
@@ -249,7 +283,7 @@ local function getGoodDoor(stage)
     end
 
     for _, d in ipairs(doors:GetChildren()) do
-        if d:IsA("BasePart") and d:FindFirstChild("IsSafe") and d.IsSafe.Value then
+        if d:IsA("BasePart") and doorData[d:GetFullName()] then
             return d
         end
     end
@@ -335,8 +369,6 @@ UL:AddTBtn(cfrm, "Auto Rejoin", true, function(state)
     rj = not rj
 end)
 
-
-
 UL:AddTBtn(cfrm, "Auto Spin", false, function() 
 b = not b
 while b do
@@ -354,7 +386,7 @@ end)
 UL:AddText(crFrm, "By Script: OneCreatorX ")
 UL:AddText(crFrm, "Create Script: 22/07/24 ")
 UL:AddText(crFrm, "Update Script: 23/07/24")
-UL:AddText(crFrm, "Script Version: 0.4")
+UL:AddText(crFrm, "Script Version: 1")
 UL:AddBtn(crFrm, "Copy link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 UL:AddBtn(crFrm, "Copy link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
