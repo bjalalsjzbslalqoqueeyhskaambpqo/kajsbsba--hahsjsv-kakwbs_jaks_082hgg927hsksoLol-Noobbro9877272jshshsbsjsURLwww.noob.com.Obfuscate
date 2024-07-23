@@ -2,7 +2,9 @@ local UL = {}
 print("Version UI 0.5")
 print("Loading OneLib")
 
-local rl = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/info.lua")) spawn(rl)
+spawn(function()
+    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+end)
 
 local uiProperties = {
     BackgroundColor3 = Color3.fromRGB(65, 65, 65),
