@@ -81,7 +81,7 @@ local function moveToDoor(door)
     end
 end
 
-local b = true
+local b = false
 
 local rj = true
 local a = true
@@ -165,7 +165,7 @@ local function checkAndMov()
     end
 end
 
-UL:AddTBtn(cfrm, "Auto Doors[No TP]", true, function(state) 
+UL:AddTBtn(cfrm, "Auto Doors[No TP]", false, function(state) 
     b = not b
     if b then checkAndMov() end
 end)
@@ -210,7 +210,7 @@ game:GetService('Players').LocalPlayer.Idled:Connect(function()
    end)
     
     spawn(function()
-            checkAndMov()
+            checkAndMove()
         end)
 
 initDoors()
