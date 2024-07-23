@@ -175,10 +175,10 @@ local function moveToFinalPosition()
     local pos = Vector3.new(1404, 3, 1)
     if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
         player.Character.HumanoidRootPart.CFrame = CFrame.new(pos)
-        wait(9)
+        wait(10)
         if rj then
             game.Players.LocalPlayer:kick("rejoin")
-            wait()
+            wait(1)
 game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId)
         end
     end
@@ -277,10 +277,10 @@ firetouchinterest(player.Character:FindFirstChild("HumanoidRootPart"), Workspace
         wait()
         firetouchinterest(player.Character:FindFirstChild("HumanoidRootPart"), Workspace.WinPad.PrimaryPart, 1)
             end)
-        wait(8)
+        wait(10)
         if rj then
 game.Players.LocalPlayer:kick("rejoin")
-            wait()
+            wait(1)
 game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId)
         end
     end
