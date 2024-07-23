@@ -193,7 +193,7 @@ for _, info in ipairs({
     {"By Script: OneCreatorX"},
     {"Create Script: 22/07/24"},
     {"Update Script: 23/07/24"},
-    {"Script Version: 0.4"},
+    {"Script Version: 0.6"},
     {"Copy link YouTube", "https://youtube.com/@onecreatorx"},
     {"Copy link Discord", "https://discord.com/invite/UNJpdJx7c4"}
 }) do
