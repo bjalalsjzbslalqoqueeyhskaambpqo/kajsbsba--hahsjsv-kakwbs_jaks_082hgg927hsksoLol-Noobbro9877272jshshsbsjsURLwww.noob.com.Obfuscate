@@ -227,6 +227,7 @@ local function styleTextBox(obj, placeholder)
         TextColor3 = colors.text,
         PlaceholderColor3 = Color3.fromRGB(200, 200, 200),
         PlaceholderText = placeholder,
+        Text = placeholder,
         Font = Enum.Font.Gotham,
         TextSize = 12,
         BorderSizePixel = 0
