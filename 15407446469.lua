@@ -196,7 +196,10 @@ end
 local function moveToDoor(door)
     if door and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
    pcall(function()     
-player.Character:FindFirstChild("HumanoidRootPart").CFrame = door.CFrame
+                local dor = door.CFrame
+ door.CFrame = player.Character:FindFirstChild("HumanoidRootPart").CFrame
+                wait(0.1)
+                door.CFrame = dor
             end)
     end
 end
