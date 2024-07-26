@@ -77,100 +77,99 @@ end)
 
 
 spawn(function()
-        local a
+        local a = false
         UL:AddTBtn(cfrm, "Auto Tasks Pets", a, function(b) 
     a = b
 end)
 
+    local actions = {
+    ["hug"] = "Hugged",
+    ["bath"] = "Bathed",
+    ["hungry"] = "Fed"
+}
+
+local actionCooldown = 15
+local petActionTimes = {}
+
+local function sendActionToServer(petName, action)
+    local args = {
+        [1] = {
+            [1] = "PetInteractAction",
+            [2] = "'",
+            [3] = {
+                [1] = "\1",
+                [2] = {
+                    [1] = tostring(petName),
+                    [2] = action
+                }
+            },
+            [4] = "\28"
+        }
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
+    print("Sent to server: PetName =", petName, "Action =", action)
+end
+
+local function findPetName(instance)
+    while instance and not instance:IsA("Model") do
+        instance = instance.Parent
+    end
+    if instance and instance:IsA("Model") then
+        return instance.Name
+    end
+    return "Unknown"
+end
+
+local function processChatMessages()
+    local playerName = game.Players.LocalPlayer.Name
+    local userDirectoryName = playerName .. ":Debris"
+    local userDirectory = workspace:FindFirstChild(userDirectoryName)
+
+    if not userDirectory then
         
+        return
+    end
 
-local playerName = game.Players.LocalPlayer.Name
-local userDirectoryName = playerName .. ":Debris"
-local workspace = game:GetService("Workspace")
-local replicatedStorage = game:GetService("ReplicatedStorage")
+    while true do
+        wait(0.1)
+        for _, child in ipairs(userDirectory:GetDescendants()) do
+            if child.Name == "ChatList" and a then
+                local chatMessages = child:GetChildren()
+                if #chatMessages >= 2 then
+                    local secondChild = chatMessages[2]
+                    if secondChild:IsA("Frame") then
+                        local textLabel = secondChild:FindFirstChildOfClass("TextLabel")
+                        if textLabel then
+                            local messageText = textLabel.Text:lower()
+                            local petName = findPetName(secondChild)
 
--- Tabla para almacenar los nombres de los hijos existentes
-local existingChildren = {}
+                            for key, action in pairs(actions) do
+                                if messageText:find(key) then
+                                    local currentTime = tick()
+                                    local lastActionTime = petActionTimes[petName]
 
-local function handleFileCreation(newChild)
-    if newChild:IsA("Model") then
-        local modelName = newChild.Name
-        
-        local actions = {"Fed", "Bathed", "Hugged"}
-        for _, action in ipairs(actions) do
-            local args = {
-                        [1] = {
-        [1] = "PetInteractAction",
-        [2] = "'",
-        [3] = {
-            [1] = "\1",
-            [2] = {
-                [1] = tostring(modelName),
-                [2] = tostring(action)
-            }
-        },
-        [4] = "\28"
-                        }
-                    }
-            
-            game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
-            wait(0.1)
-                    
-    
-
+                                    if not lastActionTime or (currentTime - lastActionTime >= actionCooldown) then
+                                        sendActionToServer(petName, action)
+                                        petActionTimes[petName] = currentTime
+                                        break
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
                     
         end
-        wait()
     end
 end
 
-local function connectSignal()
-    local userDirectory = workspace:FindFirstChild(userDirectoryName)
-    if userDirectory then
-        for _, child in ipairs(userDirectory:GetChildren()) do
-            if not child.Name:find("_Accessories") then
-                local chatList = child:FindFirstChild("RootPart"):FindFirstChild("ChatMessageUI"):FindFirstChild("ChatList")
-                if chatList then
-                    chatList.ChildAdded:Connect(function(newChild)
-                        handleFileCreation(newChild.Parent.Parent.Parent.Parent)
-                    end)
-                end
-                
-                existingChildren[child.Name] = true
-            end
-        end
-    end
-    
-
-    userDirectory.ChildAdded:Connect(function(newChild)
-        wait(4)
-
-local userDirectory = workspace:FindFirstChild(userDirectoryName)
-    if userDirectory then
-        for _, child in ipairs(userDirectory:GetChildren()) do
-            if not child.Name:find("_Accessories") then
-                local chatList = child:FindFirstChild("RootPart"):FindFirstChild("ChatMessageUI"):FindFirstChild("ChatList")
-                if chatList then
-                    chatList.ChildAdded:Connect(function(newChild)
-                        handleFileCreation(newChild.Parent.Parent.Parent.Parent)
-                    end)
-                end
-
-                existingChildren[child.Name] = true
-                            end
-        end
-                    end
-                
-    end)
-        end
-
-connectSignal()
-
+spawn(processChatMessages)    
     end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
 UL:AddText(crFrm, "Create Script: 29/05/24 ")
-UL:AddText(crFrm, "Update Script: 29/06/24")
+UL:AddText(crFrm, "Update Script: 26/07/24")
 UL:AddText(crFrm, "Script Version: 0.2")
 UL:AddBtn(crFrm, "Copy link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 UL:AddBtn(crFrm, "Copy link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
