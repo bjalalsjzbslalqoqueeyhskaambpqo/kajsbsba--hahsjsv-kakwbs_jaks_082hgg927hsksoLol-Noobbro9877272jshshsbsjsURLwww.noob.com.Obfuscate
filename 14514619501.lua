@@ -107,7 +107,7 @@ local function sendActionToServer(petName, action)
         }
     }
     game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
-    print("Sent to server: PetName =", petName, "Action =", action)
+    
 end
 
 local function findPetName(instance)
