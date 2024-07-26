@@ -128,8 +128,8 @@ function cAb(u, l, c)
             if p.bypasses then
                 b = eRs(p.bypasses)
                 if b then
-                    if nRt(b) and c < 10 then
-                        l.Text = "Retrying... (" .. (c + 1) .. "/10)"
+                    if nRt(b) and c < 100 then
+                        l.Text = "Retrying [Host Api: offline]... (" .. (c + 1) .. "/100)"
                         wait(1)
                         cAb(u, l, c + 1)
                     else
@@ -153,7 +153,7 @@ StarterGui:SetCore("SendNotification", {
         end
     else
         if c < 100 then
-            l.Text = "Connection error, retrying... (" .. (c + 1) .. "/10)"
+            l.Text = "Connection error, retrying... (" .. (c + 1) .. "/100)"
             wait(0.5)
             cAb(u, l, c + 1)
         else
