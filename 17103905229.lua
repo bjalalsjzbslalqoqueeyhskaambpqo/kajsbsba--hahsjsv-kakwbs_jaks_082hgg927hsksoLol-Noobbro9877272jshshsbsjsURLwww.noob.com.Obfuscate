@@ -212,3 +212,6 @@ StarterGui:SetCore("SendNotification", {
 })
 
 moveHearts()
+pcall(function()
+game.Players.LocalPlayer.Character.PrimaryPart.Anchored = false
+    end)
