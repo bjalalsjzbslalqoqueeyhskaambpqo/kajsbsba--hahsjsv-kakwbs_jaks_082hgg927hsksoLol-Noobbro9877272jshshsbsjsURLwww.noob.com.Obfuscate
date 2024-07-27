@@ -35,7 +35,11 @@ local function upd(t)
 end
 
 local function svi()
-    writefile(fn, game:GetService("HttpService"):JSONEncode(its))
+    local data = {}
+    for id, item in pairs(its) do
+        data[tostring(id)] = item.p
+    end
+    writefile(fn, game:GetService("HttpService"):JSONEncode(data))
 end
 
 getgenv()._s = clonefunction(setthreadidentity)
@@ -123,36 +127,44 @@ local function atl(i, p, a)
     })
     
     b1.MouseButton1Click:Connect(function()
-        if its[i] then
-            its[i].a = not its[i].a
-            b1.Text = its[i].a and "Pause" or "Start"
-            b1.BackgroundColor3 = its[i].a and Color3.fromRGB(255, 80, 80) or Color3.fromRGB(80, 255, 80)
-            svi()
-        end
+        its[i].a = not its[i].a
+        b1.Text = its[i].a and "Pause" or "Start"
+        b1.BackgroundColor3 = its[i].a and Color3.fromRGB(255, 80, 80) or Color3.fromRGB(80, 255, 80)
     end)
     
     b2.MouseButton1Click:Connect(function()
-    its[i] = nil
-    f:Destroy()
-    svi() 
-end)
+        its[i] = nil
+        f:Destroy()
+        svi()
+    end)
 end
 
 local function ldi()
     if isfile(fn) then
-        its = game:GetService("HttpService"):JSONDecode(readfile(fn))
-        for _, item in pairs(its) do
-            if item and item.i and item.p then
-                atl(item.i, item.p, item.a or false)
+        local success, result = pcall(function()
+            return game:GetService("HttpService"):JSONDecode(readfile(fn))
+        end)
+        if success and type(result) == "table" then
+            for id, price in pairs(result) do
+                local numId = tonumber(id)
+                if numId and type(price) == "number" then
+                    its[numId] = {i = numId, p = price, a = false}
+                    atl(numId, price, false)
+                end
             end
+        else
+            warn("Failed to load items: ", tostring(result))
+            its = {}
         end
+    else
+        its = {}
     end
 end
 
 local function ssn()
     while true do
         for i, t in pairs(its) do
-            if t and t.a then
+            if t.a then
                 local s, n = pcall(function()
                     return game:GetService("MarketplaceService"):GetProductInfo(i)
                 end)
@@ -227,7 +239,7 @@ local function styleTextBox(obj, placeholder)
         TextColor3 = colors.text,
         PlaceholderColor3 = Color3.fromRGB(200, 200, 200),
         PlaceholderText = placeholder,
-        Text = placeholder,
+        Text = "",
         Font = Enum.Font.Gotham,
         TextSize = 12,
         BorderSizePixel = 0
@@ -282,7 +294,7 @@ local isExpanded = true
 tg.MouseButton1Click:Connect(function()
     isExpanded = not isExpanded
     tp.Visible = isExpanded
-    tg.Text = isExpanded and ">" or "<"
+    tg.Text = isExpanded and "<" or ">"
     mf:TweenPosition(
         isExpanded and UDim2.new(1, -200, 0, 20) or UDim2.new(1, -30, 0, 20),
         Enum.EasingDirection.Out,
@@ -291,7 +303,7 @@ tg.MouseButton1Click:Connect(function()
         true
     )
     tg:TweenPosition(
-        isExpanded and UDim2.new(0, 0, 0, 0) or UDim2.new(0, -30, 0, 0),
+        isExpanded and UDim2.new(0, -30, 0, 0) or UDim2.new(0, 0, 0, 0),
         Enum.EasingDirection.Out,
         Enum.EasingStyle.Quart,
         0.3,
