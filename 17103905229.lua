@@ -247,7 +247,7 @@ function copyy()
 end
 
 Sec:CreateToggle("Auto Hearts", has)
-Sec:CreateToggle("Auto Save Heart", save)
+
 Sec3:CreateButton("Versión 17", sa)
 Sec3:CreateButton("Update: 27/07/24", sa)
 Sec3:CreateButton("System 95% + Safe", sa)
