@@ -56,8 +56,6 @@ local function moveHearts()
                 wait(0.15)
                 spawn(function()
                 pcall(function()
-player.Character:MoveTo(closestHeart.Position)
-closestHeart.Position = game.Players.LocalPlayer.Character.PrimaryPart.Position
 firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, closestHeart, 0)
         wait()
         firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, closestHeart, 1)
