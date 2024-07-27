@@ -51,6 +51,7 @@ local function moveHearts()
 
 
             if closestHeart then
+closestHeart.Size = Vector3.new(4, 4, 4)
                 player.Character:MoveTo(closestHeart.Position)
                 wait(0.2)
                 spawn(function()
@@ -63,7 +64,7 @@ firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, closestHe
 
                     end)
                     end)
-                wait(0.2)
+                wait(0.05)
 spawn(function()
                 pcall(function()
                     closestHeart.Transparency = 1
@@ -75,7 +76,7 @@ spawn(function()
                 rejoin()
             end
         end
-        wait(0.1)
+        wait(0.3)
     end
 end
 
