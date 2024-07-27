@@ -34,14 +34,14 @@ while b do
         local Hearts = WS.Map.Interactable:GetDescendants()
         
         for _, heart in ipairs(Hearts) do
-            if heart:IsA("MeshPart") and heart.Transparency ~= 1 then
+            if b and heart:IsA("MeshPart") and heart.Transparency ~= 1 then
                 player.Character:MoveTo(heart.Position)
-wait(0.2)
+wait(0.3)
             end
         end
     end
 end
-wait(0.5)
+wait(1)
 end
 
 function has()
