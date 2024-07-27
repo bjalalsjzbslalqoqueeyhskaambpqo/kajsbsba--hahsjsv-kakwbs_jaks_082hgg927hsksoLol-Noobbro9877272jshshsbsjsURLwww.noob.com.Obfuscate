@@ -5,9 +5,9 @@ local Sec3 = Win:NewSection("Info Script")
 local Sec2 = Win:NewSection("Credits: OneCreatorX")
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
-local b = false
+local b = true
 local speed = 80
-local autoRejoin = false 
+local autoRejoin = true 
 
 local HttpService = game:GetService("HttpService")
 local MarketplaceService = game:GetService("MarketplaceService")
@@ -27,7 +27,7 @@ local function copyToClipboard(text)
 end
 
 function rejoin()
-    game.Players.LocalPlayer:kick(rejoin)
+    game.Players.LocalPlayer:kick("rejoin")
     wait(0.1)
     game:GetService("TeleportService"):Teleport(game.PlaceId, Player)
 end
@@ -52,14 +52,11 @@ local function moveHearts()
 
             if closestHeart then
                 player.Character:MoveTo(closestHeart.Position)
-                spawn(function()
-                pcall(function()
-                    closestHeart.Transparency = 1
-                end)
-                    end)
                 wait(0.1)
                 spawn(function()
                 pcall(function()
+player.Character:MoveTo(closestHeart.Position)
+closestHeart.Position = game.Players.LocalPlayer.Character.PrimaryPart.Position
 firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, closestHeart, 0)
         wait()
         firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, closestHeart, 1)
@@ -67,6 +64,11 @@ firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, closestHe
                     end)
                     end)
                 wait(0.1)
+spawn(function()
+                pcall(function()
+                    closestHeart.Transparency = 1
+                end)
+                    end)
             end
 
             if not closestHeart and autoRejoin then
@@ -202,3 +204,10 @@ Sec:CreateTextbox("ID Texture", function(value)
     game.Lighting.Sky.SkyboxUp = skyID
     CircleMesh.TextureId = skyID
 end)
+
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "All Options Default: ON",
+    Text = "by OneCreatorX",
+    Duration = 5,
+})
