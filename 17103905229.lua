@@ -28,67 +28,25 @@ local function copyToClipboard(text)
 end
 
 local function moveHearts()
+while b do
     local player = game.Players.LocalPlayer
     if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and b then
-        local PPos = player.Character.HumanoidRootPart.Position
         local Hearts = WS.Map.Interactable:GetDescendants()
         
-        local function calculateVelocity(targetPosition, speed)
-            local direction = (targetPosition - PPos).unit
-            return direction * speed
-        end
-        
-        local function collectHeart(heartPart)
-            local HPos = Vector3.new(heartPart.Position.X, PPos.Y, heartPart.Position.Z)
-            local dist = (HPos - PPos).magnitude
-            if dist < 3 then
-                heartPart.Transparency = 1
-                heartPart.Position = PPos
+        for _, heart in ipairs(Hearts) do
+            if heart:IsA("MeshPart") and heart.Transparency ~= 1 then
+                player.Character:MoveTo(heart.Position)
+wait(0.2)
             end
-        end
-        
-        local minDist = math.huge
-        local closestHeart = nil
-
-        for _, H in ipairs(Hearts) do
-            if H:IsA("MeshPart") and H.Transparency ~= 1 then
-                local HPos = Vector3.new(H.Position.X, PPos.Y, H.Position.Z)
-                local dist = (HPos - PPos).magnitude
-                if dist < 3 then
-                    collectHeart(H)
-                elseif dist < minDist then
-                    minDist = dist
-                    closestHeart = H
-                end
-            end
-        end
-
-        if closestHeart then
-            local heartPart = closestHeart
-            local targetPosition = heartPart.Position
-            local velocity = calculateVelocity(targetPosition, speed)
-            player.Character.HumanoidRootPart.Velocity = velocity
-            
-            repeat
-                wait()
-                collectHeart(heartPart)
-            until not closestHeart.Parent or player:DistanceFromCharacter(targetPosition) < 1
-            
-            if not closestHeart.Parent then
-            end
-        else
-            wait()
         end
     end
 end
-
-game:GetService("RunService").RenderStepped:Connect(function()
-    pcall(moveHearts)
-end)
+wait(0.5)
+end
 
 function has()
     b = not b
-  ya = not ya
+  moveHearts()
 end
 
 
@@ -206,9 +164,6 @@ game:GetService('Players').LocalPlayer.Idled:Connect(function()
 game:GetService('VirtualUser'):CaptureController()   game:GetService('VirtualUser'):ClickButton2(Vector2.new())
 end)
 
-Sec:CreateTextbox("Speed Auto Hears 70", function(value)
-             speed = value
-end)
 
 Sec:CreateTextbox("ID Texture", function(value)
         local StarterGui = game:GetService("StarterGui")
