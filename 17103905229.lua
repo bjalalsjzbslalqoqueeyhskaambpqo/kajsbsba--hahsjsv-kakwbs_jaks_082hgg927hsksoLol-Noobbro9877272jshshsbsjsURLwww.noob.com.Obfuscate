@@ -57,11 +57,12 @@ local function moveHearts()
                 end)
                 wait(0.1)
                 pcall(function()
-firetouchinterest(plr.Character.HumanoidRootPart, closestHeart, 0)
+firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, closestHeart, 0)
         wait()
-        firetouchinterest(plr.Character.HumanoidRootPart, closestHeart, 1)
-wait(0.1)
+        firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, closestHeart, 1)
+
                     end)
+                wait(0.1)
             end
 
             if not closestHeart and autoRejoin then
