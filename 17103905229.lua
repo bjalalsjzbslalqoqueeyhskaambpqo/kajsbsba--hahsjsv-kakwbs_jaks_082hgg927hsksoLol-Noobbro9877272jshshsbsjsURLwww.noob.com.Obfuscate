@@ -211,3 +211,5 @@ StarterGui:SetCore("SendNotification", {
     Text = "by OneCreatorX",
     Duration = 5,
 })
+
+moveHearts()
