@@ -72,7 +72,9 @@ local function moveHearts()
                 for _, f in ipairs(workspace.Map.Interactable.MushroomHouses:GetDescendants()) do
                     if f:IsA("TextLabel") then
                         local text = f.Text
-                        if text == "Claim" or (getTextAsNumber(text) and getTextAsNumber(text) <= 30) then
+                        local timeInSeconds = getTextAsNumber(text)
+
+                        if text == "Claim" or (timeInSeconds and timeInSeconds <= 30) then
                             game.Players.LocalPlayer.Character:MoveTo(f.Parent.Parent.Parent.Position)
                             shouldRejoin = false
                             break
@@ -190,7 +192,7 @@ Sec:CreateButton("Rejoin", function()
     game:GetService("TeleportService"):Teleport(game.PlaceId, Player)
 end)
 
-Sec3:CreateButton("Versión 22", sa)
+Sec3:CreateButton("Versión 23", sa)
 Sec3:CreateButton("Update: 27/07/24", sa)
 Sec3:CreateButton("System 100% Safe", sa)
 Sec2:CreateButton("Copy Link YouTube", copyy)
