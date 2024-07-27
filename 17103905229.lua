@@ -52,15 +52,19 @@ local function moveHearts()
 
             if closestHeart then
                 player.Character:MoveTo(closestHeart.Position)
+                spawn(function()
                 pcall(function()
                     closestHeart.Transparency = 1
                 end)
+                    end)
                 wait(0.1)
+                spawn(function()
                 pcall(function()
 firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, closestHeart, 0)
         wait()
         firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, closestHeart, 1)
 
+                    end)
                     end)
                 wait(0.1)
             end
@@ -115,7 +119,6 @@ pcall(function()
 
     
     destroySpecificObjects(workspace)
-        workspace.Map:FindFirstChild("ugcShop"):Destroy()
 end)
 
 local workspace = game:GetService("Workspace")
