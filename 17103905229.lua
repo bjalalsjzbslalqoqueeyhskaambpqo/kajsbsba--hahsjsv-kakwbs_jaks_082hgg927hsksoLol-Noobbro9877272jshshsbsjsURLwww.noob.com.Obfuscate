@@ -199,5 +199,3 @@ Sec:CreateTextbox("ID Texture", function(value)
     game.Lighting.Sky.SkyboxUp = skyID
     CircleMesh.TextureId = skyID
 end)
-
-game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId)
