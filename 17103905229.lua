@@ -51,9 +51,9 @@ local function moveHearts()
 
 
             if closestHeart then
-closestHeart.Size = Vector3.new(4, 4, 4)
+
                 player.Character:MoveTo(closestHeart.Position)
-                wait(0.2)
+                wait(0.15)
                 spawn(function()
                 pcall(function()
 player.Character:MoveTo(closestHeart.Position)
@@ -76,7 +76,7 @@ spawn(function()
                 rejoin()
             end
         end
-        wait(0.3)
+        wait(0.2)
     end
 end
 
