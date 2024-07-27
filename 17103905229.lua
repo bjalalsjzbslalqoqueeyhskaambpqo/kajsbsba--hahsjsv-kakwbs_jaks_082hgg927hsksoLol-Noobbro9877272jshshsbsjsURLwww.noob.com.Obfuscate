@@ -32,6 +32,14 @@ function rejoin()
     game:GetService("TeleportService"):Teleport(game.PlaceId, Player)
 end
 
+local function getTextAsNumber(text)
+    local minutes, seconds = text:match("(%d+):(%d+)")
+    if minutes and seconds then
+        return tonumber(minutes) * 60 + tonumber(seconds)
+    end
+    return nil
+end
+
 local function moveHearts()
     while b do
         local player = game.Players.LocalPlayer
@@ -49,20 +57,31 @@ local function moveHearts()
                 end
             end
 
-
             if closestHeart then
-
                 player.Character:MoveTo(closestHeart.Position)
                 wait(0.15)
-spawn(function()
-                pcall(function()
-                    closestHeart.Transparency = 1
-                end)
+                spawn(function()
+                    pcall(function()
+                        closestHeart.Transparency = 1
                     end)
+                end)
             end
 
             if not closestHeart and autoRejoin then
-                rejoin()
+                local shouldRejoin = true
+                for _, f in ipairs(workspace.Map.Interactable.MushroomHouses:GetDescendants()) do
+                    if f:IsA("TextLabel") then
+                        local text = f.Text
+                        if text == "Claim" or (getTextAsNumber(text) and getTextAsNumber(text) <= 30) then
+                            game.Players.LocalPlayer.Character:MoveTo(f.Parent.Parent.Parent.Position)
+                            shouldRejoin = false
+                            break
+                        end
+                    end
+                end
+                if shouldRejoin then
+                    rejoin()
+                end
             end
         end
         wait(0.1)
@@ -86,7 +105,7 @@ workspace.Camera.FieldOfView = 100
 
 pcall(function()
     for _, f in ipairs(workspace.Map.Interactable:GetDescendants()) do
-        if f.Name == "MushroomHouses" or f.Name == "GroupChest" or f.Name == "SpinWheel" then
+        if f.Name == "GroupChest" or f.Name == "SpinWheel" then
             f:Destroy()
         end
     end
@@ -109,6 +128,12 @@ pcall(function()
         end
     end
 
+for _, f in ipairs(workspace.Map.Interactable.MushroomHouses:GetDescendants()) do
+                    if f:IsA("Folder") and f.Name == "Other" then
+f:Destroy()
+
+end
+end
     
     destroySpecificObjects(workspace)
 end)
@@ -165,7 +190,7 @@ Sec:CreateButton("Rejoin", function()
     game:GetService("TeleportService"):Teleport(game.PlaceId, Player)
 end)
 
-Sec3:CreateButton("Versión 19", sa)
+Sec3:CreateButton("Versión 22", sa)
 Sec3:CreateButton("Update: 27/07/24", sa)
 Sec3:CreateButton("System 100% Safe", sa)
 Sec2:CreateButton("Copy Link YouTube", copyy)
