@@ -53,7 +53,7 @@ local function moveHearts()
             if closestHeart then
 
                 player.Character:MoveTo(closestHeart.Position)
-                wait(0.05)
+                wait(0.15)
 spawn(function()
                 pcall(function()
                     closestHeart.Transparency = 1
@@ -202,7 +202,37 @@ StarterGui:SetCore("SendNotification", {
     Duration = 5,
 })
 
-moveHearts()
 pcall(function()
-game.Players.LocalPlayer.Character.PrimaryPart.Anchored = false
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local function scaleCharacter(scale)
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    
+    if not character or not humanoid then
+        warn("No se pudo encontrar el personaje o el humanoide.")
+        return
+    end
+    
+    local newScale = Vector3.new(scale, scale, scale)
+    
+    for _, part in pairs(character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.Size = part.Size * newScale
+        end
+    end
+    
+    local rootPart = character:FindFirstChild("HumanoidRootPart")
+    if rootPart then
+        rootPart.Position = rootPart.Position - Vector3.new(0, (1 - scale) * 3, 0)
+    end
+    
+    print("Escala del personaje cambiada a: " .. scale)
+end
+
+scaleCharacter(0.3)
     end)
+
+
+moveHearts()
