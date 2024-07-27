@@ -7,18 +7,16 @@ local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local b = false
 local speed = 80
-local ya = false
 local autoRejoin = false 
 
 local HttpService = game:GetService("HttpService")
 local MarketplaceService = game:GetService("MarketplaceService")
+local RS = game:GetService("RunService")
+local WS = game:GetService("Workspace")
 
 spawn(function()
     (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
 end)
-
-local RS = game:GetService("RunService")
-local WS = game:GetService("Workspace")
 
 local function copyToClipboard(text)
     if syn then
@@ -29,8 +27,8 @@ local function copyToClipboard(text)
 end
 
 function rejoin()
-game.Players.LocalPlayer:kick(rejoin)
-wait(0.1)
+    game.Players.LocalPlayer:kick(rejoin)
+    wait(0.1)
     game:GetService("TeleportService"):Teleport(game.PlaceId, Player)
 end
 
@@ -39,21 +37,36 @@ local function moveHearts()
         local player = game.Players.LocalPlayer
         if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and b then
             local Hearts = WS.Map.Interactable:GetDescendants()
-            local heartsFound = false
-            
+            local closestHeart, closestDistance
+
             for _, heart in ipairs(Hearts) do
-                if b and heart:IsA("MeshPart") and heart.Transparency ~= 1 then
-                    heartsFound = true
-                    player.Character:MoveTo(heart.Position)
-                    wait(0.3)
+                if heart:IsA("MeshPart") and heart.Transparency ~= 1 then
+                    local distance = (player.Character.HumanoidRootPart.Position - heart.Position).magnitude
+                    if not closestHeart or distance < closestDistance then
+                        closestHeart = heart
+                        closestDistance = distance
+                    end
                 end
             end
 
-            if not heartsFound and autoRejoin then
+
+            if closestHeart then
+                player.Character:MoveTo(closestHeart.Position)
+                pcall(function()
+                    closestHeart.Transparency = 1
+                end)
+                wait(0.1)
+firetouchinterest(plr.Character.HumanoidRootPart, closestHeart, 0)
+        wait()
+        firetouchinterest(plr.Character.HumanoidRootPart, closestHeart, 1)
+wait(0.1)
+            end
+
+            if not closestHeart and autoRejoin then
                 rejoin()
             end
         end
-        wait(1)
+        wait(0.1)
     end
 end
 
@@ -97,8 +110,9 @@ pcall(function()
         end
     end
 
-    workspace.Map:FindFirstChild("ugcShop"):Destroy()
+    
     destroySpecificObjects(workspace)
+        workspace.Map:FindFirstChild("ugcShop"):Destroy()
 end)
 
 local workspace = game:GetService("Workspace")
@@ -117,7 +131,7 @@ AC.CanCollide = false
 AC.Shape = Enum.PartType.Cylinder
 AC.Transparency = 0
 AC.Color = Color3.new(0, 0, 0)
-AC.Parent = parent
+AC.Parent = workspace
 AC.Position = Vector3.new(-14.8902, -7.86472, 13.5819)
 
 local skyID = "rbxassetid://15189831814"
@@ -134,24 +148,7 @@ CircleMesh.Scale = Vector3.new(522.132, 34.9476, 611.233)
 CircleMesh.Parent = AC
 CircleMesh.TextureId = skyID
 
-local da = false
-function save()
-    da = not da
-    while da do
-        if game.ReplicatedStorage.Events:FindFirstChild("saveHearts") and da then
-            game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("saveHearts"):FireServer()
-            wait(10)
-        elseif da then
-            local StarterGui = game:GetService("StarterGui")
-            StarterGui:SetCore("SendNotification", {
-                Title = "Server No Support",
-                Text = "Server Desactualizado",
-                Duration = 10,
-            })
-            break
-        end
-    end
-end
+
 
 function sa()
 end
@@ -166,11 +163,11 @@ Sec:CreateToggle("Auto Rejoin", function()
 end)
 Sec:CreateButton("Rejoin", function()
     game.Players.LocalPlayer:kick("Rejoining")
-wait(0.1)
+    wait(0.1)
     game:GetService("TeleportService"):Teleport(game.PlaceId, Player)
 end)
 
-Sec3:CreateButton("Versión 17", sa)
+Sec3:CreateButton("Versión 19", sa)
 Sec3:CreateButton("Update: 27/07/24", sa)
 Sec3:CreateButton("System 100% Safe", sa)
 Sec2:CreateButton("Copy Link YouTube", copyy)
