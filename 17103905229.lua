@@ -56,10 +56,12 @@ local function moveHearts()
                     closestHeart.Transparency = 1
                 end)
                 wait(0.1)
+                pcall(function()
 firetouchinterest(plr.Character.HumanoidRootPart, closestHeart, 0)
         wait()
         firetouchinterest(plr.Character.HumanoidRootPart, closestHeart, 1)
 wait(0.1)
+                    end)
             end
 
             if not closestHeart and autoRejoin then
