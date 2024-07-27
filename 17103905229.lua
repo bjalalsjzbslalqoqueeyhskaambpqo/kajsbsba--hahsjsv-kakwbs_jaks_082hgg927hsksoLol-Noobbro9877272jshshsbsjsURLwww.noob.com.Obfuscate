@@ -128,7 +128,7 @@ local function destroySpecificObjects(parent)
     end
 end
 
-workspace.Map.ugcShop:Destroy()
+workspace.Map:FindFirstChild("ugcShop"):Destroy()
 destroySpecificObjects(workspace)
 end)
 
