@@ -269,7 +269,7 @@ local function main()
             StarterGui:SetCore("SendNotification", {
                 Title = "Auto Start ",
                 Text = "u are safe, by OneCreatorX",
-                Duration = 5,
+                Duration = 2,
             })
             b = true
             pcall(function()
@@ -334,7 +334,7 @@ local function main()
 
     local function checkFreefall()
         if player.Character.Humanoid:GetState() == Enum.HumanoidStateType.Freefall then
-            wait(3)
+            wait(7)
             if player.Character.Humanoid:GetState() == Enum.HumanoidStateType.Freefall then
                 onLongFall()
             end
