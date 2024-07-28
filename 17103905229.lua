@@ -362,7 +362,7 @@ end)
         onCharacterAdded()
         player.Character.Humanoid.StateChanged:Connect(function(_, newState)
             if newState == Enum.HumanoidStateType.Freefall then
-                checkFreefall()
+               -- checkFreefall()
             end
         end)
     end)
