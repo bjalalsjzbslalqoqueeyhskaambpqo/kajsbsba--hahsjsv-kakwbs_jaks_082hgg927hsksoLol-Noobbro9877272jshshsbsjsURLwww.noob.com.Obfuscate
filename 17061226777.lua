@@ -62,6 +62,10 @@ wait(5)
 end
 end)
 
+UL:AddBtn(cfrm, "Auto Claim UGC", function()
+
+(loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Auto%20Buyer(Fast%20Claim)")
+    end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
 UL:AddText(crFrm, "Create Script: 28/07/24 ")
