@@ -125,8 +125,9 @@ local function destroySpecificObjects(parent)
     end
 end
 
-workspace.Map.ugcShop:Destroy()
+
 destroySpecificObjects(workspace)
+        workspace.Map.ugcShop:Destroy()
 end)
 
 local workspace = game:GetService("Workspace")
@@ -236,12 +237,74 @@ local function main()
                 Duration = 5,
             })
             b = true
+            pcall(function()
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local function scaleCharacter(scale)
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    
+    if not character or not humanoid then
+
+        return
+    end
+    
+    local newScale = Vector3.new(scale, scale, scale)
+    
+    for _, part in pairs(character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.Size = part.Size * newScale
+        end
+    end
+    
+    local rootPart = character:FindFirstChild("HumanoidRootPart")
+    if rootPart then
+        rootPart.Position = rootPart.Position - Vector3.new(0, (1 - scale) * 3, 0)
+    end
+    
+
+end
+
+scaleCharacter(0.4)
+    end)
         else
             StarterGui:SetCore("SendNotification", {
                 Title = "Anti dectect Ready",
                 Text = "u are safe, by OneCreatorX",
                 Duration = 5,
             })
+            pcall(function()
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local function scaleCharacter(scale)
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    
+    if not character or not humanoid then
+
+        return
+    end
+    
+    local newScale = Vector3.new(scale, scale, scale)
+    
+    for _, part in pairs(character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.Size = part.Size * newScale
+        end
+    end
+    
+    local rootPart = character:FindFirstChild("HumanoidRootPart")
+    if rootPart then
+        rootPart.Position = rootPart.Position - Vector3.new(0, (1 - scale) * 3, 0)
+    end
+    
+
+end
+
+scaleCharacter(0.4)
+    end)
         end
     end
 
