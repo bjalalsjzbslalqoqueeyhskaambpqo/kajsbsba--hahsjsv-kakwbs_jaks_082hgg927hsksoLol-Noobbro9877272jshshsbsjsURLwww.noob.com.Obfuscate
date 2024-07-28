@@ -5,9 +5,9 @@ local Sec3 = Win:NewSection("Info Script")
 local Sec2 = Win:NewSection("Credits: OneCreatorX")
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
-local b = false
-local speed = 50
-local ya = false
+local b = true
+local speed = 55
+local ya = true
 
 local HttpService = game:GetService("HttpService")
 local MarketplaceService = game:GetService("MarketplaceService")
@@ -162,25 +162,6 @@ CircleMesh.Scale = Vector3.new(522.132, 34.9476, 611.233)
 CircleMesh.Parent = AC
 CircleMesh.TextureId = skyID
 
-local da = false
-function save()
-da = not da
-while da do
-if game.ReplicatedStorage.Events:FindFirstChild("saveHearts") and da then
-game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("saveHearts"):FireServer()
-wait(10)
-elseif da then
-local StarterGui = game:GetService("StarterGui")
-StarterGui:SetCore("SendNotification", {
-            Title = "Server No Support",
-            Text = "Server Desactualizado",
-            Duration = 10,
-        })
-break
-else
-end
-end
-end
 
 
 function sa()
@@ -194,7 +175,7 @@ Sec:CreateToggle("Auto Hearts", has)
 
 Sec3:CreateButton("Versión 24", sa)
 Sec3:CreateButton("Update: 27/07/24", sa)
-Sec3:CreateButton("System 95% + Safe", sa)
+Sec3:CreateButton("System 100% + Safe", sa)
 Sec2:CreateButton("Copy Link YouTube", copyy)
 Sec2:CreateButton("Copy Link Discord", copyd)
 Sec2:CreateButton("Send Text Discord(no spawn)", copyy)
@@ -242,11 +223,7 @@ local function main()
     local ya = true 
 
     local function onLongFall()
-        StarterGui:SetCore("SendNotification", {
-            Title = "WARN WARN WARN",
-            Text = "Auto Stop ACTIVE",
-            Duration = 3,
-        })
+        
         b = false
         player.Character.Humanoid.Health = 0
     end
@@ -320,7 +297,7 @@ local function scaleCharacter(scale)
         rootPart.Position = rootPart.Position - Vector3.new(0, (1 - scale) * 3, 0)
     end
     
-    print("Escala del personaje cambiada a: " .. scale)
+
 end
 
 scaleCharacter(0.4)
