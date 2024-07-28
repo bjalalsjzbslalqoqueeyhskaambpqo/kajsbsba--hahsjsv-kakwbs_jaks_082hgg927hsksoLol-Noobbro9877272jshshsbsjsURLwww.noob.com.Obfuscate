@@ -37,6 +37,7 @@ end)
 UL:AddTBtn(cfrm, "Auto Blocks", false, function()
 b = not b
 while b do
+            pcall(function()
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -55,6 +56,7 @@ wait(0.2)
         end
     end
 end
+                end)
 wiat(5)
 end
 end)
