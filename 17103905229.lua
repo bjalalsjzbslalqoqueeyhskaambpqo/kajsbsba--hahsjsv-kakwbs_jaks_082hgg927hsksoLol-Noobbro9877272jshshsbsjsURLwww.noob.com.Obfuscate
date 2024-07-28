@@ -6,7 +6,7 @@ local Sec2 = Win:NewSection("Credits: OneCreatorX")
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local b = true
-local speed = 55
+local speed = 50
 local ya = true
 
 spawn(function()
