@@ -29,14 +29,6 @@ local function copyToClipboard(text)
     end
 end
 
-local function getTextAsNumber(text)
-    local minutes, seconds = text:match("(%d+):(%d+)")
-    if minutes and seconds then
-        return tonumber(minutes) * 60 + tonumber(seconds)
-    end
-    return nil
-end
-
 local function moveHearts()
     local player = game.Players.LocalPlayer
     if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and b then
@@ -104,7 +96,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
                         local text = f.Text
                         local timeInSeconds = getTextAsNumber(text)
 
-                        if text == "Claim" or (timeInSeconds and timeInSeconds <= 30) then
+                        if text == "Claim" then
                             collectHeart(f.Parent.Parent.Parent)
                             break
                         end
