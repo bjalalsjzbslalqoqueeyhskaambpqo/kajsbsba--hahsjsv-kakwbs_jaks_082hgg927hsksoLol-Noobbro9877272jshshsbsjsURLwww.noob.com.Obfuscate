@@ -371,4 +371,27 @@ end
 scaleCharacter(0.4)
     end)
 
+pcall(function()
+        local NetworkClient = game:GetService("NetworkClient")
+local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+
+local PlaceId = game.GameId
+local localPlayer = Players.LocalPlayer
+
+NetworkClient.ChildRemoved:Connect(function(child)
+local PlaceId = game.PlaceId
+local JobId = game.JobId
+local TeleportService = game:GetService("TeleportService")
+
+if #game.Players:GetPlayers() <= 1 then
+        game.Players.LocalPlayer:Kick("\nRejoining...")
+        wait()
+        TeleportService:Teleport(PlaceId, game.Players.LocalPlayer)
+    else
+        TeleportService:TeleportToPlaceInstance(PlaceId, JobId, game.Players.LocalPlayer)
+    end
+
+end)
+    end)
 main()
