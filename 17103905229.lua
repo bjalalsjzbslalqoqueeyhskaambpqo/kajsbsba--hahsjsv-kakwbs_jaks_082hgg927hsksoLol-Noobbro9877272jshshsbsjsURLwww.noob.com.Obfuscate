@@ -192,6 +192,9 @@ Sec:CreateButton("Rejoin", function()
     game:GetService("TeleportService"):Teleport(game.PlaceId, Player)
 end)
 
+Sec:CreateButton("Store UGC", function()
+game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible  = not game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible 
+    end)
 Sec3:CreateButton("Versión 23", sa)
 Sec3:CreateButton("Update: 27/07/24", sa)
 Sec3:CreateButton("System 100% Safe", sa)
