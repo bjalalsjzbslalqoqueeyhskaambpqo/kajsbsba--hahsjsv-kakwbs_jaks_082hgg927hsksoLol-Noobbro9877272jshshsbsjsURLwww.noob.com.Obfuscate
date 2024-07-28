@@ -219,8 +219,8 @@ local function main()
 
 
     StarterGui:SetCore("SendNotification", {
-        Title = "much Time AFK +4 hs",
-        Text = "maybe 55 - 60 avoid (baibai)",
+        Title = "Auto Rejoin for Baibai",
+        Text = "maybe 45 - 50 avoid (baibai)",
         Duration = 5,
     })
 
@@ -274,11 +274,6 @@ end
 scaleCharacter(0.4)
     end)
         else
-            StarterGui:SetCore("SendNotification", {
-                Title = "Anti dectect Ready",
-                Text = "u are safe, by OneCreatorX",
-                Duration = 5,
-            })
             pcall(function()
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -394,4 +389,5 @@ if #game.Players:GetPlayers() <= 1 then
 
 end)
     end)
+
 main()
