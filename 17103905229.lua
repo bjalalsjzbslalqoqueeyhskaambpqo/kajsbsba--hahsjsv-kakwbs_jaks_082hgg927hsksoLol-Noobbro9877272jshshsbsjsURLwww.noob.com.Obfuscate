@@ -13,11 +13,8 @@ spawn(function()
     (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
 end)
 
-
 local HttpService = game:GetService("HttpService")
 local MarketplaceService = game:GetService("MarketplaceService")
-
-
 local RS = game:GetService("RunService")
 local WS = game:GetService("Workspace")
 
@@ -29,87 +26,101 @@ local function copyToClipboard(text)
     end
 end
 
-local function moveHearts()
+local function collectHeart(heartPart)
+    local player = game.Players.LocalPlayer
+    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local PPos = player.Character.HumanoidRootPart.Position
+        local HPos = Vector3.new(heartPart.Position.X, PPos.Y, heartPart.Position.Z)
+        local dist = (HPos - PPos).magnitude
+        if dist < 1 then
+            heartPart.Transparency = 1
+            heartPart.Position = PPos
+            spawn(function()
+                pcall(function() 
+                    wait(10)
+                    heartPart.Transparency = 0
+                end)
+            end)
+        end
+    end
+end
+
+local function moveToTarget(targetPosition)
     local player = game.Players.LocalPlayer
     if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and b then
         local PPos = player.Character.HumanoidRootPart.Position
-        local Hearts = WS.Map.Interactable:GetDescendants()
-        
-        local function calculateVelocity(targetPosition, speed)
-            local direction = (targetPosition - PPos).unit
-            return direction * speed
-        end
-        
-        local function collectHeart(heartPart)
-            local HPos = Vector3.new(heartPart.Position.X, PPos.Y, heartPart.Position.Z)
-            local dist = (HPos - PPos).magnitude
-            if dist < 1 then
-                heartPart.Transparency = 1
-                heartPart.Position = PPos
-                spawn(function()
-                pcall(function() 
-                        wait(10)
-                        heartPart.Transparency = 0
-                    end)
-                    end)
+        local direction = (targetPosition - PPos).unit
+        player.Character.HumanoidRootPart.Velocity = direction * speed
+    end
+end
+
+local function findNearestClaimableObject()
+    local player = game.Players.LocalPlayer
+    if not player or not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
+        return nil
+    end
+    
+    local PPos = player.Character.HumanoidRootPart.Position
+    local nearestClaimable = nil
+    local minDistance = math.huge
+
+    for _, f in ipairs(workspace.Map.Interactable.MushroomHouses:GetDescendants()) do
+        if f:IsA("TextLabel") and f.Text == "Claim" then
+            local claimableObject = f.Parent.Parent.Parent
+            local distance = (claimableObject.Position - PPos).Magnitude
+            if distance < minDistance then
+                minDistance = distance
+                nearestClaimable = claimableObject
             end
         end
-        
-        local minDist = math.huge
-        local closestHeart = nil
+    end
 
-        for _, H in ipairs(Hearts) do
-            if H:IsA("MeshPart") and H.Transparency ~= 1 then
-                local HPos = Vector3.new(H.Position.X, PPos.Y, H.Position.Z)
-                local dist = (HPos - PPos).magnitude
-                if dist < 1 then
-                    collectHeart(H)
-                elseif dist < minDist then
-                    minDist = dist
-                    closestHeart = H
+    return nearestClaimable
+end
+
+local function moveHearts()
+    local nearestClaimable = findNearestClaimableObject()
+    if nearestClaimable then
+        moveToTarget(nearestClaimable.Position)
+        collectHeart(nearestClaimable)
+    else
+        local player = game.Players.LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and b then
+            local PPos = player.Character.HumanoidRootPart.Position
+            local Hearts = WS.Map.Interactable:GetDescendants()
+            
+            local minDist = math.huge
+            local closestHeart = nil
+
+            for _, H in ipairs(Hearts) do
+                if H:IsA("MeshPart") and H.Transparency ~= 1 then
+                    local HPos = Vector3.new(H.Position.X, PPos.Y, H.Position.Z)
+                    local dist = (HPos - PPos).magnitude
+                    if dist < 1 then
+                        collectHeart(H)
+                    elseif dist < minDist then
+                        minDist = dist
+                        closestHeart = H
+                    end
                 end
             end
-        end
 
-        if closestHeart then
-            local heartPart = closestHeart
-            local targetPosition = heartPart.Position
-            local velocity = calculateVelocity(targetPosition, speed)
-            player.Character.HumanoidRootPart.Velocity = velocity
-            
-            repeat
-                wait()
-                collectHeart(heartPart)
-            until not closestHeart.Parent or player:DistanceFromCharacter(targetPosition) < 1
-            
-            if not closestHeart.Parent then
+            if closestHeart then
+                moveToTarget(closestHeart.Position)
+                collectHeart(closestHeart)
             end
-        else
-            wait()
         end
     end
 end
 
 game:GetService("RunService").RenderStepped:Connect(function()
-        for _, f in ipairs(workspace.Map.Interactable.MushroomHouses:GetDescendants()) do
-                    if f:IsA("TextLabel") then
-                        local text = f.Text
-                        local timeInSeconds = getTextAsNumber(text)
-
-                        if text == "Claim" then
-                            collectHeart(f.Parent.Parent.Parent)
-                            break
-                        end
-                    end
-        end
     pcall(moveHearts)
 end)
 
 function has()
     b = not b
-  ya = not ya
+    ya = not ya
 end
-
 
 function copyd()
     copyToClipboard("https://discord.com/invite/23kFrRBSfD")
@@ -122,38 +133,38 @@ end
 workspace.Camera.FieldOfView = 100
 
 pcall(function()
-for _, f in ipairs(workspace.Map.Interactable:GetDescendants()) do
-    if f.Name == "GroupChest" or f.Name == "SpinWheel" then
-        f:Destroy()
-    end
-end
-
-workspace.Map.Decorations:Destroy()
-
-workspace.nightLights:Destroy()
-workspace.BillboardGui:Destroy()
-workspace.Map.Leaderboards:Destroy()
-
-local function destroySpecificObjects(parent)
-    for _, child in ipairs(parent:GetChildren()) do
-        if child.ClassName == "Model" and child.Name == "Model" then
-            child:Destroy()
-        elseif child.ClassName == "MeshPart" and child.Name == "MeshPart" then
-            child:Destroy()
-        elseif child.ClassName == "Part" and child.Name == "Part" then
-            child:Destroy()
+    for _, f in ipairs(workspace.Map.Interactable:GetDescendants()) do
+        if f.Name == "GroupChest" or f.Name == "SpinWheel" then
+            f:Destroy()
         end
-        destroySpecificObjects(child)
     end
-end
 
-for _, f in ipairs(workspace.Map.Interactable.MushroomHouses:GetDescendants()) do
-                    if f:IsA("Folder") and f.Name == "Other" then
-f:Destroy()
+    workspace.Map.Decorations:Destroy()
+    workspace.nightLights:Destroy()
+    workspace.BillboardGui:Destroy()
+    workspace.Map.Leaderboards:Destroy()
 
-                
-destroySpecificObjects(workspace)
-        workspace.Map.ugcShop:Destroy()
+    local function destroySpecificObjects(parent)
+        for _, child in ipairs(parent:GetChildren()) do
+            if child.ClassName == "Model" and child.Name == "Model" then
+                child:Destroy()
+            elseif child.ClassName == "MeshPart" and child.Name == "MeshPart" then
+                child:Destroy()
+            elseif child.ClassName == "Part" and child.Name == "Part" then
+                child:Destroy()
+            end
+            destroySpecificObjects(child)
+        end
+    end
+
+    for _, f in ipairs(workspace.Map.Interactable.MushroomHouses:GetDescendants()) do
+        if f:IsA("Folder") and f.Name == "Other" then
+            f:Destroy()
+        end
+    end
+
+    destroySpecificObjects(workspace)
+    workspace.Map.ugcShop:Destroy()
 end)
 
 local workspace = game:GetService("Workspace")
@@ -189,8 +200,6 @@ CircleMesh.Scale = Vector3.new(522.132, 34.9476, 611.233)
 CircleMesh.Parent = AC
 CircleMesh.TextureId = skyID
 
-
-
 function sa()
 end
 
@@ -200,8 +209,8 @@ end
 
 Sec:CreateToggle("Auto Hearts", has)
 Sec:CreateButton("Store UGC", function()
-game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible  = not game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible 
-    end)
+    game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible = not game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible 
+end)
 
 Sec3:CreateButton("Versión 24", sa)
 Sec3:CreateButton("Update: 27/07/24", sa)
@@ -211,21 +220,22 @@ Sec2:CreateButton("Copy Link Discord", copyd)
 Sec2:CreateButton("Send Text Discord(no spawn)", copyy)
 
 game:GetService('Players').LocalPlayer.Idled:Connect(function()
-game:GetService('VirtualUser'):CaptureController()   game:GetService('VirtualUser'):ClickButton2(Vector2.new())
+    game:GetService('VirtualUser'):CaptureController()
+    game:GetService('VirtualUser'):ClickButton2(Vector2.new())
 end)
 
 Sec:CreateTextbox("Speed Auto Hears 70", function(value)
-             speed = value
+    speed = value
 end)
 
 Sec:CreateTextbox("ID Texture", function(value)
-        local StarterGui = game:GetService("StarterGui")
-StarterGui:SetCore("SendNotification", {
-            Title = "UseID Image: 12345",
-            Text = "Is Roblox Image - No URL",
-            Duration = 5,
-        })
-        
+    local StarterGui = game:GetService("StarterGui")
+    StarterGui:SetCore("SendNotification", {
+        Title = "UseID Image: 12345",
+        Text = "Is Roblox Image - No URL",
+        Duration = 5,
+    })
+    
     skyID = "rbxassetid://" .. value
     game.Lighting.Sky.SkyboxBk = skyID
     game.Lighting.Sky.SkyboxDn = skyID
@@ -236,12 +246,9 @@ StarterGui:SetCore("SendNotification", {
     CircleMesh.TextureId = skyID
 end)
 
-
 local function main()
     local StarterGui = game:GetService("StarterGui")
     
-
-
     StarterGui:SetCore("SendNotification", {
         Title = "Auto Rejoin for Baibai",
         Text = "maybe 45 - 50 avoid (baibai)",
@@ -253,7 +260,6 @@ local function main()
     local ya = true 
 
     local function onLongFall()
-        
         b = false
         player.Character.Humanoid.Health = 0
     end
@@ -267,68 +273,62 @@ local function main()
             })
             b = true
             pcall(function()
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
+                local Players = game:GetService("Players")
+                local player = Players.LocalPlayer
 
-local function scaleCharacter(scale)
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:WaitForChild("Humanoid")
-    
-    if not character or not humanoid then
+                local function scaleCharacter(scale)
+                    local character = player.Character or player.CharacterAdded:Wait()
+                    local humanoid = character:WaitForChild("Humanoid")
+                    
+                    if not character or not humanoid then
+                        return
+                    end
+                    
+                    local newScale = Vector3.new(scale, scale, scale)
+                    
+                    for _, part in pairs(character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.Size = part.Size * newScale
+                        end
+                    end
+                    
+                    local rootPart = character:FindFirstChild("HumanoidRootPart")
+                    if rootPart then
+                        rootPart.Position = rootPart.Position - Vector3.new(0, (1 - scale) * 3, 0)
+                    end
+                end
 
-        return
-    end
-    
-    local newScale = Vector3.new(scale, scale, scale)
-    
-    for _, part in pairs(character:GetDescendants()) do
-        if part:IsA("BasePart") then
-            part.Size = part.Size * newScale
-        end
-    end
-    
-    local rootPart = character:FindFirstChild("HumanoidRootPart")
-    if rootPart then
-        rootPart.Position = rootPart.Position - Vector3.new(0, (1 - scale) * 3, 0)
-    end
-    
-
-end
-
-scaleCharacter(0.4)
-    end)
+                scaleCharacter(0.4)
+            end)
         else
             pcall(function()
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
+                local Players = game:GetService("Players")
+                local player = Players.LocalPlayer
 
-local function scaleCharacter(scale)
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:WaitForChild("Humanoid")
-    
-    if not character or not humanoid then
+                local function scaleCharacter(scale)
+                    local character = player.Character or player.CharacterAdded:Wait()
+                    local humanoid = character:WaitForChild("Humanoid")
+                    
+                    if not character or not humanoid then
+                        return
+                    end
+                    
+                    local newScale = Vector3.new(scale, scale, scale)
+                    
+                    for _, part in pairs(character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.Size = part.Size * newScale
+                        end
+                    end
+                    
+                    local rootPart = character:FindFirstChild("HumanoidRootPart")
+                    if rootPart then
+                        rootPart.Position = rootPart.Position - Vector3.new(0, (1 - scale) * 3, 0)
+                    end
+                end
 
-        return
-    end
-    
-    local newScale = Vector3.new(scale, scale, scale)
-    
-    for _, part in pairs(character:GetDescendants()) do
-        if part:IsA("BasePart") then
-            part.Size = part.Size * newScale
-        end
-    end
-    
-    local rootPart = character:FindFirstChild("HumanoidRootPart")
-    if rootPart then
-        rootPart.Position = rootPart.Position - Vector3.new(0, (1 - scale) * 3, 0)
-    end
-    
-
-end
-
-scaleCharacter(0.4)
-    end)
+                scaleCharacter(0.4)
+            end)
         end
     end
 
@@ -359,59 +359,56 @@ scaleCharacter(0.4)
 end
 
 pcall(function()
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
+    local Players = game:GetService("Players")
+    local player = Players.LocalPlayer
 
-local function scaleCharacter(scale)
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:WaitForChild("Humanoid")
-    
-    if not character or not humanoid then
-
-        return
-    end
-    
-    local newScale = Vector3.new(scale, scale, scale)
-    
-    for _, part in pairs(character:GetDescendants()) do
-        if part:IsA("BasePart") then
-            part.Size = part.Size * newScale
+    local function scaleCharacter(scale)
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        if not character or not humanoid then
+            return
+        end
+        
+        local newScale = Vector3.new(scale, scale, scale)
+        
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Size = part.Size * newScale
+            end
+        end
+        
+        local rootPart = character:FindFirstChild("HumanoidRootPart")
+        if rootPart then
+            rootPart.Position = rootPart.Position - Vector3.new(0, (1 - scale) * 3, 0)
         end
     end
-    
-    local rootPart = character:FindFirstChild("HumanoidRootPart")
-    if rootPart then
-        rootPart.Position = rootPart.Position - Vector3.new(0, (1 - scale) * 3, 0)
-    end
-    
 
-end
-
-scaleCharacter(0.4)
-    end)
+    scaleCharacter(0.4)
+end)
 
 pcall(function()
-        local NetworkClient = game:GetService("NetworkClient")
-local Players = game:GetService("Players")
-local TeleportService = game:GetService("TeleportService")
+    local NetworkClient = game:GetService("NetworkClient")
+    local Players = game:GetService("Players")
+    local TeleportService = game:GetService("TeleportService")
 
-local PlaceId = game.GameId
-local localPlayer = Players.LocalPlayer
+    local PlaceId = game.GameId
+    local localPlayer = Players.LocalPlayer
 
-NetworkClient.ChildRemoved:Connect(function(child)
-local PlaceId = game.PlaceId
-local JobId = game.JobId
-local TeleportService = game:GetService("TeleportService")
+    NetworkClient.ChildRemoved:Connect(function(child)
+        local PlaceId = game.PlaceId
+        local JobId = game.JobId
+        local TeleportService = game:GetService("TeleportService")
 
-if #game.Players:GetPlayers() <= 1 then
-        game.Players.LocalPlayer:Kick("\nRejoining...")
-        wait()
-        TeleportService:Teleport(PlaceId, game.Players.LocalPlayer)
-    else
-        TeleportService:TeleportToPlaceInstance(PlaceId, JobId, game.Players.LocalPlayer)
-    end
+        if #game.Players:GetPlayers() <= 1 then
+            game.Players.LocalPlayer:Kick("\nRejoining...")
+            wait()
 
-end)
+                    TeleportService:Teleport(PlaceId, game.Players.LocalPlayer)
+        else
+            TeleportService:TeleportToPlaceInstance(PlaceId, JobId, game.Players.LocalPlayer)
+        end
     end)
+end)
 
 main()
