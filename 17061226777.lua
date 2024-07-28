@@ -57,7 +57,7 @@ wait(0.2)
     end
 end
                 end)
-wiat(5)
+wait(5)
 end
 end)
 
