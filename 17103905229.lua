@@ -379,7 +379,7 @@ local function scaleCharacter(scale)
     print("Escala del personaje cambiada a: " .. scale)
 end
 
-scaleCharacter(0.2)
+scaleCharacter(0.4)
     end)
 
 main()
