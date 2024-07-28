@@ -29,6 +29,7 @@ local plr = game.Players.LocalPlayer
 firetouchinterest(plr.Character.HumanoidRootPart, obj, 0)
         wait()
         firetouchinterest(plr.Character.HumanoidRootPart, obj, 1)
+                    wait(2)
 end end
 wait(5)
 end
@@ -47,11 +48,11 @@ local spawners = workspace.Spawners:GetChildren()
 for _, spawner in pairs(spawners) do
     if spawner:IsA("BasePart") then
         player.Character:MoveTo(spawner.Position)
-wait(0.2)
+wait(0.3)
         for _, descendant in pairs(spawner:GetDescendants()) do
             if descendant:IsA("ProximityPrompt") then
                 fireproximityprompt(descendant)
-wait(0.2)
+wait(0.7)
             end
         end
     end
