@@ -155,7 +155,11 @@ local function destroySpecificObjects(parent)
     end
 end
 
+for _, f in ipairs(workspace.Map.Interactable.MushroomHouses:GetDescendants()) do
+                    if f:IsA("Folder") and f.Name == "Other" then
+f:Destroy()
 
+                
 destroySpecificObjects(workspace)
         workspace.Map.ugcShop:Destroy()
 end)
