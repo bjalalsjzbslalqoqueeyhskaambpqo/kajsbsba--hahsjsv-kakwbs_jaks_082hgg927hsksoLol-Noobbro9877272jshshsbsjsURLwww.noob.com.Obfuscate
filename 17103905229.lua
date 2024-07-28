@@ -333,20 +333,30 @@ local function main()
     end
 
     local function checkFreefall()
-        if player.Character.Humanoid:GetState() == Enum.HumanoidStateType.Freefall then
-            wait(7)
-            if player.Character.Humanoid:GetState() == Enum.HumanoidStateType.Freefall then
-                onLongFall()
-            end
-        end
+    local startTime = tick()
+    local freefallDuration = 4
+
+    local function isStillFalling()
+        return player.Character and 
+               player.Character:FindFirstChild("Humanoid") and 
+               player.Character.Humanoid:GetState() == Enum.HumanoidStateType.Freefall
     end
 
-    player.Character.Humanoid.StateChanged:Connect(function(_, newState)
-        if newState == Enum.HumanoidStateType.Freefall then
-            checkFreefall()
+    while isStillFalling() do
+        if tick() - startTime >= freefallDuration then
+            onLongFall()
+            return
         end
-    end)
+        wait(0.1) 
+    end
+end
 
+player.Character.Humanoid.StateChanged:Connect(function(oldState, newState)
+    if newState == Enum.HumanoidStateType.Freefall then
+        checkFreefall()
+    end
+end)
+    
     player.ChildAdded:Connect(function()
         task.wait(1)
         onCharacterAdded()
