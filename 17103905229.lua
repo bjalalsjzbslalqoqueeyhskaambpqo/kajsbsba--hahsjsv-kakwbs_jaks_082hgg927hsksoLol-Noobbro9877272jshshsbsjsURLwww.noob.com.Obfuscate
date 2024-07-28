@@ -28,7 +28,7 @@ end
 
 function rejoin()
     game.Players.LocalPlayer:kick("rejoin")
-    wait(0.1)
+    wait(0.2)
     game:GetService("TeleportService"):Teleport(game.PlaceId, Player)
 end
 
