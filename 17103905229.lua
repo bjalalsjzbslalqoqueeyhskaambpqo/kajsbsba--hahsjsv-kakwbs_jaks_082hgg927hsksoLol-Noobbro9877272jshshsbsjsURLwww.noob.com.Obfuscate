@@ -334,7 +334,7 @@ local function main()
 
     local function checkFreefall()
     local startTime = tick()
-    local freefallDuration = 4
+    local freefallDuration = 3
 
     local function isStillFalling()
         return player.Character and 
@@ -362,7 +362,7 @@ end)
         onCharacterAdded()
         player.Character.Humanoid.StateChanged:Connect(function(_, newState)
             if newState == Enum.HumanoidStateType.Freefall then
-               -- checkFreefall()
+               checkFreefall()
             end
         end)
     end)
