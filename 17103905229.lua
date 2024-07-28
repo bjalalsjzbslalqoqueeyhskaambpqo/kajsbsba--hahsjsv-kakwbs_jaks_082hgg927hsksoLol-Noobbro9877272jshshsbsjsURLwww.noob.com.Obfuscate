@@ -29,6 +29,14 @@ local function copyToClipboard(text)
     end
 end
 
+local function getTextAsNumber(text)
+    local minutes, seconds = text:match("(%d+):(%d+)")
+    if minutes and seconds then
+        return tonumber(minutes) * 60 + tonumber(seconds)
+    end
+    return nil
+end
+
 local function moveHearts()
     local player = game.Players.LocalPlayer
     if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and b then
@@ -46,6 +54,12 @@ local function moveHearts()
             if dist < 1 then
                 heartPart.Transparency = 1
                 heartPart.Position = PPos
+                spawn(function()
+                pcall(function() 
+                        wait(10)
+                        heartPart.Transparency = 0
+                    end)
+                    end)
             end
         end
         
@@ -85,6 +99,17 @@ local function moveHearts()
 end
 
 game:GetService("RunService").RenderStepped:Connect(function()
+        for _, f in ipairs(workspace.Map.Interactable.MushroomHouses:GetDescendants()) do
+                    if f:IsA("TextLabel") then
+                        local text = f.Text
+                        local timeInSeconds = getTextAsNumber(text)
+
+                        if text == "Claim" or (timeInSeconds and timeInSeconds <= 30) then
+                            collectHeart(f.Parent.Parent.Parent)
+                            break
+                        end
+                    end
+        end
     pcall(moveHearts)
 end)
 
@@ -106,7 +131,7 @@ workspace.Camera.FieldOfView = 100
 
 pcall(function()
 for _, f in ipairs(workspace.Map.Interactable:GetDescendants()) do
-    if f.Name == "MushroomHouses" or f.Name == "GroupChest" or f.Name == "SpinWheel" then
+    if f.Name == "GroupChest" or f.Name == "SpinWheel" then
         f:Destroy()
     end
 end
@@ -178,6 +203,9 @@ function copyy()
 end
 
 Sec:CreateToggle("Auto Hearts", has)
+Sec:CreateButton("Store UGC", function()
+game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible  = not game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible 
+    end)
 
 Sec3:CreateButton("Versión 24", sa)
 Sec3:CreateButton("Update: 27/07/24", sa)
