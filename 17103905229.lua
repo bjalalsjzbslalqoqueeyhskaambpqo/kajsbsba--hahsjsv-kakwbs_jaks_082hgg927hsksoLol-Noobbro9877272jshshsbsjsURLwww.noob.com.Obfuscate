@@ -1,3 +1,4 @@
+if game.PlaceId == 17103905229 then
 local Lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
 local Win = Lib:NewWindow("Collect For UGC")
 local Sec = Win:NewSection("Options")
@@ -428,3 +429,6 @@ end)
     end)
 
 main()
+else
+    print("No Game Collect AFK For UGC")
+end
