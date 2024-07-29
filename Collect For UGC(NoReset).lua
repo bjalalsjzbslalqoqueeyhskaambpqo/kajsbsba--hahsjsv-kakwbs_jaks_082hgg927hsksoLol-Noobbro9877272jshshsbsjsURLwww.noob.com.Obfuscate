@@ -432,6 +432,7 @@ for _, p in game.Players.LocalPlayer.Character:GetChildren() do
         if p:IsA("BasePart") then
 p.CanCollide = false
         end
+            end
     end)
 
 main()
