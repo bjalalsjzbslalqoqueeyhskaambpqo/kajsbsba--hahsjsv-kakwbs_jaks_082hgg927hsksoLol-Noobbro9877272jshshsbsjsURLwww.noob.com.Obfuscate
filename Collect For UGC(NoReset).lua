@@ -215,7 +215,7 @@ end)
 
 Sec3:CreateButton("Versión 24", sa)
 Sec3:CreateButton("Update: 27/07/24", sa)
-Sec3:CreateButton("System 100% + Safe", sa)
+Sec3:CreateButton("System 85% + Safe", sa)
 Sec2:CreateButton("Copy Link YouTube", copyy)
 Sec2:CreateButton("Copy Link Discord", copyd)
 Sec2:CreateButton("Send Text Discord(no spawn)", copyy)
