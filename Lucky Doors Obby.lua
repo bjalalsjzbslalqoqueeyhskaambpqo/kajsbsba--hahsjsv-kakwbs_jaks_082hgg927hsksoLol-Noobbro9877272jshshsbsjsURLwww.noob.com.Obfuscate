@@ -189,7 +189,7 @@ end
 
 local function waitForReset()
     while stageValue.Value ~= 0 do
-        wait(1)
+        wait(2)
     end
 end
 
@@ -202,10 +202,10 @@ local function checkAndMove()
             local door = getGoodDoor(nextStage)
             if door then
                 moveToDoor(door)
-                wait(0.5)
+                wait(2)
                 checkAndMove()
             else
-                wait(0.5)
+                wait(2)
                 checkAndMove()
             end
         else
@@ -230,9 +230,9 @@ spawn(function()
 while true do
 if a and game.Players.LocalPlayer:WaitForChild("Stage"):WaitForChild("Current").Value == 0 then
 checkAndMove()
-wait(0.4)
+wait(2)
 end
-wait(0.5)
+wait(2)
 end
 end)
 
@@ -305,10 +305,10 @@ local function checkAndMov()
             local door = getGoodDoor(nextStage)
             if door then
                 moveToDoor(door)
-                wait(0.5)
+                wait(2)
                 checkAndMov()
             else
-                wait(0.5)
+                wait(2)
                 checkAndMov()
             end
         else
