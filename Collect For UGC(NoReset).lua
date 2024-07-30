@@ -254,6 +254,12 @@ if game.PlaceId == 17103905229 then
     Sec:CreateTextbox("Speed Auto Hears 50", function(value)
         speed = tonumber(value) or speed
         saveSpeed(speed)
+            local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Save in local",
+    Text = "speed now is " .. speed,
+    Duration = 5,
+})
         print("Velocidad actualizada a: " .. speed)
     end)
 
