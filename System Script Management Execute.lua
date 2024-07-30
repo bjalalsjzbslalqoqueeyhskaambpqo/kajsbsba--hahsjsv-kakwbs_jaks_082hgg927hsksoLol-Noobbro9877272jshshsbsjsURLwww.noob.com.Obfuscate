@@ -124,7 +124,7 @@ local function cg()
 end
 
 local function ce(id, sd, p)
-    if sd.name == "info" or sd.name == "System Script Management Exdcute" then
+    if sd.name == "info" or sd.name == "System Script Management Execute" then
         return
     end
 
