@@ -175,7 +175,6 @@ local function joinPublicServerWithMostPlayers()
         end
     end
     
-    warn("No suitable server found. Teleporting to a random server.")
     TeleportService:Teleport(placeId)
 end
 
@@ -242,6 +241,28 @@ end)
 
 UL:AddBtn(cfrm, "Join Server with More Players", function() 
     joinPublicServerWithMostPlayers()
+end)
+
+spawn(function()
+local function updateWalkSpeed(speedIncrement)
+    local player = game.Players.LocalPlayer
+    local success, humanoid = pcall(function()
+        return player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+    end)
+    if success and humanoid then
+        humanoid.WalkSpeed = humanoid.WalkSpeed + speedIncrement
+    end
+end
+
+UL:AddTBox(cfrm, "Speed Test:", function(text)
+    local speedIncrement = tonumber(text) or 0
+    spawn(function()
+        while true do
+            updateWalkSpeed(speedIncrement)
+            wait(1)
+        end
+    end)
+end)
 end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX")
