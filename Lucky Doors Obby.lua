@@ -232,7 +232,7 @@ local function movePlayerThroughDoors()
 
                 if humanoid.Health > 1 and (character.Humanoid.RootPart.Position - finalPosition).magnitude <= 3 then
                    
-                    wait(8)
+                    wait(10)
                     game.Players.LocalPlayer:Kick("Joining a server with more players...")
                     wait(0.3)
                     joinPublicServerWithMostPlayers()
