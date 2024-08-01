@@ -254,12 +254,12 @@ local function updateWalkSpeed(speedIncrement)
     end
 end
 
-UL:AddTBox(cfrm, "Speed Test:", function(text)
+UL:AddTBox(cfrm, "Speed Test: 10 or -10", function(text)
     local speedIncrement = tonumber(text) or 0
     spawn(function()
         while true do
             updateWalkSpeed(speedIncrement)
-            wait(1)
+            wait(0.1)
         end
     end)
 end)
