@@ -184,14 +184,41 @@ local function movePlayerThroughDoors()
         local humanoid = character and character:FindFirstChild("Humanoid")
 
         if humanoid and humanoid.Health > 1 then
-            local correctDoor = getCorrectDoor(stageNumber)
-            if correctDoor then
-                local targetPosition = correctDoor.Position
-                humanoid:MoveTo(targetPosition)
+            if stageNumber <= #workspace.Stages:GetChildren() then
+                local correctDoor = getCorrectDoor(stageNumber)
+                if correctDoor then
+                    local targetPosition = correctDoor.Position
+                    humanoid:MoveTo(targetPosition)
 
+                    local startTime = tick()
+                    repeat
+                        humanoid:MoveTo(targetPosition)
+                        wait(0.1)
+                        if humanoid.Health <= 1 then
+                            stageNumber = 1
+                            break
+                        end
+                        
+                        if tick() - startTime > 10 then 
+                            break
+                        end
+                    until (character and character:FindFirstChild("Humanoid") and (character.Humanoid.RootPart.Position - targetPosition).magnitude <= 2) or not autoMoveEnabled
+
+                    if humanoid.Health > 1 then
+                        stageNumber = stageNumber + 1
+                    else
+                        stageNumber = 1
+                    end
+                else
+                    wait(3)
+                    stageNumber = 1
+                    initDoors()
+                end
+            else
+                humanoid:MoveTo(finalPosition)
                 local startTime = tick()
                 repeat
-                    humanoid:MoveTo(targetPosition)
+                    humanoid:MoveTo(finalPosition)
                     wait(0.1)
                     if humanoid.Health <= 1 then
                         stageNumber = 1
@@ -201,24 +228,17 @@ local function movePlayerThroughDoors()
                     if tick() - startTime > 10 then 
                         break
                     end
-                until (character and character:FindFirstChild("Humanoid") and (character.Humanoid.RootPart.Position - targetPosition).magnitude <= 2) or not autoMoveEnabled
+                until (character and character:FindFirstChild("Humanoid") and (character.Humanoid.RootPart.Position - finalPosition).magnitude <= 3) or not autoMoveEnabled
 
-                if humanoid.Health <= 1 then
-                    continue
-                end
-
-                stageNumber = stageNumber + 1
-            else
-                if stageNumber > #workspace.Stages:GetChildren() then
-                    humanoid:MoveTo(finalPosition)
-                    wait(14)
+                if humanoid.Health > 1 and (character.Humanoid.RootPart.Position - finalPosition).magnitude <= 3 then
+                   
+                    wait(8)
                     game.Players.LocalPlayer:Kick("Joining a server with more players...")
                     wait(0.3)
                     joinPublicServerWithMostPlayers()
                 else
-                    wait(3)
+
                     stageNumber = 1
-                    initDoors()
                 end
             end
         else
