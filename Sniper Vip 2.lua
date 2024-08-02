@@ -16,7 +16,7 @@ local its = {}
 local fn = "UGCSniper.json"
 
 local workers = {}
-for i = 1, 100 do
+for i = 1, 99 do
     workers[i] = "https://worker-" .. i .. ".matiastoledo284.workers.dev/?id="
 end
 
