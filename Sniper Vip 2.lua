@@ -16,7 +16,7 @@ local its = {}
 local fn = "UGCSniper.json"
 
 local workers = {}
-for i = 1, 99 do
+for i = 1, 20 do
     workers[i] = "https://worker-" .. i .. ".matiastoledo284.workers.dev/?id="
 end
 
@@ -227,14 +227,12 @@ local function purchaseItem(n, i, p)
 end
 
 local function startSnipe(i, p, b, f)
-    upd("Snipe iniciado para ID " .. i)
     task.spawn(function()
         while its[i] and its[i].a do
             local n = getProductInfo(i)
             
             if n and n.IsForSale and n.PriceInRobux <= p then
                 if purchaseItem(n, i, p) then
-                    upd("Item " .. i .. " purchased successfully!")
                     its[i] = nil
                     f:Destroy()
                     svi()
@@ -242,7 +240,7 @@ local function startSnipe(i, p, b, f)
                 end
             end
             
-            task.wait(0.050)
+            task.wait(0.1)
         end
     end)
 end
