@@ -106,11 +106,73 @@ UL:AddTBtn(cfrm, "Auto Boost Horse", false, function()
     end
 end)
 
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+local mobFolder = Workspace:WaitForChild("MobFolder")
+local lastFeedTimes = {}
+
+local function feedHorse(horse)
+    local tameEvent = horse:FindFirstChild("TameEvent")
+    if tameEvent and tameEvent:IsA("RemoteEvent") then
+        for _ = 1, 3 do
+            wait(0.5)
+            tameEvent:FireServer("SuccessfulFeed")
+        end
+    end
+end
+
+local function startFeeding(horse)
+    local tameEvent = horse:FindFirstChild("TameEvent")
+    if tameEvent and tameEvent:IsA("RemoteEvent") then
+        tameEvent:FireServer("Begin")
+        wait(1)
+        feedHorse(horse)
+    end
+end
+
+local function checkHorses()
+    local currentTime = tick()
+    
+    for _, mob in pairs(mobFolder:GetChildren()) do
+        if mob:IsA("BasePart") and mob:FindFirstChild("TameEvent") then
+            local distance = (mob.Position - humanoidRootPart.Position).magnitude
+            local horseId = mob:GetFullName()
+            
+            if distance <= 8 then
+                if not lastFeedTimes[horseId] or (currentTime - lastFeedTimes[horseId] > 10) then
+                    startFeeding(mob)
+                    lastFeedTimes[horseId] = currentTime
+                end
+            elseif distance <= 15 then
+                if not lastFeedTimes[horseId] or (currentTime - lastFeedTimes[horseId] > 15) then
+                    lastFeedTimes[horseId] = nil
+                end
+            end
+        end
+    end
+end
+
+local hat = false
+UL:AddTBtn(cfrm, "Auto Obtain Horse", false, function() 
+hat = not hat
+while hat do 
+pcall(function()
+checkHorses()
+wait()
+end)
+        end
+    end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
 UL:AddText(crFrm, "Create Script: 03/07/24 ")
-UL:AddText(crFrm, "Update Script: --/--/--")
-UL:AddText(crFrm, "Script Version: 0.1")
+UL:AddText(crFrm, "Update Script: 02/08/24")
+UL:AddText(crFrm, "Script Version: 0.2")
 UL:AddBtn(crFrm, "Copy link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 UL:AddBtn(crFrm, "Copy link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
