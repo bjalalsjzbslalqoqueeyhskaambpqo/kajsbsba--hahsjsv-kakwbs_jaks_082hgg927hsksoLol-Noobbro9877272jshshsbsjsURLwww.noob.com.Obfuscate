@@ -159,7 +159,7 @@ local function checkHorses()
 end
 
 local hat = false
-UL:AddTBtn(cfrm, "Auto Obtain Horse", false, function() 
+UL:AddTBtn(cfrm, "Auto feed Horse", false, function() 
 hat = not hat
 while hat do 
 pcall(function()
