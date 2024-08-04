@@ -32,7 +32,7 @@ local function moveTo(pos)
             
             if humanoid.Sit then
                 humanoid.Sit = false
-                task.wait(0.1) -- Esperar un poco para que se levante
+                task.wait(0.1)
             end
 
             if p.Character:FindFirstChild("HumanoidRootPart") then
@@ -50,9 +50,26 @@ local function collectCash()
     end
 end
 
+local function handleInsufficientFunds()
+    local textModal = p.PlayerGui:WaitForChild("UXGuis"):WaitForChild("TextModal")
+    if textModal.Enabled then
+        local targetButton = textModal.Frame.Footer.TextButton
+        if targetButton and targetButton.Visible then
+            local events = {"MouseButton1Click", "MouseButton1Down", "MouseButton1Up", "Activated", "InputBegan", "InputEnded"}
+            for _, eventName in ipairs(events) do
+                for _, connection in pairs(getconnections(targetButton[eventName])) do
+                    pcall(function()
+                        connection:Fire()
+                    end)
+                end
+            end
+        end
+    end
+end
+
 local function activateProximities()
     local tycoon = getTycoon()
-    if not tycoon then return end
+    if not tycoon then return false end
     
     for _, i in tycoon:GetDescendants() do
         if i:IsA("ProximityPrompt") and i.Parent and i.Parent.Name == "UnlockedButton" then
@@ -60,10 +77,20 @@ local function activateProximities()
             task.wait(0.5)
             fireproximityprompt(i)
             
+            local startTime = tick()
             repeat
                 task.wait()
+                
+                local textModal = p.PlayerGui:WaitForChild("UXGuis"):WaitForChild("TextModal")
+                if textModal.Enabled then
+                    handleInsufficientFunds()
+                    return false
+                end
+                
+                if tick() - startTime > 10 then
+                    return false
+                end
             until not i:IsDescendantOf(game) or not i.Parent or i.Parent.Name ~= "UnlockedButton"
-            
             
             return true
         end
@@ -98,7 +125,10 @@ local function mainLoop()
         if getTycoon() then
             collectCash()
             task.wait(1)
-            if activateProximities() then
+            if not activateProximities() then
+                collectCash()
+                task.wait()
+            else
                 task.wait()
             end
         end
@@ -125,26 +155,3 @@ p.Idled:Connect(function()
     game:GetService('VirtualUser'):CaptureController()
     game:GetService('VirtualUser'):ClickButton2(Vector2.new())
 end)
-
-local function handleTextModalButton()
-    local player = game.Players.LocalPlayer
-    local textModal = player.PlayerGui:WaitForChild("UXGuis"):WaitForChild("TextModal")
-    local targetButton = textModal.Frame.Footer.TextButton
-
-    local function interactWithButton()
-        if textModal.Enabled and targetButton.Visible then
-            local events = {"MouseButton1Click", "MouseButton1Down", "MouseButton1Up", "Activated", "InputBegan", "InputEnded"}
-            for _, eventName in ipairs(events) do
-                for _, connection in pairs(getconnections(targetButton[eventName])) do
-                    pcall(function()
-                        connection:Fire()
-                    end)
-                end
-            end
-        end
-    end
-
-    textModal:GetPropertyChangedSignal("Enabled"):Connect(interactWithButton)
-end
-
-handleTextModalButton()
