@@ -30,9 +30,7 @@ for _, obj in ipairs(workspace:GetChildren()) do
     if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") then
 
 local plr = game.Players.LocalPlayer
-firetouchinterest(plr.Character.HumanoidRootPart, obj, 0)
-        wait()
-        firetouchinterest(plr.Character.HumanoidRootPart, obj, 1)
+obj.Position = plr.Character.HumanoidRootPart.Position
 wait()
 end end
 wait()
