@@ -1,6 +1,9 @@
-
-_G.CreatorID = "3653226175"
-_G.CreatorButtonText = "F. OneCreatorX"
+if not _G.CreatorID then
+    _G.CreatorID = "3653226175"
+end
+if not _G.CreatorButtonText then
+    _G.CreatorButtonText = "F. OneCreatorX"
+end
 
 local HttpService = game:GetService("HttpService")
 
