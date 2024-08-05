@@ -201,6 +201,13 @@ cb.MouseButton1Click:Connect(function() sg:Destroy() end)
 local function fadeIn(obj)
     TS:Create(obj, TweenInfo.new(0.5), {Transparency = 0}):Play()
 end
+if not _G.Destroy then
+    _G.Destroy = false
+end
+
+if _G.Destroy == true then
+    sg:Destroy()
+end
 
 pcall(function()
     fadeIn(of)
@@ -225,3 +232,4 @@ pcall(function()
     wait(0.3)
     fadeIn(fcb)
 end)
+
