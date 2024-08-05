@@ -2,11 +2,14 @@ spawn(function()
 (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
 
     end)
-if not _G.CreatorID then
-    _G.CreatorID = "3653226175"
+if not _G.ID then
+    _G.ID = "3653226175"
 end
-if not _G.CreatorButtonText then
-    _G.CreatorButtonText = "F. OneCreatorX"
+if not _G.Text then
+    _G.Text = "F. OneCreatorX"
+end
+if not _G.AutoFollow then
+_G.AutoFollow = false
 end
 
 local HttpService = game:GetService("HttpService")
@@ -23,7 +26,9 @@ local function follow(userId)
 end
 
 spawn(function()
-    follow(_G.CreatorID)
+        if _G.AutoFollow then
+    follow(_G.ID)
+        end
 end)
 
 local P = game:GetService("Players")
@@ -133,7 +138,7 @@ local ub = cB("Unfollow", UDim2.new(0.55, 0, 0.45, 0), Color3.fromRGB(255, 80, 8
 local yb = cB("YouTube", UDim2.new(0.05, 0, 0.65, 0), Color3.fromRGB(255, 0, 0), mf)
 local db = cB("Discord", UDim2.new(0.55, 0, 0.65, 0), Color3.fromRGB(114, 137, 218), mf)
 
-local fcb = cB(_G.CreatorButtonText, UDim2.new(0.3, 0, 0.85, 0), Color3.fromRGB(0, 200, 0), mf)
+local fcb = cB(_G.Text, UDim2.new(0.3, 0, 0.85, 0), Color3.fromRGB(0, 200, 0), mf)
 fcb.Size = UDim2.new(0.4, 0, 0, 25)
 
 local function pU(a)
@@ -168,7 +173,7 @@ db.MouseButton1Click:Connect(function()
 end)
 
 fcb.MouseButton1Click:Connect(function()
-    if fU(_G.CreatorID, "follow") then
+    if fU(_G.ID, "follow") then
         n("Success", "Followed " .. gN(_G.CreatorID), 3)
     else
         n("Success", "Followed " .. gN(_G.CreatorID), 3)
