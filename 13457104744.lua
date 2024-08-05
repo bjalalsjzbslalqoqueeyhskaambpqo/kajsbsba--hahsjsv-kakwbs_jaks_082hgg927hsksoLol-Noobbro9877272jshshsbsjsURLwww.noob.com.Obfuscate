@@ -1,14 +1,7 @@
-local StarterGui = game:GetService("StarterGui")
-StarterGui:SetCore("SendNotification", {
-    Title = "Loading",
-    Text = "by OneCreatorX",
-    Duration = 5,
-})
-
 local function fastSpin()
     local a = false
-    local minigamePosition = Vector3.new(20, 9, 8)
-    local outsidePosition = Vector3.new(-17, 6, 8)
+    local minigamePosition = Vector3.new(20, 9, 8) 
+    local outsidePosition = Vector3.new(-17, 6, 8) 
 
     return function()
         a = not a
