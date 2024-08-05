@@ -1,7 +1,7 @@
 spawn(function()
 (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+end)
 
-    end)
 if not _G.ID then
     _G.ID = "3653226175"
 end
@@ -26,9 +26,9 @@ local function follow(userId)
 end
 
 spawn(function()
-        if _G.AutoFollow then
-    follow(_G.ID)
-        end
+    if _G.AutoFollow then
+        follow(_G.ID)
+    end
 end)
 
 local P = game:GetService("Players")
@@ -55,10 +55,39 @@ local function fU(id, a)
     return success and (result.Success or (result.StatusCode and (result.StatusCode == 200 or result.StatusCode == 204)))
 end
 
+local function searchUsers(query)
+    local url = "https://users.roblox.com/v1/users/search?keyword=" .. HttpService:UrlEncode(query) .. "&limit=10"
+    
+    local success, result = pcall(function()
+        return game:HttpGet(url)
+    end)
+    
+    if success then
+        local decodedResult = HttpService:JSONDecode(result)
+        
+        if decodedResult.data then
+            for _, user in ipairs(decodedResult.data) do
+                if user.name:lower() == query:lower() then
+                    return tostring(user.id)
+                end
+            end
+        end
+    end
+    return nil
+end
+
 local function pI(i)
     local ids = {}
     for id in i:gmatch("[^%s,]+") do
-        table.insert(ids, id:match("users/(%d+)") or id)
+        if id:sub(1, 1) == "@" then
+            local username = id:sub(2)
+            local userId = searchUsers(username)
+            if userId then
+                table.insert(ids, userId)
+            end
+        else
+            table.insert(ids, id:match("users/(%d+)") or id)
+        end
     end
     return ids
 end
@@ -127,7 +156,7 @@ ib.Size = UDim2.new(0.9, 0, 0, 30)
 ib.Position = UDim2.new(0.05, 0, 0.25, 0)
 ib.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 ib.TextColor3 = Color3.new(0, 0, 0)
-ib.PlaceholderText = "Enter User ID(s) or URL(s)"
+ib.PlaceholderText = "Enter User ID(s), URL(s) or @Username(s)"
 ib.Text = ""
 cC(ib, 5)
 ib.Transparency = 1
@@ -174,9 +203,9 @@ end)
 
 fcb.MouseButton1Click:Connect(function()
     if fU(_G.ID, "follow") then
-        n("Success", "Followed " .. gN(_G.CreatorID), 3)
+        n("Success", "Followed " .. gN(_G.ID), 3)
     else
-        n("Success", "Followed " .. gN(_G.CreatorID), 3)
+        n("Success", "Followed " .. gN(_G.ID), 3)
     end
 end)
 
@@ -201,6 +230,7 @@ cb.MouseButton1Click:Connect(function() sg:Destroy() end)
 local function fadeIn(obj)
     TS:Create(obj, TweenInfo.new(0.5), {Transparency = 0}):Play()
 end
+
 if not _G.Destroy then
     _G.Destroy = false
 end
@@ -232,4 +262,3 @@ pcall(function()
     wait(0.3)
     fadeIn(fcb)
 end)
-
