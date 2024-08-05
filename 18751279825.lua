@@ -104,6 +104,7 @@ function blockAllOtherPlayers()
 end
 
 function rejoinExperience()
+            game.Players.LocalPlayer:kick("Join other Server")
     local placeId = game.PlaceId
     TS:Teleport(placeId, LP)
 end
