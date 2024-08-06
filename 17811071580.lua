@@ -37,6 +37,11 @@ ff()
 end
  end)
 
+UL:AddBtn(cfrm, "Tp Main Game", function() 
+        p:kick("join main")
+game:GetService("TeleportService"):Teleport(17811071580)
+    end)
+
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
 UL:AddText(crFrm, "Create Script: 06/08/24 ")
