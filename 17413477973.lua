@@ -31,18 +31,33 @@ UL:AddTBtn(cfrm, "Instant Codes", false, function()
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
     while a do
-        local response = game:HttpGet("https://codes.matiastoledo284.workers.dev")
-        local data = HttpService:JSONDecode(response)
-        local codes = data.table
-        local available = data.available
-        
-        statusText.Text = "Status: " .. (available and "Available" or "Not Available")
+         local HttpService = game:GetService("HttpService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-        for _, code in ipairs(codes) do
-            local args = { tostring(code) }
-            ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("UGCService"):WaitForChild("RF"):WaitForChild("ClaimItem"):InvokeServer(unpack(args))
-            wait()
+local function fetchCodes()
+    local response = game:HttpGet("https://codes.matiastoledo284.workers.dev") 
+    local codes = {}
+
+    for line in response:gmatch("[^\r\n]+") do
+        for code in line:gmatch("%S+") do
+            table.insert(codes, code)
         end
+    end
+    
+    return codes
+end
+
+local function claimCodes(codes)
+    local ugcService = ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("UGCService"):WaitForChild("RF"):WaitForChild("ClaimItem")
+    
+    for _, code in ipairs(codes) do
+        ugcService:InvokeServer(code)
+        wait()
+    end
+end
+
+local codes = fetchCodes()
+claimCodes(codes)
         
         wait(0.1)
     end
