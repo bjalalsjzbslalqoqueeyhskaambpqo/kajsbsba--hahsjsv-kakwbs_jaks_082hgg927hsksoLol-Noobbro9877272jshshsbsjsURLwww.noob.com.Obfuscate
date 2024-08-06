@@ -5,8 +5,8 @@ local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
-_G.CREATOR_ID = _G.CREATOR_ID or "4525133262"
-_G.CREATOR_BUTTON_TEXT = _G.CREATOR_BUTTON_TEXT or "Follow OneCreatorX"
+_G.ID = _G.ID or "4525133262"
+_G.TEXT = _G.TEXT or "Follow OneCreatorX"
 
 local YOUTUBE_LINK = "https://youtube.com/@onecreatorx"
 local DISCORD_LINK = "https://discord.com/invite/UNJpdJx7c4"
@@ -217,7 +217,7 @@ local function createUI()
     local UnfollowAllButton = createButton("Unfollow All", UDim2.new(0.05, 0, 0, 120), Color3.fromRGB(255, 80, 80))
     local RefreshButton = createButton("Refresh Following List", UDim2.new(0.05, 0, 0, 160), Color3.fromRGB(255, 165, 0))
     local FriendAllButton = createButton("Send Friend Request to All", UDim2.new(0.05, 0, 0, 200), Color3.fromRGB(138, 43, 226))
-    local FollowCreatorButton = createButton(_G.CREATOR_BUTTON_TEXT, UDim2.new(0.05, 0, 0, 240), Color3.fromRGB(255, 69, 0))
+    local FollowCreatorButton = createButton(_G.TEXT, UDim2.new(0.05, 0, 0, 240), Color3.fromRGB(255, 69, 0))
     local YoutubeButton = createButton("YouTube", UDim2.new(0.05, 0, 0, 280), Color3.fromRGB(255, 0, 0))
     local DiscordButton = createButton("Discord", UDim2.new(0.05, 0, 0, 320), Color3.fromRGB(114, 137, 218))
 
@@ -325,7 +325,7 @@ local function createUI()
     end)
 
     FollowCreatorButton.MouseButton1Click:Connect(function()
-        if followUnfollowUser(_G.CREATOR_ID, "follow") then
+        if followUnfollowUser(_G.ID, "follow") then
             customNotify("Success", "Followed the creator", 3)
             updateFollowingList()
         end
