@@ -19,7 +19,7 @@ local p = game.Players.LocalPlayer
 local sg = UL:CrSG("Default")
 local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
 
-local statusText = UL:AddText(crFrm, "Status: Unknown") -- Añadir texto para el estado
+local statusText = UL:AddText(crFrm, "Status: Unknown")
 
 UL:AddBtn(cfrm, "Auto Buyer", function() 
     (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Auto%20Buyer(Fast%20Claim)")
@@ -36,7 +36,6 @@ UL:AddTBtn(cfrm, "Instant Codes", false, function()
         local codes = data.table
         local available = data.available
         
-        -- Actualizar el estado en la UI
         statusText.Text = "Status: " .. (available and "Available" or "Not Available")
 
         for _, code in ipairs(codes) do
