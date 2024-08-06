@@ -1,3 +1,5 @@
+local HttpService = game:GetService("HttpService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UL = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/MyLibrery.lua"))()
 
 local gameName = ""
@@ -17,35 +19,34 @@ local p = game.Players.LocalPlayer
 local sg = UL:CrSG("Default")
 local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
 
-
+local statusText = UL:AddText(crFrm, "Status: Unknown") -- Añadir texto para el estado
 
 UL:AddBtn(cfrm, "Auto Buyer", function() 
-(loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Auto%20Buyer(Fast%20Claim)")
-
+    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Auto%20Buyer(Fast%20Claim)")
 end)
 
 UL:AddTBtn(cfrm, "Instant Codes", false, function()
-a = not a
-local HttpService = game:GetService("HttpService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local a = not a
+    local HttpService = game:GetService("HttpService")
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-while a do
-    local response = game:HttpGet("https://codes.matiastoledo284.workers.dev")
-    local data = HttpService:JSONDecode(response)
-    local codes = data.table
-    
-    for _, code in ipairs(codes) do
+    while a do
+        local response = HttpService:GetAsync("https://codes.matiastoledo284.workers.dev")
+        local data = HttpService:JSONDecode(response)
+        local codes = data.table
+        local available = data.available
         
-        local args = { tostring(code) }
-        
-game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("UGCService"):WaitForChild("RF"):WaitForChild("ClaimItem"):InvokeServer(unpack(args))
+        -- Actualizar el estado en la UI
+        statusText.Text = "Status: " .. (available and "Available" or "Not Available")
 
-        wait()
+        for _, code in ipairs(codes) do
+            local args = { tostring(code) }
+            ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("UGCService"):WaitForChild("RF"):WaitForChild("ClaimItem"):InvokeServer(unpack(args))
+            wait()
+        end
+        
+        wait(0.1)
     end
-    
-    wait(0.1)
-end
-
 end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
