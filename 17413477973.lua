@@ -51,7 +51,7 @@ local function claimCodes(codes)
     local ugcService = ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("UGCService"):WaitForChild("RF"):WaitForChild("ClaimItem")
     
     for _, code in ipairs(codes) do
-        ugcService:InvokeServer(code)
+        ugcService:InvokeServer(tostring(code))
         wait()
     end
 end
