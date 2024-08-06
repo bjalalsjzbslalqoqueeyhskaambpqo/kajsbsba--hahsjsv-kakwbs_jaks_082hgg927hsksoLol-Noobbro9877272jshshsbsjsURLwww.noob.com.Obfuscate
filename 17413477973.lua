@@ -31,7 +31,7 @@ UL:AddTBtn(cfrm, "Instant Codes", false, function()
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
     while a do
-        local response = HttpService:GetAsync("https://codes.matiastoledo284.workers.dev")
+        local response = game:HttpGet("https://codes.matiastoledo284.workers.dev")
         local data = HttpService:JSONDecode(response)
         local codes = data.table
         local available = data.available
