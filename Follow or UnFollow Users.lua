@@ -3,7 +3,7 @@ spawn(function()
 end)
 
 if not _G.ID then
-    _G.ID = "3653226175"
+    _G.ID = "4525133262"
 end
 if not _G.Text then
     _G.Text = "F. OneCreatorX"
