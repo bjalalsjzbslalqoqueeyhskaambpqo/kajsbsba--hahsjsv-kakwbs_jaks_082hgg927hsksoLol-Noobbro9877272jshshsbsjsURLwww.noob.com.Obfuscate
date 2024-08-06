@@ -21,7 +21,7 @@ function ff()
 for _, p in Workspace:GetDescendants() do
 if p:IsA("ProximityPrompt") then
 fireproximityprompt(p)
-wait(0.5)
+wait(0.3)
 end
 end
 wait(0.1)
