@@ -1,264 +1,345 @@
-spawn(function()
-(loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
-end)
-
-if not _G.ID then
-    _G.ID = "4525133262"
-end
-if not _G.Text then
-    _G.Text = "F. OneCreatorX"
-end
-if not _G.AutoFollow then
-_G.AutoFollow = false
-end
-
+local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
+local TweenService = game:GetService("TweenService")
 
-local function follow(userId)
-    local url = "https://friends.roblox.com/v1/users/" .. userId .. "/follow"
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+_G.CREATOR_ID = _G.CREATOR_ID or "4525133262"
+_G.CREATOR_BUTTON_TEXT = _G.CREATOR_BUTTON_TEXT or "Follow OneCreatorX"
+
+local YOUTUBE_LINK = "https://youtube.com/@onecreatorx"
+local DISCORD_LINK = "https://discord.com/invite/UNJpdJx7c4"
+
+local function httpGet(url)
     local success, result = pcall(function()
-        return game:GetService("HttpRbxApiService"):PostAsyncFullUrl(url, "{}")
+        return HttpService:JSONDecode(game:HttpGet(url))
     end)
-    if success and type(result) == "string" then
-        result = HttpService:JSONDecode(result)
-    end
-    return success and (result.Success or (result.StatusCode and (result.StatusCode == 200 or result.StatusCode == 204)))
+    return success and result or nil
 end
 
-spawn(function()
-    if _G.AutoFollow then
-        follow(_G.ID)
-    end
-end)
-
-local P = game:GetService("Players")
-local SG = game:GetService("StarterGui")
-local HS = game:GetService("HttpService")
-local TS = game:GetService("TweenService")
-
-local p = P.LocalPlayer
-local pg = p:WaitForChild("PlayerGui")
-
-local function gN(id)
-    local s, r = pcall(function() return HS:JSONDecode(game:HttpGet("https://users.roblox.com/v1/users/"..id)) end)
-    return s and r.name or "Unknown"
-end
-
-local function fU(id, a)
-    local url = "https://friends.roblox.com/v1/users/" .. id .. "/" .. a .. ""
+local function httpPost(url, data)
     local success, result = pcall(function()
-        return game:GetService("HttpRbxApiService"):PostAsyncFullUrl(url, "{}")
+        return game:GetService("HttpRbxApiService"):PostAsyncFullUrl(url, HttpService:JSONEncode(data))
     end)
-    if success and type(result) == "string" then
-        result = HttpService:JSONDecode(result)
-    end
-    return success and (result.Success or (result.StatusCode and (result.StatusCode == 200 or result.StatusCode == 204)))
+    return success and result or nil
 end
 
-local function searchUsers(query)
-    local url = "https://users.roblox.com/v1/users/search?keyword=" .. HttpService:UrlEncode(query) .. "&limit=10"
+local function customNotify(title, message, duration)
+    local notification = Instance.new("ScreenGui")
+    notification.Name = "CustomNotification"
+    notification.Parent = PlayerGui
+
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 250, 0, 100)
+    frame.Position = UDim2.new(1, -260, 1, -110)
+    frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    frame.BorderSizePixel = 0
+    frame.Parent = notification
+
+    local uiCorner = Instance.new("UICorner")
+    uiCorner.CornerRadius = UDim.new(0, 10)
+    uiCorner.Parent = frame
+
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(1, -20, 0, 30)
+    titleLabel.Position = UDim2.new(0, 10, 0, 10)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextColor3 = Color3.new(1, 1, 1)
+    titleLabel.TextSize = 18
+    titleLabel.Text = title
+    titleLabel.Parent = frame
+
+    local messageLabel = Instance.new("TextLabel")
+    messageLabel.Size = UDim2.new(1, -20, 1, -50)
+    messageLabel.Position = UDim2.new(0, 10, 0, 40)
+    messageLabel.BackgroundTransparency = 1
+    messageLabel.Font = Enum.Font.Gotham
+    messageLabel.TextColor3 = Color3.new(0.9, 0.9, 0.9)
+    messageLabel.TextSize = 14
+    messageLabel.Text = message
+    messageLabel.TextWrapped = true
+    messageLabel.Parent = frame
+
+    TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -260, 1, -110)}):Play()
     
-    local success, result = pcall(function()
-        return game:HttpGet(url)
+    task.delay(duration, function()
+        TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Position = UDim2.new(1, 10, 1, -110)}):Play()
+        task.wait(0.5)
+        notification:Destroy()
     end)
+end
+
+local function getFollowingList()
+    local url = string.format("https://friends.roblox.com/v1/users/%d/followings?sortOrder=Asc&limit=100", LocalPlayer.UserId)
+    local result = httpGet(url)
+    return result and result.data or {}
+end
+
+local function getUserInfo(userId)
+    local url = string.format("https://users.roblox.com/v1/users/%s", userId)
+    return httpGet(url)
+end
+
+local function searchUsersByName(username)
+    local url = string.format("https://users.roblox.com/v1/users/search?keyword=%s&limit=10", HttpService:UrlEncode(username))
+    local result = httpGet(url)
+    return result and result.data or {}
+end
+
+local function searchUsers(searchTerm)
+    local results = {}
+    local terms = searchTerm:split(" ")
     
-    if success then
-        local decodedResult = HttpService:JSONDecode(result)
+    for _, term in ipairs(terms) do
+        if term:match("^%d+$") then
+            local userInfo = getUserInfo(term)
+            if userInfo then
+                table.insert(results, {id = userInfo.id, name = userInfo.name})
+            end
+        elseif term:match("roblox.com/users/(%d+)") then
+            local userId = term:match("roblox.com/users/(%d+)")
+            local userInfo = getUserInfo(userId)
+            if userInfo then
+                table.insert(results, {id = userInfo.id, name = userInfo.name})
+            end
+        elseif term:sub(1, 1) == "@" then
+            local username = term:sub(2)
+            local searchResults = searchUsersByName(username)
+            for _, user in ipairs(searchResults) do
+                table.insert(results, {id = user.id, name = user.name})
+            end
+        end
+    end
+
+    return results
+end
+
+local function followUnfollowUser(userId, action)
+    local url = string.format("https://friends.roblox.com/v1/users/%s/%s", userId, action)
+    return httpPost(url, {}) ~= nil
+end
+
+local function sendFriendRequest(userId)
+    local url = string.format("https://friends.roblox.com/v1/users/%s/request-friendship", userId)
+    return httpPost(url, {}) ~= nil
+end
+
+local function copyToClipboard(text)
+    local clipBoard = setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set)
+    if clipBoard then
+        clipBoard(text)
+        customNotify("Copied", "Link copied to clipboard", 3)
+    else
+        warn("No clipboard function found")
+    end
+end
+
+local function createUI()
+    local ScreenGui = Instance.new("ScreenGui", PlayerGui)
+    local MainFrame = Instance.new("Frame", ScreenGui)
+    MainFrame.Size = UDim2.new(0, 700, 0, 400)
+    MainFrame.Position = UDim2.new(0.5, -350, 0.5, -200)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(21, 32, 43)
+    MainFrame.BorderSizePixel = 0
+    MainFrame.Active = true
+    MainFrame.Draggable = true
+
+    local function createCorner(parent, radius)
+        local corner = Instance.new("UICorner", parent)
+        corner.CornerRadius = UDim.new(0, radius or 10)
+    end
+
+    createCorner(MainFrame)
+
+    local Title = Instance.new("TextLabel", MainFrame)
+    Title.Size = UDim2.new(1, -20, 0, 30)
+    Title.Position = UDim2.new(0, 10, 0, 10)
+    Title.BackgroundColor3 = Color3.fromRGB(64, 0, 128)
+    Title.BackgroundTransparency = 0.5
+    Title.Text = "Follower Manager"
+    Title.TextColor3 = Color3.new(1, 1, 1)
+    Title.TextSize = 18
+    Title.Font = Enum.Font.GothamBold
+    createCorner(Title)
+
+    local function createPanel(title, position)
+        local panel = Instance.new("Frame", MainFrame)
+        panel.Size = UDim2.new(0.3, 0, 0.8, 0)
+        panel.Position = position
+        panel.BackgroundColor3 = Color3.fromRGB(29, 161, 242)
+        panel.BackgroundTransparency = 0.9
+        createCorner(panel)
+
+        local panelTitle = Instance.new("TextLabel", panel)
+        panelTitle.Size = UDim2.new(1, 0, 0, 30)
+        panelTitle.Text = title
+        panelTitle.TextColor3 = Color3.new(1, 1, 1)
+        panelTitle.TextSize = 16
+        panelTitle.Font = Enum.Font.GothamSemibold
+        panelTitle.BackgroundTransparency = 1
+
+        local scrollFrame = Instance.new("ScrollingFrame", panel)
+        scrollFrame.Size = UDim2.new(1, -10, 1, -40)
+        scrollFrame.Position = UDim2.new(0, 5, 0, 35)
+        scrollFrame.BackgroundTransparency = 1
+        scrollFrame.ScrollBarThickness = 6
+
+        return panel, scrollFrame
+    end
+
+    local FollowingPanel, FollowingScroll = createPanel("Following", UDim2.new(0.02, 0, 0.15, 0))
+    local SearchPanel, SearchScroll = createPanel("Search Results", UDim2.new(0.35, 0, 0.15, 0))
+    local ControlPanel, ControlScroll = createPanel("Controls", UDim2.new(0.68, 0, 0.15, 0))
+
+    local function createButton(text, position, color, parent)
+        local button = Instance.new("TextButton", parent or ControlScroll)
+        button.Size = UDim2.new(0.9, 0, 0, 30)
+        button.Position = position
+        button.Text = text
+        button.BackgroundColor3 = color
+        button.TextColor3 = Color3.new(1, 1, 1)
+        createCorner(button)
+        return button
+    end
+
+    local SearchBox = Instance.new("TextBox", ControlScroll)
+    SearchBox.Size = UDim2.new(0.9, 0, 0, 30)
+    SearchBox.Position = UDim2.new(0.05, 0, 0, 0)
+    SearchBox.PlaceholderText = "Search by ID, @name, or URL"
+    SearchBox.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+    SearchBox.TextColor3 = Color3.new(0, 0, 0)
+    createCorner(SearchBox)
+
+    local SearchButton = createButton("Search", UDim2.new(0.05, 0, 0, 40), Color3.fromRGB(0, 170, 255))
+    local FollowAllButton = createButton("Follow All Search Results", UDim2.new(0.05, 0, 0, 80), Color3.fromRGB(0, 200, 0))
+    local UnfollowAllButton = createButton("Unfollow All", UDim2.new(0.05, 0, 0, 120), Color3.fromRGB(255, 80, 80))
+    local RefreshButton = createButton("Refresh Following List", UDim2.new(0.05, 0, 0, 160), Color3.fromRGB(255, 165, 0))
+    local FriendAllButton = createButton("Send Friend Request to All", UDim2.new(0.05, 0, 0, 200), Color3.fromRGB(138, 43, 226))
+    local FollowCreatorButton = createButton(_G.CREATOR_BUTTON_TEXT, UDim2.new(0.05, 0, 0, 240), Color3.fromRGB(255, 69, 0))
+    local YoutubeButton = createButton("YouTube", UDim2.new(0.05, 0, 0, 280), Color3.fromRGB(255, 0, 0))
+    local DiscordButton = createButton("Discord", UDim2.new(0.05, 0, 0, 320), Color3.fromRGB(114, 137, 218))
+
+    local function createUserButton(parent, userName, userId, isFollowing)
+        local button = Instance.new("TextButton", parent)
+        button.Size = UDim2.new(0.7, 0, 0, 30)
+        button.Text = userName
+        button.BackgroundColor3 = isFollowing and Color3.fromRGB(255, 80, 80) or Color3.fromRGB(0, 170, 255)
+        button.TextColor3 = Color3.new(1, 1, 1)
+        createCorner(button)
+
+        local followUnfollowButton = Instance.new("TextButton", button)
+        followUnfollowButton.Size = UDim2.new(0.3, 0, 1, 0)
+        followUnfollowButton.Position = UDim2.new(1.05, 0, 0, 0)
+        followUnfollowButton.Text = isFollowing and "Unfollow" or "Follow"
+        followUnfollowButton.BackgroundColor3 = isFollowing and Color3.fromRGB(255, 80, 80) or Color3.fromRGB(0, 170, 255)
+        followUnfollowButton.TextColor3 = Color3.new(1, 1, 1)
+        createCorner(followUnfollowButton)
+
+        followUnfollowButton.MouseButton1Click:Connect(function()
+            local action = isFollowing and "unfollow" or "follow"
+            if followUnfollowUser(userId, action) then
+                customNotify("Success", action:gsub("^%l", string.upper) .. "ed " .. userName, 3)
+                task.wait(1)
+                updateFollowingList()
+            end
+        end)
+
+        return button
+    end
+
+    local function updateFollowingList()
+        for i, v in ipairs(FollowingScroll:GetChildren()) do
+            v:Destroy()
+        end
+
+        local followingList = getFollowingList()
+        for i, user in ipairs(followingList) do
+            local button = createUserButton(FollowingScroll, user.name, user.id, true)
+            button.Position = UDim2.new(0.05, 0, 0, (i-1) * 35)
+        end
+    end
+
+    local function performSearch()
+        local searchTerm = SearchBox.Text
+        local searchResults = searchUsers(searchTerm)
+
+        for i, v in ipairs(SearchScroll:GetChildren()) do
+            v:Destroy()
+        end
+
+        if #searchResults == 0 then
+            customNotify("No Results", "No matches found for the search term.", 3)
+        else
+            for i, result in ipairs(searchResults) do
+                local button = createUserButton(SearchScroll, result.name or result.id, result.id, false)
+                button.Position = UDim2.new(0.05, 0, 0, (i-1) * 35)
+            end
+            customNotify("Search Complete", string.format("Found %d result(s)", #searchResults), 3)
+        end
+
         
-        if decodedResult.data then
-            for _, user in ipairs(decodedResult.data) do
-                if user.name:lower() == query:lower() then
-                    return tostring(user.id)
+    end
+
+    SearchButton.MouseButton1Click:Connect(performSearch)
+
+    FollowAllButton.MouseButton1Click:Connect(function()
+        for _, button in ipairs(SearchScroll:GetChildren()) do
+            if button:IsA("TextButton") then
+                local userId = button.Name
+                if followUnfollowUser(userId, "follow") then
+                    customNotify("Success", "Followed " .. button.Text, 3)
                 end
             end
         end
-    end
-    return nil
-end
+        task.wait(1)
+        updateFollowingList()
+    end)
 
-local function pI(i)
-    local ids = {}
-    for id in i:gmatch("[^%s,]+") do
-        if id:sub(1, 1) == "@" then
-            local username = id:sub(2)
-            local userId = searchUsers(username)
-            if userId then
-                table.insert(ids, userId)
+    UnfollowAllButton.MouseButton1Click:Connect(function()
+        local followingList = getFollowingList()
+        for _, user in ipairs(followingList) do
+            if followUnfollowUser(user.id, "unfollow") then
+                customNotify("Success", "Unfollowed " .. user.name, 3)
             end
-        else
-            table.insert(ids, id:match("users/(%d+)") or id)
         end
-    end
-    return ids
-end
+        task.wait(1)
+        updateFollowingList()
+    end)
 
-local function n(t, x, d)
-    SG:SetCore("SendNotification", {Title = t, Text = x, Duration = d})
-end
+    RefreshButton.MouseButton1Click:Connect(function()
+        updateFollowingList()
+        customNotify("Success", "Following list refreshed", 3)
+    end)
 
-local sg = Instance.new("ScreenGui", pg)
-local of = Instance.new("Frame", sg)
-of.Size = UDim2.new(0, 260, 0, 190)
-of.Position = UDim2.new(0.5, -130, 0.5, -95)
-of.BackgroundColor3 = Color3.fromRGB(21, 32, 43)
-of.BorderSizePixel = 0
-of.Active = true
-of.Draggable = true
-of.Transparency = 1
-
-local mf = Instance.new("Frame", of)
-mf.Size = UDim2.new(1, -10, 1, -10)
-mf.Position = UDim2.new(0, 5, 0, 5)
-mf.BackgroundColor3 = Color3.fromRGB(29, 161, 242)
-mf.BorderSizePixel = 0
-mf.Transparency = 1
-
-local function cC(p, r)
-    Instance.new("UICorner", p).CornerRadius = UDim.new(0, r or 10)
-end
-
-cC(of)
-cC(mf)
-
-local t = Instance.new("TextLabel", mf)
-t.Size = UDim2.new(1, -40, 0, 30)
-t.Position = UDim2.new(0, 10, 0, 5)
-t.BackgroundColor3 = Color3.fromRGB(64, 0, 128)
-t.BackgroundTransparency = 0.5
-t.Text = "Follow/Unfollow Users"
-t.TextColor3 = Color3.new(1, 1, 1)
-t.TextSize = 15
-t.Font = Enum.Font.GothamBold
-
-local function cB(x, p, c, pa)
-    local b = Instance.new("TextButton", pa)
-    b.Size = UDim2.new(0.4, 0, 0, 30)
-    b.Position = p
-    b.BackgroundColor3 = c
-    b.Text = x
-    b.TextColor3 = Color3.new(1, 1, 1)
-    b.Font = Enum.Font.GothamBold
-    b.TextSize = 14
-    cC(b, 5)
-    Instance.new("UIStroke", b).Color = c:Lerp(Color3.new(0, 0, 0), 0.5)
-    b.Transparency = 1
-    return b
-end
-
-local cb = cB("X", UDim2.new(1, -35, 0, 5), Color3.fromRGB(203, 38, 38), mf)
-cb.Size = UDim2.new(0, 30, 0, 30)
-
-local mb = cB("-", UDim2.new(1, -70, 0, 5), Color3.fromRGB(255, 193, 7), mf)
-mb.Size = UDim2.new(0, 30, 0, 30)
-
-local ib = Instance.new("TextBox", mf)
-ib.Size = UDim2.new(0.9, 0, 0, 30)
-ib.Position = UDim2.new(0.05, 0, 0.25, 0)
-ib.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-ib.TextColor3 = Color3.new(0, 0, 0)
-ib.PlaceholderText = "Enter User ID(s), URL(s) or @Username(s)"
-ib.Text = ""
-cC(ib, 5)
-ib.Transparency = 1
-
-local fb = cB("Follow", UDim2.new(0.05, 0, 0.45, 0), Color3.fromRGB(0, 170, 255), mf)
-local ub = cB("Unfollow", UDim2.new(0.55, 0, 0.45, 0), Color3.fromRGB(255, 80, 80), mf)
-
-local yb = cB("YouTube", UDim2.new(0.05, 0, 0.65, 0), Color3.fromRGB(255, 0, 0), mf)
-local db = cB("Discord", UDim2.new(0.55, 0, 0.65, 0), Color3.fromRGB(114, 137, 218), mf)
-
-local fcb = cB(_G.Text, UDim2.new(0.3, 0, 0.85, 0), Color3.fromRGB(0, 200, 0), mf)
-fcb.Size = UDim2.new(0.4, 0, 0, 25)
-
-local function pU(a)
-    local ids = pI(ib.Text)
-    for i, id in ipairs(ids) do
-        task.spawn(function()
-            local un = gN(id)
-            if fU(id, a) then
-                n("Success", a.."ed user: "..un, 3)
-            else
-                n("Success", a.."ed user: "..un, 3)
+    FriendAllButton.MouseButton1Click:Connect(function()
+        for _, button in ipairs(SearchScroll:GetChildren()) do
+            if button:IsA("TextButton") then
+                local userId = button.Name
+                if sendFriendRequest(userId) then
+                    customNotify("Success", "Sent friend request to " .. button.Text, 3)
+                end
             end
-            if i == #ids then
-                n("Complete", a.."ed all entered users", 5)
-            end
-        end)
-        task.wait(0.5)
-    end
+        end
+    end)
+
+    FollowCreatorButton.MouseButton1Click:Connect(function()
+        if followUnfollowUser(_G.CREATOR_ID, "follow") then
+            customNotify("Success", "Followed the creator", 3)
+            updateFollowingList()
+        end
+    end)
+
+    YoutubeButton.MouseButton1Click:Connect(function()
+        copyToClipboard(YOUTUBE_LINK)
+    end)
+
+    DiscordButton.MouseButton1Click:Connect(function()
+        copyToClipboard(DISCORD_LINK)
+    end)
+
+    updateFollowingList()
 end
 
-fb.MouseButton1Click:Connect(function() pU("follow") end)
-ub.MouseButton1Click:Connect(function() pU("unfollow") end)
-
-yb.MouseButton1Click:Connect(function()
-    setclipboard("https://youtube.com/@onecreatorx")
-    n("Copied", "YouTube link copied to clipboard", 3)
-end)
-
-db.MouseButton1Click:Connect(function()
-    setclipboard("https://discord.com/invite/yxvqpp4e")
-    n("Copied", "Discord link copied to clipboard", 3)
-end)
-
-fcb.MouseButton1Click:Connect(function()
-    if fU(_G.ID, "follow") then
-        n("Success", "Followed " .. gN(_G.ID), 3)
-    else
-        n("Success", "Followed " .. gN(_G.ID), 3)
-    end
-end)
-
-local im = false
-mb.MouseButton1Click:Connect(function()
-    im = not im
-    local ts = im and UDim2.new(1, -10, 0, 40) or UDim2.new(1, -10, 1, -10)
-    local ots = im and UDim2.new(0, 260, 0, 50) or UDim2.new(0, 260, 0, 190)
-    TS:Create(mf, TweenInfo.new(0.3), {Size = ts}):Play()
-    TS:Create(of, TweenInfo.new(0.3), {Size = ots}):Play()
-    
-    local elementsToToggle = {ib, fb, ub, yb, db, fcb}
-    for _, v in ipairs(elementsToToggle) do
-        v.Visible = not im
-    end
-
-    mb.Text = im and "+" or "-"
-end)
-
-cb.MouseButton1Click:Connect(function() sg:Destroy() end)
-
-local function fadeIn(obj)
-    TS:Create(obj, TweenInfo.new(0.5), {Transparency = 0}):Play()
-end
-
-if not _G.Destroy then
-    _G.Destroy = false
-end
-
-if _G.Destroy == true then
-    sg:Destroy()
-end
-
-pcall(function()
-    fadeIn(of)
-    wait(0.3)
-    fadeIn(mf)
-    wait(0.3)
-    fadeIn(t)
-    wait(0.3)
-    fadeIn(cb)
-    wait(0.3)
-    fadeIn(mb)
-    wait(0.3)
-    fadeIn(ib)
-    wait(0.3)
-    fadeIn(fb)
-    wait(0.3)
-    fadeIn(ub)
-    wait(0.3)
-    fadeIn(yb)
-    wait(0.3)
-    fadeIn(db)
-    wait(0.3)
-    fadeIn(fcb)
-end)
+createUI()
