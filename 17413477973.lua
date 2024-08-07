@@ -33,9 +33,16 @@ UL:AddTBtn(cfrm, "Process Codes", false, function()
     
     spawn(function()
         while isProcessingCodes do
+                    local args = {
+    [1] = true
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("ActivityService"):WaitForChild("RF"):WaitForChild("PlayerInput"):InvokeServer(unpack(args))
+                    
             statusText.Text = "Status: Processing Codes"
             for _, code in ipairs(codes) do
                 pcall(function()
+                                
                     ugcService:InvokeServer(string.format('"%s"', code))
                     print("Sent code:", code)
                 end)
