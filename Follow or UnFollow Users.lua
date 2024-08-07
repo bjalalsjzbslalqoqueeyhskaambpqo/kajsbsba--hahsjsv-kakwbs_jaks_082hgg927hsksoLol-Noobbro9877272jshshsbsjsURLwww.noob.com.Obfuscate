@@ -239,23 +239,6 @@ local function cUI()
         SBu.BackgroundColor3=Color3.fromRGB(29,161,242)
     end)
     
-    FAB.MouseButton1Click:Connect(function()
-        FAB.Text="Processing..."
-        FAB.BackgroundColor3=Color3.fromRGB(18,108,128)
-        local la=sLA(SS,"Following all...")
-        for _,b in ipairs(SS:GetChildren()) do
-            if b:IsA("TextButton") then
-                local i=b.Name
-                if fUU(i,"follow") then nf("Success","Followed "..b.Text,3) end
-            end
-        end
-        la:Destroy()
-        task.wait(1)
-        uFL()
-        task.wait(2)
-        FAB.Text="Follow All Search Results"
-        FAB.BackgroundColor3=Color3.fromRGB(0,200,0)
-    end)
     
     UAB.MouseButton1Click:Connect(function()
         UAB.Text="Processing..."
