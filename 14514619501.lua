@@ -55,8 +55,10 @@ wait(0.5)
     end
 end)
 
-UL:AddTBtn(cfrm, "Auto Claim Gift", a, function(b) 
-    a = b
+
+UL:AddTBtn(cfrm, "Auto Claim Gift", false, function(b) 
+    local a = false
+    a = not a
     while a do
         for i = 1, 9 do
             local args = {
@@ -76,13 +78,69 @@ UL:AddTBtn(cfrm, "Auto Claim Gift", a, function(b)
 end)
 
 
+local players = game:GetService("Players")
+local localPlayer = players.LocalPlayer
+local playerGui = localPlayer:WaitForChild("PlayerGui")
+local inventoryGui = playerGui:WaitForChild("MainMenu"):WaitForChild("Root"):WaitForChild("Inventory"):WaitForChild("MainWindow")
+local itemGrid = inventoryGui:WaitForChild("ItemGrid")
+
+for _, item in pairs(itemGrid:GetChildren()) do
+    local backgroundFrame = item:FindFirstChild("Background")
+    if backgroundFrame and backgroundFrame:IsA("Frame") then
+        local existingStatusValue = item:FindFirstChild("IsActive")
+        if existingStatusValue then
+            existingStatusValue:Destroy()
+        end
+
+        local existingButton = backgroundFrame:FindFirstChild("StatusButton")
+        if existingButton then
+            existingButton:Destroy()
+        end
+
+        local statusValue = Instance.new("BoolValue")
+        statusValue.Name = "IsActive"
+        statusValue.Value = false
+        statusValue.Parent = item
+
+        local toggleButton = Instance.new("TextButton")
+        toggleButton.Name = "StatusButton"
+        toggleButton.Size = UDim2.new(1, 0, 0.2, 0)
+        toggleButton.Position = UDim2.new(0, 0, 0, 0)
+        toggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        toggleButton.Text = "Auto [OFF]"
+        toggleButton.TextColor3 = Color3.new(1, 1, 1)
+        toggleButton.TextStrokeTransparency = 0.8
+        toggleButton.Parent = backgroundFrame
+
+        local function updateButton()
+            toggleButton.BackgroundColor3 = statusValue.Value and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+            toggleButton.Text = statusValue.Value and "Auto [ON]" or "Auto [OFF]"
+        end
+
+        statusValue.Changed:Connect(updateButton)
+        toggleButton.MouseButton1Click:Connect(function()
+            statusValue.Value = not statusValue.Value
+        end)
+
+        updateButton()
+    end
+end
+
 spawn(function()
         local a = false
         UL:AddTBtn(cfrm, "Auto Tasks Pets", a, function(b) 
     a = b
 end)
 
-    local actions = {
+    local players = game:GetService("Players")
+local localPlayer = players.LocalPlayer
+local playerGui = localPlayer:WaitForChild("PlayerGui")
+local inventoryGui = playerGui:WaitForChild("MainMenu"):WaitForChild("Root"):WaitForChild("Inventory"):WaitForChild("MainWindow")
+local itemGrid = inventoryGui:WaitForChild("ItemGrid")
+local replicatedStorage = game:GetService("ReplicatedStorage")
+local dataRemoteEvent = replicatedStorage:WaitForChild("dataRemoteEvent")
+
+local actions = {
     ["hug"] = "Hugged",
     ["bath"] = "Bathed",
     ["hungry"] = "Fed"
@@ -90,6 +148,9 @@ end)
 
 local actionCooldown = 15
 local petActionTimes = {}
+local equippedPets = {}
+local autoActivePets = {}
+local petsRegistered = {}
 
 local function sendActionToServer(petName, action)
     local args = {
@@ -106,8 +167,33 @@ local function sendActionToServer(petName, action)
             [4] = "\28"
         }
     }
-    game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
-    
+    dataRemoteEvent:FireServer(unpack(args))
+end
+
+local function desequipPet(petName)
+    local args = {
+        [1] = {
+            [1] = {
+                ["GUID"] = petName,
+                ["Category"] = "Pet"
+            },
+            [2] = "4"
+        }
+    }
+    dataRemoteEvent:FireServer(unpack(args))
+end
+
+local function equipPet(petName)
+    local args = {
+        [1] = {
+            [1] = {
+                ["GUID"] = petName,
+                ["Category"] = "Pet"
+            },
+            [2] = "4"
+        }
+    }
+    dataRemoteEvent:FireServer(unpack(args))
 end
 
 local function findPetName(instance)
@@ -120,20 +206,49 @@ local function findPetName(instance)
     return "Unknown"
 end
 
+local function updateAutoActivePets()
+    autoActivePets = {}
+    for _, item in pairs(itemGrid:GetChildren()) do
+        local backgroundFrame = item:FindFirstChild("Background")
+        if backgroundFrame and backgroundFrame:IsA("Frame") then
+            local statusValue = item:FindFirstChild("IsActive")
+            if statusValue and statusValue.Value then
+                table.insert(autoActivePets, item.Name)
+            end
+        end
+    end
+end
+
+local function selectNextPet()
+    for _, petName in ipairs(autoActivePets) do
+        if not petsRegistered[petName] then
+            return petName
+        end
+    end
+    return nil
+end
+
 local function processChatMessages()
-    local playerName = game.Players.LocalPlayer.Name
+    local playerName = localPlayer.Name
     local userDirectoryName = playerName .. ":Debris"
     local userDirectory = workspace:FindFirstChild(userDirectoryName)
 
     if not userDirectory then
-        
         return
     end
 
     while true do
         wait(0.1)
+        updateAutoActivePets()
+        local nextPet = selectNextPet()
+        if not nextPet then
+            petsRegistered = {}
+            wait(3)
+            continue
+        end
+
         for _, child in ipairs(userDirectory:GetDescendants()) do
-            if child.Name == "ChatList" and a then
+            if child.Name == "ChatList" then
                 local chatMessages = child:GetChildren()
                 if #chatMessages >= 2 then
                     local secondChild = chatMessages[2]
@@ -151,6 +266,13 @@ local function processChatMessages()
                                     if not lastActionTime or (currentTime - lastActionTime >= actionCooldown) then
                                         sendActionToServer(petName, action)
                                         petActionTimes[petName] = currentTime
+                                        petsRegistered[petName] = true
+
+                                        wait(8)
+                                        desequipPet(petName)
+                                            wait(5)
+                                        equipPet(nextPet)
+
                                         break
                                     end
                                 end
@@ -159,12 +281,11 @@ local function processChatMessages()
                     end
                 end
             end
-                    
         end
     end
 end
 
-spawn(processChatMessages)    
+spawn(processChatMessages)
     end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
