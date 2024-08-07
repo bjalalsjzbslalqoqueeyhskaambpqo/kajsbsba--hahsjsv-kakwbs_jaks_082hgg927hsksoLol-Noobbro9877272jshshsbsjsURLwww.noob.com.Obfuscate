@@ -160,12 +160,11 @@ local function cUI()
     local SB=Instance.new("TextBox",CS)
     SB.Size,SB.Position=UDim2.new(0.9,0,0,30),UDim2.new(0.05,0,0,0)
     SB.PlaceholderText="Search by ID(s), @name(s), or URL(s)"
-    SB.Text="Search by ID(s), @name(s), or URL(s)"
+    SB.Text="Search ID(s), @name(s), or URL(s)"
     SB.BackgroundColor3,SB.TextColor3=Color3.fromRGB(200,200,200),Color3.new(0,0,0)
     Instance.new("UICorner",SB).CornerRadius=UDim.new(0,10)
     
     local SBu=cB("Search",UDim2.new(0.05,0,0,40))
-    local FAB=cB("Follow All Search Results",UDim2.new(0.05,0,0,80),Color3.fromRGB(0,200,0))
     local UAB=cB("Unfollow All",UDim2.new(0.05,0,0,120),Color3.fromRGB(255,80,80))
     local RB=cB("Refresh Following List",UDim2.new(0.05,0,0,160),Color3.fromRGB(255,165,0))
     local FRB=cB("Send Friend Request to All",UDim2.new(0.05,0,0,200),Color3.fromRGB(138,43,226))
@@ -188,13 +187,13 @@ local function cUI()
         fb.MouseButton1Click:Connect(function()
             local a=f and "unfollow" or "follow"
             fb.Text="Processing..."
-            fb.BackgroundColor3=Color3.fromRGB(128,128,128)
+            fb.BackgroundColor3=Color3.fromRGB(100,18,128)
             if fUU(i,a) then
                 nf("Success",a:gsub("^%l",string.upper).."ed "..n,3)
-                task.wait(1)
+                task.wait(0.5)
                 uFL()
             end
-            task.wait(2)
+            task.wait(0.4))
             fb.Text=f and "Unfollow" or "Follow"
             fb.BackgroundColor3=f and Color3.fromRGB(255,80,80) or Color3.fromRGB(0,170,255)
         end)
