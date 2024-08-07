@@ -2,18 +2,8 @@ local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UL = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/MyLibrery.lua"))()
 
-local gameName = ""
-if gameName == "" then
-    gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
-end
-
-local function cleanGameName(name)
-    name = name:gsub("%b[]", "")
-    name = name:match("^[^:]*")
-    return name:match("^%s*(.-)%s*$")
-end
-
-gameName = cleanGameName(gameName)
+local gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+gameName = gameName:gsub("%b[]", ""):match("^[^:]*"):match("^%s*(.-)%s*$")
 
 local p = game.Players.LocalPlayer
 local sg = UL:CrSG("Default")
@@ -22,45 +12,37 @@ local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
 local statusText = UL:AddText(crFrm, "Status: Unknown")
 
 UL:AddBtn(cfrm, "Auto Buyer", function() 
-    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Auto%20Buyer(Fast%20Claim)")
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))()("Auto%20Buyer(Fast%20Claim)")
 end)
 
-UL:AddTBtn(cfrm, "Instant Codes", false, function()
-    local a = not a
-    local HttpService = game:GetService("HttpService")
-    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local codes = {}
 
-    while a do
-         local HttpService = game:GetService("HttpService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local function fetchCodes()
-    local response = game:HttpGet("https://codes.matiastoledo284.workers.dev") 
-    local codes = {}
-
-    for line in response:gmatch("[^\r\n]+") do
-        for code in line:gmatch("%S+") do
-            table.insert(codes, code)
+UL:AddTBox(cfrm, "Enter Codes:", function(text)
+    codes = {}
+    for code in text:gmatch("[^\r\n]+") do
+        for c in code:gmatch("%S+") do
+            table.insert(codes, c)
         end
     end
-    
-    return codes
-end
+end)
 
-local function claimCodes(codes)
+local isProcessingCodes = false
+
+UL:AddTBtn(cfrm, "Process Codes", false, function()
+    isProcessingCodes = not isProcessingCodes
     local ugcService = ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("UGCService"):WaitForChild("RF"):WaitForChild("ClaimItem")
     
-    for _, code in ipairs(codes) do
-        ugcService:InvokeServer(tostring(code))
-        wait()
-    end
-end
-
-local codes = fetchCodes()
-claimCodes(codes)
-        
-        wait(0.1)
-    end
+    spawn(function()
+        while isProcessingCodes do
+            for _, code in ipairs(codes) do
+                pcall(function()
+                    ugcService:InvokeServer(tostring(code))
+                end)
+                wait(0.1)
+            end
+            wait(0.2)
+        end
+    end)
 end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
