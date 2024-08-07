@@ -84,7 +84,7 @@ local playerGui = localPlayer:WaitForChild("PlayerGui")
 local inventoryGui = playerGui:WaitForChild("MainMenu"):WaitForChild("Root"):WaitForChild("Inventory"):WaitForChild("MainWindow")
 local itemGrid = inventoryGui:WaitForChild("ItemGrid")
 
-for _, item in pairs(itemGrid:GetChildren()) do
+local function setupItem(item)
     local backgroundFrame = item:FindFirstChild("Background")
     if backgroundFrame and backgroundFrame:IsA("Frame") then
         local existingStatusValue = item:FindFirstChild("IsActive")
@@ -125,6 +125,12 @@ for _, item in pairs(itemGrid:GetChildren()) do
         updateButton()
     end
 end
+
+for _, item in pairs(itemGrid:GetChildren()) do
+    setupItem(item)
+end
+
+itemGrid.ChildAdded:Connect(setupItem)
 
 spawn(function()
         local a = false
@@ -267,9 +273,22 @@ local function processChatMessages()
                                         sendActionToServer(petName, action)
                                         petActionTimes[petName] = currentTime
                                         petsRegistered[petName] = true
-
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Pet Interacction: Sucess",
+    Text = "wait 8s",
+    Duration = 3,
+})
+                                                
                                         wait(8)
                                         desequipPet(petName)
+                                                local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Loading New Pet",
+    Text = "Wait 5s",
+    Duration = 5,
+})
+                                                
                                             wait(5)
                                         equipPet(nextPet)
 
@@ -290,8 +309,8 @@ spawn(processChatMessages)
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
 UL:AddText(crFrm, "Create Script: 29/05/24 ")
-UL:AddText(crFrm, "Update Script: 28/07/24")
-UL:AddText(crFrm, "Script Version: 0.4")
+UL:AddText(crFrm, "Update Script: 07/08/24")
+UL:AddText(crFrm, "Script Version: 0.6")
 UL:AddBtn(crFrm, "Copy link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 UL:AddBtn(crFrm, "Copy link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
