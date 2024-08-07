@@ -193,7 +193,7 @@ local function cUI()
                 task.wait(0.5)
                 uFL()
             end
-            task.wait(0.4))
+            task.wait(0.4)
             fb.Text=f and "Unfollow" or "Follow"
             fb.BackgroundColor3=f and Color3.fromRGB(255,80,80) or Color3.fromRGB(0,170,255)
         end)
