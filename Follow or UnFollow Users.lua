@@ -207,7 +207,8 @@ local function createUI()
     local SearchBox = Instance.new("TextBox", ControlScroll)
     SearchBox.Size = UDim2.new(0.9, 0, 0, 30)
     SearchBox.Position = UDim2.new(0.05, 0, 0, 0)
-    SearchBox.PlaceholderText = "Search by ID, @name, or URL"
+    SearchBox.PlaceholderText = "Search by ID(s), @name(s), or URL(s)"
+    SearchBox.Text = "Search by ID(s), @name(s), or URL(s)"
     SearchBox.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
     SearchBox.TextColor3 = Color3.new(0, 0, 0)
     createCorner(SearchBox)
