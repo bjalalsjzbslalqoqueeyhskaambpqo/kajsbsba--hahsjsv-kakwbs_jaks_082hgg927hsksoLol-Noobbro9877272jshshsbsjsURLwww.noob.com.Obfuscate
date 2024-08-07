@@ -171,6 +171,45 @@ local function cUI()
     local FCB=cB(_G.TEXT,UDim2.new(0.05,0,0,240),Color3.fromRGB(255,69,0))
     local YB=cB("YouTube",UDim2.new(0.05,0,0,280),Color3.fromRGB(255,0,0))
     local DB=cB("Discord",UDim2.new(0.05,0,0,320),Color3.fromRGB(114,137,218))
+
+    local function ckB(p,n,i,f)
+        local b=Instance.new("TextButton",p)
+        b.Size=UDim2.new(0.7,0,0,30)
+        b.Text,b.BackgroundColor3=n,f and Color3.fromRGB(255,80,80) or Color3.fromRGB(0,170,255)
+        b.TextColor3=Color3.new(1,1,1)
+        Instance.new("UICorner",b).CornerRadius=UDim.new(0,10)
+        local fb=Instance.new("TextButton",b)
+        fb.Size,fb.Position=UDim2.new(0.3,0,1,0),UDim2.new(1.05,0,0,0)
+        fb.Text=f and "Unfollow" or "Follow"
+        fb.BackgroundColor3=f and Color3.fromRGB(255,80,80) or Color3.fromRGB(0,170,255)
+        fb.TextColor3=Color3.new(1,1,1)
+        Instance.new("UICorner",fb).CornerRadius=UDim.new(0,10)
+        fb.MouseButton1Click:Connect(function()
+            local a=f and "unfollow" or "follow"
+            fb.Text="Processing..."
+            fb.BackgroundColor3=Color3.fromRGB(100,18,128)
+            if fUU(i,a) then
+                nf("Success",a:gsub("^%l",string.upper).."ed "..n,3)
+                task.wait(0.5)
+                uFL()
+            end
+            task.wait(0.4)
+            fb.Text=f and "Unfollow" or "Follow"
+            fb.BackgroundColor3=f and Color3.fromRGB(255,80,80) or Color3.fromRGB(0,170,255)
+        end)
+        return b
+    end
+    
+    local function uFL()
+        for _,v in ipairs(FS:GetChildren()) do v:Destroy() end
+        local la=sLA(FS,"Loading...")
+        local fl=gFL()
+        la:Destroy()
+        for i,u in ipairs(fl) do
+            local b=ckB(FS,u.name,u.id,true)
+            b.Position=UDim2.new(0.05,0,0,(i-1)*35)
+        end
+    end
     
     local function cUB(p,n,i,f)
         local b=Instance.new("TextButton",p)
@@ -200,7 +239,7 @@ local function cUI()
         return b
     end
     
-    local function uFL()
+  local function uFL()
         for _,v in ipairs(FS:GetChildren()) do v:Destroy() end
         local la=sLA(FS,"Loading...")
         local fl=gFL()
