@@ -256,7 +256,7 @@ local function cUI()
         for _,v in ipairs(SS:GetChildren()) do v:Destroy() end
         local la=sLA(SS,"Searching...")
         if #sr==0 then
-            nf("Api in CoolDown","Wait 1 minute.",3)
+            nf("Api in CoolDown for UserName","Wait 1 minute or use ID.",3)
         else
             for i,r in ipairs(sr) do
                 local b=cUB(SS,r.name or r.id,r.id,false)
