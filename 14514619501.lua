@@ -133,11 +133,7 @@ end
 itemGrid.ChildAdded:Connect(setupItem)
 
 spawn(function()
-        local a = false
-        UL:AddTBtn(cfrm, "Auto Tasks Pets", a, function(b) 
-    a = b
-end)
-
+        
     local players = game:GetService("Players")
 local localPlayer = players.LocalPlayer
 local playerGui = localPlayer:WaitForChild("PlayerGui")
@@ -145,7 +141,6 @@ local inventoryGui = playerGui:WaitForChild("MainMenu"):WaitForChild("Root"):Wai
 local itemGrid = inventoryGui:WaitForChild("ItemGrid")
 local replicatedStorage = game:GetService("ReplicatedStorage")
 local dataRemoteEvent = replicatedStorage:WaitForChild("dataRemoteEvent")
-local workspace = game:GetService("Workspace")
 
 local actions = {
     ["hug"] = "Hugged",
@@ -155,8 +150,7 @@ local actions = {
 
 local actionCooldown = 15
 local petActionTimes = {}
-local autoActivePets = {}
-local petsRegistered = {}
+local activePets = {}
 
 local function sendActionToServer(petName, action)
     local args = {
@@ -212,22 +206,33 @@ local function findPetName(instance)
     return "Unknown"
 end
 
-local function updateAutoActivePets()
-    autoActivePets = {}
+local function updateActivePets()
+    activePets = {}
     for _, item in pairs(itemGrid:GetChildren()) do
         local backgroundFrame = item:FindFirstChild("Background")
         if backgroundFrame and backgroundFrame:IsA("Frame") then
             local statusValue = item:FindFirstChild("IsActive")
             if statusValue and statusValue.Value then
-                table.insert(autoActivePets, item.Name)
+                table.insert(activePets, item.Name)
             end
         end
     end
 end
 
-local function selectNextPet()
-    for _, petName in ipairs(autoActivePets) do
-        if not petsRegistered[petName] then
+local function isPetEquipped(petName)
+    local item = itemGrid:FindFirstChild(petName)
+    if item then
+        local backgroundFrame = item:FindFirstChild("Background")
+        if backgroundFrame and backgroundFrame:IsA("Frame") then
+            return backgroundFrame:FindFirstChild("Equipped") ~= nil
+        end
+    end
+    return false
+end
+
+local function findNextUnequippedActivePet()
+    for _, petName in ipairs(activePets) do
+        if not isPetEquipped(petName) then
             return petName
         end
     end
@@ -245,8 +250,7 @@ local function processChatMessages()
 
     while true do
         wait(0.1)
-        updateAutoActivePets()
-        local nextPet = selectNextPet()
+        updateActivePets()
 
         for _, child in ipairs(userDirectory:GetDescendants()) do
             if child.Name == "ChatList" then
@@ -257,44 +261,52 @@ local function processChatMessages()
                         local textLabel = secondChild:FindFirstChildOfClass("TextLabel")
                         if textLabel then
                             local messageText = textLabel.Text:lower()
-                            local petName = findPetName(secondChild)
+                            local currentPetName = findPetName(secondChild)
 
                             for key, action in pairs(actions) do
                                 if messageText:find(key) then
                                     local currentTime = tick()
-                                    local lastActionTime = petActionTimes[petName]
+                                    local lastActionTime = petActionTimes[currentPetName]
 
                                     if not lastActionTime or (currentTime - lastActionTime >= actionCooldown) then
-                                        sendActionToServer(petName, action)
-                                        petActionTimes[petName] = currentTime
-                                        petsRegistered[petName] = true
+                                        sendActionToServer(currentPetName, action)
+                                        petActionTimes[currentPetName] = currentTime
 
                                         local StarterGui = game:GetService("StarterGui")
                                         StarterGui:SetCore("SendNotification", {
                                             Title = "Pet Interaction: Success",
-                                            Text = "Waiting 8 seconds...",
+                                            Text = "Waiting for server response...",
                                             Duration = 3,
                                         })
 
-                                        wait(8)
+                                        wait(8)  
 
-                                        -- Check if there is a new pet to equip
-                                        if nextPet and petName ~= nextPet then
-                                            desequipPet(petName)
+                                        local nextPet = findNextUnequippedActivePet()
+
+                                        if nextPet then
+                                            desequipPet(currentPetName)
 
                                             StarterGui:SetCore("SendNotification", {
-                                                Title = "Loading New Pet",
-                                                Text = "Wait 5 seconds...",
+                                                Title = "Deequipping Current Pet",
+                                                Text = "Please wait...",
                                                 Duration = 5,
                                             })
 
-                                            wait(5)
+                                            wait(5) 
+
                                             equipPet(nextPet)
-                                        elseif not nextPet then
+
                                             StarterGui:SetCore("SendNotification", {
-                                                Title = "No Active Pets",
-                                                Text = "No active pets available for replacement. Continuing with the current pet.",
-                                                Duration = 3,
+                                                Title = "Equipping New Pet",
+                                                Text = "Please wait...",
+                                                Duration = 5,
+                                            })
+
+                                            else
+StarterGui:SetCore("SendNotification", {
+                                                Title = "No Pets Actives",
+                                                Text = "without changes",
+                                                Duration = 5,
                                             })
                                         end
 
@@ -307,16 +319,10 @@ local function processChatMessages()
                 end
             end
         end
-
-        if not nextPet then
-            petsRegistered = {}
-            wait(1)
-        end
     end
 end
 
 spawn(processChatMessages)
-
     end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
@@ -533,3 +539,9 @@ UL:AddBtn(cfrm, "TP Egg Zone Secret", function()
         wait(3)
         game.Players.LocalPlayer.Character.PrimaryPart.Anchored = false
     end)
+
+StarterGui:SetCore("SendNotification", {
+                                                Title = "Auto Tasks Pet",
+                                                Text = "Automatic Active ON",
+                                                Duration = 5,
+                                            })
