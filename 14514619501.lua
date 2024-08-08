@@ -84,7 +84,7 @@ local playerGui = localPlayer:WaitForChild("PlayerGui")
 local inventoryGui = playerGui:WaitForChild("MainMenu"):WaitForChild("Root"):WaitForChild("Inventory"):WaitForChild("MainWindow")
 local itemGrid = inventoryGui:WaitForChild("ItemGrid")
 
-local function setupItem(item)
+for _, item in pairs(itemGrid:GetChildren()) do
     local backgroundFrame = item:FindFirstChild("Background")
     if backgroundFrame and backgroundFrame:IsA("Frame") then
         local existingStatusValue = item:FindFirstChild("IsActive")
@@ -107,14 +107,14 @@ local function setupItem(item)
         toggleButton.Size = UDim2.new(1, 0, 0.2, 0)
         toggleButton.Position = UDim2.new(0, 0, 0, 0)
         toggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        toggleButton.Text = "Auto [OFF]"
+        toggleButton.Text = "A.Rotation[OFF]"
         toggleButton.TextColor3 = Color3.new(1, 1, 1)
         toggleButton.TextStrokeTransparency = 0.8
         toggleButton.Parent = backgroundFrame
 
         local function updateButton()
             toggleButton.BackgroundColor3 = statusValue.Value and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
-            toggleButton.Text = statusValue.Value and "Auto [ON]" or "Auto [OFF]"
+            toggleButton.Text = statusValue.Value and "A.Rotation[ON]" or "A.Rotation[OFF]"
         end
 
         statusValue.Changed:Connect(updateButton)
@@ -126,37 +126,31 @@ local function setupItem(item)
     end
 end
 
-for _, item in pairs(itemGrid:GetChildren()) do
-    setupItem(item)
-end
-
-itemGrid.ChildAdded:Connect(setupItem)
-
 spawn(function()
         local a = false
         UL:AddTBtn(cfrm, "Auto Tasks Pets", a, function(b) 
     a = b
 end)
 
-    local players = game:GetService("Players")
-local localPlayer = players.LocalPlayer
-local playerGui = localPlayer:WaitForChild("PlayerGui")
-local inventoryGui = playerGui:WaitForChild("MainMenu"):WaitForChild("Root"):WaitForChild("Inventory"):WaitForChild("MainWindow")
-local itemGrid = inventoryGui:WaitForChild("ItemGrid")
-local replicatedStorage = game:GetService("ReplicatedStorage")
-local dataRemoteEvent = replicatedStorage:WaitForChild("dataRemoteEvent")
+    local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local InventoryGui = PlayerGui:WaitForChild("MainMenu"):WaitForChild("Root"):WaitForChild("Inventory"):WaitForChild("MainWindow")
+local ItemGrid = InventoryGui:WaitForChild("ItemGrid")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local DataRemoteEvent = ReplicatedStorage:WaitForChild("dataRemoteEvent")
 
-local actions = {
+local Actions = {
     ["hug"] = "Hugged",
     ["bath"] = "Bathed",
     ["hungry"] = "Fed"
 }
 
-local actionCooldown = 15
-local petActionTimes = {}
-local equippedPets = {}
-local autoActivePets = {}
-local petsRegistered = {}
+local ActionCooldown = 15
+local PetActionTimes = {}
+local EquippedPets = {}
+local AutoActivePets = {}
+local PetsRegistered = {}
 
 local function sendActionToServer(petName, action)
     local args = {
@@ -173,7 +167,7 @@ local function sendActionToServer(petName, action)
             [4] = "\28"
         }
     }
-    dataRemoteEvent:FireServer(unpack(args))
+    DataRemoteEvent:FireServer(unpack(args))
 end
 
 local function desequipPet(petName)
@@ -186,7 +180,7 @@ local function desequipPet(petName)
             [2] = "4"
         }
     }
-    dataRemoteEvent:FireServer(unpack(args))
+    DataRemoteEvent:FireServer(unpack(args))
 end
 
 local function equipPet(petName)
@@ -199,43 +193,51 @@ local function equipPet(petName)
             [2] = "4"
         }
     }
-    dataRemoteEvent:FireServer(unpack(args))
+    DataRemoteEvent:FireServer(unpack(args))
 end
 
-local function findPetName(instance)
-    while instance and not instance:IsA("Model") do
-        instance = instance.Parent
+local function findPetModel(chatList)
+    local parent = chatList
+    while parent and not parent:IsA("Model") do
+        parent = parent.Parent
     end
-    if instance and instance:IsA("Model") then
-        return instance.Name
+    if parent and parent:IsA("Model") then
+        return parent.Name
     end
     return "Unknown"
 end
 
 local function updateAutoActivePets()
-    autoActivePets = {}
-    for _, item in pairs(itemGrid:GetChildren()) do
+    AutoActivePets = {}
+    for _, item in pairs(ItemGrid:GetChildren()) do
         local backgroundFrame = item:FindFirstChild("Background")
         if backgroundFrame and backgroundFrame:IsA("Frame") then
             local statusValue = item:FindFirstChild("IsActive")
             if statusValue and statusValue.Value then
-                table.insert(autoActivePets, item.Name)
+                table.insert(AutoActivePets, item.Name)
             end
         end
     end
 end
 
 local function selectNextPet()
-    for _, petName in ipairs(autoActivePets) do
-        if not petsRegistered[petName] then
+    for _, petName in ipairs(AutoActivePets) do
+        if not PetsRegistered[petName] and not EquippedPets[petName] then
             return petName
         end
     end
     return nil
 end
 
+local function updateEquippedPets()
+    EquippedPets = {}
+    for _, petName in ipairs(AutoActivePets) do
+        EquippedPets[petName] = true
+    end
+end
+
 local function processChatMessages()
-    local playerName = localPlayer.Name
+    local playerName = LocalPlayer.Name
     local userDirectoryName = playerName .. ":Debris"
     local userDirectory = workspace:FindFirstChild(userDirectoryName)
 
@@ -246,50 +248,45 @@ local function processChatMessages()
     while true do
         wait(0.1)
         updateAutoActivePets()
+        updateEquippedPets()
         local nextPet = selectNextPet()
         if not nextPet then
-            petsRegistered = {}
+            PetsRegistered = {}
             wait(3)
             continue
         end
 
         for _, child in ipairs(userDirectory:GetDescendants()) do
             if child.Name == "ChatList" then
-                local chatMessages = child:GetChildren()
-                if #chatMessages >= 2 then
-                    local secondChild = chatMessages[2]
+                local chatList = child
+                local petName = findPetModel(chatList)
+
+                -- Add pet name to PetsRegistered if not already present
+                if not PetsRegistered[petName] then
+                    PetsRegistered[petName] = true
+                end
+
+                local messages = chatList:GetChildren()
+                if #messages >= 2 then
+                    local secondChild = messages[2]
                     if secondChild:IsA("Frame") then
                         local textLabel = secondChild:FindFirstChildOfClass("TextLabel")
                         if textLabel then
                             local messageText = textLabel.Text:lower()
-                            local petName = findPetName(secondChild)
 
-                            for key, action in pairs(actions) do
+                            for key, action in pairs(Actions) do
                                 if messageText:find(key) then
                                     local currentTime = tick()
-                                    local lastActionTime = petActionTimes[petName]
+                                    local lastActionTime = PetActionTimes[petName]
 
-                                    if not lastActionTime or (currentTime - lastActionTime >= actionCooldown) then
+                                    if not lastActionTime or (currentTime - lastActionTime >= ActionCooldown) then
                                         sendActionToServer(petName, action)
-                                        petActionTimes[petName] = currentTime
-                                        petsRegistered[petName] = true
-local StarterGui = game:GetService("StarterGui")
-StarterGui:SetCore("SendNotification", {
-    Title = "Pet Interacction: Sucess",
-    Text = "wait 8s",
-    Duration = 3,
-})
-                                                
+                                        PetActionTimes[petName] = currentTime
+
                                         wait(8)
                                         desequipPet(petName)
-                                                local StarterGui = game:GetService("StarterGui")
-StarterGui:SetCore("SendNotification", {
-    Title = "Loading New Pet",
-    Text = "Wait 5s",
-    Duration = 5,
-})
-                                                
-                                            wait(5)
+                                        wait(5)
+
                                         equipPet(nextPet)
 
                                         break
