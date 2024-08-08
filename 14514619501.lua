@@ -280,10 +280,14 @@ local function processChatMessages()
                                     local lastActionTime = PetActionTimes[petName]
 
                                     if not lastActionTime or (currentTime - lastActionTime >= ActionCooldown) then
-                                        sendActionToServer(petName, action)
+                                       local StarterGui = game:GetService("StarterGui")
+
+                                                sendActionToServer(petName, action)
                                         PetActionTimes[petName] = currentTime
 
                                         wait(8)
+                                                local StarterGui = game:GetService("StarterGui")
+
                                         desequipPet(petName)
                                         wait(5)
 
