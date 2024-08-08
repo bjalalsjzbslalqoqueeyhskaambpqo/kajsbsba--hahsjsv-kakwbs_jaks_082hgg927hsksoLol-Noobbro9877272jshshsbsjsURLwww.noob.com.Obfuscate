@@ -145,6 +145,7 @@ local inventoryGui = playerGui:WaitForChild("MainMenu"):WaitForChild("Root"):Wai
 local itemGrid = inventoryGui:WaitForChild("ItemGrid")
 local replicatedStorage = game:GetService("ReplicatedStorage")
 local dataRemoteEvent = replicatedStorage:WaitForChild("dataRemoteEvent")
+local workspace = game:GetService("Workspace")
 
 local actions = {
     ["hug"] = "Hugged",
@@ -154,7 +155,6 @@ local actions = {
 
 local actionCooldown = 15
 local petActionTimes = {}
-local equippedPets = {}
 local autoActivePets = {}
 local petsRegistered = {}
 
@@ -247,11 +247,6 @@ local function processChatMessages()
         wait(0.1)
         updateAutoActivePets()
         local nextPet = selectNextPet()
-        if not nextPet then
-            petsRegistered = {}
-            wait(3)
-            continue
-        end
 
         for _, child in ipairs(userDirectory:GetDescendants()) do
             if child.Name == "ChatList" then
@@ -273,24 +268,35 @@ local function processChatMessages()
                                         sendActionToServer(petName, action)
                                         petActionTimes[petName] = currentTime
                                         petsRegistered[petName] = true
-local StarterGui = game:GetService("StarterGui")
-StarterGui:SetCore("SendNotification", {
-    Title = "Pet Interacction: Sucess",
-    Text = "wait 8s",
-    Duration = 3,
-})
-                                                
+
+                                        local StarterGui = game:GetService("StarterGui")
+                                        StarterGui:SetCore("SendNotification", {
+                                            Title = "Pet Interaction: Success",
+                                            Text = "Waiting 8 seconds...",
+                                            Duration = 3,
+                                        })
+
                                         wait(8)
-                                        desequipPet(petName)
-                                                local StarterGui = game:GetService("StarterGui")
-StarterGui:SetCore("SendNotification", {
-    Title = "Loading New Pet",
-    Text = "Wait 5s",
-    Duration = 5,
-})
-                                                
+
+                                        -- Check if there is a new pet to equip
+                                        if nextPet and petName ~= nextPet then
+                                            desequipPet(petName)
+
+                                            StarterGui:SetCore("SendNotification", {
+                                                Title = "Loading New Pet",
+                                                Text = "Wait 5 seconds...",
+                                                Duration = 5,
+                                            })
+
                                             wait(5)
-                                        equipPet(nextPet)
+                                            equipPet(nextPet)
+                                        elseif not nextPet then
+                                            StarterGui:SetCore("SendNotification", {
+                                                Title = "No Active Pets",
+                                                Text = "No active pets available for replacement. Continuing with the current pet.",
+                                                Duration = 3,
+                                            })
+                                        end
 
                                         break
                                     end
@@ -301,10 +307,16 @@ StarterGui:SetCore("SendNotification", {
                 end
             end
         end
+
+        if not nextPet then
+            petsRegistered = {}
+            wait(1)
+        end
     end
 end
 
 spawn(processChatMessages)
+
     end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
