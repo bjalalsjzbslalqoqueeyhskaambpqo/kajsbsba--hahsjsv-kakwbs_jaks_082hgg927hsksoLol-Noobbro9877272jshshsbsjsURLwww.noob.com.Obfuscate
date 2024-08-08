@@ -328,7 +328,7 @@ spawn(processChatMessages)
 UL:AddText(crFrm, "By Script: OneCreatorX ")
 UL:AddText(crFrm, "Create Script: 29/05/24 ")
 UL:AddText(crFrm, "Update Script: 07/08/24")
-UL:AddText(crFrm, "Script Version: 0.7")
+UL:AddText(crFrm, "Script Version: 0.6")
 UL:AddBtn(crFrm, "Copy link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 UL:AddBtn(crFrm, "Copy link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
@@ -539,7 +539,7 @@ UL:AddBtn(cfrm, "TP Egg Zone Secret", function()
         wait(3)
         game.Players.LocalPlayer.Character.PrimaryPart.Anchored = false
     end)
-
+local StarterGui = game:GetService("StarterGui")
 StarterGui:SetCore("SendNotification", {
                                                 Title = "Auto Tasks Pet",
                                                 Text = "Automatic Active ON",
