@@ -42,6 +42,21 @@ UL:AddBtn(cfrm, "Tp Main Game", function()
 game:GetService("TeleportService"):Teleport(17811071580)
     end)
 
+UL:AddBtn(cfrm, "Tp Floor is Lava Game", function() 
+        p:kick("join main")
+game:GetService("TeleportService"):Teleport(815405518)
+    end)
+
+local a = false
+UL:AddTBtn(cfrm, "Auto Tokens(Floor is Lava)", false, function() 
+
+        a = not a
+
+        while a do local token = workspace:FindFirstChild("Token") local character = game.Players.LocalPlayer.Character if token and token.PrimaryPart and character then character:MoveTo(token.PrimaryPart.Position) end wait(0.3) end
+        
+    end)
+
+
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
 UL:AddText(crFrm, "Create Script: 06/08/24 ")
