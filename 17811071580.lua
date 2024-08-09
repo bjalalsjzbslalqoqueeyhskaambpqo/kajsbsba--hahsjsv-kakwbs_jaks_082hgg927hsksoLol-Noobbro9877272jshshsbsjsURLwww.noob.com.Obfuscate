@@ -43,7 +43,7 @@ game:GetService("TeleportService"):Teleport(17811071580)
     end)
 
 UL:AddBtn(cfrm, "Tp Floor is Lava Game", function() 
-        p:kick("join main")
+        p:kick("join Floor is Lava")
 game:GetService("TeleportService"):Teleport(815405518)
     end)
 
