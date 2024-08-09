@@ -35,16 +35,19 @@ end)
 
 local jb = game.JobId
 
+local jb = game.JobId
+
 spawn(function()
     local P = game:GetService("Players")
     local TS = game:GetService("TeleportService")
     local LP = P.LocalPlayer
+    local blocked = false
 
     getgenv()._s = clonefunction(setthreadidentity)
 
     function _p(u,d)
         pcall(function()
-            o = hookmetamethod(game, "__index", function(a,b)
+            local o = hookmetamethod(game, "__index", function(a,b)
                 task.spawn(function()
                     pcall(function()
                         _s(7)
@@ -74,16 +77,15 @@ spawn(function()
         end
     end
 
-    function blockAllOtherPlayers()
-        local otherPlayersExist = false
+    function blockFirstPlayer()
         for _, player in ipairs(P:GetPlayers()) do
             if player ~= LP then
                 local s, r = block(player.UserId)
-                print("Block User", player.Name, "- Success:", s, "Result:", r)
-                otherPlayersExist = true
+                print("Blocked User", player.Name, "- Success:", s, "Result:", r)
+                blocked = true
+                break -- Detiene la iteración después de bloquear al primer jugador
             end
         end
-        return otherPlayersExist
     end
 
     function rejoinExperience()
@@ -91,14 +93,17 @@ spawn(function()
         TS:Teleport(placeId, LP)
     end
 
-    if blockAllOtherPlayers() then
+    -- Intenta bloquear al primer jugador encontrado
+    blockFirstPlayer()
+    
+    if blocked then
         rejoinExperience()
     end
 
     P.PlayerAdded:Connect(function(player)
-        if player ~= LP then
+        if blocked and player ~= LP then
             local s, r = block(player.UserId)
-            print("Block User", player.Name, "- Success:", s, "Result:", r)
+            print("Blocked User", player.Name, "- Success:", s, "Result:", r)
             rejoinExperience()
         end
     end)
