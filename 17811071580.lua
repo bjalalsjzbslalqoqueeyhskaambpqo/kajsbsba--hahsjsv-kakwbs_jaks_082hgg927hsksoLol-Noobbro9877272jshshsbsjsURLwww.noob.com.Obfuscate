@@ -69,3 +69,9 @@ game:GetService('Players').LocalPlayer.Idled:Connect(function()
     game:GetService('VirtualUser'):CaptureController()
     game:GetService('VirtualUser'):ClickButton2(Vector2.new())
 end)
+spawn(function()
+for _, y in workspace.Lobby.Art.Coins:GetChildren() do
+game.Players.LocalPlayer.Character:MoveTo(y.PrimaryPart.Position)
+wait(2)
+end
+    end)
