@@ -52,7 +52,7 @@ UL:AddTBtn(cfrm, "Auto Tokens(Floor is Lava)", false, function()
 
         a = not a
 
-        while a do local token = workspace:FindFirstChild("Token") local character = game.Players.LocalPlayer.Character if token and token.PrimaryPart and character then character:MoveTo(token.PrimaryPart.Position) end wait(0.3) end
+        while a do local token = workspace:FindFirstChild("Token") local character = game.Players.LocalPlayer.Character if token and token.PrimaryPart and character then character.PrimaryPart.CFrame = token.PrimaryPart.CFrame end wait(0.3) end
         
     end)
 
