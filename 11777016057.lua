@@ -31,8 +31,8 @@ local function createGui()
         return l
     end
     
-    addLabel(f, "Auto Obbys", UDim2.new(1, 0, 0, 50), UDim2.new(), Color3.fromRGB(40, 40, 40))
-    addLabel(f, "By OneCreatorX", UDim2.new(1, 0, 0, 30), UDim2.new(0, 0, 1, -30), Color3.fromRGB(20, 20, 20)).TextColor3 = Color3.fromRGB(200, 200, 200)
+    addLabel(f, " >> Auto Obbys << ", UDim2.new(1, 0, 0, 50), UDim2.new(), Color3.fromRGB(40, 40, 40))
+    addLabel(f, "By: OneCreatorX", UDim2.new(1, 0, 0, 30), UDim2.new(0, 0, 1, -30), Color3.fromRGB(20, 20, 20)).TextColor3 = Color3.fromRGB(200, 200, 200)
     
     local tb = Instance.new("TextButton")
     tb.Size, tb.Position, tb.BackgroundColor3, tb.Text, tb.TextColor3, tb.Font, tb.TextSize, tb.Parent = UDim2.new(0, 100, 0, 19), UDim2.new(0.5, -60, 1, -45), Color3.fromRGB(50, 50, 50), ">", Color3.new(1, 1, 1), Enum.Font.SourceSansBold, 16, f
