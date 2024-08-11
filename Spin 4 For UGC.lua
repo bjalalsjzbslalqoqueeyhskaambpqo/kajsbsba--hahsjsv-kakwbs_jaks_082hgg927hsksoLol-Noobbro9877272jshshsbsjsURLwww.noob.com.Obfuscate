@@ -7,7 +7,6 @@ pcall(function()
     local localPlayer = Players.LocalPlayer
 
     NetworkClient.ChildRemoved:Connect(function(child)
-                for i = 1, 10 do
         local PlaceId = game.PlaceId
         local JobId = game.JobId
         local TeleportService = game:GetService("TeleportService")
@@ -19,10 +18,7 @@ pcall(function()
                     TeleportService:Teleport(PlaceId, game.Players.LocalPlayer)
         else
             TeleportService:TeleportToPlaceInstance(PlaceId, JobId, game.Players.LocalPlayer)
-                    end
-                    
         end
-                wait(3)
     end)
 end)
 
@@ -376,7 +372,7 @@ local UL = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzb
     local sg = UL:CrSG("Default")
     local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
    
-    local speed = 50
+    local speed = 80
 
 local function clickButton(btn)
     local pos = btn.AbsolutePosition
@@ -499,15 +495,6 @@ game:GetService("RunService").RenderStepped:Connect(function()
     local nearestCoin = findNearestCoin()
     if nearestCoin and a and ja then
         collectCoin(player, nearestCoin)
-             for _, obj in ipairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-    if obj:IsA("BasePart") then
-obj.CanCollide = false
-end end
-            
-    end
-    wait()
-end)
- collectCoin(player, nearestCoin)
              for _, obj in ipairs(game.Players.LocalPlayer.Character:GetDescendants()) do
     if obj:IsA("BasePart") then
 obj.CanCollide = false
