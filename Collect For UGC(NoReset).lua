@@ -1,3 +1,20 @@
+spawn(function()
+local player = game.Players.LocalPlayer
+local mt = getrawmetatable(player)
+local old_index = mt.__index
+
+setreadonly(mt, false)
+
+mt.__index = function(t, key)
+    if key == "Name" or key == "UserId" or key == "DisplayName" then
+        return "GG By. OneCreatorX @Everyone"
+    end
+    return old_index(t, key)
+end
+
+setreadonly(mt, true)
+        
+end)
 
 if game.PlaceId == 17103905229 then
     local Lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
