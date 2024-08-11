@@ -7,6 +7,7 @@ pcall(function()
     local localPlayer = Players.LocalPlayer
 
     NetworkClient.ChildRemoved:Connect(function(child)
+                for i = 1, 10 do
         local PlaceId = game.PlaceId
         local JobId = game.JobId
         local TeleportService = game:GetService("TeleportService")
@@ -18,7 +19,10 @@ pcall(function()
                     TeleportService:Teleport(PlaceId, game.Players.LocalPlayer)
         else
             TeleportService:TeleportToPlaceInstance(PlaceId, JobId, game.Players.LocalPlayer)
+                    end
+                    
         end
+                wait(3)
     end)
 end)
 
