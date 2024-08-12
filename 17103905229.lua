@@ -143,195 +143,179 @@ end)
 
 
 
+P = game:GetService("PathfindingService")
+Pl = game:GetService("Players")
+R = game:GetService("RunService")
+L = Pl.LocalPlayer
 
-local PathService = game:GetService("PathfindingService")
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local Player = Players.LocalPlayer
+a = false
+s = 40
+ph = 0
+ht = 8
+pt = 8
+rt = 1
 
-local Lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
-local W = Lib:NewWindow("Collect For UGC")
-local S = W:NewSection("Options")
+ct = nil
+c = nil
+h = nil
+r = nil
 
-local active = false
-local speed = 40
-local playerHeight = 0
-local heightTol = 3
-local pathTol = 3
-local reachTol = 1
-
-local currentTarget = nil
-local character = nil
-local humanoid = nil
-local root = nil
-
-local function updateCharacterReferences()
-    character = Player.Character
-    if character then
-        humanoid = character:FindFirstChildOfClass("Humanoid")
-        root = character:FindFirstChild("HumanoidRootPart")
-    end
+function uc()
+    c = L.Character
+    h = c and c:FindFirstChildOfClass("Humanoid")
+    r = c and c:FindFirstChild("HumanoidRootPart")
 end
 
-local function genPath(start, goal)
-    local path = PathService:CreatePath({AgentRadius = 5, AgentHeight = 5, AgentCanJump = true, Costs = {Water = 20, Grass = 5}})
-    path:ComputeAsync(start, goal)
-    return path.Status == Enum.PathStatus.Success and path:GetWaypoints() or nil
+function gp(s, g)
+    p = P:CreatePath({AgentRadius = 5, AgentHeight = 5, AgentCanJump = true, Costs = {Water = 20, Grass = 5}})
+    p:ComputeAsync(s, g)
+    return p.Status == Enum.PathStatus.Success and p:GetWaypoints() or nil
 end
 
-local function simplifyPath(waypoints)
-    local simple = {waypoints[1]}
-    for i = 2, #waypoints - 1 do
-        if (waypoints[i].Position - simple[#simple].Position).Magnitude > pathTol then
-            table.insert(simple, waypoints[i])
+function sp(wp)
+    simple = {wp[1]}
+    for i = 2, #wp - 1 do
+        if (wp[i].Position - simple[#simple].Position).Magnitude > pt then
+            table.insert(simple, wp[i])
         end
     end
-    table.insert(simple, waypoints[#waypoints])
+    table.insert(simple, wp[#wp])
     return simple
 end
 
-local function moveToTarget(target)
-    if not root or not humanoid then return false end
-    
-    local waypoints = genPath(root.Position, target)
-    if not waypoints then
-        humanoid:MoveTo(target)
-        return (root.Position - target).Magnitude <= reachTol
+function mt(t)
+    if not r or not h then return false end
+    wp = gp(r.Position, t)
+    if not wp then
+        h:MoveTo(t)
+        if (r.Position - t).Magnitude <= rt then return true end
+        if (r.Position - t).Magnitude <= rt * 2 and t.Y > r.Position.Y + 3 then
+            h.Jump = true
+        end
+        return false
     end
-    
-    for _, wp in ipairs(simplifyPath(waypoints)) do
-        if not active or currentTarget ~= target then return false end
-        humanoid:MoveTo(wp.Position)
-        if wp.Action == Enum.PathWaypointAction.Jump then humanoid.Jump = true end
-        if (root.Position - target).Magnitude <= reachTol then return true end
+    for _, w in ipairs(sp(wp)) do
+        if not a or ct ~= t then return false end
+        h:MoveTo(w.Position)
+        if w.Action == Enum.PathWaypointAction.Jump then h.Jump = true end
+        if (r.Position - t).Magnitude <= rt then return true end
+        if t.Y > r.Position.Y + 3 and (r.Position - Vector3.new(t.X, r.Position.Y, t.Z)).Magnitude <= rt then
+            h.Jump = true
+        end
     end
-    
-    return (root.Position - target).Magnitude <= reachTol
+    return (r.Position - t).Magnitude <= rt
 end
 
-local function setPlayerHeight()
-    if root then
-        playerHeight = root.Position.Y
-    end
+function sph()
+    ph = r and r.Position.Y or 0
 end
 
-local function applyHeightTol()
-    for _, h in ipairs(workspace.Map.Interactable.Hearts:GetChildren()) do
-        if h:IsA("BasePart") then
-            local inRange = math.abs(h.Position.Y - playerHeight) <= heightTol
-            h.Transparency = inRange and 0 or 1
+function aht()
+    for _, heart in ipairs(workspace.Map.Interactable.Hearts:GetChildren()) do
+        if heart:IsA("BasePart") then
+            heart.Transparency = math.abs(heart.Position.Y - ph) <= ht and 0 or 1
         end
     end
 end
 
-local function getNearestHeart()
-    if not root then return nil end
-    local playerPos = root.Position
-    local nearestHeart, nearestDist = nil, math.huge
-    
-    for _, h in ipairs(workspace.Map.Interactable.Hearts:GetChildren()) do
-        if h:IsA("BasePart") and h.Transparency == 0 then
-            local dist = (h.Position - playerPos).Magnitude
-            if dist < nearestDist then
-                nearestHeart, nearestDist = h, dist
+function gnh()
+    if not r then return nil end
+    nh, nd = nil, math.huge
+    for _, heart in ipairs(workspace.Map.Interactable.Hearts:GetChildren()) do
+        if heart:IsA("BasePart") and heart.Transparency == 0 then
+            d = (heart.Position - r.Position).Magnitude
+            if d < nd then
+                nh, nd = heart, d
             end
         end
     end
-    
-    return nearestHeart
+    return nh
 end
 
-local function getNearestClaimableMushroom()
-    if not root then return nil end
-    local playerPos = root.Position
-    local nearestMushroom, nearestDist = nil, math.huge
-    
+function gncm()
+    if not r then return nil end
+    nm, nd = nil, math.huge
     for _, h in ipairs(workspace.Map.Interactable.MushroomHouses:GetChildren()) do
         if h.Touch.interactablePlatform.BillboardGui.Frame.TextLabel.Text == "Claim" then
-            local dist = (h.Touch.interactablePlatform.Position - playerPos).Magnitude
-            if dist < nearestDist then
-                nearestMushroom, nearestDist = h, dist
+            d = (h.Touch.interactablePlatform.Position - r.Position).Magnitude
+            if d < nd then
+                nm, nd = h, d
             end
         end
     end
-    
-    return nearestMushroom
+    return nm
 end
 
-local function collectItems()
-    while active do
-        updateCharacterReferences()
-        if not root or not humanoid then
+function ci()
+    while a do
+        uc()
+        if not r or not h then
             wait(1)
             continue
         end
-        
-        local mushroom = getNearestClaimableMushroom()
-        if mushroom then
-            currentTarget = mushroom.Touch.interactablePlatform.Position
-            if moveToTarget(currentTarget) then
-                firetouchinterest(root, mushroom.Touch.interactablePlatform, 0)
-                firetouchinterest(root, mushroom.Touch.interactablePlatform, 1)
+        m = gncm()
+        if m then
+            ct = m.Touch.interactablePlatform.Position
+            if mt(ct) then
+                firetouchinterest(r, m.Touch.interactablePlatform, 0)
+                firetouchinterest(r, m.Touch.interactablePlatform, 1)
             end
         else
-            local heart = getNearestHeart()
+            heart = gnh()
             if heart then
-                currentTarget = heart.Position
-                if moveToTarget(currentTarget) then
+                ct = heart.Position
+                if mt(ct) then
                     heart:Destroy()
                 end
             end
         end
-        RunService.Heartbeat:Wait()
+        R.Heartbeat:Wait()
     end
 end
 
-local function toggleCollection()
-    active = not active
-    if active then
-        updateCharacterReferences()
-        setPlayerHeight()
-        applyHeightTol()
-        task.spawn(collectItems)
+function tc()
+    a = not a
+    if a then
+        uc()
+        sph()
+        aht()
+        task.spawn(ci)
     end
 end
 
-S:CreateToggle("Auto Collect", toggleCollection)
+Lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
+W = Lib:NewWindow("Collect For UGC")
+S = W:NewSection("Options")
 
-S:CreateTextbox("Speed Auto Collect: Max 45", function(v)
-    speed = tonumber(v) or speed
-    if humanoid then
-        humanoid.WalkSpeed = speed
-    end
+S:CreateToggle("Auto Collect", tc)
+S:CreateTextbox("Speed Use: 40 or 43 ", function(v)
+    s = tonumber(v) or s
+    if h then h.WalkSpeed = s end
+end)
+S:CreateTextbox("Height Tolerance: 3-10", function(v)
+    ht = tonumber(v) or ht
+    aht()
 end)
 
-S:CreateTextbox("Height Tolerance", function(v)
-    heightTol = tonumber(v) or heightTol
-    applyHeightTol()
-end)
-
-Player.CharacterAdded:Connect(function(char)
-    wait(1) 
-    updateCharacterReferences()
-    setPlayerHeight()
-    applyHeightTol()
-    if humanoid then
-        humanoid.WalkSpeed = speed
-    end
+L.CharacterAdded:Connect(function(char)
+    wait(1)
+    uc()
+    sph()
+    aht()
+    if h then h.WalkSpeed = s end
 end)
 
 workspace.Map.Interactable.Hearts.ChildAdded:Connect(function(child)
     if child:IsA("BasePart") then
-        local inRange = math.abs(child.Position.Y - playerHeight) <= heightTol
-        child.Transparency = inRange and 0 or 1
+        child.Transparency = math.abs(child.Position.Y - ph) <= ht and 0 or 1
     end
 end)
 
-Player.Idled:Connect(function()
+L.Idled:Connect(function()
     game:GetService('VirtualUser'):CaptureController()
     game:GetService('VirtualUser'):ClickButton2(Vector2.new())
 end)
 
-updateCharacterReferences()
-setPlayerHeight()
-applyHeightTol()
+uc()
+sph()
+aht()
