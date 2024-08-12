@@ -143,6 +143,23 @@ end)
             obj:Destroy()
         end
     end
+
+spawn(function()
+
+local function disableCollisionForInteractables()
+    for _, interactable in ipairs(workspace.Map.Interactable:GetDescendants()) do
+        if interactable:IsA("BasePart") then
+            interactable.CanCollide = false
+        end
+    end
+end
+
+disableCollisionForInteractables()
+
+game:GetService("RunService").Heartbeat:Connect(disableCollisionForInteractables)
+        end)
+
+
 local Lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
 local Win = Lib:NewWindow("Collect For UGC")
 local Sec = Win:NewSection("Options")
