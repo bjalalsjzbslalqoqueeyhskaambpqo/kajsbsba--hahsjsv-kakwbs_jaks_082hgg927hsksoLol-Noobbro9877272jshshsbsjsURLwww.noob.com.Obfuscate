@@ -253,7 +253,7 @@ local function toggleAutoHearts()
     b = not b
 end
 
-Sec:CreateToggle("Auto Hearts", toggleAutoHearts)
+Sec:CreateToggle("Auto Collect (fly)", toggleAutoHearts)
 Sec:CreateButton("Store UGC", function()
     game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible = not game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible
 end)
@@ -268,7 +268,7 @@ Sec:CreateTextbox("Speed Fly: 40-45", function(value)
     })
 end)
 
-Sec3:CreateButton("Version 26", function() end)
+Sec3:CreateButton("Version 28", function() end)
 Sec3:CreateButton("Update: 12/08/24", function() end)
 Sec3:CreateButton("System 80% + Safe", function() end)
 
