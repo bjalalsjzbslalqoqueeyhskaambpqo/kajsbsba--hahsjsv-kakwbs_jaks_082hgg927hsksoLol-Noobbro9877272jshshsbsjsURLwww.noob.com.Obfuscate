@@ -279,6 +279,57 @@ Sec2:CreateButton("Copy Link Discord", function()
     setclipboard("https://discord.com/invite/23kFrRBSfD")
 end)
 
+pcall(function()
+    local Players = game:GetService("Players")
+    local player = Players.LocalPlayer
+
+    local function scaleCharacter(scale)
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        if not character or not humanoid then
+            return
+        end
+        
+        local newScale = Vector3.new(scale, scale, scale)
+        
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Size = part.Size * newScale
+            end
+        end
+        
+        local rootPart = character:FindFirstChild("HumanoidRootPart")
+        if rootPart then
+            rootPart.Position = rootPart.Position - Vector3.new(0, (1 - scale) * 3, 0)
+        end
+    end
+
+    scaleCharacter(0.4)
+end)
+pcall(function()
+    local NetworkClient = game:GetService("NetworkClient")
+    local Players = game:GetService("Players")
+    local TeleportService = game:GetService("TeleportService")
+
+    local PlaceId = game.GameId
+    local localPlayer = Players.LocalPlayer
+
+    NetworkClient.ChildRemoved:Connect(function(child)
+        local PlaceId = game.PlaceId
+        local JobId = game.JobId
+        local TeleportService = game:GetService("TeleportService")
+
+        if #game.Players:GetPlayers() <= 1 then
+            game.Players.LocalPlayer:Kick("\nRejoining...")
+            wait()
+
+                    TeleportService:Teleport(PlaceId, game.Players.LocalPlayer)
+        else
+            TeleportService:TeleportToPlaceInstance(PlaceId, JobId, game.Players.LocalPlayer)
+        end
+    end)
+end)
 game:GetService('Players').LocalPlayer.Idled:Connect(function()
     game:GetService('VirtualUser'):CaptureController()
     game:GetService('VirtualUser'):ClickButton2(Vector2.new())
