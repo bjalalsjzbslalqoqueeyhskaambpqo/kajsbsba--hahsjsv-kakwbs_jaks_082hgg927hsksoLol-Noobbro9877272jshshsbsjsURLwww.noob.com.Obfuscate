@@ -18,20 +18,19 @@ local sg = UL:CrSG("Default")
 local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
 
 
-local h = nil
-for _, descendant in pairs(game:GetDescendants()) do
-    if descendant:IsA("RemoteFunction") and descendant.Name == "ConfirmUGC" then
+
+UL:AddTBox(cfrm, "Id Instant", function(id) 
+    for _, descendant in pairs(game:GetDescendants()) do
+    if descendant:IsA("RemoteFunction") and descendant.Name == "PromptClientPurchase" then
         pcall(function()
-            h = descendant
+descendant:InvokeServer(id)
+            
         end)
         break
     end
 end
-
-UL:AddTBox(cfrm, "Id Instant", function(id) 
-    if h then
-        h:InvokeServer(id)
-    end
+       
+    
 end)
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
