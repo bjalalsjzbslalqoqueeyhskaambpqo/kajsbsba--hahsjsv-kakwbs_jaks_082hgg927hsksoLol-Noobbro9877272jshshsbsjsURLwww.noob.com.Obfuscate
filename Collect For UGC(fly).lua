@@ -1,4 +1,7 @@
 spawn(function()
+        (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+    end)
+spawn(function()
 function eliminarObjeto(objeto)
     for _, hijo in ipairs(objeto:GetDescendants()) do
         if hijo:IsA("BasePart") then
