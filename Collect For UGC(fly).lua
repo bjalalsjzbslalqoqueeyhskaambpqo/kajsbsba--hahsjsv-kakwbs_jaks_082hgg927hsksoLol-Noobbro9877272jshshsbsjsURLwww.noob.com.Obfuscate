@@ -333,6 +333,20 @@ pcall(function()
         end
     end)
 end)
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Warn Speed ",
+    Text = "do not use speed that causes (baibai)",
+    Duration = 5,
+})
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Advertencia",
+    Text = "No Usar velocidad que provoque el (baibai)",
+    Duration = 5,
+})
+
+
 game:GetService('Players').LocalPlayer.Idled:Connect(function()
     game:GetService('VirtualUser'):CaptureController()
     game:GetService('VirtualUser'):ClickButton2(Vector2.new())
