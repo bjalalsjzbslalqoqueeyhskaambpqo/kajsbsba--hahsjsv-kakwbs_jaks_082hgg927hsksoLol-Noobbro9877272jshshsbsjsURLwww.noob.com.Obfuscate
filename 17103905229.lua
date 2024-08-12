@@ -368,6 +368,20 @@ pcall(function()
     end)
 end)
 
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Warn Speed ",
+    Text = "do not use speed that causes (baibai)",
+    Duration = 5,
+})
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Advertencia",
+    Text = "No Usar velocidad que provoque el (baibai)",
+    Duration = 5,
+})
+
+
 spawn(function()
         local mt = getrawmetatable(game)
 local old_index = mt.__index
