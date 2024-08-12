@@ -198,13 +198,18 @@ local function moveToTarget(targetPosition)
 end
 
 local function findNearestClaimableObject()
-    if not r then return nil end
-    nm, nd = nil, math.huge
-    for _, h in ipairs(workspace.Map.Interactable.MushroomHouses:GetChildren()) do
-        if h.Touch.interactablePlatform.BillboardGui.Frame.TextLabel.Text == "Claim" then
-            d = (h.Touch.interactablePlatform.Position - r.Position).Magnitude
-            if d < nd then
-                nm, nd = h, d
+    local player = game.Players.LocalPlayer
+    if not player or not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return nil end
+    local PPos = player.Character.HumanoidRootPart.Position
+    local nearestClaimable = nil
+    local minDistance = math.huge
+    for _, f in ipairs(workspace.Map.Interactable.MushroomHouses:GetDescendants()) do
+        if f:IsA("TextLabel") and f.Text == "Claim" then
+            local claimableObject = f.Parent.Parent.Parent
+            local distance = (claimableObject.Position - PPos).Magnitude
+            if distance < minDistance then
+                minDistance = distance
+                nearestClaimable = claimableObject
             end
         end
     end
