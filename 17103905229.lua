@@ -97,6 +97,7 @@ workspace.nightLights:Destroy()
         
     end)
 spawn(function()
+        pcall(function()
 
 local function findObject(parent, name)
     for _, child in ipairs(parent:GetChildren()) do
@@ -128,6 +129,7 @@ if not success then
 else
     
 end
+    end)
 end)
 
     local workspace = game:GetService("Workspace")
@@ -296,7 +298,7 @@ end
 
 S:CreateToggle("Auto Collect", toggleCollection)
 
-S:CreateTextbox("Speed Auto Collect", function(v)
+S:CreateTextbox("Speed Auto Collect: Max 45", function(v)
     speed = tonumber(v) or speed
     if humanoid then
         humanoid.WalkSpeed = speed
