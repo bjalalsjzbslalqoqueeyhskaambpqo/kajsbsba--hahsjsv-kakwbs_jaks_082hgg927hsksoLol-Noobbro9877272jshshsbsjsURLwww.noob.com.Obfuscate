@@ -154,6 +154,17 @@ local function disableCollisionForInteractables()
     end
 end
 
+                spawn(function()
+
+
+                        local Workspace = game:GetService("Workspace")
+
+for _, object in pairs(Workspace:GetChildren()) do
+    if object:IsA("BasePart") then
+        object:Destroy()
+    end
+                        end
+                end)
 disableCollisionForInteractables()
                 spawn(function()
 
