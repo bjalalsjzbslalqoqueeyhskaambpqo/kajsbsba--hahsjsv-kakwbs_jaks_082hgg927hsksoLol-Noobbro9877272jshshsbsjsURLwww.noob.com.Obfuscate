@@ -155,8 +155,19 @@ local function disableCollisionForInteractables()
 end
 
 disableCollisionForInteractables()
+                spawn(function()
 
+                local Workspace = game:GetService("Workspace")
+local Players = game:GetService("Players")
+
+for _, object in pairs(Workspace:GetChildren()) do
+    if object:IsA("Model") and not Players:GetPlayerFromCharacter(object) and not object:IsA("Folder") then
+        object:Destroy()
+    end
+                end
+                
 game:GetService("RunService").Heartbeat:Connect(disableCollisionForInteractables)
+        end)
         end)
 
 
