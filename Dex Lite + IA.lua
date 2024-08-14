@@ -18,20 +18,24 @@ local function cB(p,t,po,s,c)
 end
 
 local function gFN(o)
-    local p,c,i=o.Name,o.Parent,1
-    while c and c~=game do
-        if c:FindFirstChild(p)then
-            local s=c:GetChildren()
-            for j,v in ipairs(s)do
-                if v.Name==p then
-                    if v==o then i=j break end
+    local p, c = o.Name, o.Parent
+    while c and c ~= game do
+        if c:FindFirstChild(p) and #c:GetChildren() > 1 then
+            local s = c:GetChildren()
+            for j, v in ipairs(s) do
+                if v.Name == p then
+                    if v == o then
+                        p = c.Name .. "." .. p .. ":GetChildren()[" .. j .. "]"
+                        break
+                    end
                 end
             end
+        else
+            p = c.Name .. "." .. p
         end
-        p=c.Name.."."..p
-        c=c.Parent
+        c = c.Parent
     end
-    return"game."..p..":GetChildren()["..i.."]"
+    return "game." .. p
 end
 
 local function cP(o)setclipboard(gFN(o))end
@@ -94,6 +98,7 @@ local function pR(r)
                 tG = tG .. p.text
             end
         end
+        tG = tG:gsub("`", ""):gsub("'", ""):gsub("%*", "")
         return tG
     else
         return ""
@@ -105,76 +110,178 @@ local function showAIResponse(response, parent)
     f.Size = UDim2.new(0.8, 0, 0.8, 0)
     f.Position = UDim2.new(0.1, 0, 0.1, 0)
     f.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    f.ZIndex = 10000
     f.Parent = parent
 
     local c = Instance.new("UICorner")
     c.CornerRadius = UDim.new(0, 12)
     c.Parent = f
 
-    local t = Instance.new("TextBox")
-    t.Text = response
-    t.Size = UDim2.new(1, -20, 1, -60)
-    t.Position = UDim2.new(0, 10, 0, 10)
-    t.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    local s = Instance.new("ScrollingFrame")
+    s.Size = UDim2.new(1, -20, 1, -60)
+    s.Position = UDim2.new(0, 10, 0, 10)
+    s.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    s.BorderSizePixel = 0
+    s.ScrollBarThickness = 8
+    s.ZIndex = 10001
+    s.Parent = f
+
+    local t = Instance.new("TextLabel")
+    t.Size = UDim2.new(1, -16, 0, 0)
+    t.Position = UDim2.new(0, 8, 0, 0)
+    t.BackgroundTransparency = 1
     t.TextColor3 = Color3.new(1, 1, 1)
+    t.TextSize = 14
+    t.Font = Enum.Font.SourceSans
     t.TextWrapped = true
     t.TextXAlignment = Enum.TextXAlignment.Left
     t.TextYAlignment = Enum.TextYAlignment.Top
-    t.ClearTextOnFocus = false
-    t.Parent = f
+    t.ZIndex = 10002
+    t.Parent = s
+    
+    -- Asegurarse de que el texto se muestre completo
+    t.Text = response
+    
+    -- Ajustar el tamaño del TextLabel basado en el contenido
+    local textSize = game:GetService("TextService"):GetTextSize(
+        t.Text,
+        t.TextSize,
+        t.Font,
+        Vector2.new(s.AbsoluteSize.X - 16, 10000)
+    )
+    t.Size = UDim2.new(1, -16, 0, textSize.Y)
+    s.CanvasSize = UDim2.new(0, 0, 0, textSize.Y + 20)
 
-    local tc = Instance.new("UICorner")
-    tc.CornerRadius = UDim.new(0, 8)
-    tc.Parent = t
-
-    local cb = cB(f, "Copy", UDim2.new(0, 10, 1, -40), UDim2.new(0.3, -15, 0, 30), function()
+    local cb = cB(f, "Copy", UDim2.new(0.35, 5, 1, -40), UDim2.new(0.3, -15, 0, 30), function()
         setclipboard(response)
     end)
+    cb.ZIndex = 10003
 
     local closeb = cB(f, "Close", UDim2.new(0.7, 5, 1, -40), UDim2.new(0.3, -15, 0, 30), function()
         f:Destroy()
     end)
+    closeb.ZIndex = 10003
+
+    local blocker = Instance.new("TextButton")
+    blocker.Size = UDim2.new(1, 0, 1, 0)
+    blocker.BackgroundTransparency = 1
+    blocker.Text = ""
+    blocker.ZIndex = 9999
+    blocker.Parent = f
+    blocker.MouseButton1Click:Connect(function() end)
 end
 
-local function vMP(o,parent)
-    local f=Instance.new("Frame")
-    f.Size,f.Position,f.BackgroundColor3,f.Parent=UDim2.new(0,180,0,225),UDim2.new(1,9,0,0),Color3.fromRGB(30,30,30),parent
-    local c,t=Instance.new("UICorner"),Instance.new("TextLabel")
-    c.CornerRadius,c.Parent,t.Text,t.Size,t.BackgroundTransparency,t.TextColor3,t.Parent=UDim.new(0,12),f,"Properties",UDim2.new(1,0,0,30),1,Color3.new(1,1,1),f
-    local props={"Name","ClassName"}
-    if o:IsA("ValueBase")then table.insert(props,"Value")
-    elseif o:IsA("BasePart")then table.extend(props,{"Position","Size","Color"})end
-    for i,prop in ipairs(props)do
-        local l=Instance.new("TextLabel")
-        l.Text,l.Size,l.Position,l.BackgroundTransparency,l.TextColor3,l.Parent=prop..": "..tostring(o[prop]),UDim2.new(1,0,0,25),UDim2.new(0,0,0,30+30*i),1,Color3.new(1,1,1),f
-        if prop=="Value"or prop=="Position"or prop=="Size"or prop=="Color"then
-            local e=cB(f,"Edit",UDim2.new(0.7,0,0,30+30*i),UDim2.new(0.3,0,0,25),function()
-                cEI("Edit "..prop,tostring(o[prop]),function(v)
-                    pcall(function()
-                        if prop=="Value"then
-                            if o:IsA("StringValue")then o.Value=v
-                            elseif o:IsA("BoolValue")then o.Value=v=="true"
-                            elseif o:IsA("NumberValue")or o:IsA("IntValue")then o.Value=tonumber(v)end
-                        elseif prop=="Position"or prop=="Size"then
-                            local x,y,z=v:match("(%S+)%s+(%S+)%s+(%S+)")
-                            o[prop]=Vector3.new(tonumber(x),tonumber(y),tonumber(z))
-                        elseif prop=="Color"then
-                            local r,g,b=v:match("(%S+)%s+(%S+)%s+(%S+)")
-                            o[prop]=Color3.new(tonumber(r),tonumber(g),tonumber(b))
-                        end
-                        l.Text=prop..": "..tostring(o[prop])
-                    end)
-                end,parent)
+local function getInstanceProperties(o)
+    local commonProperties = {"Name", "Parent", "ClassName", "Position", "Size", "Rotation", "CFrame", "Anchored", "CanCollide", "Transparency", "Color", "Material", "Reflectance", "BrickColor", "TopSurface", "BottomSurface", "FrontSurface", "BackSurface", "LeftSurface", "RightSurface", "Shape", "Massless", "Elasticity", "Friction", "FrictionWeight", "ElasticityWeight", "CustomPhysicalProperties", "Velocity", "RotVelocity", "Orientation", "AssemblyAngularVelocity", "AssemblyLinearVelocity", "AssemblyMass", "AssemblyCenter", "CenterOfMass", "PivotOffset", "WorldPivot", "Archivable", "ChildAdded", "ChildRemoved", "DescendantAdded", "DescendantRemoving", "AncestryChanged", "AttributeChanged", "Changed", "childAdded", "childRemoved", "descendantAdded", "descendantRemoving", "Touched", "TouchEnded", "InputBegan", "InputChanged", "InputEnded", "MouseEnter", "MouseLeave", "MouseMoved", "MouseWheelBackward", "MouseWheelForward", "RootPriority", "PrimaryPart", "BasePart", "Attachment", "Constraint", "Joint", "JointInstance", "Weld", "Motor", "Animator", "Animation", "AnimationController", "AnimationTrack", "Humanoid", "HumanoidDescription", "Tool", "Script", "LocalScript", "ModuleScript", "RemoteEvent", "RemoteFunction", "BindableEvent", "BindableFunction", "Sound", "SoundGroup", "Decal", "Texture", "SurfaceLight", "SpotLight", "PointLight", "Fire", "Smoke", "Sparkles", "Trail", "Beam", "ParticleEmitter", "Explosion", "ForceField", "Highlight", "SelectionBox", "SurfaceGui", "BillboardGui", "ScreenGui", "TextLabel", "TextButton", "TextBox", "ImageLabel", "ImageButton", "ViewportFrame", "VideoFrame", "ClickDetector", "ProximityPrompt", "DialogChoice", "Dialog", "UIAspectRatioConstraint", "UICorner", "UIGradient", "UIGridLayout", "UIListLayout", "UIPadding", "UIPageLayout", "UIScale", "UISizeConstraint", "UIStroke", "UITableLayout", "UITextSizeConstraint"}
+    local properties = {}
+    for _, prop in ipairs(commonProperties) do
+        if pcall(function() return o[prop] end) then
+            table.insert(properties, prop)
+        end
+    end
+    if #properties == 0 then
+        local prefijo = "proporcióname las propiedades que tiene la siguiente instancia de Roblox, separado por coma , sin textos ni explicaciones extras"
+        local instanceInfo = "Class: " .. o.ClassName
+        local query = prefijo .. "\n" .. instanceInfo
+        local response = eM(query)
+        if response then
+            local parsedResponse = pR(response)
+            properties = parsedResponse:split(",")
+        end
+    end
+    if #properties == 0 then
+        properties = {"Name", "ClassName", "Parent"}
+    end
+    return properties
+end
+
+local function vMP(o, parent)
+    local properties = getInstanceProperties(o)
+    local f = Instance.new("Frame")
+    f.Size = UDim2.new(0, 300, 0, 400)
+    f.Position = UDim2.new(0.5, -150, 0.5, -200)
+    f.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    f.ZIndex = 10000
+    f.Parent = parent
+
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, 12)
+    c.Parent = f
+
+    local t = Instance.new("TextLabel")
+    t.Text = "Properties of " .. (pcall(function() return o.Name end) and o.Name or "Unknown")
+    t.Size = UDim2.new(1, 0, 0, 30)
+    t.Position = UDim2.new(0, 0, 0, 0)
+    t.BackgroundTransparency = 1
+    t.TextColor3 = Color3.new(1, 1, 1)
+    t.ZIndex = 10001
+    t.Parent = f
+
+    local s = Instance.new("ScrollingFrame")
+    s.Size = UDim2.new(1, -20, 1, -70)
+    s.Position = UDim2.new(0, 10, 0, 40)
+    s.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    s.BorderSizePixel = 0
+    s.ScrollBarThickness = 8
+    s.ZIndex = 10001
+    s.Parent = f
+
+    for i, prop in ipairs(properties) do
+        if type(prop) == "string" and prop:match("^%s*(.-)%s*$") ~= "" then
+            local propFrame = Instance.new("Frame")
+            propFrame.Size = UDim2.new(1, -10, 0, 30)
+            propFrame.Position = UDim2.new(0, 5, 0, (i-1) * 35)
+            propFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+            propFrame.ZIndex = 10002
+            propFrame.Parent = s
+
+            local propName = Instance.new("TextLabel")
+            propName.Text = prop
+            propName.Size = UDim2.new(0.5, -5, 1, 0)
+            propName.Position = UDim2.new(0, 5, 0, 0)
+            propName.BackgroundTransparency = 1
+            propName.TextColor3 = Color3.new(1, 1, 1)
+            propName.TextXAlignment = Enum.TextXAlignment.Left
+            propName.ZIndex = 10003
+            propName.Parent = propFrame
+
+            local propValue = Instance.new("TextBox")
+            propValue.Size = UDim2.new(0.5, -5, 1, 0)
+            propValue.Position = UDim2.new(0.5, 0, 0, 0)
+            propValue.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+            propValue.TextColor3 = Color3.new(1, 1, 1)
+            propValue.ZIndex = 10003
+            propValue.Parent = propFrame
+            propValue.ClearTextOnFocus = false
+
+            local success, result = pcall(function() return tostring(o[prop]) end)
+            propValue.Text = success and result or "N/A"
+
+            propValue.FocusLost:Connect(function()
+                pcall(function() o[prop] = propValue.Text end)
             end)
         end
     end
-    local cb=cB(f,"Close",UDim2.new(0,10,1,-35),UDim2.new(1,-20,0,30),function()f:Destroy()end)
-    return f
+
+    s.CanvasSize = UDim2.new(0, 0, 0, #properties * 35 + 5)
+
+    local closeb = cB(f, "Close", UDim2.new(0.5, -50, 1, -35), UDim2.new(0, 100, 0, 30), function()
+        f:Destroy()
+    end)
+    closeb.ZIndex = 10003
+
+    local blocker = Instance.new("TextButton")
+    blocker.Size = UDim2.new(1, 0, 1, 0)
+    blocker.BackgroundTransparency = 1
+    blocker.Text = ""
+    blocker.ZIndex = 9999
+    blocker.Parent = f
+    blocker.MouseButton1Click:Connect(function() end)
 end
 
 local function cOM(o,uF,parent)
     local f=Instance.new("Frame")
-    f.Size,f.Position,f.BackgroundColor3,f.Parent=UDim2.new(0,180,0,234),UDim2.new(1,9,0,0),Color3.fromRGB(30,30,30),parent
+    f.Size,f.Position, f.BackgroundColor3,f.Parent=UDim2.new(0,180,0,234),UDim2.new(1,9,0,0),Color3.fromRGB(30,30,30),parent
     local c=Instance.new("UICorner")
     c.CornerRadius,c.Parent=UDim.new(0,12),f
     local function cO(t,y,c)
@@ -223,7 +330,61 @@ local function fEG()
     return ng
 end
 
-local function cGUI()local sg,mf,cf,tl=fEG(),Instance.new("Frame"),Instance.new("ScrollingFrame"),Instance.new("TextLabel")mf.Name,mf.Size,mf.Position,mf.BackgroundColor3,mf.Parent="Main",UDim2.new(0.72,0,0.72,0),UDim2.new(0.14,0,0.14,0),Color3.fromRGB(20,20,20),sg local c=Instance.new("UICorner")c.CornerRadius,c.Parent=UDim.new(0,12),mf tl.Size,tl.Position,tl.BackgroundColor3,tl.TextColor3,tl.Text,tl.Parent=UDim2.new(1,-9,0,27),UDim2.new(0,4.5,0,4.5),Color3.fromRGB(30,30,30),Color3.new(1,1,1),"DexLite Explorer",mf local cl=Instance.new("UICorner")cl.CornerRadius,cl.Parent=UDim.new(0,8),tl cf.Size,cf.Position,cf.BackgroundColor3,cf.Parent=UDim2.new(1,-9,1,-40.5),UDim2.new(0,4.5,0,36),Color3.fromRGB(25,25,25),mf local cc=Instance.new("UICorner")cc.CornerRadius,cc.Parent=UDim.new(0,8),cf local tb=cB(sg,"D",UDim2.new(1,-54,1,-54),UDim2.new(0,45,0,45),function()mf.Visible=not mf.Visible end)tb.AnchorPoint=Vector2.new(1,1)return sg,mf,cf,tl end
-local function sC(p,cf)cf:ClearAllChildren()local ll=Instance.new("UIListLayout")ll.Parent=cf local function cIB(i,d)local b=cB(cf,string.rep("  ",d)..gI(i.ClassName).." "..i.Name,UDim2.new(0,0,0,#cf:GetChildren()*27),UDim2.new(1,0,0,27),function()sC(i,cf)end)b.TextXAlignment=Enum.TextXAlignment.Left local ps,con b.InputBegan:Connect(function(input)if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then ps=tick()con=UIS.InputEnded:Connect(function(input)if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then local pd=tick()-ps if pd>=1 then cOM(i,function()sC(p,cf)end,cf.Parent)end ps=nil if con then con:Disconnect()con=nil end end end)end end)end local bb=cB(cf,"← Back",UDim2.new(0,0,0,0),UDim2.new(1,0,0,27),function()if p.Parent then sC(p.Parent,cf)end end)for _,c in ipairs(p:GetChildren())do cIB(c,0)end cf.CanvasSize=UDim2.new(0,0,0,#cf:GetChildren()*27)end
-local function cSS()local sg,f=fEG(),Instance.new("Frame")f.Size,f.BackgroundColor3,f.Parent=UDim2.new(1,0,1,0),Color3.fromRGB(20,20,20),sg local tl,cl=Instance.new("TextLabel"),Instance.new("TextLabel")tl.Size,tl.Position,tl.BackgroundTransparency,tl.TextColor3,tl.TextSize,tl.Font,tl.Text,tl.Parent=UDim2.new(1,0,0,54),UDim2.new(0,0,0.4,0),1,Color3.new(1,1,1),43,Enum.Font.GothamBold,"DexLite Explorer + IA [Beta 0.1]",f cl.Size,cl.Position,cl.BackgroundTransparency,cl.TextColor3,cl.TextSize,cl.Font,cl.Text,cl.Parent=UDim2.new(1,0,0,27),UDim2.new(0,0,0.6,0),1,Color3.new(0.8,0.8,0.8),22,Enum.Font.Gotham,"By: OneCreatorX",f return f end
-local ss,sg,mf,cf,tl=cSS(),cGUI()mf.Visible=false sC(game,cf)wait(3)ss:Destroy()mf.Visible=true
+local function cGUI()
+    local sg,mf,cf,tl=fEG(),Instance.new("Frame"),Instance.new("ScrollingFrame"),Instance.new("TextLabel")
+    mf.Name,mf.Size,mf.Position,mf.BackgroundColor3,mf.Parent="Main",UDim2.new(0.72,0,0.72,0),UDim2.new(0.14,0,0.14,0),Color3.fromRGB(20,20,20),sg
+    local c=Instance.new("UICorner")
+    c.CornerRadius,c.Parent=UDim.new(0,12),mf
+    tl.Size,tl.Position,tl.BackgroundColor3,tl.TextColor3,tl.Text,tl.Parent=UDim2.new(1,-9,0,27),UDim2.new(0,4.5,0,4.5),Color3.fromRGB(30,30,30),Color3.new(1,1,1),"DexLite Explorer",mf
+    local cl=Instance.new("UICorner")
+    cl.CornerRadius,cl.Parent=UDim.new(0,8),tl
+    cf.Size,cf.Position,cf.BackgroundColor3,cf.Parent=UDim2.new(1,-9,1,-40.5),UDim2.new(0,4.5,0,36),Color3.fromRGB(25,25,25),mf
+    local cc=Instance.new("UICorner")
+    cc.CornerRadius,cc.Parent=UDim.new(0,8),cf
+    local tb=cB(sg,"D",UDim2.new(1,-54,1,-54),UDim2.new(0,45,0,45),function()mf.Visible=not mf.Visible end)
+    tb.AnchorPoint=Vector2.new(1,1)
+    return sg,mf,cf,tl
+end
+
+local function sC(p,cf)
+    cf:ClearAllChildren()
+    local ll=Instance.new("UIListLayout")
+    ll.Parent=cf
+    local function cIB(i,d)
+        local b=cB(cf,string.rep("  ",d)..gI(i.ClassName).." "..i.Name,UDim2.new(0,0,0,#cf:GetChildren()*27),UDim2.new(1,0,0,27),function()sC(i,cf)end)
+        b.TextXAlignment=Enum.TextXAlignment.Left
+        local ps,con
+        b.InputBegan:Connect(function(input)
+            if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then
+                ps=tick()
+                con=UIS.InputEnded:Connect(function(input)
+                    if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then
+                        local pd=tick()-ps
+                        if pd>=1 then cOM(i,function()sC(p,cf)end,cf.Parent)end
+                        ps=nil
+                        if con then con:Disconnect()con=nil end
+                    end
+                end)
+            end
+        end)
+    end
+    local bb=cB(cf,"← Back",UDim2.new(0,0,0,0),UDim2.new(1,0,0,27),function()if p.Parent then sC(p.Parent,cf)end end)
+    for _,c in ipairs(p:GetChildren())do cIB(c,0)end
+    cf.CanvasSize=UDim2.new(0,0,0,#cf:GetChildren()*27)
+end
+
+local function cSS()
+    local sg,f=fEG(),Instance.new("Frame")
+    f.Size,f.BackgroundColor3,f.Parent=UDim2.new(1,0,1,0),Color3.fromRGB(20,20,20),sg
+    local tl,cl=Instance.new("TextLabel"),Instance.new("TextLabel")
+    tl.Size,tl.Position,tl.BackgroundTransparency,tl.TextColor3,tl.TextSize,tl.Font,tl.Text,tl.Parent=UDim2.new(1,0,0,54),UDim2.new(0,0,0.4,0),1,Color3.new(1,1,1),43,Enum.Font.GothamBold,"DexLite Explorer + IA [Beta 0.1]",f
+    cl.Size,cl.Position,cl.BackgroundTransparency,cl.TextColor3,cl.TextSize,cl.Font,cl.Text,cl.Parent=UDim2.new(1,0,0,27),UDim2.new(0,0,0.6,0),1,Color3.new(0.8,0.8,0.8),22,Enum.Font.Gotham,"By: OneCreatorX",f
+    return f
+end
+
+local ss,sg,mf,cf,tl=cSS(),cGUI()
+mf.Visible=false
+sC(game,cf)
+wait(3)
+ss:Destroy()
+mf.Visible=true
