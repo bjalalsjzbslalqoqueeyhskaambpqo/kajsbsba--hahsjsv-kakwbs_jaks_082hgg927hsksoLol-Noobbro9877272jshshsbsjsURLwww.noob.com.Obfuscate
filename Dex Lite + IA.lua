@@ -3,10 +3,6 @@ local HS = game:GetService("HttpService")
 local k = "AIzaSyCeb4A_gNAS7clem3u28gOo0PXIzO3o99g"
 local url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" .. k
 
-spawn(function()
-        (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
-    end)
-
 local icons={Folder="📁",Model="📦",Part="🧊",MeshPart="🔷",Tool="🔧",Script="📜",LocalScript="📝",ModuleScript="📚",Workspace="🌍",Players="👥",Lighting="💡",ReplicatedStorage="🗄️",ServerStorage="🗃️",StarterGui="🖥️",StarterPack="🎒",Teams="👥",SoundService="🔊",Camera="📷",Humanoid="🧍",Terrain="🏞️",Decal="🖼️",Texture="🎨",PointLight="💡",SpotLight="🔦",Fire="🔥",Smoke="💨",Explosion="💥",Sparkles="✨",ParticleEmitter="🎆",TrussPath="🔩",VehicleSeat="💺",ClickDetector="👆",ProximityPrompt="❗",SurfaceGui="📺",BillboardGui="🗳️",ScreenGui="🖥️",UICorner="🔘",UIGradient="🌈",UIStroke="✏️",Motor6D="🦾",Sound="🔈",Attachment="🔗",Beam="↔️",BlurEffect="🌫️",BoolValue="✅",StringValue="🔤",NumberValue="🔢",Vector3Value="➡️",CFrameValue="🔲",Color3Value="🎨",IntValue="🔢",ObjectValue="🎯",RayValue="➖",BasePart="◻️",WeldConstraint="🔗",Highlight="✨",Animator="🎭",AnimationController="🎬",KeyframeSequence="🔑",TweenService="↕️",DataStoreService="💾",MarketplaceService="🛒",Debris="🗑️",PathfindingService="🧭",RemoteEvent="📡",RemoteFunction="📞"}
 
 local function gI(c)return icons[c]or"❓"end
@@ -111,6 +107,8 @@ end
 
 local function showAIResponse(response, parent)
     local f = Instance.new("Frame")
+        f.Draggable = true
+        f.Active = true
     f.Size = UDim2.new(0.8, 0, 0.8, 0)
     f.Position = UDim2.new(0.1, 0, 0.1, 0)
     f.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -142,11 +140,8 @@ local function showAIResponse(response, parent)
     t.TextYAlignment = Enum.TextYAlignment.Top
     t.ZIndex = 10002
     t.Parent = s
-    
-    -- Asegurarse de que el texto se muestre completo
     t.Text = response
     
-    -- Ajustar el tamaño del TextLabel basado en el contenido
     local textSize = game:GetService("TextService"):GetTextSize(
         t.Text,
         t.TextSize,
@@ -298,7 +293,7 @@ local function cOM(o,uF,parent)
     cO("Delete",81,function()pcall(function()o:Destroy()uF()end)end)
     cO("View Properties",117,function()vMP(o,parent)end)
     cO("AI Query",153,function()
-        local prefijo = "Este mensaje es para un contexto de Roblox. Por favor, responde solo con el código necesario sin usar ``, o en caso de que se pida información sobre la instancia brindar una respuesta con la información en vez de un código, además de eso la información que se va a brindar no es necesario usarla de forma tan literal y directa sino puedes utilizarlo como una fuente de información en algunos casos para apuntar directamente a la instancia o para decir formas de trabajar con la distancia según se pida Script o se pida algún tipo de información de la misma Ya que en algunos casos se mejor es trabajar de forma dinámica con la información obtenida trabajar por la jerarquía directa que puede cambiar dependiendo tu analiza la situación"
+        local prefijo = "Este mensaje es para un contexto de Roblox. Por favor, responde solo con el código necesario sin usar ``, o en caso de que se pida información sobre la instancia brindar una respuesta con la información en vez de un código, además de eso la información que se va a brindar no es necesario usarla de forma tan literal y directa sino puedes utilizarlo como una fuente de información en algunos casos para apuntar directamente a la instancia o para decir formas de trabajar con la distancia según se pida Script o se pida algún tipo de información de la misma Ya que en algunos casos se mejor es trabajar de forma dinámica con la información obtenida trabajar por la jerarquía directa que puede cambiar dependiendo tu analiza la situación. algo importante que mencionar esta instrucción ha sido escrita en español pero el texto final donde se va a incluir la pregunta del usuario adaptarse a ese idioma la respuesta aunque esta instrucción anterior haya sido en español la pregunta que se va a realizar responder en su idioma correspondiente, Inglés, Chino, etc cultura idioma que se alla hecho la pregunta a continuación de estas aclaraciones: "
         local instanceInfo = "Class: " .. o.ClassName .. ", Full Path: " .. gFN(o)
         cEI("AI Query for " .. o.Name, "Enter your question", function(query)
             local fullQuery = prefijo .. "\n" .. instanceInfo .. "\n" .. query
