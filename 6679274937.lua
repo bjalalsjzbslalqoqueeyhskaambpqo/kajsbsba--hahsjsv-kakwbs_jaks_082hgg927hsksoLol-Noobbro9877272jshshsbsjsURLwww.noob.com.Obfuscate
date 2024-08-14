@@ -165,6 +165,29 @@ ha()
 end
 end)
 
+local a = false
+
+function ha()
+
+for _, C in game.Workspace.HiddenSymbols:GetDescendants() do
+if C:IsA("BasePart") and C:FindFirstChild("TouchInterest") and a then
+game.Players.LocalPlayer.Character.PrimaryPart.CFrame = C.CFrame
+
+wait(1)
+end
+end
+wait()
+ha()
+end
+
+
+UL:AddTBtn(cfrm, "Farm France[TP]", false, function() 
+a = not a
+if a then
+ha()
+end
+end)
+
 
 
 UL:AddText(crFrm, "By Script: OneCreatorX ")
