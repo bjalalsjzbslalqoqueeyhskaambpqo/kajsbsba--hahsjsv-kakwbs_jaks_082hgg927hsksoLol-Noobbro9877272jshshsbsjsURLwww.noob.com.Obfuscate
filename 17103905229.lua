@@ -325,7 +325,7 @@ local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
 
 UL:AddTBtn(cfrm, "Auto Walk Collect", false, tc)
 
-UL:AddTBox(cfrm, "Speed use: 40-45", function(v) 
+UL:AddTBox(cfrm, "Speed use: 20-25", function(v) 
  s = tonumber(v) or s
     if h then h.WalkSpeed = s end
 end)
