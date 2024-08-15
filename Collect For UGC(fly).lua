@@ -300,7 +300,7 @@ Sec:CreateButton("Store UGC", function()
     game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible = not game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible
 end)
 
-Sec:CreateTextbox("Speed Fly: 35-40", function(value)
+Sec:CreateTextbox("Speed Fly: 20-25", function(value)
     speed = tonumber(value) or speed
     saveSpeed(speed)
     game:GetService("StarterGui"):SetCore("SendNotification", {
