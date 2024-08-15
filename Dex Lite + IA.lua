@@ -18,24 +18,49 @@ local function cB(p,t,po,s,c)
 end
 
 local function gFN(o)
-    local p, c = o.Name, o.Parent
-    while c and c ~= game do
-        if c:FindFirstChild(p) and #c:GetChildren() > 1 then
-            local s = c:GetChildren()
-            for j, v in ipairs(s) do
-                if v.Name == p then
-                    if v == o then
-                        p = c.Name .. "." .. p .. ":GetChildren()[" .. j .. "]"
-                        break
-                    end
-                end
+    local function buildHierarchy(instance)
+        local hierarchy = ""
+        local current = instance
+        local parent = instance.Parent
+        local localPlayer = game.Players.LocalPlayer
+        
+        while parent and parent ~= game do
+            local instanceName = current.Name
+            
+            if parent == localPlayer then
+                hierarchy = ":FindFirstChild(\"" .. instanceName .. "\")" .. hierarchy
+                break
+            elseif parent:IsDescendantOf(localPlayer.PlayerGui) then
+                hierarchy = ":FindFirstChild(\"" .. instanceName .. "\")" .. hierarchy
+                break
+            elseif parent:IsDescendantOf(localPlayer.Character) then
+                hierarchy = ":FindFirstChild(\"" .. instanceName .. "\")" .. hierarchy
+                break
+            else
+                hierarchy = ":FindFirstChild(\"" .. instanceName .. "\")" .. hierarchy
+                current = parent
+                parent = parent.Parent
             end
-        else
-            p = c.Name .. "." .. p
         end
-        c = c.Parent
+
+        if instance:IsDescendantOf(localPlayer.PlayerGui) then
+            hierarchy = "game.Players.LocalPlayer.PlayerGui" .. hierarchy
+        elseif instance:IsDescendantOf(localPlayer.Character) then
+            hierarchy = "game.Players.LocalPlayer.Character" .. hierarchy
+        elseif instance.Parent == localPlayer then
+            hierarchy = "game.Players.LocalPlayer:FindFirstChild(\"" .. instance.Name .. "\")"
+        else
+            hierarchy = "game" .. hierarchy
+        end
+
+        local simplifiedHierarchy = hierarchy
+        simplifiedHierarchy = simplifiedHierarchy:gsub(":FindFirstChild%(\"" .. localPlayer.Name .. "\"%)", "") -- Remove repeated LocalPlayer
+        simplifiedHierarchy = simplifiedHierarchy:gsub("game:FindFirstChild%(\"" .. localPlayer.Name .. "\"%)", "game.Players.LocalPlayer")
+
+        return simplifiedHierarchy
     end
-    return "game." .. p
+
+    return buildHierarchy(o)
 end
 
 local function cP(o)setclipboard(gFN(o))end
@@ -107,8 +132,6 @@ end
 
 local function showAIResponse(response, parent)
     local f = Instance.new("Frame")
-        f.Draggable = true
-        f.Active = true
     f.Size = UDim2.new(0.8, 0, 0.8, 0)
     f.Position = UDim2.new(0.1, 0, 0.1, 0)
     f.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
