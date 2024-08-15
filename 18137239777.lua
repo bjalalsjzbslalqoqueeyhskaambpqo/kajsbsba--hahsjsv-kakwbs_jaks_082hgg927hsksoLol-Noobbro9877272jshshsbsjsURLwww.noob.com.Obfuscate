@@ -25,10 +25,12 @@ UL:AddTBtn(cfrm, "Auto Tokens", false, function()
 pcall(function()
         for _, descendant in pairs(workspace.GameObjects:GetDescendants()) do
             if descendant.Name == "HumanoidRootPart" and descendant:IsA("BasePart") then
+                local plr = game.Players.LocalPlayer
                             pcall(function()
-descendant.CanCollide = false
+firetouchinterest(plr.Character.HumanoidRootPart, descendant, 0)
+        wait()
+        firetouchinterest(plr.Character.HumanoidRootPart, descendant, 1)
                                 end)
-                descendant.Position = game.Players.LocalPlayer.Character.PrimaryPart.Position
 end
             end
         end)
@@ -52,137 +54,163 @@ game:GetService('Players').LocalPlayer.Idled:Connect(function()
 end)
 
 
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
+local Plrs = game:GetService("Players")
+local RS = game:GetService("RunService")
+local WS = game.Workspace
+local specOn = true
 
-local world = game.Workspace
+local function createVis(p)
+    local v = Instance.new("Folder")
+    v.Name = p.Name .. "Vis"
 
-local function createPlayerVisuals(player)
-    local visual = Instance.new("Folder")
-    visual.Name = player.Name .. "Visual"
+    local function cPart(n)
+        local pt = Instance.new("Part")
+        pt.Name = n
+        pt.Transparency = 1
+        pt.CanCollide = false
+        pt.Anchored = true
+        pt.Parent = v
 
-    local function createPart(name)
-        local part = Instance.new("Part")
-        part.Name = name
-        part.Transparency = 1
-        part.CanCollide = false
-        part.Anchored = true
-        part.Parent = visual
+        local ba = Instance.new("BoxHandleAdornment")
+        ba.Name = n .. "A"
+        ba.Adornee = pt
+        ba.AlwaysOnTop = true
+        ba.ZIndex = 10
+        ba.Size = pt.Size
+        ba.Transparency = 0.3
+        ba.Parent = pt
 
-        local boxHandleAdornment = Instance.new("BoxHandleAdornment")
-        boxHandleAdornment.Name = name .. "Adornment"
-        boxHandleAdornment.Adornee = part
-        boxHandleAdornment.AlwaysOnTop = true
-        boxHandleAdornment.ZIndex = 10
-        boxHandleAdornment.Size = part.Size
-        boxHandleAdornment.Transparency = 0.3
-        boxHandleAdornment.Parent = part
-
-        return part
+        return pt
     end
 
-    createPart("Torso")
-    createPart("Head")
-    createPart("LeftArm")
-    createPart("RightArm")
-    createPart("LeftLeg")
-    createPart("RightLeg")
+    cPart("T")
+    cPart("H")
+    cPart("LA")
+    cPart("RA")
+    cPart("LL")
+    cPart("RL")
 
-    local billboardGui = Instance.new("BillboardGui")
-    billboardGui.Name = "InfoBillboard"
-    billboardGui.Size = UDim2.new(0, 200, 0, 50)
-    billboardGui.StudsOffset = Vector3.new(0, 3, 0)
-    billboardGui.AlwaysOnTop = true
-    billboardGui.Parent = visual
+    local bg = Instance.new("BillboardGui")
+    bg.Name = "IB"
+    bg.Size = UDim2.new(0, 200, 0, 50)
+    bg.StudsOffset = Vector3.new(0, 3, 0)
+    bg.AlwaysOnTop = true
+    bg.Parent = v
 
-    local textLabel = Instance.new("TextLabel")
-    textLabel.Name = "InfoText"
-    textLabel.Size = UDim2.new(1, 0, 1, 0)
-    textLabel.BackgroundTransparency = 1
-    textLabel.TextScaled = true
-    textLabel.Font = Enum.Font.SourceSansBold
-    textLabel.TextColor3 = Color3.new(1, 1, 1)
-    textLabel.TextStrokeTransparency = 0
-    textLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
-    textLabel.Parent = billboardGui
+    local tl = Instance.new("TextLabel")
+    tl.Name = "IT"
+    tl.Size = UDim2.new(1, 0, 1, 0)
+    tl.BackgroundTransparency = 1
+    tl.TextScaled = true
+    tl.Font = Enum.Font.SourceSansBold
+    tl.TextColor3 = Color3.new(1, 1, 1)
+    tl.TextStrokeTransparency = 0
+    tl.TextStrokeColor3 = Color3.new(0, 0, 0)
+    tl.Parent = bg
 
-    visual.Parent = world
-    return visual
+    v.Parent = WS
+    return v
 end
 
-local function updatePlayerVisual(player, visual)
-    if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
-        visual.Parent = nil
-        return
-    end
+local function updateVis(p, v)
+    local success, err = pcall(function()
+        if not p.Character or not p.Character:FindFirstChild("HumanoidRootPart") then
+            v.Parent = nil
+            return
+        end
 
-    local role = player:FindFirstChild("Role")
-    local isGhost = role and role.Value == "Ghost"
-    local color = isGhost and Color3.new(1, 0, 0) or Color3.new(0, 0, 1)
+        local r = p:FindFirstChild("Role")
+        local isG = r and r.Value == "Ghost"
+        local c = isG and Color3.new(1, 0, 0) or Color3.new(0, 0, 1)
 
-    local function updatePart(partName, characterPart)
-        local part = visual:FindFirstChild(partName)
-        if part and characterPart then
-            part.CFrame = characterPart.CFrame
-            part.Size = characterPart.Size
-            local adornment = part:FindFirstChild(partName .. "Adornment")
-            if adornment then
-                adornment.Size = characterPart.Size
-                adornment.Color3 = color
+        local function uPart(n, cp)
+            local pt = v:FindFirstChild(n)
+            if pt and cp then
+                pt.CFrame = cp.CFrame
+                pt.Size = cp.Size
+                local a = pt:FindFirstChild(n .. "A")
+                if a then
+                    a.Size = cp.Size
+                    a.Color3 = c
+                end
             end
         end
-    end
 
-    local character = player.Character
-    updatePart("Torso", character:FindFirstChild("UpperTorso"))
-    updatePart("Head", character:FindFirstChild("Head"))
-    updatePart("LeftArm", character:FindFirstChild("LeftUpperArm"))
-    updatePart("RightArm", character:FindFirstChild("RightUpperArm"))
-    updatePart("LeftLeg", character:FindFirstChild("LeftUpperLeg"))
-    updatePart("RightLeg", character:FindFirstChild("RightUpperLeg"))
+        local char = p.Character
+        uPart("T", char:FindFirstChild("UpperTorso"))
+        uPart("H", char:FindFirstChild("Head"))
+        uPart("LA", char:FindFirstChild("LeftUpperArm"))
+        uPart("RA", char:FindFirstChild("RightUpperArm"))
+        uPart("LL", char:FindFirstChild("LeftUpperLeg"))
+        uPart("RL", char:FindFirstChild("RightUpperLeg"))
 
-    local rootPart = character.HumanoidRootPart
-    local billboardGui = visual:FindFirstChild("InfoBillboard")
-    if billboardGui then
-        billboardGui.Adornee = rootPart
-    end
+        local rp = char.HumanoidRootPart
+        local bg = v:FindFirstChild("IB")
+        if bg then bg.Adornee = rp end
 
-    local distance = (rootPart.Position - workspace.CurrentCamera.CFrame.Position).Magnitude
-    local infoText = visual.InfoBillboard.InfoText
-    infoText.Text = string.format("%s\n%s\nDist: %.1f", player.Name, role and role.Value or "Unknown", distance)
+        local d = (rp.Position - WS.CurrentCamera.CFrame.Position).Magnitude
+        local it = v.IB.IT
+        it.Text = string.format("%s\n%s\nD: %.1f", p.Name, r and r.Value or "Unk", d)
 
-    visual.Parent = world
-end
-
-local playerVisuals = {}
-
-local function onPlayerAdded(player)
-    playerVisuals[player] = createPlayerVisuals(player)
-end
-
-local function onPlayerRemoving(player)
-    if playerVisuals[player] then
-        playerVisuals[player]:Destroy()
-        playerVisuals[player] = nil
+        v.Parent = WS
+    end)
+    
+    if not success then
+        
     end
 end
 
-for _, player in ipairs(Players:GetPlayers()) do
-    onPlayerAdded(player)
+local pVis = {}
+
+local function onPA(p)
+    pVis[p] = createVis(p)
 end
 
-Players.PlayerAdded:Connect(onPlayerAdded)
-Players.PlayerRemoving:Connect(onPlayerRemoving)
+local function onPR(p)
+    if pVis[p] then
+        pVis[p]:Destroy()
+        pVis[p] = nil
+    end
+end
 
-RunService.RenderStepped:Connect(function()
-    if not spectatorEnabled then return end
+for _, p in ipairs(Plrs:GetPlayers()) do
+    onPA(p)
+end
 
-    for player, visual in pairs(playerVisuals) do
-        if player ~= Players.LocalPlayer then
-            updatePlayerVisual(player, visual)
+Plrs.PlayerAdded:Connect(onPA)
+Plrs.PlayerRemoving:Connect(onPR)
+
+RS.RenderStepped:Connect(function()
+    if not specOn then return end
+
+    local success, err = pcall(function()
+        local lp = Plrs.LocalPlayer
+        local lpR = lp:FindFirstChild("Role")
+        local isLPG = lpR and lpR.Value == "Ghost"
+
+        for p, v in pairs(pVis) do
+            if p ~= lp then
+                updateVis(p, v)
+                
+                local char = p.Character
+                if char and char:FindFirstChild("HumanoidRootPart") then
+                    local rp = char.HumanoidRootPart
+                    local r = p:FindFirstChild("Role")
+                    local isPG = r and r.Value == "Ghost"
+                    
+                    if isLPG then
+                        rp.Size = Vector3.new(20, 20, 20)
+                    elseif isPG then
+                        rp.Size = Vector3.new(20, 20, 20)
+                    else
+                        rp.Size = Vector3.new(2, 2, 1)
+                    end
+                end
+            end
         end
+    end)
+    
+    if not success then
+        
     end
 end)
-
-
-
