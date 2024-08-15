@@ -25,6 +25,9 @@ UL:AddTBtn(cfrm, "Auto Tokens", false, function()
 pcall(function()
         for _, descendant in pairs(workspace.GameObjects:GetDescendants()) do
             if descendant.Name == "HumanoidRootPart" and descendant:IsA("BasePart") then
+                            pcall(function()
+descendant.CanCollide = false
+                                end)
                 descendant.Position = game.Players.LocalPlayer.Character.PrimaryPart.Position
 end
             end
