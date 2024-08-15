@@ -146,49 +146,50 @@ local function cB(p,t,po,s,c)
 end
 
 local function gFN(o)
-    local function buildHierarchy(instance)
-        local hierarchy = ""
-        local current = instance
-        local parent = instance.Parent
-        local localPlayer = game.Players.LocalPlayer
-        
-        while parent and parent ~= game do
-            local instanceName = current.Name
-            
-            if parent == localPlayer then
-                hierarchy = ":FindFirstChild(\"" .. instanceName .. "\")" .. hierarchy
-                break
-            elseif parent:IsDescendantOf(localPlayer.PlayerGui) then
-                hierarchy = ":FindFirstChild(\"" .. instanceName .. "\")" .. hierarchy
-                break
-            elseif parent:IsDescendantOf(localPlayer.Character) then
-                hierarchy = ":FindFirstChild(\"" .. instanceName .. "\")" .. hierarchy
-                break
-            else
-                hierarchy = ":FindFirstChild(\"" .. instanceName .. "\")" .. hierarchy
-                current = parent
-                parent = parent.Parent
+    local function findIndexOfChild(parent, name)
+        local children = parent:GetChildren()
+        for i, child in ipairs(children) do
+            if child.Name == name then
+                return i, child
             end
         end
-
-        if instance:IsDescendantOf(localPlayer.PlayerGui) then
-            hierarchy = "game.Players.LocalPlayer.PlayerGui" .. hierarchy
-        elseif instance:IsDescendantOf(localPlayer.Character) then
-            hierarchy = "game.Players.LocalPlayer.Character" .. hierarchy
-        elseif instance.Parent == localPlayer then
-            hierarchy = "game.Players.LocalPlayer:FindFirstChild(\"" .. instance.Name .. "\")"
-        else
-            hierarchy = "game" .. hierarchy
-        end
-
-        local simplifiedHierarchy = hierarchy
-        simplifiedHierarchy = simplifiedHierarchy:gsub(":FindFirstChild%(\"" .. localPlayer.Name .. "\"%)", "") -- Remove repeated LocalPlayer
-        simplifiedHierarchy = simplifiedHierarchy:gsub("game:FindFirstChild%(\"" .. localPlayer.Name .. "\"%)", "game.Players.LocalPlayer")
-
-        return simplifiedHierarchy
+        return nil
     end
 
-    return buildHierarchy(o)
+    local function buildHierarchy(instance, parent)
+        local hierarchy = instance.Name
+        local currentParent = parent
+        while currentParent and currentParent ~= game do
+            local index, sibling = findIndexOfChild(currentParent, instance.Name)
+            if index and sibling then
+                if sibling == instance then
+                    -- Check if there are other siblings with the same name
+                    local siblings = currentParent:GetChildren()
+                    local isUnique = true
+                    for _, sibling in ipairs(siblings) do
+                        if sibling.Name == instance.Name and sibling ~= instance then
+                            isUnique = false
+                            break
+                        end
+                    end
+
+                    if not isUnique then
+                        hierarchy = currentParent.Name .. "." .. hierarchy .. ":GetChildren()[" .. (index - 1) .. "]"
+                    else
+                        hierarchy = currentParent.Name .. "." .. hierarchy
+                    end
+                else
+                    hierarchy = currentParent.Name .. "." .. hierarchy
+                end
+            else
+                hierarchy = currentParent.Name .. "." .. hierarchy
+            end
+            currentParent = currentParent.Parent
+        end
+        return "game." .. hierarchy
+    end
+
+    return buildHierarchy(o, o.Parent)
 end
 
 local function cP(o)setclipboard(gFN(o))end
