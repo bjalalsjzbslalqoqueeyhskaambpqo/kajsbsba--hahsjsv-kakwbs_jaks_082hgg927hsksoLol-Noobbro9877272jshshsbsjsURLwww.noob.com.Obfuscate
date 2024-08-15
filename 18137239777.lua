@@ -18,7 +18,7 @@ local sg = UL:CrSG("Default")
 local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
 
 local spectatorEnabled = true
-
+local a = false
 UL:AddTBtn(cfrm, "Auto Tokens", false, function()
     a = not a
     while a do
@@ -30,6 +30,24 @@ pcall(function()
 firetouchinterest(plr.Character.HumanoidRootPart, descendant, 0)
         wait()
         firetouchinterest(plr.Character.HumanoidRootPart, descendant, 1)
+                                end)
+end
+            end
+        end)
+        wait()
+    end
+end)
+
+local a = false
+UL:AddTBtn(cfrm, "Auto Tokens[TP]", false, function()
+    a = not a
+    while a do
+pcall(function()
+        for _, descendant in pairs(workspace.GameObjects:GetDescendants()) do
+            if descendant.Name == "HumanoidRootPart" and descendant:IsA("BasePart") then
+                local plr = game.Players.LocalPlayer
+                            pcall(function()
+plr.Character.HumanoidRootPart.CFrame = descendant.CFrame
                                 end)
 end
             end
