@@ -312,5 +312,6 @@ function Library.new(title, customOptions)
 
     return lib
 end
+print("Version 0.1")
 
 return Library
