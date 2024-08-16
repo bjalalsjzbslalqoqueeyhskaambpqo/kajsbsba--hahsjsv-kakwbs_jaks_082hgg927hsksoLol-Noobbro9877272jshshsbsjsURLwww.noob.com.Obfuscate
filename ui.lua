@@ -148,21 +148,27 @@ function Library.new(title, customOptions)
             end
         end)
         
-        local subLib = setmetatable({subFrame = subFrame}, {__index = lib})
+        local subLib = setmetatable({subFrame = subFrame, scrollFrame = scrollFrame}, {__index = lib})
         
         function subLib:a(t, p)
-            local item = lib.a(self, t, p)
-            item.Parent = scrollFrame
-            subFrame.Size = UDim2.new(0, 150, 0, math.min(300, subList.AbsoluteContentSize.Y))
-            scrollFrame.CanvasSize = UDim2.new(0, 0, 0, subList.AbsoluteContentSize.Y)
-            return item
+            local h = p.CustomHeight or 30
+            p.CustomHeight = nil
+            local container = c("Frame", {Size = UDim2.new(1, 0, 0, h), BackgroundTransparency = 1, Parent = self.scrollFrame})
+            local i = c(t, p)
+            i.Size = UDim2.new(1, -10, 1, -2)
+            i.Position = UDim2.new(0, 5, 0, 1)
+            i.Parent = container
+            s(i)
+            self.subFrame.Size = UDim2.new(0, 150, 0, math.min(300, subList.AbsoluteContentSize.Y))
+            self.scrollFrame.CanvasSize = UDim2.new(0, 0, 0, subList.AbsoluteContentSize.Y)
+            return i, container
         end
         
         return subLib
     end
 
     function lib:adjustable(title, initialValue, minValue, maxValue, step, callback)
-        local container = c("Frame", {Size = UDim2.new(1, 0, 0, 60), BackgroundTransparency = 1, Parent = cf})
+        local container = self:a("Frame", {CustomHeight = 60, BackgroundTransparency = 1})
         
         local titleLabel = c("TextLabel", {
             Size = UDim2.new(1, 0, 0, 20),
@@ -228,7 +234,6 @@ function Library.new(title, customOptions)
             end
         end)
         
-        u()
         return container
     end
 
@@ -309,9 +314,8 @@ function Library.new(title, customOptions)
             end
         end
     end
-
+print("Version 2")
     return lib
 end
-print("Version 0.1")
 
 return Library
