@@ -316,5 +316,5 @@ function Library.new(title, customOptions)
 
     return lib
 end
-print("New version")
+
 return Library
