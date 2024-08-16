@@ -42,17 +42,10 @@ function Library.new(title, customOptions)
     l:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(u)
 
     local min = false
-    local openSubMenus = {}
     m.MouseButton1Click:Connect(function()
         min = not min
         cf.Visible = not min
         m.Text = min and "+" or "-"
-        if min then
-            for _, subMenu in ipairs(openSubMenus) do
-                subMenu.Visible = false
-            end
-            openSubMenus = {}
-        end
         u()
     end)
 
@@ -102,7 +95,8 @@ function Library.new(title, customOptions)
     end
 
     function lib:sub(text)
-        local subButton, container = self:a("TextButton", {Text = text .. " ▼"})
+        local _, container = self:a("Frame", {CustomHeight = 30, BackgroundTransparency = 1})
+        local subButton = c("TextButton", {Size = UDim2.new(1, 0, 1, 0), Text = text .. " ▼", Parent = container})
         s(subButton)
         
         local subFrame = c("Frame", {
@@ -131,43 +125,29 @@ function Library.new(title, customOptions)
             subFrame.Visible = not subFrame.Visible
             subButton.Text = text .. (subFrame.Visible and " ▲" or " ▼")
             if subFrame.Visible then
-                table.insert(openSubMenus, subFrame)
                 local mainPos = f.AbsolutePosition
                 local mainSize = f.AbsoluteSize
-                subFrame.Position = UDim2.new(0, mainPos.X + mainSize.X + 5, 0, mainPos.Y + container.AbsolutePosition.Y - f.AbsolutePosition.Y)
+                subFrame.Position = UDim2.new(0, mainPos.X + mainSize.X + 5, 0, mainPos.Y)
                 subFrame.Size = UDim2.new(0, 150, 0, math.min(300, subList.AbsoluteContentSize.Y))
                 scrollFrame.CanvasSize = UDim2.new(0, 0, 0, subList.AbsoluteContentSize.Y)
-            else
-                for i, menu in ipairs(openSubMenus) do
-                    if menu == subFrame then
-                        table.remove(openSubMenus, i)
-                        break
-                    end
-                end
             end
         end)
         
-        local subLib = setmetatable({subFrame = subFrame, scrollFrame = scrollFrame}, {__index = lib})
+        local subLib = setmetatable({subFrame = subFrame}, {__index = lib})
         
         function subLib:a(t, p)
-            local h = p.CustomHeight or 30
-            p.CustomHeight = nil
-            local container = c("Frame", {Size = UDim2.new(1, 0, 0, h), BackgroundTransparency = 1, Parent = self.scrollFrame})
-            local i = c(t, p)
-            i.Size = UDim2.new(1, -10, 1, -2)
-            i.Position = UDim2.new(0, 5, 0, 1)
-            i.Parent = container
-            s(i)
-            self.subFrame.Size = UDim2.new(0, 150, 0, math.min(300, subList.AbsoluteContentSize.Y))
-            self.scrollFrame.CanvasSize = UDim2.new(0, 0, 0, subList.AbsoluteContentSize.Y)
-            return i, container
+            local item = lib.a(self, t, p)
+            item.Parent = scrollFrame
+            subFrame.Size = UDim2.new(0, 150, 0, math.min(300, subList.AbsoluteContentSize.Y))
+            scrollFrame.CanvasSize = UDim2.new(0, 0, 0, subList.AbsoluteContentSize.Y)
+            return item
         end
         
         return subLib
     end
 
     function lib:adjustable(title, initialValue, minValue, maxValue, step, callback)
-        local container = self:a("Frame", {CustomHeight = 60, BackgroundTransparency = 1})
+        local container = c("Frame", {Size = UDim2.new(1, 0, 0, 60), BackgroundTransparency = 1, Parent = cf})
         
         local titleLabel = c("TextLabel", {
             Size = UDim2.new(1, 0, 0, 20),
@@ -233,74 +213,12 @@ function Library.new(title, customOptions)
             end
         end)
         
+        u()
         return container
     end
 
     lib.info = lib:sub("Info Script")
     lib.options = lib:sub("Opciones Default")
-
-    -- Default options
-    local serverOptions = lib.options:sub("Server Options")
-
-    serverOptions:btn("Buscar Mejor Servidor", function()
-        local HttpService = game:GetService("HttpService")
-        local TeleportService = game:GetService("TeleportService")
-        
-        local servers = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
-        local bestServer = nil
-        local lowestPing = math.huge
-        
-        for _, server in ipairs(servers.data) do
-            if server.ping < lowestPing and server.playing < server.maxPlayers then
-                bestServer = server
-                lowestPing = server.ping
-            end
-        end
-        
-        if bestServer then
-            TeleportService:TeleportToPlaceInstance(game.PlaceId, bestServer.id)
-        else
-            print("No se encontró un servidor mejor.")
-        end
-    end)
-
-    serverOptions:btn("Servidor con Menos Gente", function()
-        local HttpService = game:GetService("HttpService")
-        local TeleportService = game:GetService("TeleportService")
-        
-        local servers = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
-        local leastPopulatedServer = nil
-        local lowestPlayerCount = math.huge
-        
-        for _, server in ipairs(servers.data) do
-            if server.playing < lowestPlayerCount and server.playing > 0 then
-                leastPopulatedServer = server
-                lowestPlayerCount = server.playing
-            end
-        end
-        
-        if leastPopulatedServer then
-            TeleportService:TeleportToPlaceInstance(game.PlaceId, leastPopulatedServer.id)
-        else
-            print("No se encontró un servidor con menos gente.")
-        end
-    end)
-
-    lib.options:btn("Rejoin", function()
-        local TeleportService = game:GetService("TeleportService")
-        TeleportService:Teleport(game.PlaceId, game.Players.LocalPlayer)
-    end)
-
-    lib.options:adjustable("Brillo", game.Lighting.Brightness, 0, 5, 0.1, function(value)
-        game.Lighting.Brightness = value
-    end)
-
-    lib.options:adjustable("Velocidad", 16, 1, 100, 1, function(value)
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        humanoid.WalkSpeed = value
-    end)
 
     if customOptions then
         for _, option in ipairs(customOptions) do
