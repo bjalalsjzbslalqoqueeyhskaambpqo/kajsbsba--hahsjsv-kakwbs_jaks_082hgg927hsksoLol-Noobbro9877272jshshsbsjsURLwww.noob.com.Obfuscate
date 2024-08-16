@@ -1,7 +1,5 @@
 local U = {}
 local T = game:GetService("TweenService")
-local TP = game:GetService("TeleportService")
-local HS = game:GetService("HttpService")
 
 local C = {
     Bg = Color3.fromRGB(36, 36, 36),
@@ -13,7 +11,8 @@ local C = {
     Sld = Color3.fromRGB(59, 59, 59),
     SldF = Color3.fromRGB(0, 162, 255),
     Cat = Color3.fromRGB(45, 45, 45),
-    Bdr = Color3.fromRGB(70, 70, 70)
+    Bdr = Color3.fromRGB(70, 70, 70),
+    TBox = Color3.fromRGB(50, 50, 50)
 }
 
 local function f(p, s, o)
@@ -44,7 +43,12 @@ local function updateLayout(f)
 end
 
 function U.n(g)
-    g.Enabled = true
+    if not g then
+        g = Instance.new("ScreenGui")
+        g.Name = "MiInterfaz"
+        g.Parent = game.Players.LocalPlayer.PlayerGui
+    end
+    g.ResetOnSpawn = false
     local m = f(g, UDim2.new(0, 200, 0, 300), UDim2.new(0, 10, 0, 10))
     m.BackgroundTransparency = 0.2
     m.BorderSizePixel = 2
@@ -62,9 +66,11 @@ function U.c(p, n)
     local s = f(c, UDim2.new(1, 0, 0, 0), UDim2.new(0, 0, 0, 35))
     s.ClipsDescendants = true
     s.BackgroundTransparency = 1
-    c.Activated:Connect(function()
-        s.Visible = not s.Visible
-        updateLayout(p)
+    c.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            s.Visible = not s.Visible
+            updateLayout(p)
+        end
     end)
     return {m = c, s = s}
 end
@@ -101,63 +107,36 @@ function U.s(p, n, i, a, c)
         l.Text = n .. ": " .. v
         c(v)
     end
-    b.InputBegan:Connect(function(i) u(i.Position) end)
-    b.InputChanged:Connect(function(i) u(i.Position) end)
+    b.InputBegan:Connect(function(i)
+        if i.UserInputType == Enum.UserInputType.MouseButton1 then
+            u(i.Position)
+        end
+    end)
+    b.InputChanged:Connect(function(i)
+        if i.UserInputType == Enum.UserInputType.MouseMovement then
+            u(i.Position)
+        end
+    end)
     updateLayout(p)
     return f
 end
 
-function U.u(p)
-    local u = f(p, UDim2.new(1, 0, 0, 0), UDim2.new(0, 0, 0, 0))
-    u.BackgroundTransparency = 1
-    
-    U.t(u, "Reducir Lag", function(g) 
-        settings().Rendering.QualityLevel = g and 1 or 21
-    end)
-    
-    U.s(u, "Velocidad", 16, 100, function(s)
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
-    end)
-    
-    U.t(u, "Anti-Aliasing", function(g)
-        settings().Rendering.QualityLevel = g and 21 or 1
-    end)
-    
-    local function getServers()
-        local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
-        local res = game:HttpGet(url)
-        return HS:JSONDecode(res).data
-    end
-    
-    U.b(u, "Mejor Servidor", function()
-        local s = getServers()
-        table.sort(s, function(a, b) return a.playing < b.playing end)
-        if s[1].id ~= game.JobId then
-            TP:TeleportToPlaceInstance(game.PlaceId, s[1].id, game.Players.LocalPlayer)
-        end
-    end)
-    
-    U.b(u, "Mejor Ping", function()
-        local s = getServers()
-        table.sort(s, function(a, b) return a.ping < b.ping end)
-        if s[1].id ~= game.JobId then
-            TP:TeleportToPlaceInstance(game.PlaceId, s[1].id, game.Players.LocalPlayer)
-        end
-    end)
-    
-    U.s(u, "Brillo", 0, 100, function(b)
-        game.Lighting.Brightness = b / 100
-    end)
-    
-    updateLayout(u)
-    return u
+function U.tb(p, n, ph)
+    local f = f(p, UDim2.new(1, -10, 0, 50), UDim2.new(0, 5, 0, 0))
+    local l = Instance.new("TextLabel")
+    l.Size, l.BackgroundTransparency, l.Text, l.TextColor3, l.Font, l.TextSize, l.Parent = UDim2.new(1, 0, 0, 20), 1, n, C.Txt, Enum.Font.SourceSansBold, 14, f
+    local tb = Instance.new("TextBox")
+    tb.Size, tb.Position = UDim2.new(1, 0, 0, 30), UDim2.new(0, 0, 0, 20)
+    tb.BackgroundColor3, tb.TextColor3, tb.PlaceholderText, tb.PlaceholderColor3, tb.Font, tb.TextSize, tb.Parent = C.TBox, C.Txt, ph, Color3.fromRGB(200, 200, 200), Enum.Font.SourceSans, 14, f
+    updateLayout(p)
+    return tb
 end
 
 function U.i(p)
     local i = f(p, UDim2.new(1, 0, 0, 60), UDim2.new(0, 0, 1, -60))
     i.BackgroundTransparency = 1
     local v = Instance.new("TextLabel")
-    v.Size, v.BackgroundTransparency, v.Text, v.TextColor3, v.Font, v.TextSize, v.Parent = UDim2.new(1, 0, 0, 20), 1, "v1.0", C.Txt, Enum.Font.SourceSansBold, 14, i
+    v.Size, v.BackgroundTransparency, v.Text, v.TextColor3, v.Font, v.TextSize, v.Parent = UDim2.new(1, 0, 0, 20), 1, "v1.2", C.Txt, Enum.Font.SourceSansBold, 14, i
     local a = Instance.new("TextLabel")
     a.Size, a.Position, a.BackgroundTransparency, a.Text, a.TextColor3, a.Font, a.TextSize, a.Parent = UDim2.new(1, 0, 0, 20), UDim2.new(0, 0, 0, 20), 1, "Por: Tu", C.Txt, Enum.Font.SourceSansBold, 14, i
     updateLayout(p)
