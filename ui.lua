@@ -1,3 +1,5 @@
+end
+
 local Library = {}
 
 local function c(t, p)
@@ -94,16 +96,16 @@ function Library.new(title, customOptions)
         return self:a("TextLabel", {CustomHeight = 50, Text = text, TextWrapped = true})
     end
 
-    function lib:sub(text)
+    function lib:sub(text, parent)
         local _, container = self:a("Frame", {CustomHeight = 30, BackgroundTransparency = 1})
-        local subButton = c("TextButton", {Size = UDim2.new(1, 0, 1, 0), Text = text .. " ▼", Parent = container})
+        local subButton = c("TextButton", {Size = UDim2.new(1, 0, 1, 0), Text = text, Parent = container})
         s(subButton)
         
         local subFrame = c("Frame", {
             Size = UDim2.new(0, 150, 0, 0),
             Position = UDim2.new(1, 5, 0, 0),
             Visible = false,
-            Parent = sg
+            Parent = parent and parent.subFrame or sg
         })
         s(subFrame, Color3.fromRGB(25, 25, 25))
         
@@ -123,13 +125,16 @@ function Library.new(title, customOptions)
         
         subButton.MouseButton1Click:Connect(function()
             subFrame.Visible = not subFrame.Visible
-            subButton.Text = text .. (subFrame.Visible and " ▲" or " ▼")
             if subFrame.Visible then
                 local mainPos = f.AbsolutePosition
                 local mainSize = f.AbsoluteSize
-                subFrame.Position = UDim2.new(0, mainPos.X + mainSize.X + 5, 0, mainPos.Y)
-                subFrame.Size = UDim2.new(0, 150, 0, math.min(300, subList.AbsoluteContentSize.Y))
-                scrollFrame.CanvasSize = UDim2.new(0, 0, 0, subList.AbsoluteContentSize.Y)
+                subFrame.Position = UDim2.new(0, mainSize.X + 5, 0, 0)
+                
+                local viewportSize = workspace.CurrentCamera.ViewportSize
+                local subFrameSize = subFrame.AbsoluteSize
+                local yPos = math.clamp(mainPos.Y, 0, viewportSize.Y - subFrameSize.Y)
+                
+                subFrame.Position = UDim2.new(0, subFrame.Position.X.Offset, 0, yPos)
             end
         end)
         
@@ -218,21 +223,78 @@ function Library.new(title, customOptions)
     end
 
     lib.info = lib:sub("Info Script")
-    lib.options = lib:sub("Opciones Default")
 
+    -- Opciones por defecto
+    local options = lib:sub("Opciones")
+    
+    options:tgl("Aumentar Brillo", function(state)
+        if state then
+            game.Lighting.Brightness = game.Lighting.Brightness * 1.5
+        else
+            game.Lighting.Brightness = game.Lighting.Brightness / 1.5
+        end
+    end)
+    
+    options:tgl("Aumentar Velocidad", function(state)
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        if state then
+            humanoid.WalkSpeed = humanoid.WalkSpeed * 1.5
+        else
+            humanoid.WalkSpeed = humanoid.WalkSpeed / 1.5
+        end
+    end)
+    
+    options:btn("Buscar Mejor Servidor", function()
+        local HttpService = game:GetService("HttpService")
+        local TeleportService = game:GetService("TeleportService")
+        
+        local servers = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
+        local bestServer = nil
+        local lowestPing = math.huge
+        
+        for _, server in ipairs(servers.data) do
+            if server.ping < lowestPing and server.playing < server.maxPlayers then
+                bestServer = server
+                lowestPing = server.ping
+            end
+        end
+        
+        if bestServer then
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, bestServer.id)
+        else
+            print("No se encontró un servidor mejor.")
+        end
+    end)
+
+    -- Agregar nuevos controles ajustables
+    options:adjustable("Brillo", game.Lighting.Brightness, 0, 5, 0.1, function(value)
+        game.Lighting.Brightness = value
+    end)
+
+    options:adjustable("Velocidad", 16, 1, 100, 1, function(value)
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        humanoid.WalkSpeed = value
+    end)
+
+    -- Agregar opciones personalizadas
     if customOptions then
         for _, option in ipairs(customOptions) do
             if option.type == "toggle" then
-                lib.options:tgl(option.text, option.callback)
+                options:tgl(option.text, option.callback)
             elseif option.type == "button" then
-                lib.options:btn(option.text, option.callback)
+                options:btn(option.text, option.callback)
             elseif option.type == "adjustable" then
-                lib.options:adjustable(option.text, option.initial, option.min, option.max, option.step, option.callback)
+                options:adjustable(option.text, option.initial, option.min, option.max, option.step, option.callback)
             end
         end
     end
 
     return lib
 end
-print("ha")
-return Library
+
+return Libraryreturn Library
