@@ -102,8 +102,7 @@ function Library.new(title, customOptions)
     end
 
     function lib:sub(text)
-        local _, container = self:a("Frame", {CustomHeight = 30, BackgroundTransparency = 1})
-        local subButton = c("TextButton", {Size = UDim2.new(1, 0, 1, 0), Text = text .. " ▼", Parent = container})
+        local subButton, container = self:a("TextButton", {Text = text .. " ▼"})
         s(subButton)
         
         local subFrame = c("Frame", {
@@ -135,7 +134,7 @@ function Library.new(title, customOptions)
                 table.insert(openSubMenus, subFrame)
                 local mainPos = f.AbsolutePosition
                 local mainSize = f.AbsoluteSize
-                subFrame.Position = UDim2.new(0, mainPos.X + mainSize.X + 5, 0, mainPos.Y)
+                subFrame.Position = UDim2.new(0, mainPos.X + mainSize.X + 5, 0, mainPos.Y + container.AbsolutePosition.Y - f.AbsolutePosition.Y)
                 subFrame.Size = UDim2.new(0, 150, 0, math.min(300, subList.AbsoluteContentSize.Y))
                 scrollFrame.CanvasSize = UDim2.new(0, 0, 0, subList.AbsoluteContentSize.Y)
             else
@@ -314,8 +313,8 @@ function Library.new(title, customOptions)
             end
         end
     end
-print("version 3")
+
     return lib
 end
-
+print("New version")
 return Library
