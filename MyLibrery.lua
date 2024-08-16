@@ -289,6 +289,7 @@ function UL:AddText(parent, text, color)
     return label
 end
 
+spawn(function()
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local LocalPlayer = Players.LocalPlayer
