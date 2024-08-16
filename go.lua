@@ -1,78 +1,54 @@
 local MiniUI = {}
 
-function MiniUI.new()
+local function c(t, p)
+    local i = Instance.new(t)
+    for k, v in pairs(p) do i[k] = v end
+    return i
+end
+
+local function s(i, bg)
+    i.BackgroundColor3 = bg or Color3.fromRGB(20, 20, 20)
+    i.BorderSizePixel = 0
+    c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = i})
+    if i:IsA("TextButton") or i:IsA("TextLabel") or i:IsA("TextBox") then
+        i.Font = Enum.Font.GothamSemibold
+        i.TextColor3 = Color3.fromRGB(255, 255, 255)
+        i.TextSize = 14
+    end
+end
+
+function MiniUI.create()
     local self = {}
-    local subMenus = {}
-
-    local function c(t, p)
-        local i = Instance.new(t)
-        for k, v in pairs(p) do i[k] = v end
-        return i
-    end
-
-    local function s(i, bg)
-        i.BackgroundColor3 = bg or Color3.fromRGB(20, 20, 20)
-        i.BorderSizePixel = 0
-        c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = i})
-        if i:IsA("TextButton") or i:IsA("TextLabel") or i:IsA("TextBox") then
-            i.Font = Enum.Font.GothamSemibold
-            i.TextColor3 = Color3.fromRGB(255, 255, 255)
-            i.TextSize = 14
-        end
-    end
-
-    local function getAbsolutePosition(instance)
-        local position = instance.Position
-        local parent = instance.Parent
-        while parent and not parent:IsA("ScreenGui") do
-            position = UDim2.new(
-                position.X.Scale + parent.Position.X.Scale,
-                position.X.Offset + parent.Position.X.Offset,
-                position.Y.Scale + parent.Position.Y.Scale,
-                position.Y.Offset + parent.Position.Y.Offset
-            )
-            parent = parent.Parent
-        end
-        return position
-    end
-
-    local function hideAllSubMenus(excludeSubMenu)
-        for _, sm in pairs(subMenus) do
-            if sm ~= excludeSubMenu then
-                sm.Frame.Visible = false
-                sm.Button.Text = sm.Button.Text:gsub("<", ">")
-                hideAllSubMenus(sm)
-            end
-        end
-    end
-
+    
     local sg = game.Players.LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("MiniUIScreenGui")
     if not sg or not sg.Enabled then
         sg = c("ScreenGui", {Name = "MiniUIScreenGui", Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")})
     end
-
+    
     local f = c("Frame", {Name = "MiniUIMainFrame", Size = UDim2.new(0, 200, 0, 30), Position = UDim2.new(0.5, -100, 0, 20), Parent = sg})
     s(f)
     f.Active = true
     f.Draggable = true
-
+    
     local t = c("TextLabel", {Size = UDim2.new(1, -30, 1, 0), Text = "Mini UI", Parent = f})
     s(t)
-
+    
     local m = c("TextButton", {Size = UDim2.new(0, 30, 1, 0), Position = UDim2.new(1, -30, 0, 0), Text = "-", Parent = f})
     s(m)
-
+    
     local cf = c("Frame", {Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 1, 0), Parent = f})
     s(cf, Color3.fromRGB(15, 15, 15))
-
+    
     local l = c("UIListLayout", {Parent = cf, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 1)})
-
+    
     local function u()
         cf.Size = UDim2.new(1, 0, 0, l.AbsoluteContentSize.Y)
     end
-
+    
     l:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(u)
-
+    
+    local subMenus = {}
+    
     local min = false
     m.MouseButton1Click:Connect(function()
         min = not min
@@ -84,7 +60,7 @@ function MiniUI.new()
             subMenu.Button.Text = subMenu.Button.Text:gsub("<", ">")
         end
     end)
-
+    
     function self.addElement(t, p)
         local h = p.CustomHeight or 30
         p.CustomHeight = nil
@@ -97,8 +73,8 @@ function MiniUI.new()
         u()
         return i, con
     end
-
-    function self.createSubMenu(par, txt, parentSubMenu)
+    
+    function self.createSubMenu(par, txt)
         local sb = c("TextButton", {Size = UDim2.new(1, 0, 1, 0), Text = txt .. " >", Parent = par})
         s(sb)
         
@@ -107,56 +83,45 @@ function MiniUI.new()
             Position = UDim2.new(0, 0, 0, 0),
             Visible = false,
             Parent = sg,
-            ZIndex = parentSubMenu and parentSubMenu.Frame.ZIndex + 1 or 10
+            ZIndex = 10
         })
         s(sf, Color3.fromRGB(25, 25, 25))
         
         local sl = c("UIListLayout", {Parent = sf, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 1)})
         
-        local subMenu = {Frame = sf, Button = sb, ParentSubMenu = parentSubMenu}
-        table.insert(subMenus, subMenu)
+        table.insert(subMenus, {Frame = sf, Button = sb})
         
         sb.MouseButton1Click:Connect(function()
-            hideAllSubMenus(subMenu)
+            for _, subMenu in pairs(subMenus) do
+                if subMenu.Frame ~= sf then
+                    subMenu.Frame.Visible = false
+                    subMenu.Button.Text = subMenu.Button.Text:gsub("<", ">")
+                end
+            end
             sf.Visible = not sf.Visible
             sb.Text = sf.Visible and txt .. " <" or txt .. " >"
             if sf.Visible then
-                local parentFrame = parentSubMenu and parentSubMenu.Frame or f
-                local parentPos = getAbsolutePosition(parentFrame)
-                local buttonPos = getAbsolutePosition(sb)
-                
-                sf.Position = UDim2.new(
-                    0, parentPos.X.Offset + parentFrame.AbsoluteSize.X + 5,
-                    0, buttonPos.Y.Offset - parentPos.Y.Offset
-                )
-                sf.Parent = sg
+                sf.Position = UDim2.new(0, f.AbsolutePosition.X + f.AbsoluteSize.X + 5, 0, f.AbsolutePosition.Y)
             end
         end)
         
         f:GetPropertyChangedSignal("Position"):Connect(function()
             if sf.Visible then
-                local parentFrame = parentSubMenu and parentSubMenu.Frame or f
-                local parentPos = getAbsolutePosition(parentFrame)
-                local buttonPos = getAbsolutePosition(sb)
-                
-                sf.Position = UDim2.new(
-                    0, parentPos.X.Offset + parentFrame.AbsoluteSize.X + 5,
-                    0, buttonPos.Y.Offset - parentPos.Y.Offset
-                )
+                sf.Position = UDim2.new(0, f.AbsolutePosition.X + f.AbsoluteSize.X + 5, 0, f.AbsolutePosition.Y)
             end
         end)
         
         local function ao(txt, cb)
-            local o = c("TextButton", {Size = UDim2.new(1, -10, 0, 25), Position = UDim2.new(0, 5, 0, 0), Text = txt, Parent = sf, ZIndex = sf.ZIndex + 1})
+            local o = c("TextButton", {Size = UDim2.new(1, -10, 0, 25), Position = UDim2.new(0, 5, 0, 0), Text = txt, Parent = sf, ZIndex = 11})
             s(o)
             sf.Size = UDim2.new(0, 150, 0, sl.AbsoluteContentSize.Y)
             if cb then o.MouseButton1Click:Connect(cb) end
             return o
         end
         
-        return ao, sf, subMenu
+        return ao
     end
-
+    
     function self.addTrackbar(label, defaultValue, minValue, maxValue, step, callback)
         local container = c("Frame", {Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, Parent = cf})
         
@@ -197,7 +162,76 @@ function MiniUI.new()
         u()
         return container
     end
-
+    
+    -- Agregar botón de opciones por defecto
+    local _, defaultOptionsContainer = self.addElement("Frame", {CustomHeight = 30, BackgroundTransparency = 1})
+    local addDefaultOption = self.createSubMenu(defaultOptionsContainer, "Default Options")
+    
+    -- Crear submenú "Server Options"
+    local addServerOption = addDefaultOption("Server Options", function() end)
+    
+    -- Agregar opciones al submenú "Server Options"
+    addServerOption("Rejoin", function()
+        game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
+    end)
+    
+    addServerOption("Join Less Crowded", function()
+        local servers = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
+        local leastPlayers = math.huge
+        local serverToJoin
+        
+        for _, server in ipairs(servers.data) do
+            if server.playing < leastPlayers and server.id ~= game.JobId then
+                leastPlayers = server.playing
+                serverToJoin = server.id
+            end
+        end
+        
+        if serverToJoin then
+            game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, serverToJoin, game.Players.LocalPlayer)
+        else
+            print("No se encontró un servidor con menos jugadores")
+        end
+    end)
+    
+    addServerOption("Join Most Crowded", function()
+        local servers = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Desc&limit=100"))
+        local mostPlayers = 0
+        local serverToJoin
+        
+        for _, server in ipairs(servers.data) do
+            if server.playing > mostPlayers and server.id ~= game.JobId then
+                mostPlayers = server.playing
+                serverToJoin = server.id
+            end
+        end
+        
+        if serverToJoin then
+            game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, serverToJoin, game.Players.LocalPlayer)
+        else
+            print("No se encontró un servidor con más jugadores")
+        end
+    end)
+    
+    addServerOption("Join Best Ping", function()
+        local servers = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
+        local bestPing = math.huge
+        local serverToJoin
+        
+        for _, server in ipairs(servers.data) do
+            if server.ping < bestPing and server.id ~= game.JobId then
+                bestPing = server.ping
+                serverToJoin = server.id
+            end
+        end
+        
+        if serverToJoin then
+            game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, serverToJoin, game.Players.LocalPlayer)
+        else
+            print("No se encontró un servidor con mejor ping")
+        end
+    end)
+    
     return self
 end
 
