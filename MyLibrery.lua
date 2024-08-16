@@ -289,9 +289,43 @@ function UL:AddText(parent, text, color)
     return label
 end
 
-game:GetService('Players').LocalPlayer.Idled:Connect(function()
-    game:GetService('VirtualUser'):CaptureController()
-    game:GetService('VirtualUser'):ClickButton2(Vector2.new())
+local Players = game:GetService("Players")
+local VirtualUser = game:GetService("VirtualUser")
+local LocalPlayer = Players.LocalPlayer
+
+local function testVirtualUserMethods()
+    local success, errorMessage
+    
+    success, errorMessage = pcall(function()
+        VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    end)
+    print("Button2Down:", success, errorMessage)
+    
+    success, errorMessage = pcall(function()
+        VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    end)
+    print("Button2Up:", success, errorMessage)
+    
+    success, errorMessage = pcall(function()
+        VirtualUser:MoveMouse(Vector2.new(10, 10))
+    end)
+    print("MoveMouse:", success, errorMessage)
+    
+    success, errorMessage = pcall(function()
+        VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    end)
+    print("Button1Down:", success, errorMessage)
+    
+    success, errorMessage = pcall(function()
+        VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    end)
+    print("Button1Up:", success, errorMessage)
+end
+
+LocalPlayer.Idled:Connect(function()
+    testVirtualUserMethods()
+end)
+
 end)
 print("Loading Finish")
 print("by: OneCreatorX")
