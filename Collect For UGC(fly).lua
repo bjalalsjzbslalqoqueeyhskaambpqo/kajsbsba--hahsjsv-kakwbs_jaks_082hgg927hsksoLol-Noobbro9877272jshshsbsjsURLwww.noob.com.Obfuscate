@@ -193,7 +193,7 @@ local Player = Players.LocalPlayer
 local WS = game:GetService("Workspace")
 
 local b = true
-local speed = 40
+local speed = 20
 
 local function saveSpeed(speed)
     if not isfolder("SpeedData") then makefolder("SpeedData") end
