@@ -74,7 +74,7 @@ function MiniUI.new()
         return i, con
     end
 
-    function self.createSubMenu(par, txt)
+    function self.createSubMenu(par, txt, parentFrame)
         local sb = c("TextButton", {Size = UDim2.new(1, 0, 1, 0), Text = txt .. " >", Parent = par})
         s(sb)
         
@@ -82,7 +82,7 @@ function MiniUI.new()
             Size = UDim2.new(0, 150, 0, 0),
             Position = UDim2.new(0, 0, 0, 0),
             Visible = false,
-            Parent = sg,
+            Parent = parentFrame or sg,
             ZIndex = 10
         })
         s(sf, Color3.fromRGB(25, 25, 25))
@@ -101,12 +101,16 @@ function MiniUI.new()
             sf.Visible = not sf.Visible
             sb.Text = sf.Visible and txt .. " <" or txt .. " >"
             if sf.Visible then
-                sf.Position = UDim2.new(0, f.AbsolutePosition.X + f.AbsoluteSize.X + 5, 0, f.AbsolutePosition.Y)
+                if parentFrame then
+                    sf.Position = UDim2.new(1, 5, 0, sb.AbsolutePosition.Y - parentFrame.AbsolutePosition.Y)
+                else
+                    sf.Position = UDim2.new(0, f.AbsolutePosition.X + f.AbsoluteSize.X + 5, 0, f.AbsolutePosition.Y)
+                end
             end
         end)
         
         f:GetPropertyChangedSignal("Position"):Connect(function()
-            if sf.Visible then
+            if sf.Visible and not parentFrame then
                 sf.Position = UDim2.new(0, f.AbsolutePosition.X + f.AbsoluteSize.X + 5, 0, f.AbsolutePosition.Y)
             end
         end)
@@ -119,7 +123,7 @@ function MiniUI.new()
             return o
         end
         
-        return ao
+        return ao, sf
     end
 
     function self.addTrackbar(label, defaultValue, minValue, maxValue, step, callback)
@@ -165,9 +169,9 @@ function MiniUI.new()
 
     local function createDefaultOptions()
         local _, defaultOptionsContainer = self.addElement("Frame", {CustomHeight = 30, BackgroundTransparency = 1})
-        local addDefaultOption = self.createSubMenu(defaultOptionsContainer, "Opciones por defecto")
+        local addDefaultOption, defaultOptionsFrame = self.createSubMenu(defaultOptionsContainer, "Opciones por defecto")
 
-        local addServerOption = addDefaultOption("Server Options", function() end)
+        local addServerOption, serverOptionsFrame = addDefaultOption("Server Options", function() end)
 
         addServerOption("Rejoin", function()
             game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
