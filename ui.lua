@@ -314,7 +314,7 @@ function Library.new(title, customOptions)
             end
         end
     end
-print("Version 2")
+print("version 3")
     return lib
 end
 
