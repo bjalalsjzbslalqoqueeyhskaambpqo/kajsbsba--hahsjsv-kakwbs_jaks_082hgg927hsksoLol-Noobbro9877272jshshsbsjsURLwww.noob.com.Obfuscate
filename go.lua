@@ -41,6 +41,7 @@ function MiniUI.new()
             if sm ~= excludeSubMenu then
                 sm.Frame.Visible = false
                 sm.Button.Text = sm.Button.Text:gsub("<", ">")
+                hideAllSubMenus(sm)
             end
         end
     end
@@ -78,7 +79,10 @@ function MiniUI.new()
         cf.Visible = not min
         m.Text = min and "+" or "-"
         u()
-        hideAllSubMenus()
+        for _, subMenu in pairs(subMenus) do
+            subMenu.Frame.Visible = false
+            subMenu.Button.Text = subMenu.Button.Text:gsub("<", ">")
+        end
     end)
 
     function self.addElement(t, p)
@@ -261,7 +265,6 @@ function MiniUI.new()
             end
         end)
 
-    end
 
     self.createDefaultOptions()
 
