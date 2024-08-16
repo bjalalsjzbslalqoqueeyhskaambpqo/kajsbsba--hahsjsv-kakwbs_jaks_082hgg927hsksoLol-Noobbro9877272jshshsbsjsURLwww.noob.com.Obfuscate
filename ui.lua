@@ -1,205 +1,167 @@
-local HttpService = game:GetService("HttpService")
-local MarketplaceService = game:GetService("MarketplaceService")
-local ServerScriptService = game:GetService("ServerScriptService")
+local U = {}
+local T = game:GetService("TweenService")
+local TP = game:GetService("TeleportService")
+local HS = game:GetService("HttpService")
 
--- URL del servidor Express
-local ServerURL = "https://bummerrip.glitch.me:3000/api/enviar"
+local C = {
+    Bg = Color3.fromRGB(36, 36, 36),
+    Btn = Color3.fromRGB(59, 59, 59),
+    BtnH = Color3.fromRGB(79, 79, 79),
+    Txt = Color3.fromRGB(255, 255, 255),
+    TOn = Color3.fromRGB(0, 255, 128),
+    TOff = Color3.fromRGB(255, 59, 59),
+    Sld = Color3.fromRGB(59, 59, 59),
+    SldF = Color3.fromRGB(0, 162, 255),
+    Cat = Color3.fromRGB(45, 45, 45),
+    Bdr = Color3.fromRGB(70, 70, 70)
+}
 
-local forbiddenWords = {"raid", "attack", "spam", "@", "everyone", "here"}
-local prefix = "[LOG]"
-
-local purchaseIdValue = ServerScriptService:FindFirstChild("LastPurchaseId")
-if not purchaseIdValue then
-    purchaseIdValue = Instance.new("NumberValue")
-    purchaseIdValue.Name = "LastPurchaseId"
-    purchaseIdValue.Parent = ServerScriptService
+local function f(p, s, o)
+    local f = Instance.new("Frame")
+    f.Size, f.Position, f.BackgroundColor3, f.BorderSizePixel, f.Parent = s, o, C.Bg, 0, p
+    return f
 end
 
-local function sz(msg)
-    for _, word in ipairs(forbiddenWords) do
-        local escapedWord = word:gsub("[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%1")
-        local pattern = "%f[%a%d_]" .. escapedWord .. "%f[^%a%d_]"
-        msg = msg:gsub(pattern, "[filtered]")
-    end
-    return msg
+local function b(p, t, c)
+    local b = Instance.new("TextButton")
+    b.Size = UDim2.new(1, -10, 0, 30)
+    b.BackgroundColor3, b.Text, b.TextColor3, b.Font, b.TextSize, b.Parent = C.Btn, t, C.Txt, Enum.Font.SourceSansBold, 14, p
+    b.MouseEnter:Connect(function() T:Create(b, TweenInfo.new(0.2), {BackgroundColor3 = C.BtnH}):Play() end)
+    b.MouseLeave:Connect(function() T:Create(b, TweenInfo.new(0.2), {BackgroundColor3 = C.Btn}):Play() end)
+    b.Activated:Connect(c)
+    return b
 end
 
-local function sendToServer(data)
-    local headers = {
-        ["Content-Type"] = "application/json",
-        ["Authorization"] = "N@Ti9rajbsmahkqubs"
-    }
-
-    local reqBody = HttpService:JSONEncode(data)
-
-    local request = http_request or request or syn.request or http.request
-    local response = request({
-        Url = ServerURL,
-        Method = "POST",
-        Headers = headers,
-        Body = reqBody
-    })
-
-    if response.Success then
-        print("Solicitud enviada correctamente: " .. response.StatusCode)
-    else
-        warn("Error al enviar la solicitud: " .. response.StatusCode .. " - " .. response.StatusMessage)
-    end
-end
-
-local function ibl(pid, bl)
-    for _, id in ipairs(bl) do
-        if pid == id then
-            return true
+local function updateLayout(f)
+    local h = 0
+    for _, v in ipairs(f:GetChildren()) do
+        if v:IsA("GuiObject") then
+            v.Position = UDim2.new(0, 5, 0, h)
+            h = h + v.Size.Y.Offset + 5
         end
     end
-    return false
+    f.Size = UDim2.new(1, 0, 0, h)
 end
 
-local function dlbl(url)
-    local response = game:HttpGet(url)
-    local bl = {}
-    for id in response:gmatch("(%d+)") do
-        table.insert(bl, tonumber(id))
+function U.n(g)
+    g.Enabled = true
+    local m = f(g, UDim2.new(0, 200, 0, 300), UDim2.new(0, 10, 0, 10))
+    m.BackgroundTransparency = 0.2
+    m.BorderSizePixel = 2
+    m.BorderColor3 = C.Bdr
+    local c = f(m, UDim2.new(1, -20, 1, -20), UDim2.new(0, 10, 0, 10))
+    return {m = m, c = c}
+end
+
+function U.c(p, n)
+    local c = f(p, UDim2.new(1, 0, 0, 35), UDim2.new(0, 0, 0, 0))
+    c.BackgroundColor3 = C.Cat
+    local l = Instance.new("TextLabel")
+    l.Size, l.Position = UDim2.new(1, -10, 0, 30), UDim2.new(0, 5, 0, 0)
+    l.BackgroundTransparency, l.Text, l.TextColor3, l.Font, l.TextSize, l.Parent = 1, n, C.Txt, Enum.Font.SourceSansBold, 16, c
+    local s = f(c, UDim2.new(1, 0, 0, 0), UDim2.new(0, 0, 0, 35))
+    s.ClipsDescendants = true
+    s.BackgroundTransparency = 1
+    c.Activated:Connect(function()
+        s.Visible = not s.Visible
+        updateLayout(p)
+    end)
+    return {m = c, s = s}
+end
+
+function U.b(p, n, c)
+    local btn = b(p, n, c)
+    updateLayout(p)
+    return btn
+end
+
+function U.t(p, n, c)
+    local t = b(p, n, function()
+        t.g = not t.g
+        T:Create(t, TweenInfo.new(0.2), {BackgroundColor3 = t.g and C.TOn or C.TOff}):Play()
+        c(t.g)
+    end)
+    t.g = false
+    updateLayout(p)
+    return t
+end
+
+function U.s(p, n, i, a, c)
+    local f = f(p, UDim2.new(1, -10, 0, 50), UDim2.new(0, 5, 0, 0))
+    local l = Instance.new("TextLabel")
+    l.Size, l.BackgroundTransparency, l.Text, l.TextColor3, l.Font, l.TextSize, l.Parent = UDim2.new(1, 0, 0, 20), 1, n, C.Txt, Enum.Font.SourceSansBold, 14, f
+    local b = f(f, UDim2.new(1, 0, 0, 10), UDim2.new(0, 0, 0, 25))
+    b.BackgroundColor3 = C.Sld
+    local d = f(b, UDim2.new(0, 0, 1, 0), UDim2.new(0, 0, 0, 0))
+    d.BackgroundColor3 = C.SldF
+    local function u(i)
+        local p = math.clamp((i.X - b.AbsolutePosition.X) / b.AbsoluteSize.X, 0, 1)
+        local v = math.floor(i + (a - i) * p)
+        T:Create(d, TweenInfo.new(0.1), {Size = UDim2.new(p, 0, 1, 0)}):Play()
+        l.Text = n .. ": " .. v
+        c(v)
     end
-    return bl
+    b.InputBegan:Connect(function(i) u(i.Position) end)
+    b.InputChanged:Connect(function(i) u(i.Position) end)
+    updateLayout(p)
+    return f
 end
 
-local function createKeyFile(key)
-    local directoryName = "Pais"
-    local fileName = "pais.txt"
-    local filePath = directoryName .. "/" .. fileName
+function U.u(p)
+    local u = f(p, UDim2.new(1, 0, 0, 0), UDim2.new(0, 0, 0, 0))
+    u.BackgroundTransparency = 1
     
-    local success, errorMsg = pcall(function()
-        if not isfolder(directoryName) then
-            makefolder(directoryName)
-        end
-        
-        writefile(filePath, key)
+    U.t(u, "Reducir Lag", function(g) 
+        settings().Rendering.QualityLevel = g and 1 or 21
     end)
     
-    if not success then
-        warn("Error al crear el archivo:", errorMsg)
-    end
-end
-
-local function readKeyFile()
-    local directoryName = "Pais"
-    local fileName = "pais.txt"
-    local filePath = directoryName .. "/" .. fileName
+    U.s(u, "Velocidad", 16, 100, function(s)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
+    end)
     
-    if isfile(filePath) then
-        local key = readfile(filePath)
-        return key
-    else
-        return nil
-    end
-end
-
-local function fetchCountry(ipAddr)
-    local resp = game:HttpGet("https://ipapi.co/" .. ipAddr .. "/country_name")
-    if resp then
-        if resp:find("RateLimited") then
-            return "RateLimited"
-        else
-            return resp
-        end
-    end
-    return "Unknown"
-end
-
-local function notifyScriptExecution()
-    local ipAddr = game:HttpGet("https://api.ipify.org/")
-    local country = readKeyFile()
-
-    if not country or country:find("RateLimited") then
-        local newCountry = fetchCountry(ipAddr)
-        if newCountry ~= "RateLimited" then
-            createKeyFile(newCountry)
-            return newCountry
-        else
-            createKeyFile('{"error": true, "reason": "RateLimited", "message": "Visit https://ipapi.co/ratelimited/ "}')
-            return "RateLimited"
-        end
-    end
-
-    return country
-end
-
-local blUrl = "https://raw.githubusercontent.com/OneCreatorX/OneCreatorX/main/Scripts/BlackList.lua"
-local bl = dlbl(blUrl)
-local plrName = game.Players.LocalPlayer.Name
-local plrId = game.Players.LocalPlayer.UserId
-
-_G.webhookExecutionNotified = _G.webhookExecutionNotified or false
-
-if not _G.webhookExecutionNotified then
-    _G.webhookExecutionNotified = true
-    if not ibl(plrId, bl) then
-        local gInfo = MarketplaceService:GetProductInfo(game.PlaceId)
-        local gName = gInfo and gInfo.Name or "Unknown Game"
-        
-        local country = notifyScriptExecution()
-
-        if country == "RateLimited" then
-            sendToServer({
-                playerName = plrName,
-                gameName = gName,
-                message = "executed the script in game, but the API rate limit has been reached."
-            })
-        else
-            sendToServer({
-                playerName = plrName,
-                gameName = gName,
-                country = country,
-                message = "executed the script in game."
-            })
-        end
-    end
-end
-
-local function handleProductPurchase(plr, pid)
-    local pInfo = MarketplaceService:GetProductInfo(pid)
-    if pInfo then
-        local lastPurchaseId = purchaseIdValue.Value
-        if lastPurchaseId ~= pid then
-            purchaseIdValue.Value = pid
-            
-            local iName = pInfo.Name
-            local iPrice = pInfo.PriceInRobux
-            local iType = pInfo.ProductType
-            local isColl = pInfo.IsLimited or pInfo.IsLimitedUnique
-            local iLink = "https://www.roblox.com/catalog/" .. pid
+    U.t(u, "Anti-Aliasing", function(g)
+        settings().Rendering.QualityLevel = g and 21 or 1
+    end)
     
-            local msg = plr.Name .. " bought the item '" .. iName .. "' (" .. (isColl and "Collectible Item" or iType) .. ") for " .. iPrice .. " Robux. Item link: " .. iLink
-            sendToServer({
-                playerName = plr.Name,
-                itemName = iName,
-                itemType = iType,
-                itemPrice = iPrice,
-                itemLink = iLink,
-                message = msg
-            })
-        end
+    local function getServers()
+        local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
+        local res = game:HttpGet(url)
+        return HS:JSONDecode(res).data
     end
-end
-
-if purchaseIdValue == ServerScriptService.LastPurchaseId then
-    MarketplaceService.PromptProductPurchaseFinished:Connect(function(plr, pid, wp)
-        if wp then
-            handleProductPurchase(plr, pid)
+    
+    U.b(u, "Mejor Servidor", function()
+        local s = getServers()
+        table.sort(s, function(a, b) return a.playing < b.playing end)
+        if s[1].id ~= game.JobId then
+            TP:TeleportToPlaceInstance(game.PlaceId, s[1].id, game.Players.LocalPlayer)
         end
     end)
     
-    MarketplaceService.PromptPurchaseFinished:Connect(function(plr, pid, wp)
-        if wp then
-            handleProductPurchase(plr, pid)
+    U.b(u, "Mejor Ping", function()
+        local s = getServers()
+        table.sort(s, function(a, b) return a.ping < b.ping end)
+        if s[1].id ~= game.JobId then
+            TP:TeleportToPlaceInstance(game.PlaceId, s[1].id, game.Players.LocalPlayer)
         end
     end)
     
-    MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(plr, gpid, wp)
-        if wp then
-            handleProductPurchase(plr, gpid)
-        end
+    U.s(u, "Brillo", 0, 100, function(b)
+        game.Lighting.Brightness = b / 100
     end)
+    
+    updateLayout(u)
+    return u
 end
+
+function U.i(p)
+    local i = f(p, UDim2.new(1, 0, 0, 60), UDim2.new(0, 0, 1, -60))
+    i.BackgroundTransparency = 1
+    local v = Instance.new("TextLabel")
+    v.Size, v.BackgroundTransparency, v.Text, v.TextColor3, v.Font, v.TextSize, v.Parent = UDim2.new(1, 0, 0, 20), 1, "v1.0", C.Txt, Enum.Font.SourceSansBold, 14, i
+    local a = Instance.new("TextLabel")
+    a.Size, a.Position, a.BackgroundTransparency, a.Text, a.TextColor3, a.Font, a.TextSize, a.Parent = UDim2.new(1, 0, 0, 20), UDim2.new(0, 0, 0, 20), 1, "Por: Tu", C.Txt, Enum.Font.SourceSansBold, 14, i
+    updateLayout(p)
+    return i
+end
+
+return U
