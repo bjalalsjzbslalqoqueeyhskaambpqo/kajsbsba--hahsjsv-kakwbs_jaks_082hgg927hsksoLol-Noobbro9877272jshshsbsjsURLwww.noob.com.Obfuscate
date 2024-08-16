@@ -47,76 +47,13 @@ function MiniUI.new(title)
     
     l:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(u)
     
-    local subMenus = {}
-    
     local min = false
     m.MouseButton1Click:Connect(function()
         min = not min
         cf.Visible = not min
         m.Text = min and "+" or "-"
         u()
-        for _, subMenu in pairs(subMenus) do
-            subMenu.Frame.Visible = false
-            subMenu.Button.Text = subMenu.Button.Text:gsub("<", ">")
-        end
     end)
-    
-    function self:Sub(txt)
-        local subMenu = {}
-        local sb = c("TextButton", {Size = UDim2.new(1, 0, 0, 30), Text = txt .. " >", Parent = cf})
-        s(sb)
-        
-        local sf = c("Frame", {
-            Size = UDim2.new(0, 150, 0, 0),
-            Position = UDim2.new(0, 0, 0, 0),
-            Visible = false,
-            Parent = sg,
-            ZIndex = 10
-        })
-        s(sf, Color3.fromRGB(25, 25, 25))
-        
-        local sl = c("UIListLayout", {Parent = sf, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 1)})
-        
-        table.insert(subMenus, {Frame = sf, Button = sb})
-        
-        sb.MouseButton1Click:Connect(function()
-            for _, sm in pairs(subMenus) do
-                if sm.Frame ~= sf then
-                    sm.Frame.Visible = false
-                    sm.Button.Text = sm.Button.Text:gsub("<", ">")
-                end
-            end
-            sf.Visible = not sf.Visible
-            sb.Text = sf.Visible and txt .. " <" or txt .. " >"
-            if sf.Visible then
-                sf.Position = UDim2.new(0, f.AbsolutePosition.X + f.AbsoluteSize.X + 5, 0, f.AbsolutePosition.Y)
-            end
-        end)
-        
-        f:GetPropertyChangedSignal("Position"):Connect(function()
-            if sf.Visible then
-                sf.Position = UDim2.new(0, f.AbsolutePosition.X + f.AbsoluteSize.X + 5, 0, f.AbsolutePosition.Y)
-            end
-        end)
-        
-        function subMenu:Btn(txt, cb)
-            local o = c("TextButton", {Size = UDim2.new(1, -10, 0, 25), Position = UDim2.new(0, 5, 0, 0), Text = txt, Parent = sf, ZIndex = 11})
-            s(o)
-            sf.Size = UDim2.new(0, 150, 0, sl.AbsoluteContentSize.Y)
-            if cb then o.MouseButton1Click:Connect(cb) end
-            return o
-        end
-        
-        function subMenu:Txt(txt)
-            local o = c("TextLabel", {Size = UDim2.new(1, -10, 0, 25), Position = UDim2.new(0, 5, 0, 0), Text = txt, Parent = sf, ZIndex = 11})
-            s(o)
-            sf.Size = UDim2.new(0, 150, 0, sl.AbsoluteContentSize.Y)
-            return o
-        end
-        
-        u()
-        return subMenu
-    end
     
     function self:Btn(txt, cb)
         local b = c("TextButton", {Size = UDim2.new(1, -10, 0, 25), Position = UDim2.new(0, 5, 0, 0), Text = txt, Parent = cf})
@@ -177,21 +114,21 @@ function MiniUI.new(title)
     end
     
     -- Default options
-    local serverOptions = self:Sub("Server Options")
-    serverOptions:Btn("Rejoin", function()
+    self:Txt("Server Options")
+    self:Btn("Rejoin", function()
         game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
     end)
-    serverOptions:Btn("Less Crowded Server", function()
+    self:Btn("Less Crowded Server", function()
         local servers = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
         local server = servers.data[math.random(1, #servers.data)]
         game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, server.id, game.Players.LocalPlayer)
     end)
-    serverOptions:Btn("More Crowded Server", function()
+    self:Btn("More Crowded Server", function()
         local servers = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Desc&limit=100"))
         local server = servers.data[math.random(1, #servers.data)]
         game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, server.id, game.Players.LocalPlayer)
     end)
-    serverOptions:Btn("Best Ping Server", function()
+    self:Btn("Best Ping Server", function()
         local servers = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
         local bestPing = math.huge
         local bestServer
@@ -208,16 +145,16 @@ function MiniUI.new(title)
         end
     end)
     
-    local clientOptions = self:Sub("Client Options")
-    clientOptions:Slider("WalkSpeed", 16, 100, 16, function(value)
+    self:Txt("Client Options")
+    self:Slider("WalkSpeed", 16, 100, 16, function(value)
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
     end)
-    clientOptions:Slider("JumpPower", 50, 200, 50, function(value)
+    self:Slider("JumpPower", 50, 200, 50, function(value)
         game.Players.LocalPlayer.Character.Humanoid.JumpPower = value
     end)
     
     local flyEnabled = false
-    clientOptions:Btn("Fly", function(btn)
+    self:Btn("Fly", function(btn)
         flyEnabled = not flyEnabled
         btn.Text = "Fly: " .. (flyEnabled and "ON" or "OFF")
         
