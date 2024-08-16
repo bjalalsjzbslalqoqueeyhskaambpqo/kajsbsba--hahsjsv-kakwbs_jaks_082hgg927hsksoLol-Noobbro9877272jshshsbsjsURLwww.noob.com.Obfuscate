@@ -149,7 +149,7 @@ R = game:GetService("RunService")
 L = Pl.LocalPlayer
 
 a = false
-s = 40
+s = 20
 ph = 0
 ht = 8
 pt = 8
