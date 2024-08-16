@@ -55,85 +55,105 @@ function MiniUI.new(title)
         u()
     end)
     
-    function self:Btn(txt, cb)
-        local b = c("TextButton", {Size = UDim2.new(1, -10, 0, 25), Position = UDim2.new(0, 5, 0, 0), Text = txt, Parent = cf})
-        s(b)
-        if cb then b.MouseButton1Click:Connect(cb) end
-        u()
-        return b
-    end
-    
-    function self:Txt(txt)
-        local t = c("TextLabel", {Size = UDim2.new(1, -10, 0, 25), Position = UDim2.new(0, 5, 0, 0), Text = txt, Parent = cf})
-        s(t)
-        u()
-        return t
-    end
-    
-    function self:Slider(txt, min, max, default, cb)
-        local container = c("Frame", {Size = UDim2.new(1, -10, 0, 50), Position = UDim2.new(0, 5, 0, 0), BackgroundTransparency = 1, Parent = cf})
-        local label = c("TextLabel", {Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 0, 0), Text = txt .. ": " .. default, Parent = container})
-        s(label)
+    function self:Sub(txt)
+        local subMenu = {}
+        local sb = c("TextButton", {Size = UDim2.new(1, 0, 0, 30), Text = txt .. " >", Parent = cf})
+        s(sb)
         
-        local sliderBack = c("Frame", {Size = UDim2.new(1, 0, 0, 5), Position = UDim2.new(0, 0, 0, 25), Parent = container})
-        s(sliderBack, Color3.fromRGB(40, 40, 40))
+        local sf = c("Frame", {Size = UDim2.new(1, 0, 0, 0), Visible = false, Parent = cf})
+        s(sf, Color3.fromRGB(25, 25, 25))
         
-        local sliderFill = c("Frame", {Size = UDim2.new((default - min) / (max - min), 0, 1, 0), Position = UDim2.new(0, 0, 0, 0), Parent = sliderBack})
-        s(sliderFill, Color3.fromRGB(60, 60, 60))
+        local sl = c("UIListLayout", {Parent = sf, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 1)})
         
-        local function update(value)
-            local pos = (value - min) / (max - min)
-            sliderFill.Size = UDim2.new(pos, 0, 1, 0)
-            label.Text = txt .. ": " .. math.floor(value * 10) / 10
-            if cb then cb(value) end
+        sb.MouseButton1Click:Connect(function()
+            sf.Visible = not sf.Visible
+            sb.Text = sf.Visible and txt .. " <" or txt .. " >"
+            u()
+        end)
+        
+        function subMenu:Btn(txt, cb)
+            local b = c("TextButton", {Size = UDim2.new(1, -10, 0, 25), Position = UDim2.new(0, 5, 0, 0), Text = txt, Parent = sf})
+            s(b)
+            if cb then b.MouseButton1Click:Connect(cb) end
+            u()
+            return b
         end
         
-        local dragging = false
-        sliderBack.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                dragging = true
-            end
-        end)
+        function subMenu:Txt(txt)
+            local t = c("TextLabel", {Size = UDim2.new(1, -10, 0, 25), Position = UDim2.new(0, 5, 0, 0), Text = txt, Parent = sf})
+            s(t)
+            u()
+            return t
+        end
         
-        game:GetService("UserInputService").InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                dragging = false
+        function subMenu:Slider(txt, min, max, default, cb)
+            local container = c("Frame", {Size = UDim2.new(1, -10, 0, 50), Position = UDim2.new(0, 5, 0, 0), BackgroundTransparency = 1, Parent = sf})
+            local label = c("TextLabel", {Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 0, 0), Text = txt .. ": " .. default, Parent = container})
+            s(label)
+            
+            local sliderBack = c("Frame", {Size = UDim2.new(1, 0, 0, 5), Position = UDim2.new(0, 0, 0, 25), Parent = container})
+            s(sliderBack, Color3.fromRGB(40, 40, 40))
+            
+            local sliderFill = c("Frame", {Size = UDim2.new((default - min) / (max - min), 0, 1, 0), Position = UDim2.new(0, 0, 0, 0), Parent = sliderBack})
+            s(sliderFill, Color3.fromRGB(60, 60, 60))
+            
+            local function update(value)
+                local pos = (value - min) / (max - min)
+                sliderFill.Size = UDim2.new(pos, 0, 1, 0)
+                label.Text = txt .. ": " .. math.floor(value * 10) / 10
+                if cb then cb(value) end
             end
-        end)
+            
+            local dragging = false
+            sliderBack.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    dragging = true
+                end
+            end)
+            
+            game:GetService("UserInputService").InputEnded:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    dragging = false
+                end
+            end)
+            
+            sliderBack.InputChanged:Connect(function(input)
+                if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                    local pos = math.clamp((input.Position.X - sliderBack.AbsolutePosition.X) / sliderBack.AbsoluteSize.X, 0, 1)
+                    local value = min + (max - min) * pos
+                    update(value)
+                end
+            end)
+            
+            u()
+            return container
+        end
         
-        sliderBack.InputChanged:Connect(function(input)
-            if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-                local pos = math.clamp((input.Position.X - sliderBack.AbsolutePosition.X) / sliderBack.AbsoluteSize.X, 0, 1)
-                local value = min + (max - min) * pos
-                update(value)
-            end
-        end)
-        
-        u()
-        return container
+        return subMenu
     end
     
     -- Default options
-    self:Txt("Server Options")
-    self:Btn("Rejoin", function()
+    local options = self:Sub("Options")
+    options:Txt("Server Options")
+    options:Btn("Rejoin", function()
         game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
     end)
-    self:Btn("Less Crowded Server", function()
+    options:Btn("Less Crowded Server", function()
         local servers = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
         local server = servers.data[math.random(1, #servers.data)]
         game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, server.id, game.Players.LocalPlayer)
     end)
-    self:Btn("More Crowded Server", function()
+    options:Btn("More Crowded Server", function()
         local servers = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Desc&limit=100"))
         local server = servers.data[math.random(1, #servers.data)]
         game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, server.id, game.Players.LocalPlayer)
     end)
-    self:Btn("Best Ping Server", function()
+    options:Btn("Best Ping Server", function()
         local servers = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
         local bestPing = math.huge
         local bestServer
         for _, server in ipairs(servers.data) do
-            if server.ping < bestPing and server.playing < server.maxPlayers then
+            if server.ping and server.ping < bestPing and server.playing < server.maxPlayers then
                 bestPing = server.ping
                 bestServer = server
             end
@@ -145,16 +165,16 @@ function MiniUI.new(title)
         end
     end)
     
-    self:Txt("Client Options")
-    self:Slider("WalkSpeed", 16, 100, 16, function(value)
+    options:Txt("Client Options")
+    options:Slider("WalkSpeed", 16, 100, 16, function(value)
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
     end)
-    self:Slider("JumpPower", 50, 200, 50, function(value)
+    options:Slider("JumpPower", 50, 200, 50, function(value)
         game.Players.LocalPlayer.Character.Humanoid.JumpPower = value
     end)
     
     local flyEnabled = false
-    self:Btn("Fly", function(btn)
+    options:Btn("Fly", function(btn)
         flyEnabled = not flyEnabled
         btn.Text = "Fly: " .. (flyEnabled and "ON" or "OFF")
         
