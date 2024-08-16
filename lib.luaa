@@ -2,6 +2,7 @@ local MiniUI = {}
 
 function MiniUI.new()
     local self = {}
+    local subMenus = {}
 
     local function c(t, p)
         local i = Instance.new(t)
@@ -47,8 +48,6 @@ function MiniUI.new()
 
     l:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(u)
 
-    local subMenus = {}
-
     local min = false
     m.MouseButton1Click:Connect(function()
         min = not min
@@ -74,7 +73,7 @@ function MiniUI.new()
         return i, con
     end
 
-    function self.createSubMenu(par, txt, parentFrame)
+    function self.createSubMenu(par, txt, parentSubMenu)
         local sb = c("TextButton", {Size = UDim2.new(1, 0, 1, 0), Text = txt .. " >", Parent = par})
         s(sb)
         
@@ -82,36 +81,39 @@ function MiniUI.new()
             Size = UDim2.new(0, 150, 0, 0),
             Position = UDim2.new(0, 0, 0, 0),
             Visible = false,
-            Parent = parentFrame or sg,
+            Parent = sg,
             ZIndex = 10
         })
         s(sf, Color3.fromRGB(25, 25, 25))
         
         local sl = c("UIListLayout", {Parent = sf, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 1)})
         
-        table.insert(subMenus, {Frame = sf, Button = sb})
+        local subMenu = {Frame = sf, Button = sb, ParentSubMenu = parentSubMenu}
+        table.insert(subMenus, subMenu)
         
         sb.MouseButton1Click:Connect(function()
-            for _, subMenu in pairs(subMenus) do
-                if subMenu.Frame ~= sf then
-                    subMenu.Frame.Visible = false
-                    subMenu.Button.Text = subMenu.Button.Text:gsub("<", ">")
+            for _, sm in pairs(subMenus) do
+                if sm ~= subMenu and sm.ParentSubMenu ~= subMenu then
+                    sm.Frame.Visible = false
+                    sm.Button.Text = sm.Button.Text:gsub("<", ">")
                 end
             end
             sf.Visible = not sf.Visible
             sb.Text = sf.Visible and txt .. " <" or txt .. " >"
             if sf.Visible then
-                if parentFrame then
-                    sf.Position = UDim2.new(1, 5, 0, sb.AbsolutePosition.Y - parentFrame.AbsolutePosition.Y)
+                if parentSubMenu then
+                    sf.Position = UDim2.new(1, 5, 0, sb.AbsolutePosition.Y - parentSubMenu.Frame.AbsolutePosition.Y)
+                    sf.Parent = parentSubMenu.Frame
                 else
-                    sf.Position = UDim2.new(0, f.AbsolutePosition.X + f.AbsoluteSize.X + 5, 0, f.AbsolutePosition.Y)
+                    sf.Position = UDim2.new(0, f.AbsolutePosition.X + f.AbsoluteSize.X + 5, 0, sb.AbsolutePosition.Y)
+                    sf.Parent = sg
                 end
             end
         end)
         
         f:GetPropertyChangedSignal("Position"):Connect(function()
-            if sf.Visible and not parentFrame then
-                sf.Position = UDim2.new(0, f.AbsolutePosition.X + f.AbsoluteSize.X + 5, 0, f.AbsolutePosition.Y)
+            if sf.Visible and not parentSubMenu then
+                sf.Position = UDim2.new(0, f.AbsolutePosition.X + f.AbsoluteSize.X + 5, 0, sb.AbsolutePosition.Y)
             end
         end)
         
@@ -123,7 +125,7 @@ function MiniUI.new()
             return o
         end
         
-        return ao, sf
+        return ao, sf, subMenu
     end
 
     function self.addTrackbar(label, defaultValue, minValue, maxValue, step, callback)
@@ -169,9 +171,9 @@ function MiniUI.new()
 
     function self.createDefaultOptions()
         local _, defaultOptionsContainer = self.addElement("Frame", {CustomHeight = 30, BackgroundTransparency = 1})
-        local addDefaultOption, defaultOptionsFrame = self.createSubMenu(defaultOptionsContainer, "Opciones por defecto")
+        local addDefaultOption, defaultOptionsFrame, defaultOptionsSubMenu = self.createSubMenu(defaultOptionsContainer, "Opciones por defecto")
 
-        local addServerOption, serverOptionsFrame = self.createSubMenu(defaultOptionsFrame, "Server Options")
+        local addServerOption, serverOptionsFrame, serverOptionsSubMenu = self.createSubMenu(defaultOptionsFrame, "Server Options", defaultOptionsSubMenu)
 
         addServerOption("Rejoin", function()
             game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
@@ -234,7 +236,7 @@ function MiniUI.new()
             end
         end)
 
-        local addWorldOption, worldOptionsFrame = self.createSubMenu(defaultOptionsFrame, "Worlds")
+        local addWorldOption, worldOptionsFrame, worldOptionsSubMenu = self.createSubMenu(defaultOptionsFrame, "Worlds", defaultOptionsSubMenu)
         addWorldOption("World 1", function() print("Selected World 1") end)
     end
 
