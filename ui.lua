@@ -1,146 +1,252 @@
-local U = {}
-local T = game:GetService("TweenService")
+local UL = {}
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
 
-local C = {
-    Bg = Color3.fromRGB(36, 36, 36),
-    Btn = Color3.fromRGB(59, 59, 59),
-    BtnH = Color3.fromRGB(79, 79, 79),
-    Txt = Color3.fromRGB(255, 255, 255),
-    TOn = Color3.fromRGB(0, 255, 128),
-    TOff = Color3.fromRGB(255, 59, 59),
-    Sld = Color3.fromRGB(59, 59, 59),
-    SldF = Color3.fromRGB(0, 162, 255),
-    Cat = Color3.fromRGB(45, 45, 45),
-    Bdr = Color3.fromRGB(70, 70, 70),
-    TBox = Color3.fromRGB(50, 50, 50)
+local uiProperties = {
+    BackgroundColor3 = Color3.fromRGB(65, 65, 65),
+    BackgroundTransparency = 0.8,
+    TextColor3 = Color3.fromRGB(255, 255, 255),
+    Font = Enum.Font.GothamBold,
+    TextSize = 14
 }
 
-local function f(p, s, o)
-    local f = Instance.new("Frame")
-    f.Size, f.Position, f.BackgroundColor3, f.BorderSizePixel, f.Parent = s, o, C.Bg, 0, p
-    return f
-end
-
-local function b(p, t, c)
-    local b = Instance.new("TextButton")
-    b.Size = UDim2.new(1, -10, 0, 30)
-    b.BackgroundColor3, b.Text, b.TextColor3, b.Font, b.TextSize, b.Parent = C.Btn, t, C.Txt, Enum.Font.SourceSansBold, 14, p
-    b.MouseEnter:Connect(function() T:Create(b, TweenInfo.new(0.2), {BackgroundColor3 = C.BtnH}):Play() end)
-    b.MouseLeave:Connect(function() T:Create(b, TweenInfo.new(0.2), {BackgroundColor3 = C.Btn}):Play() end)
-    b.Activated:Connect(c)
-    return b
-end
-
-local function updateLayout(f)
-    local h = 0
-    for _, v in ipairs(f:GetChildren()) do
-        if v:IsA("GuiObject") then
-            v.Position = UDim2.new(0, 5, 0, h)
-            h = h + v.Size.Y.Offset + 5
+function UL:CrSG(name)
+    for _, gui in ipairs(Players.LocalPlayer:WaitForChild("PlayerGui"):GetChildren()) do
+        if gui:IsA("ScreenGui") and gui:FindFirstChild("ULId") then
+            gui:Destroy()
         end
     end
-    f.Size = UDim2.new(1, 0, 0, h)
+
+    local sg = Instance.new("ScreenGui")
+    sg.Name = name
+    sg.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+    sg.ResetOnSpawn = false
+
+    local id = Instance.new("BoolValue")
+    id.Name = "ULId"
+    id.Value = true
+    id.Parent = sg
+
+    return sg
 end
 
-function U.n(g)
-    if not g then
-        g = Instance.new("ScreenGui")
-        g.Name = "MiInterfaz"
-        g.Parent = game.Players.LocalPlayer.PlayerGui
+function UL:CrFrm(parent, title)
+    local frm = Instance.new("Frame")
+    frm.Parent = parent
+    frm.Size = UDim2.new(0.25, 0, 0, 60)
+    frm.Position = UDim2.new(0.2, 0, 0.2, 0)
+    frm.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    frm.BackgroundTransparency = 0.4
+    frm.BorderSizePixel = 1
+    frm.Active = true
+    
+    local function updateInput(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            local dragInput = input
+            local dragStart = input.Position
+            local startPos = frm.Position
+            
+            local dragConnection
+            dragConnection = input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragConnection:Disconnect()
+                end
+            end)
+            
+            local inputChangedConnection
+            inputChangedConnection = UserInputService.InputChanged:Connect(function(newInput)
+                if newInput.UserInputType == Enum.UserInputType.MouseMovement or newInput.UserInputType == Enum.UserInputType.Touch then
+                    local delta = newInput.Position - dragStart
+                    frm.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+                end
+            end)
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    inputChangedConnection:Disconnect()
+                end
+            end)
+        end
     end
-    g.ResetOnSpawn = false
-    local m = f(g, UDim2.new(0, 200, 0, 300), UDim2.new(0, 10, 0, 10))
-    m.BackgroundTransparency = 0.2
-    m.BorderSizePixel = 2
-    m.BorderColor3 = C.Bdr
-    local c = f(m, UDim2.new(1, -20, 1, -20), UDim2.new(0, 10, 0, 10))
-    return {m = m, c = c}
-end
 
-function U.c(p, n)
-    local c = f(p, UDim2.new(1, 0, 0, 35), UDim2.new(0, 0, 0, 0))
-    c.BackgroundColor3 = C.Cat
-    local l = Instance.new("TextLabel")
-    l.Size, l.Position = UDim2.new(1, -10, 0, 30), UDim2.new(0, 5, 0, 0)
-    l.BackgroundTransparency, l.Text, l.TextColor3, l.Font, l.TextSize, l.Parent = 1, n, C.Txt, Enum.Font.SourceSansBold, 16, c
-    local s = f(c, UDim2.new(1, 0, 0, 0), UDim2.new(0, 0, 0, 35))
-    s.ClipsDescendants = true
-    s.BackgroundTransparency = 1
-    c.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            s.Visible = not s.Visible
-            updateLayout(p)
+    frm.InputBegan:Connect(updateInput)
+
+    local lbl = Instance.new("TextLabel")
+    lbl.Parent = frm
+    lbl.Text = title
+    lbl.Size = UDim2.new(1, 0, 0, 30)
+    lbl.Position = UDim2.new(0, 0, 0, 0)
+    lbl.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    lbl.BackgroundTransparency = 0.2
+    lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+    lbl.Font = Enum.Font.GothamBold 
+    lbl.TextSize = 18
+
+    local tbtn = Instance.new("TextButton")
+    tbtn.Parent = frm
+    tbtn.Text = "+"
+    tbtn.Size = UDim2.new(0, 30, 0, 30)
+    tbtn.Position = UDim2.new(1, -30, 0, 0)
+    for prop, value in pairs(uiProperties) do
+        tbtn[prop] = value
+    end
+
+    local cfrm = Instance.new("ScrollingFrame")
+    cfrm.Parent = frm
+    cfrm.Size = UDim2.new(1, 0, 1, -30)
+    cfrm.Position = UDim2.new(0, 0, 0, 30)
+    cfrm.BackgroundTransparency = 0.6
+    cfrm.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    cfrm.Visible = false
+    cfrm.ScrollBarThickness = 4
+
+    local minimized = true
+    tbtn.MouseButton1Click:Connect(function()
+        minimized = not minimized
+        if minimized then
+            cfrm.Visible = false
+            tbtn.Text = "+"
+            frm.Size = UDim2.new(0.25, 0, 0, 60)
+        else
+            cfrm.Visible = true
+            tbtn.Text = "-"
+            frm.Size = UDim2.new(0.25, 0, 0.6, 0)
         end
     end)
-    return {m = c, s = s}
+
+    return frm, cfrm
 end
 
-function U.b(p, n, c)
-    local btn = b(p, n, c)
-    updateLayout(p)
+function UL:AddBtn(parent, text, callback)
+    local btn = Instance.new("TextButton")
+    btn.Parent = parent
+    btn.Text = text
+    btn.Size = UDim2.new(1, -10, 0, 30)
+    btn.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35 - 35)
+    for prop, value in pairs(uiProperties) do
+        btn[prop] = value
+    end
+
+    btn.MouseButton1Click:Connect(callback)
+    parent.CanvasSize = UDim2.new(0, 0, 0, #parent:GetChildren() * 35)
+    
     return btn
 end
 
-function U.t(p, n, c)
-    local t = b(p, n, function()
-        t.g = not t.g
-        T:Create(t, TweenInfo.new(0.2), {BackgroundColor3 = t.g and C.TOn or C.TOff}):Play()
-        c(t.g)
-    end)
-    t.g = false
-    updateLayout(p)
-    return t
-end
-
-function U.s(p, n, i, a, c)
-    local f = f(p, UDim2.new(1, -10, 0, 50), UDim2.new(0, 5, 0, 0))
-    local l = Instance.new("TextLabel")
-    l.Size, l.BackgroundTransparency, l.Text, l.TextColor3, l.Font, l.TextSize, l.Parent = UDim2.new(1, 0, 0, 20), 1, n, C.Txt, Enum.Font.SourceSansBold, 14, f
-    local b = f(f, UDim2.new(1, 0, 0, 10), UDim2.new(0, 0, 0, 25))
-    b.BackgroundColor3 = C.Sld
-    local d = f(b, UDim2.new(0, 0, 1, 0), UDim2.new(0, 0, 0, 0))
-    d.BackgroundColor3 = C.SldF
-    local function u(i)
-        local p = math.clamp((i.X - b.AbsolutePosition.X) / b.AbsoluteSize.X, 0, 1)
-        local v = math.floor(i + (a - i) * p)
-        T:Create(d, TweenInfo.new(0.1), {Size = UDim2.new(p, 0, 1, 0)}):Play()
-        l.Text = n .. ": " .. v
-        c(v)
+function UL:AddTBtn(parent, text, state, callback)
+    local btn = Instance.new("TextButton")
+    btn.Parent = parent
+    btn.Text = text .. " [" .. (state and "ON" or "OFF") .. "]"
+    btn.Size = UDim2.new(1, -10, 0, 30)
+    btn.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35 - 35)
+    for prop, value in pairs(uiProperties) do
+        btn[prop] = value
     end
-    b.InputBegan:Connect(function(i)
-        if i.UserInputType == Enum.UserInputType.MouseButton1 then
-            u(i.Position)
+
+    btn.MouseButton1Click:Connect(function()
+        state = not state
+        btn.Text = text .. " [" .. (state and "ON" or "OFF") .. "]"
+        btn.BackgroundColor3 = state and Color3.fromRGB(85, 170, 85) or Color3.fromRGB(65, 65, 65)
+        callback(state)
+    end)
+
+    parent.CanvasSize = UDim2.new(0, 0, 0, #parent:GetChildren() * 35)
+
+    return btn
+end
+
+function UL:AddTBox(parent, placeholder, callback)
+    local box = Instance.new("TextBox")
+    box.Parent = parent
+    box.PlaceholderText = placeholder
+    box.Text = ""
+    box.Size = UDim2.new(1, -10, 0, 30)
+    box.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35 - 35)
+    box.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+    box.TextColor3 = Color3.fromRGB(255, 255, 255)
+    box.Font = Enum.Font.SourceSans
+    box.TextSize = 14
+    box.ClearTextOnFocus = false
+
+    box.FocusLost:Connect(function(enterPressed)
+        if enterPressed then
+            callback(box.Text)
         end
     end)
-    b.InputChanged:Connect(function(i)
-        if i.UserInputType == Enum.UserInputType.MouseMovement then
-            u(i.Position)
+
+    parent.CanvasSize = UDim2.new(0, 0, 0, #parent:GetChildren() * 35)
+
+    return box
+end
+
+function UL:AddUtilities(parent)
+    local utils = UL:AddBtn(parent, "Utilities", function() end)
+    utils.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+
+    UL:AddTBtn(parent, "Reduce Lag", false, function(state)
+        settings().Rendering.QualityLevel = state and 1 or 10
+    end)
+
+    UL:AddTBtn(parent, "Anti AFK", false, function(state)
+        local VirtualUser = game:GetService("VirtualUser")
+        if state then
+            Players.LocalPlayer.Idled:Connect(function()
+                VirtualUser:CaptureController()
+                VirtualUser:ClickButton2(Vector2.new())
+            end)
         end
     end)
-    updateLayout(p)
-    return f
+
+    UL:AddBtn(parent, "Server Hop", function()
+        local TeleportService = game:GetService("TeleportService")
+        local HttpService = game:GetService("HttpService")
+        local PlaceId = game.PlaceId
+        local ServersInfo = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
+
+        local FilteredServers = {}
+        for _, server in ipairs(ServersInfo.data) do
+            if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                table.insert(FilteredServers, server)
+            end
+        end
+
+        if #FilteredServers > 0 then
+            TeleportService:TeleportToPlaceInstance(PlaceId, FilteredServers[math.random(1, #FilteredServers)].id, Players.LocalPlayer)
+        else
+            print("No suitable servers found.")
+        end
+    end)
 end
 
-function U.tb(p, n, ph)
-    local f = f(p, UDim2.new(1, -10, 0, 50), UDim2.new(0, 5, 0, 0))
-    local l = Instance.new("TextLabel")
-    l.Size, l.BackgroundTransparency, l.Text, l.TextColor3, l.Font, l.TextSize, l.Parent = UDim2.new(1, 0, 0, 20), 1, n, C.Txt, Enum.Font.SourceSansBold, 14, f
-    local tb = Instance.new("TextBox")
-    tb.Size, tb.Position = UDim2.new(1, 0, 0, 30), UDim2.new(0, 0, 0, 20)
-    tb.BackgroundColor3, tb.TextColor3, tb.PlaceholderText, tb.PlaceholderColor3, tb.Font, tb.TextSize, tb.Parent = C.TBox, C.Txt, ph, Color3.fromRGB(200, 200, 200), Enum.Font.SourceSans, 14, f
-    updateLayout(p)
-    return tb
+function UL:AddInfo(parent, infoText)
+    local infoBtn = UL:AddBtn(parent, "Show Info", function() end)
+    infoBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+
+    local infoFrame = Instance.new("Frame")
+    infoFrame.Parent = parent.Parent
+    infoFrame.Size = UDim2.new(0.25, 0, 0, 100)
+    infoFrame.Position = UDim2.new(1.02, 0, 0, 0)
+    infoFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    infoFrame.BackgroundTransparency = 0.4
+    infoFrame.BorderSizePixel = 1
+    infoFrame.Visible = false
+
+    local infoLabel = Instance.new("TextLabel")
+    infoLabel.Parent = infoFrame
+    infoLabel.Size = UDim2.new(1, -10, 1, -10)
+    infoLabel.Position = UDim2.new(0, 5, 0, 5)
+    infoLabel.BackgroundTransparency = 1
+    infoLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    infoLabel.Text = infoText
+    infoLabel.TextWrapped = true
+    infoLabel.TextSize = 14
+    infoLabel.Font = Enum.Font.SourceSans
+
+    infoBtn.MouseButton1Click:Connect(function()
+        infoFrame.Visible = not infoFrame.Visible
+    end)
+
+    return infoBtn, infoFrame
 end
 
-function U.i(p)
-    local i = f(p, UDim2.new(1, 0, 0, 60), UDim2.new(0, 0, 1, -60))
-    i.BackgroundTransparency = 1
-    local v = Instance.new("TextLabel")
-    v.Size, v.BackgroundTransparency, v.Text, v.TextColor3, v.Font, v.TextSize, v.Parent = UDim2.new(1, 0, 0, 20), 1, "v1.2", C.Txt, Enum.Font.SourceSansBold, 14, i
-    local a = Instance.new("TextLabel")
-    a.Size, a.Position, a.BackgroundTransparency, a.Text, a.TextColor3, a.Font, a.TextSize, a.Parent = UDim2.new(1, 0, 0, 20), UDim2.new(0, 0, 0, 20), 1, "Por: Tu", C.Txt, Enum.Font.SourceSansBold, 14, i
-    updateLayout(p)
-    return i
-end
-
-return U
+return UL
