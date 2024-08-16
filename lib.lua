@@ -242,6 +242,6 @@ function MiniUI.new()
 
     return self
 end
-print("hah")
+print"haha")
 
 return MiniUI
