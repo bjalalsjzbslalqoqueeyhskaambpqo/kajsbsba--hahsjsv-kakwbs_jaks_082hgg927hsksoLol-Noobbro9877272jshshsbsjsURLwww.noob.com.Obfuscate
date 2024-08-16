@@ -1,5 +1,3 @@
-end
-
 local Library = {}
 
 local function c(t, p)
@@ -297,4 +295,4 @@ function Library.new(title, customOptions)
     return lib
 end
 
-return Libraryreturn Library
+return Library
