@@ -21,6 +21,30 @@ function MiniUI.new()
         end
     end
 
+    local function getAbsolutePosition(instance)
+        local position = instance.Position
+        local parent = instance.Parent
+        while parent and not parent:IsA("ScreenGui") do
+            position = UDim2.new(
+                position.X.Scale + parent.Position.X.Scale,
+                position.X.Offset + parent.Position.X.Offset,
+                position.Y.Scale + parent.Position.Y.Scale,
+                position.Y.Offset + parent.Position.Y.Offset
+            )
+            parent = parent.Parent
+        end
+        return position
+    end
+
+    local function hideAllSubMenus(excludeSubMenu)
+        for _, sm in pairs(subMenus) do
+            if sm ~= excludeSubMenu then
+                sm.Frame.Visible = false
+                sm.Button.Text = sm.Button.Text:gsub("<", ">")
+            end
+        end
+    end
+
     local sg = game.Players.LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("MiniUIScreenGui")
     if not sg or not sg.Enabled then
         sg = c("ScreenGui", {Name = "MiniUIScreenGui", Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")})
@@ -54,10 +78,7 @@ function MiniUI.new()
         cf.Visible = not min
         m.Text = min and "+" or "-"
         u()
-        for _, subMenu in pairs(subMenus) do
-            subMenu.Frame.Visible = false
-            subMenu.Button.Text = subMenu.Button.Text:gsub("<", ">")
-        end
+        hideAllSubMenus()
     end)
 
     function self.addElement(t, p)
@@ -82,7 +103,7 @@ function MiniUI.new()
             Position = UDim2.new(0, 0, 0, 0),
             Visible = false,
             Parent = sg,
-            ZIndex = 10
+            ZIndex = parentSubMenu and parentSubMenu.Frame.ZIndex + 1 or 10
         })
         s(sf, Color3.fromRGB(25, 25, 25))
         
@@ -92,33 +113,37 @@ function MiniUI.new()
         table.insert(subMenus, subMenu)
         
         sb.MouseButton1Click:Connect(function()
-            for _, sm in pairs(subMenus) do
-                if sm ~= subMenu and sm.ParentSubMenu ~= subMenu then
-                    sm.Frame.Visible = false
-                    sm.Button.Text = sm.Button.Text:gsub("<", ">")
-                end
-            end
+            hideAllSubMenus(subMenu)
             sf.Visible = not sf.Visible
             sb.Text = sf.Visible and txt .. " <" or txt .. " >"
             if sf.Visible then
-                if parentSubMenu then
-                    sf.Position = UDim2.new(1, 5, 0, sb.AbsolutePosition.Y - parentSubMenu.Frame.AbsolutePosition.Y)
-                    sf.Parent = parentSubMenu.Frame
-                else
-                    sf.Position = UDim2.new(0, f.AbsolutePosition.X + f.AbsoluteSize.X + 5, 0, sb.AbsolutePosition.Y)
-                    sf.Parent = sg
-                end
+                local parentFrame = parentSubMenu and parentSubMenu.Frame or f
+                local parentPos = getAbsolutePosition(parentFrame)
+                local buttonPos = getAbsolutePosition(sb)
+                
+                sf.Position = UDim2.new(
+                    0, parentPos.X.Offset + parentFrame.AbsoluteSize.X + 5,
+                    0, buttonPos.Y.Offset - parentPos.Y.Offset
+                )
+                sf.Parent = sg
             end
         end)
         
         f:GetPropertyChangedSignal("Position"):Connect(function()
-            if sf.Visible and not parentSubMenu then
-                sf.Position = UDim2.new(0, f.AbsolutePosition.X + f.AbsoluteSize.X + 5, 0, sb.AbsolutePosition.Y)
+            if sf.Visible then
+                local parentFrame = parentSubMenu and parentSubMenu.Frame or f
+                local parentPos = getAbsolutePosition(parentFrame)
+                local buttonPos = getAbsolutePosition(sb)
+                
+                sf.Position = UDim2.new(
+                    0, parentPos.X.Offset + parentFrame.AbsoluteSize.X + 5,
+                    0, buttonPos.Y.Offset - parentPos.Y.Offset
+                )
             end
         end)
         
         local function ao(txt, cb)
-            local o = c("TextButton", {Size = UDim2.new(1, -10, 0, 25), Position = UDim2.new(0, 5, 0, 0), Text = txt, Parent = sf, ZIndex = 11})
+            local o = c("TextButton", {Size = UDim2.new(1, -10, 0, 25), Position = UDim2.new(0, 5, 0, 0), Text = txt, Parent = sf, ZIndex = sf.ZIndex + 1})
             s(o)
             sf.Size = UDim2.new(0, 150, 0, sl.AbsoluteContentSize.Y)
             if cb then o.MouseButton1Click:Connect(cb) end
@@ -236,8 +261,6 @@ function MiniUI.new()
             end
         end)
 
-        local addWorldOption, worldOptionsFrame, worldOptionsSubMenu = self.createSubMenu(defaultOptionsFrame, "Worlds", defaultOptionsSubMenu)
-        addWorldOption("World 1", function() print("Selected World 1") end)
     end
 
     self.createDefaultOptions()
