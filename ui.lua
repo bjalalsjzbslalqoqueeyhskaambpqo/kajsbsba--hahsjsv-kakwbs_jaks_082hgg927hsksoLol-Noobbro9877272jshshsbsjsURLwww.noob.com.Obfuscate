@@ -1,252 +1,146 @@
-local UL = {}
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
+local UI = {}
+local UIS = game:GetService("UserInputService")
+local TS = game:GetService("TweenService")
 
-local uiProperties = {
-    BackgroundColor3 = Color3.fromRGB(65, 65, 65),
-    BackgroundTransparency = 0.8,
-    TextColor3 = Color3.fromRGB(255, 255, 255),
-    Font = Enum.Font.GothamBold,
-    TextSize = 14
-}
-
-function UL:CrSG(name)
-    for _, gui in ipairs(Players.LocalPlayer:WaitForChild("PlayerGui"):GetChildren()) do
-        if gui:IsA("ScreenGui") and gui:FindFirstChild("ULId") then
-            gui:Destroy()
-        end
-    end
-
-    local sg = Instance.new("ScreenGui")
-    sg.Name = name
-    sg.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
-    sg.ResetOnSpawn = false
-
-    local id = Instance.new("BoolValue")
-    id.Name = "ULId"
-    id.Value = true
-    id.Parent = sg
-
-    return sg
+local function c(t, p)
+    local i = Instance.new(t)
+    for k, v in pairs(p) do i[k] = v end
+    return i
 end
 
-function UL:CrFrm(parent, title)
-    local frm = Instance.new("Frame")
-    frm.Parent = parent
-    frm.Size = UDim2.new(0.25, 0, 0, 60)
-    frm.Position = UDim2.new(0.2, 0, 0.2, 0)
-    frm.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-    frm.BackgroundTransparency = 0.4
-    frm.BorderSizePixel = 1
-    frm.Active = true
-    
-    local function updateInput(input)
-        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-            local dragInput = input
-            local dragStart = input.Position
-            local startPos = frm.Position
-            
-            local dragConnection
-            dragConnection = input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragConnection:Disconnect()
-                end
-            end)
-            
-            local inputChangedConnection
-            inputChangedConnection = UserInputService.InputChanged:Connect(function(newInput)
-                if newInput.UserInputType == Enum.UserInputType.MouseMovement or newInput.UserInputType == Enum.UserInputType.Touch then
-                    local delta = newInput.Position - dragStart
-                    frm.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-                end
-            end)
-            
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    inputChangedConnection:Disconnect()
-                end
-            end)
-        end
-    end
-
-    frm.InputBegan:Connect(updateInput)
-
-    local lbl = Instance.new("TextLabel")
-    lbl.Parent = frm
-    lbl.Text = title
-    lbl.Size = UDim2.new(1, 0, 0, 30)
-    lbl.Position = UDim2.new(0, 0, 0, 0)
-    lbl.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    lbl.BackgroundTransparency = 0.2
-    lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-    lbl.Font = Enum.Font.GothamBold 
-    lbl.TextSize = 18
-
-    local tbtn = Instance.new("TextButton")
-    tbtn.Parent = frm
-    tbtn.Text = "+"
-    tbtn.Size = UDim2.new(0, 30, 0, 30)
-    tbtn.Position = UDim2.new(1, -30, 0, 0)
-    for prop, value in pairs(uiProperties) do
-        tbtn[prop] = value
-    end
-
-    local cfrm = Instance.new("ScrollingFrame")
-    cfrm.Parent = frm
-    cfrm.Size = UDim2.new(1, 0, 1, -30)
-    cfrm.Position = UDim2.new(0, 0, 0, 30)
-    cfrm.BackgroundTransparency = 0.6
-    cfrm.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    cfrm.Visible = false
-    cfrm.ScrollBarThickness = 4
-
-    local minimized = true
-    tbtn.MouseButton1Click:Connect(function()
-        minimized = not minimized
-        if minimized then
-            cfrm.Visible = false
-            tbtn.Text = "+"
-            frm.Size = UDim2.new(0.25, 0, 0, 60)
-        else
-            cfrm.Visible = true
-            tbtn.Text = "-"
-            frm.Size = UDim2.new(0.25, 0, 0.6, 0)
-        end
-    end)
-
-    return frm, cfrm
+local function a(p, o)
+    for k, v in pairs(o) do p[k] = v end
 end
 
-function UL:AddBtn(parent, text, callback)
-    local btn = Instance.new("TextButton")
-    btn.Parent = parent
-    btn.Text = text
-    btn.Size = UDim2.new(1, -10, 0, 30)
-    btn.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35 - 35)
-    for prop, value in pairs(uiProperties) do
-        btn[prop] = value
+function UI.new(name)
+    local sg = c("ScreenGui", {Name = name, Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")})
+    local m = c("Frame", {Parent = sg, Size = UDim2.new(0.3, 0, 0, 30), Position = UDim2.new(0.5, 0, 0, 20), AnchorPoint = Vector2.new(0.5, 0), BackgroundColor3 = Color3.fromRGB(40, 40, 40)})
+    c("UICorner", {Parent = m, CornerRadius = UDim.new(0, 6)})
+    local t = c("TextLabel", {Parent = m, Text = name, Size = UDim2.new(1, -30, 1, 0), Position = UDim2.new(0, 5, 0, 0), BackgroundTransparency = 1, TextColor3 = Color3.new(1, 1, 1), Font = Enum.Font.GothamSemibold, TextSize = 14})
+    local b = c("TextButton", {Parent = m, Text = "-", Size = UDim2.new(0, 30, 1, 0), Position = UDim2.new(1, -30, 0, 0), BackgroundTransparency = 1, TextColor3 = Color3.new(1, 1, 1), Font = Enum.Font.GothamBold, TextSize = 18})
+    local c = c("Frame", {Parent = m, Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 1, 0), BackgroundColor3 = Color3.fromRGB(50, 50, 50), ClipsDescendants = true})
+    c("UICorner", {Parent = c, CornerRadius = UDim.new(0, 6)})
+
+    local d = false
+    b.MouseButton1Click:Connect(function()
+        d = not d
+        b.Text = d and "+" or "-"
+        TS:Create(c, TweenInfo.new(0.3), {Size = UDim2.new(1, 0, 0, d and 0 or c.UIListLayout.AbsoluteContentSize.Y)}):Play()
+    end)
+
+    c("UIListLayout", {Parent = c, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)})
+    c("UIPadding", {Parent = c, PaddingLeft = UDim.new(0, 5), PaddingRight = UDim.new(0, 5), PaddingTop = UDim.new(0, 5), PaddingBottom = UDim.new(0, 5)})
+
+    local f = {}
+
+    function f.btn(text, callback)
+        local b = c("TextButton", {Parent = c, Text = text, Size = UDim2.new(1, 0, 0, 30), BackgroundColor3 = Color3.fromRGB(60, 60, 60), TextColor3 = Color3.new(1, 1, 1), Font = Enum.Font.GothamSemibold, TextSize = 14})
+        c("UICorner", {Parent = b, CornerRadius = UDim.new(0, 4)})
+        b.MouseButton1Click:Connect(callback)
+        return b
     end
 
-    btn.MouseButton1Click:Connect(callback)
-    parent.CanvasSize = UDim2.new(0, 0, 0, #parent:GetChildren() * 35)
-    
-    return btn
-end
+    function f.tgl(text, default, callback)
+        local t = c("TextButton", {Parent = c, Text = text, Size = UDim2.new(1, -40, 0, 30), BackgroundColor3 = Color3.fromRGB(60, 60, 60), TextColor3 = Color3.new(1, 1, 1), Font = Enum.Font.GothamSemibold, TextSize = 14})
+        c("UICorner", {Parent = t, CornerRadius = UDim.new(0, 4)})
+        local s = c("Frame", {Parent = t, Size = UDim2.new(0, 40, 0, 20), Position = UDim2.new(1, 5, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5), BackgroundColor3 = Color3.fromRGB(40, 40, 40)})
+        c("UICorner", {Parent = s, CornerRadius = UDim.new(1, 0)})
+        local k = c("Frame", {Parent = s, Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 2, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5), BackgroundColor3 = Color3.fromRGB(200, 200, 200)})
+        c("UICorner", {Parent = k, CornerRadius = UDim.new(1, 0)})
 
-function UL:AddTBtn(parent, text, state, callback)
-    local btn = Instance.new("TextButton")
-    btn.Parent = parent
-    btn.Text = text .. " [" .. (state and "ON" or "OFF") .. "]"
-    btn.Size = UDim2.new(1, -10, 0, 30)
-    btn.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35 - 35)
-    for prop, value in pairs(uiProperties) do
-        btn[prop] = value
+        local function u(v)
+            TS:Create(k, TweenInfo.new(0.2), {Position = UDim2.new(v and 1 or 0, v and -2 or 2, 0.5, 0), BackgroundColor3 = v and Color3.fromRGB(0, 255, 128) or Color3.fromRGB(200, 200, 200)}):Play()
+            callback(v)
+        end
+
+        t.MouseButton1Click:Connect(function()
+            default = not default
+            u(default)
+        end)
+
+        u(default)
+        return t
     end
 
-    btn.MouseButton1Click:Connect(function()
-        state = not state
-        btn.Text = text .. " [" .. (state and "ON" or "OFF") .. "]"
-        btn.BackgroundColor3 = state and Color3.fromRGB(85, 170, 85) or Color3.fromRGB(65, 65, 65)
-        callback(state)
-    end)
+    function f.sld(text, min, max, default, callback)
+        local f = c("Frame", {Parent = c, Size = UDim2.new(1, 0, 0, 50), BackgroundTransparency = 1})
+        local l = c("TextLabel", {Parent = f, Text = text, Size = UDim2.new(1, 0, 0, 20), BackgroundTransparency = 1, TextColor3 = Color3.new(1, 1, 1), Font = Enum.Font.GothamSemibold, TextSize = 14})
+        local s = c("Frame", {Parent = f, Size = UDim2.new(1, 0, 0, 4), Position = UDim2.new(0, 0, 0.7, 0), BackgroundColor3 = Color3.fromRGB(60, 60, 60)})
+        c("UICorner", {Parent = s, CornerRadius = UDim.new(1, 0)})
+        local h = c("Frame", {Parent = s, Size = UDim2.new(0, 12, 0, 12), Position = UDim2.new((default-min)/(max-min), 0, 0.5, 0), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = Color3.fromRGB(255, 255, 255)})
+        c("UICorner", {Parent = h, CornerRadius = UDim.new(1, 0)})
+        local v = c("TextLabel", {Parent = f, Text = tostring(default), Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 1, -20), BackgroundTransparency = 1, TextColor3 = Color3.new(1, 1, 1), Font = Enum.Font.GothamSemibold, TextSize = 14})
 
-    parent.CanvasSize = UDim2.new(0, 0, 0, #parent:GetChildren() * 35)
-
-    return btn
-end
-
-function UL:AddTBox(parent, placeholder, callback)
-    local box = Instance.new("TextBox")
-    box.Parent = parent
-    box.PlaceholderText = placeholder
-    box.Text = ""
-    box.Size = UDim2.new(1, -10, 0, 30)
-    box.Position = UDim2.new(0, 5, 0, #parent:GetChildren() * 35 - 35)
-    box.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-    box.TextColor3 = Color3.fromRGB(255, 255, 255)
-    box.Font = Enum.Font.SourceSans
-    box.TextSize = 14
-    box.ClearTextOnFocus = false
-
-    box.FocusLost:Connect(function(enterPressed)
-        if enterPressed then
-            callback(box.Text)
+        local function u(i)
+            local p = math.clamp((i - s.AbsolutePosition.X) / s.AbsoluteSize.X, 0, 1)
+            local val = math.floor(min + (max - min) * p)
+            h.Position = UDim2.new(p, 0, 0.5, 0)
+            v.Text = tostring(val)
+            callback(val)
         end
-    end)
 
-    parent.CanvasSize = UDim2.new(0, 0, 0, #parent:GetChildren() * 35)
-
-    return box
-end
-
-function UL:AddUtilities(parent)
-    local utils = UL:AddBtn(parent, "Utilities", function() end)
-    utils.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-
-    UL:AddTBtn(parent, "Reduce Lag", false, function(state)
-        settings().Rendering.QualityLevel = state and 1 or 10
-    end)
-
-    UL:AddTBtn(parent, "Anti AFK", false, function(state)
-        local VirtualUser = game:GetService("VirtualUser")
-        if state then
-            Players.LocalPlayer.Idled:Connect(function()
-                VirtualUser:CaptureController()
-                VirtualUser:ClickButton2(Vector2.new())
-            end)
-        end
-    end)
-
-    UL:AddBtn(parent, "Server Hop", function()
-        local TeleportService = game:GetService("TeleportService")
-        local HttpService = game:GetService("HttpService")
-        local PlaceId = game.PlaceId
-        local ServersInfo = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
-
-        local FilteredServers = {}
-        for _, server in ipairs(ServersInfo.data) do
-            if server.playing < server.maxPlayers and server.id ~= game.JobId then
-                table.insert(FilteredServers, server)
+        local db = false
+        h.InputBegan:Connect(function(i)
+            if i.UserInputType == Enum.UserInputType.Touch or i.UserInputType == Enum.UserInputType.MouseButton1 then
+                db = true
             end
+        end)
+        h.InputEnded:Connect(function(i)
+            if i.UserInputType == Enum.UserInputType.Touch or i.UserInputType == Enum.UserInputType.MouseButton1 then
+                db = false
+            end
+        end)
+        UIS.InputChanged:Connect(function(i)
+            if db and (i.UserInputType == Enum.UserInputType.Touch or i.UserInputType == Enum.UserInputType.MouseMovement) then
+                u(i.Position.X)
+            end
+        end)
+
+        return f
+    end
+
+    function f.drp(text, options, callback)
+        local d = c("Frame", {Parent = c, Size = UDim2.new(1, 0, 0, 30), BackgroundColor3 = Color3.fromRGB(60, 60, 60)})
+        c("UICorner", {Parent = d, CornerRadius = UDim.new(0, 4)})
+        local b = c("TextButton", {Parent = d, Text = text, Size = UDim2.new(1, -30, 1, 0), BackgroundTransparency = 1, TextColor3 = Color3.new(1, 1, 1), Font = Enum.Font.GothamSemibold, TextSize = 14})
+        local a = c("TextButton", {Parent = d, Text = "▼", Size = UDim2.new(0, 30, 1, 0), Position = UDim2.new(1, -30, 0, 0), BackgroundTransparency = 1, TextColor3 = Color3.new(1, 1, 1), Font = Enum.Font.GothamBold, TextSize = 14})
+        local l = c("Frame", {Parent = d, Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 1, 0), BackgroundColor3 = Color3.fromRGB(50, 50, 50), ClipsDescendants = true, Visible = false})
+        c("UICorner", {Parent = l, CornerRadius = UDim.new(0, 4)})
+        c("UIListLayout", {Parent = l, SortOrder = Enum.SortOrder.LayoutOrder})
+
+        local function t(o)
+            b.Text = o
+            callback(o)
         end
 
-        if #FilteredServers > 0 then
-            TeleportService:TeleportToPlaceInstance(PlaceId, FilteredServers[math.random(1, #FilteredServers)].id, Players.LocalPlayer)
-        else
-            print("No suitable servers found.")
+        for _, o in ipairs(options) do
+            local ob = c("TextButton", {Parent = l, Text = o, Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, TextColor3 = Color3.new(1, 1, 1), Font = Enum.Font.GothamSemibold, TextSize = 14})
+            ob.MouseButton1Click:Connect(function()
+                t(o)
+                l.Visible = false
+                a.Text = "▼"
+            end)
         end
-    end)
+
+        a.MouseButton1Click:Connect(function()
+            l.Visible = not l.Visible
+            a.Text = l.Visible and "▲" or "▼"
+            if l.Visible then
+                TS:Create(l, TweenInfo.new(0.2), {Size = UDim2.new(1, 0, 0, #options * 30)}):Play()
+            else
+                TS:Create(l, TweenInfo.new(0.2), {Size = UDim2.new(1, 0, 0, 0)}):Play()
+            end
+        end)
+
+        return d
+    end
+
+    function f.txt(text)
+        local t = c("TextLabel", {Parent = c, Text = text, Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, TextColor3 = Color3.new(1, 1, 1), Font = Enum.Font.GothamSemibold, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left})
+        return t
+    end
+
+    return f
 end
 
-function UL:AddInfo(parent, infoText)
-    local infoBtn = UL:AddBtn(parent, "Show Info", function() end)
-    infoBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-
-    local infoFrame = Instance.new("Frame")
-    infoFrame.Parent = parent.Parent
-    infoFrame.Size = UDim2.new(0.25, 0, 0, 100)
-    infoFrame.Position = UDim2.new(1.02, 0, 0, 0)
-    infoFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-    infoFrame.BackgroundTransparency = 0.4
-    infoFrame.BorderSizePixel = 1
-    infoFrame.Visible = false
-
-    local infoLabel = Instance.new("TextLabel")
-    infoLabel.Parent = infoFrame
-    infoLabel.Size = UDim2.new(1, -10, 1, -10)
-    infoLabel.Position = UDim2.new(0, 5, 0, 5)
-    infoLabel.BackgroundTransparency = 1
-    infoLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    infoLabel.Text = infoText
-    infoLabel.TextWrapped = true
-    infoLabel.TextSize = 14
-    infoLabel.Font = Enum.Font.SourceSans
-
-    infoBtn.MouseButton1Click:Connect(function()
-        infoFrame.Visible = not infoFrame.Visible
-    end)
-
-    return infoBtn, infoFrame
-end
-
-return UL
+return UI
