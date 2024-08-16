@@ -171,7 +171,7 @@ function MiniUI.new()
         local _, defaultOptionsContainer = self.addElement("Frame", {CustomHeight = 30, BackgroundTransparency = 1})
         local addDefaultOption, defaultOptionsFrame = self.createSubMenu(defaultOptionsContainer, "Opciones por defecto")
 
-        local addServerOption, serverOptionsFrame = addDefaultOption("Server Options", function() end)
+        local addServerOption, serverOptionsFrame = self.createSubMenu(defaultOptionsFrame, "Server Options")
 
         addServerOption("Rejoin", function()
             game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
@@ -234,7 +234,7 @@ function MiniUI.new()
             end
         end)
 
-        local addWorldOption = addDefaultOption("Worlds", function() end)
+        local addWorldOption, worldOptionsFrame = self.createSubMenu(defaultOptionsFrame, "Worlds")
         addWorldOption("World 1", function() print("Selected World 1") end)
     end
 
