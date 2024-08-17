@@ -1,6 +1,6 @@
 spawn(function()
 (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
-    end)
+end)
 local P=game:GetService("Players")
 local H=game:GetService("HttpService")
 local T=game:GetService("TweenService")
@@ -115,6 +115,53 @@ local function sLA(p,t)
     return l
 end
 
+local function getGameInfo(uId)
+    local success, res = pcall(function()
+        return H:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games?universeIds=" .. uId))
+    end)
+    if success and res.data and res.data[1] then
+        local data = res.data[1]
+        return data.creator.id, data.creator.type
+    end
+    return nil, "Error al obtener información del juego"
+end
+
+local function extractGroupId(input)
+    if type(input) == "number" then
+        return input
+    elseif type(input) == "string" then
+        local id = input:match("roblox.com/groups/(%d+)")
+        if id then
+            return tonumber(id)
+        else
+            return tonumber(input)
+        end
+    end
+    return nil
+end
+
+local function getGroupRoles(groupId)
+    local url = string.format("https://groups.roblox.com/v1/groups/%d/roles", groupId)
+    local success, res = pcall(function()
+        return H:JSONDecode(game:HttpGet(url))
+    end)
+    if success and res.roles then
+        return res.roles
+    end
+    return nil
+end
+
+local function getGroupMembersInRole(groupId, roleId)
+    local url = string.format("https://groups.roblox.com/v1/groups/%d/roles/%d/users?limit=100", groupId, roleId)
+    local success, res = pcall(function()
+        return H:JSONDecode(game:HttpGet(url))
+    end)
+    if success and res.data then
+        return res.data
+    end
+    return {}
+end
+
 local function cUI()
     local SG=Instance.new("ScreenGui",PG)
     local MF=Instance.new("Frame",SG)
@@ -171,8 +218,9 @@ local function cUI()
     local FCB=cB(_G.TEXT,UDim2.new(0.05,0,0,240),Color3.fromRGB(255,69,0))
     local YB=cB("YouTube",UDim2.new(0.05,0,0,280),Color3.fromRGB(255,0,0))
     local DB=cB("Discord",UDim2.new(0.05,0,0,320),Color3.fromRGB(114,137,218))
+    local GRB=cB("Get Group Ranks",UDim2.new(0.05,0,0,360),Color3.fromRGB(75,0,130))
 
-    local function ckB(p,n,i,f)
+    local function cUB(p,n,i,f)
         local b=Instance.new("TextButton",p)
         b.Size=UDim2.new(0.7,0,0,30)
         b.Text,b.BackgroundColor3=n,f and Color3.fromRGB(255,80,80) or Color3.fromRGB(0,170,255)
@@ -206,48 +254,9 @@ local function cUI()
         local fl=gFL()
         la:Destroy()
         for i,u in ipairs(fl) do
-            local b=ckB(FS,u.name,u.id,true)
-            b.Position=UDim2.new(0.05,0,0,(i-1)*35)
-        end
-    end
-    
-    local function cUB(p,n,i,f)
-        local b=Instance.new("TextButton",p)
-        b.Size=UDim2.new(0.7,0,0,30)
-        b.Text,b.BackgroundColor3=n,f and Color3.fromRGB(255,80,80) or Color3.fromRGB(0,170,255)
-        b.TextColor3=Color3.new(1,1,1)
-        Instance.new("UICorner",b).CornerRadius=UDim.new(0,10)
-        local fb=Instance.new("TextButton",b)
-        fb.Size,fb.Position=UDim2.new(0.3,0,1,0),UDim2.new(1.05,0,0,0)
-        fb.Text=f and "Unfollow" or "Follow"
-        fb.BackgroundColor3=f and Color3.fromRGB(255,80,80) or Color3.fromRGB(0,170,255)
-        fb.TextColor3=Color3.new(1,1,1)
-        Instance.new("UICorner",fb).CornerRadius=UDim.new(0,10)
-        fb.MouseButton1Click:Connect(function()
-            local a=f and "unfollow" or "follow"
-            fb.Text="Processing..."
-            fb.BackgroundColor3=Color3.fromRGB(100,18,128)
-            if fUU(i,a) then
-                nf("Success",a:gsub("^%l",string.upper).."ed "..n,3)
-                task.wait(0.5)
-                uFL()
-            end
-            task.wait(0.4)
-            fb.Text=f and "Unfollow" or "Follow"
-            fb.BackgroundColor3=f and Color3.fromRGB(255,80,80) or Color3.fromRGB(0,170,255)
-        end)
-        return b
-    end
-    
-  local function uFL()
-        for _,v in ipairs(FS:GetChildren()) do v:Destroy() end
-        local la=sLA(FS,"Loading...")
-        local fl=gFL()
-        la:Destroy()
-        for i,u in ipairs(fl) do
             local b=cUB(FS,u.name,u.id,true)
             b.Position=UDim2.new(0.05,0,0,(i-1)*35)
-        end
+end
     end
     
     local function pS()
@@ -277,7 +286,6 @@ local function cUI()
         SBu.Text="Search"
         SBu.BackgroundColor3=Color3.fromRGB(29,161,242)
     end)
-    
     
     UAB.MouseButton1Click:Connect(function()
         UAB.Text="Processing..."
@@ -339,6 +347,60 @@ local function cUI()
     
     YB.MouseButton1Click:Connect(function() cTC(YL) end)
     DB.MouseButton1Click:Connect(function() cTC(DL) end)
+    
+    GRB.MouseButton1Click:Connect(function()
+    GRB.Text = "Processing..."
+    GRB.BackgroundColor3 = Color3.fromRGB(100,18,128)
+    local la = sLA(SS, "Getting group ranks...")
+    
+    local gameId = game.GameId
+    local creatorId, creatorType = getGameInfo(gameId)
+    
+    if creatorType == "Group" then
+        local groupId = creatorId
+        local roles = getGroupRoles(groupId)
+        if roles then
+            table.sort(roles, function(a, b) return a.rank > b.rank end)
+            
+            local privilegedRoles = {}
+            for _, role in ipairs(roles) do
+                local members = getGroupMembersInRole(groupId, role.id)
+                if #members <= 30 and #members > 0 then
+                    table.insert(privilegedRoles, {role = role, members = members})
+                end
+            end
+            
+            for _,v in ipairs(SS:GetChildren()) do v:Destroy() end
+            
+            local totalButtons = 0
+            for i, roleData in ipairs(privilegedRoles) do
+                local role = roleData.role
+                local members = roleData.members
+                for j, member in ipairs(members) do
+                    local b = cUB(SS, member.username .. " (" .. role.name .. ")", member.userId, false)
+                    b.Position = UDim2.new(0.05, 0, 0, totalButtons * 35)
+                    totalButtons = totalButtons + 1
+                end
+            end
+            
+            if totalButtons > 0 then
+                nf("Success", string.format("Found %d members in privileged roles", totalButtons), 3)
+            else
+                nf("Info", "No members found in roles with 30 or fewer members", 3)
+            end
+        else
+            nf("Error", "Could not get group roles", 3)
+        end
+    else
+        nf("Error", "Game creator is not a group", 3)
+    end
+    
+    la:Destroy()
+    task.wait(2)
+    GRB.Text = "Get Group Ranks"
+    GRB.BackgroundColor3 = Color3.fromRGB(75,0,130)
+end)
+
     
     uFL()
 end
