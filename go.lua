@@ -27,6 +27,10 @@ local function createUI(parent, isSubMenu)
     })
     s(frame, isSubMenu and Color3.fromRGB(25, 25, 25) or nil)
     
+    local content = c("Frame", {Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 1, 0), Parent = frame})
+    s(content, Color3.fromRGB(15, 15, 15))
+    local list = c("UIListLayout", {Parent = content, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 1)})
+    
     if not isSubMenu then
         frame.Active = true
         frame.Draggable = true
@@ -34,19 +38,29 @@ local function createUI(parent, isSubMenu)
         s(title)
         local minBtn = c("TextButton", {Size = UDim2.new(0, 30, 1, 0), Position = UDim2.new(1, -30, 0, 0), Text = "-", Parent = frame})
         s(minBtn)
+        
+        local isMinimized = false
         minBtn.MouseButton1Click:Connect(function()
-            frame.Size = frame.Size == UDim2.new(0, 200, 0, 30) and UDim2.new(0, 200, 0, frame.Size.Y.Offset) or UDim2.new(0, 200, 0, 30)
-            minBtn.Text = frame.Size == UDim2.new(0, 200, 0, 30) and "-" or "+"
+            isMinimized = not isMinimized
+            if isMinimized then
+                content.Visible = false
+                frame.Size = UDim2.new(0, 200, 0, 30)
+                minBtn.Text = "+"
+            else
+                content.Visible = true
+                frame.Size = UDim2.new(0, 200, 0, 30 + content.Size.Y.Offset)
+                minBtn.Text = "-"
+            end
         end)
     end
     
-    local content = c("Frame", {Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 1, 0), Parent = frame})
-    s(content, Color3.fromRGB(15, 15, 15))
-    local list = c("UIListLayout", {Parent = content, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 1)})
-    
     local function updateSize()
         content.Size = UDim2.new(1, 0, 0, list.AbsoluteContentSize.Y)
-        if isSubMenu then frame.Size = UDim2.new(0, 150, 0, list.AbsoluteContentSize.Y) end
+        if isSubMenu then
+            frame.Size = UDim2.new(0, 150, 0, list.AbsoluteContentSize.Y)
+        elseif not isMinimized then
+            frame.Size = UDim2.new(0, 200, 0, 30 + list.AbsoluteContentSize.Y)
+        end
     end
     list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateSize)
     
@@ -102,20 +116,33 @@ local function createUI(parent, isSubMenu)
         return container
     end
     
+    local openSubMenu = nil
     function ui:Sub(text)
         local subBtn = self:Btn(text .. " >")
         local subFrame = createUI(parent, true)
         subFrame.frame.Visible = false
         subBtn.MouseButton1Click:Connect(function()
+            if openSubMenu and openSubMenu ~= subFrame then
+                openSubMenu.frame.Visible = false
+                openSubMenu.button.Text = openSubMenu.button.Text:gsub(" <", " >")
+            end
             subFrame.frame.Visible = not subFrame.frame.Visible
             subBtn.Text = subFrame.frame.Visible and text .. " <" or text .. " >"
             if subFrame.frame.Visible then
                 subFrame.frame.Position = UDim2.new(0, frame.AbsolutePosition.X + frame.AbsoluteSize.X + 5, 0, frame.AbsolutePosition.Y)
+                openSubMenu = {frame = subFrame.frame, button = subBtn}
+            else
+                openSubMenu = nil
             end
         end)
         frame:GetPropertyChangedSignal("Position"):Connect(function()
             if subFrame.frame.Visible then
                 subFrame.frame.Position = UDim2.new(0, frame.AbsolutePosition.X + frame.AbsoluteSize.X + 5, 0, frame.AbsolutePosition.Y)
+            end
+        end)
+        frame.AncestryChanged:Connect(function()
+            if not frame:IsDescendantOf(game) then
+                subFrame.frame:Destroy()
             end
         end)
         return subFrame
