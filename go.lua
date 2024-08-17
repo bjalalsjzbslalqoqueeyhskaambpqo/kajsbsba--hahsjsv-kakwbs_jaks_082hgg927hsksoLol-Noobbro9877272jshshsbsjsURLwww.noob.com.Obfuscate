@@ -21,7 +21,7 @@ local function s(i, bg)
     end
 end
 
-local function createUI(parent, isSubMenu, subMenuTitle)
+local function createUI(parent, isSubMenu, subMenuTitle, customTitle)
     local ui = {}
     local frame = c("Frame", {
         Size = UDim2.new(0, 200, 0, 30),
@@ -33,26 +33,28 @@ local function createUI(parent, isSubMenu, subMenuTitle)
     })
     s(frame, isSubMenu and Color3.fromRGB(25, 25, 25) or nil)
 
-    local gameName = ""
-    if gameName == "" then
-        gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+    local title
+    if isSubMenu then
+        title = subMenuTitle
+    elseif customTitle then
+        title = customTitle
+    else
+        local gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+        local function cleanGameName(name)
+            name = name:gsub("%b[]", "")
+            name = name:match("^[^:]*")
+            return name:match("^%s*(.-)%s*$")
+        end
+        title = cleanGameName(gameName)
     end
-
-    local function cleanGameName(name)
-        name = name:gsub("%b[]", "")
-        name = name:match("^[^:]*")
-        return name:match("^%s*(.-)%s*$")
-    end
-
-    gameName = cleanGameName(gameName)
     
-    local title = c("TextLabel", {
+    local titleLabel = c("TextLabel", {
         Size = UDim2.new(1, -30, 0, 30),
         Position = UDim2.new(0, 0, 0, 0),
-        Text = isSubMenu and subMenuTitle or gameName,
+        Text = title,
         Parent = frame
     })
-    s(title)
+    s(titleLabel)
     
     local minBtn = c("TextButton", {
         Size = UDim2.new(0, 30, 0, 30),
