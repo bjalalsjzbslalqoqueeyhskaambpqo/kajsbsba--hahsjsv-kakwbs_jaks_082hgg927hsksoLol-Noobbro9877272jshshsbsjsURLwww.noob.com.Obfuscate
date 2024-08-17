@@ -184,8 +184,7 @@ function MiniUI:new()
     end
     local ui = createUI(sg)
     
-    -- Add default server options
-    local serverSub = ui:Sub("Server Options")
+    local serverSub = ui:Sub("Options Default")
     
     serverSub:Btn("Rejoin", function()
         game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
@@ -230,15 +229,14 @@ function MiniUI:new()
     serverSub:Btn("Join Best Ping", function()
         joinServer("ping", true)
     end)
+
+    serverSub:Txt("Optimization")
     
-    -- Add default optimization options
-    local optimizeSub = ui:Sub("Optimization")
-    
-    optimizeSub:Btn("Reduce Graphics", function()
+    serverSub:Btn("Reduce Graphics", function()
         settings().Rendering.QualityLevel = 1
     end)
     
-    optimizeSub:Btn("Disable Particles", function()
+ serverSub:Btn("Disable Particles", function()
         for _, v in pairs(game:GetDescendants()) do
             if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
                 v.Enabled = false
@@ -246,7 +244,7 @@ function MiniUI:new()
         end
     end)
     
-    optimizeSub:Btn("Optimize Lighting", function()
+    serverSub:Btn("Optimize Lighting", function()
         local lighting = game:GetService("Lighting")
         lighting.GlobalShadows = false
         lighting.FogEnd = 9e9
@@ -259,7 +257,7 @@ function MiniUI:new()
         end
     end)
     
-    optimizeSub:Track("View Distance", 1000, 100, 2000, 100, function(value)
+serverSub:Track("View Distance", 1000, 100, 2000, 100, function(value)
         settings().Rendering.EagerBulkExecution = true
         settings().Rendering.ExportMergeByMaterial = true
         settings().Rendering.MeshCacheSize = 256
@@ -271,6 +269,13 @@ function MiniUI:new()
             warn("sethiddenproperty function not available. Unable to adjust view distance.")
         end
     end)
+    serverSub:Txt("Client")
+    serverSub:Track("Speed", 16, 16, 100, 1, function(value)
+    local player = game.Players.LocalPlayer
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.WalkSpeed = value
+    end
+end)
     
     return ui
 end
