@@ -23,7 +23,9 @@ local function createUI(parent, isSubMenu)
         Size = UDim2.new(0, 200, 0, 30),
         Position = isSubMenu and UDim2.new(0, 205, 0, 0) or UDim2.new(0.5, -100, 0, 20),
         Parent = parent,
-        Visible = not isSubMenu
+        Visible = not isSubMenu,
+        Active = not isSubMenu,
+        Draggable = not isSubMenu
     })
     s(frame, isSubMenu and Color3.fromRGB(25, 25, 25) or nil)
     
@@ -58,20 +60,14 @@ local function createUI(parent, isSubMenu)
     
     local function updateSize()
         content.Size = UDim2.new(1, 0, 0, list.AbsoluteContentSize.Y)
-        frame.Size = UDim2.new(0, 200, 0, 30 + list.AbsoluteContentSize.Y)
+        frame.Size = UDim2.new(0, 200, 0, 30 + (content.Visible and list.AbsoluteContentSize.Y or 0))
     end
     list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateSize)
     
     minBtn.MouseButton1Click:Connect(function()
-        if content.Visible then
-            content.Visible = false
-            frame.Size = UDim2.new(0, 200, 0, 30)
-            minBtn.Text = "+"
-        else
-            content.Visible = true
-            updateSize()
-            minBtn.Text = "-"
-        end
+        content.Visible = not content.Visible
+        updateSize()
+        minBtn.Text = content.Visible and "-" or "+"
     end)
     
     local function addElement(elemType, props)
@@ -154,6 +150,13 @@ local function createUI(parent, isSubMenu)
                 subFrame.frame.Position = UDim2.new(0, frame.AbsolutePosition.X + frame.AbsoluteSize.X + 5, 0, frame.AbsolutePosition.Y)
             end
         end)
+        frame:GetPropertyChangedSignal("Visible"):Connect(function()
+            if not frame.Visible and subFrame.frame.Visible then
+                subFrame.frame.Visible = false
+                subBtn.Text = text .. " >"
+                activeSubMenu = nil
+            end
+        end)
         return subFrame
     end
     
@@ -218,7 +221,7 @@ function MiniUI:new()
     -- Add default optimization options
     local optimizeSub = ui:Sub("Optimization")
     
-    optimizeSub:Btn("Reduce G", function()
+    optimizeSub:Btn("Reduce Graphics", function()
         settings().Rendering.QualityLevel = 1
     end)
     
@@ -230,7 +233,7 @@ function MiniUI:new()
         end
     end)
     
-    optimizeSub:Track("Render", 1000, 100, 2000, 100, function(value)
+    optimizeSub:Track("Render Distance", 1000, 100, 2000, 100, function(value)
         settings().Rendering.EagerBulkExecution = true
         settings().Rendering.ExportMergeByMaterial = true
         settings().Rendering.MeshCacheSize = 256
