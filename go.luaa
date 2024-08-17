@@ -10,7 +10,6 @@ spawn(function()
     (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
 end)
 
-
 local function s(i, bg)
     i.BackgroundColor3 = bg or Color3.fromRGB(20, 20, 20)
     i.BorderSizePixel = 0
@@ -35,17 +34,17 @@ local function createUI(parent, isSubMenu, subMenuTitle)
     s(frame, isSubMenu and Color3.fromRGB(25, 25, 25) or nil)
 
     local gameName = ""
-if gameName == "" then
-    gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
-end
+    if gameName == "" then
+        gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+    end
 
-local function cleanGameName(name)
-    name = name:gsub("%b[]", "")
-    name = name:match("^[^:]*")
-    return name:match("^%s*(.-)%s*$")
-end
+    local function cleanGameName(name)
+        name = name:gsub("%b[]", "")
+        name = name:match("^[^:]*")
+        return name:match("^%s*(.-)%s*$")
+    end
 
-gameName = cleanGameName(gameName)
+    gameName = cleanGameName(gameName)
     
     local title = c("TextLabel", {
         Size = UDim2.new(1, -30, 0, 30),
@@ -144,6 +143,24 @@ gameName = cleanGameName(gameName)
         return container
     end
     
+    function ui:TBtn(text, callback)
+        local btn = addElement("TextButton", {Text = text})
+        local isActive = false
+        
+        local function updateAppearance()
+            btn.BackgroundColor3 = isActive and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(20, 20, 20)
+        end
+        
+        btn.MouseButton1Click:Connect(function()
+            isActive = not isActive
+            updateAppearance()
+            if callback then callback(isActive) end
+        end)
+        
+        updateAppearance()
+        return btn
+    end
+    
     local activeSubMenu = nil
     function ui:Sub(text)
         local subBtn = self:Btn(text .. " >")
@@ -184,122 +201,139 @@ end
 
 function MiniUI:new()
     local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-local sg = nil
+    local sg = nil
 
-for _, gui in pairs(playerGui:GetChildren()) do
-    if gui:IsA("ScreenGui") and gui.Enabled then
-        sg = gui
-        break
+    for _, gui in pairs(playerGui:GetChildren()) do
+        if gui:IsA("ScreenGui") and gui.Enabled then
+            sg = gui
+            break
+        end
     end
-end
 
-if not sg then
-    sg = Instance.new("ScreenGui")
-    sg.Name = "MiniUIScreenGui"
-    sg.Parent = playerGui
-end
+    if not sg then
+        sg = Instance.new("ScreenGui")
+        sg.Name = "MiniUIScreenGui"
+        sg.Parent = playerGui
+    end
 
     local ui = createUI(sg)
     spawn(function()
-            wait(0.3)
-    local serverSub = ui:Sub("Options Universal")
-    
-    serverSub:Btn("Rejoin", function()
-game.Players.LocalPlayer:kick("Rejoin")
-        game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
-    end)
-    
-    local function joinServer(sortOrder, ascending)
-        local servers = {}
-        local endpoint = string.format(
-            "https://games.roblox.com/v1/games/%s/servers/Public?sortOrder=%s&limit=100",
-            tostring(game.PlaceId),
-            sortOrder
-        )
-        local result = game:HttpGet(endpoint)
-        result = game:GetService("HttpService"):JSONDecode(result)
-        for _, server in ipairs(result.data) do
-            if server.playing < server.maxPlayers and server.id ~= game.JobId then
-                table.insert(servers, server)
+        wait(0.3)
+        local serverSub = ui:Sub("Options Universal")
+        
+        serverSub:Btn("Rejoin", function()
+            game.Players.LocalPlayer:kick("Rejoin")
+            game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
+        end)
+        
+        local function joinServer(sortOrder, ascending)
+            local servers = {}
+            local endpoint = string.format(
+                "https://games.roblox.com/v1/games/%s/servers/Public?sortOrder=%s&limit=100",
+                tostring(game.PlaceId),
+                sortOrder
+            )
+            local result = game:HttpGet(endpoint)
+            result = game:GetService("HttpService"):JSONDecode(result)
+            for _, server in ipairs(result.data) do
+                if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                    table.insert(servers, server)
+                end
+            end
+            if #servers > 0 then
+                table.sort(servers, function(a, b)
+                    if ascending then
+                        return a[sortOrder] < b[sortOrder]
+                    else
+                        return a[sortOrder] > b[sortOrder]
+                    end
+                end)
+                game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, servers[1].id)
+            else
+                print("No suitable servers found.")
             end
         end
-        if #servers > 0 then
-            table.sort(servers, function(a, b)
-                if ascending then
-                    return a[sortOrder] < b[sortOrder]
-                else
-                    return a[sortOrder] > b[sortOrder]
+        
+        serverSub:Btn("Join + Players", function()
+            joinServer("playing", false)
+        end)
+        
+        serverSub:Btn("Join - Players", function()
+            joinServer("playing", true)
+        end)
+        
+        serverSub:Btn("Join Best Ping", function()
+            joinServer("ping", true)
+        end)
+        
+        serverSub:TBtn("FPS Boost", function(isActive)
+            if isActive then
+                settings().Rendering.QualityLevel = 1
+                for _, v in pairs(game:GetDescendants()) do
+                    if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
+                        v.Enabled = false
+                    end
+                end
+                local lighting = game:GetService("Lighting")
+                lighting.GlobalShadows = false
+                lighting.FogEnd = 9e9
+                lighting.Brightness = 2
+                for i, v in pairs(lighting:GetDescendants()) do
+                    if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
+                        v.Enabled = false
+                    end
+                end
+            else
+                -- Restore default settings
+                settings().Rendering.QualityLevel = 7
+                for _, v in pairs(game:GetDescendants()) do
+                    if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
+                        v.Enabled = true
+                    end
+                end
+                local lighting = game:GetService("Lighting")
+                lighting.GlobalShadows = true
+                lighting.FogEnd = 100000
+                lighting.Brightness = 1
+                for i, v in pairs(lighting:GetDescendants()) do
+                    if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
+                        v.Enabled = true
+                    end
+                end
+            end
+        end)
+        
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            serverSub:Track("Speed", player.Character.Humanoid.WalkSpeed, player.Character.Humanoid.WalkSpeed, 100, 1, function(value)
+                local player = game.Players.LocalPlayer
+                if player.Character and player.Character:FindFirstChild("Humanoid") then
+                    player.Character.Humanoid.WalkSpeed = value
                 end
             end)
-            game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, servers[1].id)
-        else
-            print("No suitable servers found.")
         end
-    end
-    
-    serverSub:Btn("Join + Players", function()
-        joinServer("playing", false)
-    end)
-    
-    serverSub:Btn("Join - Players", function()
-        joinServer("playing", true)
-    end)
-    
-    serverSub:Btn("Join Best Ping", function()
-        joinServer("ping", true)
-    end)
-    
-    serverSub:Btn("+ FPS", function()
-        settings().Rendering.QualityLevel = 1
-                    for _, v in pairs(game:GetDescendants()) do
-            if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
-                v.Enabled = false
-            end
-                    end
-                    local lighting = game:GetService("Lighting")
-        lighting.GlobalShadows = false
-        lighting.FogEnd = 9e9
-        lighting.Brightness = 2
-        settings().Rendering.QualityLevel = 1
-        for i, v in pairs(lighting:GetDescendants()) do
-            if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
-                v.Enabled = false
-            end
-                    end
-                    
-    end)
-    
-            local player = game.Players.LocalPlayer
-    if player.Character and player.Character:FindFirstChild("Humanoid") then
         
-    
-    serverSub:Track("Speed", player.Character.Humanoid.WalkSpeed, player.Character.Humanoid.WalkSpeed, 100, 1, function(value)
-    local player = game.Players.LocalPlayer
-    if player.Character and player.Character:FindFirstChild("Humanoid") then
-        player.Character.Humanoid.WalkSpeed = value
-    end
-end)
-            end
-            serverSub:Btn("Auto Claim UGC", function()
-(loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Auto%20Buyer(Fast%20Claim)")
+        serverSub:Btn("Auto Claim UGC", function()
+            (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Auto%20Buyer(Fast%20Claim)")
+        end)
+        
+        serverSub:Btn("Join Group", function()
+            (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Join%20Group")
+        end)
+        
+        serverSub:Btn("Follow or unFollow", function()
+            (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Follow%20or%20UnFollow%20Users")
+        end)
+        
+        serverSub:Btn("Active Fake Gamepass", function()
+            (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Fake%20Parchuses%20Gamepass")
+        end)
+        
+        serverSub:Btn("Bypass Premium (Free)", function()
+            (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Bypass%20Premiun")
+        end)
+        
 
-                end)
-            serverSub:Btn("Join Group", function()
-(loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Join%20Group")
-
-                end)
-            serverSub:Btn("Follow or unFollow", function()
-(loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Follow%20or%20UnFollow%20Users")
-
-                end)
-            serverSub:Btn("Active Fake Gamepass", function()
-(loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Fake%20Parchuses%20Gamepass")
-
-                end)
-            serverSub:Btn("Bypass Premium (Free)", function()
-(loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Bypass%20Premiun")
-
-                end)
     spawn(function()
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
