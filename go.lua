@@ -276,21 +276,21 @@ game.Players.LocalPlayer:kick("Rejoin")
         end
     end)
     
-local spd = 16
 
-local player = game.Players.LocalPlayer
-    if player.Character and player.Character:FindFirstChild("Humanoid") then
-        spd = player.Character.Humanoid.WalkSpeed
-    end
-    
+
     serverSub:Txt("Client")
+            local player = game.Players.LocalPlayer
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        
     
-    serverSub:Track("Speed", spd, spd, 100, 1, function(value)
+    
+    serverSub:Track("Speed", player.Character.Humanoid.WalkSpeed, player.Character.Humanoid.WalkSpeed, 100, 1, function(value)
     local player = game.Players.LocalPlayer
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         player.Character.Humanoid.WalkSpeed = value
     end
 end)
+            end
     spawn(function()
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
