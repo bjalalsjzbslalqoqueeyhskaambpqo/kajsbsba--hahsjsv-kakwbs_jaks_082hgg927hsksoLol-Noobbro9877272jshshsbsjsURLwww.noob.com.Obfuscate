@@ -220,6 +220,8 @@ function MiniUI:new()
     spawn(function()
         wait(0.3)
         local serverSub = ui:Sub("Options Universal")
+serverSub:Txt("Auto Reconect: ON')
+serverSub:Txt("Anti-AFK: ON')
         
         serverSub:Btn("Rejoin", function()
             game.Players.LocalPlayer:kick("Rejoin")
@@ -284,8 +286,7 @@ function MiniUI:new()
                     end
                 end
             else
-                -- Restore default settings
-                settings().Rendering.QualityLevel = 7
+                settings().Rendering.QualityLevel = 4
                 for _, v in pairs(game:GetDescendants()) do
                     if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
                         v.Enabled = true
@@ -332,6 +333,29 @@ function MiniUI:new()
         serverSub:Btn("Bypass Premium (Free)", function()
             (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Bypass%20Premiun")
         end)
+pcall(funtion()
+local NetworkClient = game:GetService("NetworkClient")
+    local Players = game:GetService("Players")
+    local TeleportService = game:GetService("TeleportService")
+
+    local PlaceId = game.GameId
+    local localPlayer = Players.LocalPlayer
+
+    NetworkClient.ChildRemoved:Connect(function(child)
+        local PlaceId = game.PlaceId
+        local JobId = game.JobId
+        local TeleportService = game:GetService("TeleportService")
+
+        if #game.Players:GetPlayers() <= 1 then
+            game.Players.LocalPlayer:Kick("\nRejoining...")
+            wait()
+
+                    TeleportService:Teleport(PlaceId, game.Players.LocalPlayer)
+        else
+            TeleportService:TeleportToPlaceInstance(PlaceId, JobId, game.Players.LocalPlayer)
+        end
+    end)
+end)
         
 
     spawn(function()
