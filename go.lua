@@ -304,7 +304,7 @@ serverSub:Txt("Anti-AFK: ON")
             end
         end)
         
-       
+        
         
         serverSub:Btn("Auto Claim UGC", function()
             (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Auto%20Buyer(Fast%20Claim)")
@@ -344,7 +344,7 @@ local NetworkClient = game:GetService("NetworkClient")
 
                     TeleportService:Teleport(PlaceId, game.Players.LocalPlayer)
         else
-            TeleportService:TeleportToPlaceInstance(PlaceId, game.Players.LocalPlayer)
+            TeleportService:TeleportToPlaceInstance(PlaceId, JobId, game.Players.LocalPlayer)
         end
     end)
 end)
