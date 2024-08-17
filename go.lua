@@ -178,15 +178,28 @@ gameName = cleanGameName(gameName)
 end
 
 function MiniUI:new()
-    local sg = game.Players.LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("MiniUIScreenGui")
-    if not sg or not sg.Enabled then
-        sg = c("ScreenGui", {Name = "MiniUIScreenGui", Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")})
+    local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+local sg = nil
+
+for _, gui in pairs(playerGui:GetChildren()) do
+    if gui:IsA("ScreenGui") and gui.Enabled then
+        sg = gui
+        break
     end
+end
+
+if not sg then
+    sg = Instance.new("ScreenGui")
+    sg.Name = "MiniUIScreenGui"
+    sg.Parent = playerGui
+end
+
     local ui = createUI(sg)
     
     local serverSub = ui:Sub("Options Default")
     
     serverSub:Btn("Rejoin", function()
+game.Players.LocalPlayer:kick("Rejoin")
         game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
     end)
     
@@ -218,11 +231,11 @@ function MiniUI:new()
         end
     end
     
-    serverSub:Btn("Join Most Players", function()
+    serverSub:Btn("Join + Players", function()
         joinServer("playing", false)
     end)
     
-    serverSub:Btn("Join Least Players", function()
+    serverSub:Btn("Join - Players", function()
         joinServer("playing", true)
     end)
     
@@ -257,20 +270,16 @@ function MiniUI:new()
         end
     end)
     
-serverSub:Track("View Distance", 1000, 100, 2000, 100, function(value)
-        settings().Rendering.EagerBulkExecution = true
-        settings().Rendering.ExportMergeByMaterial = true
-        settings().Rendering.MeshCacheSize = 256
-        settings().Rendering.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level04
-        settings().Rendering.ReloadAssets = true
-        if sethiddenproperty then
-            sethiddenproperty(workspace.Terrain, "MaxExtents", Vector3.new(value, value, value))
-        else
-            warn("sethiddenproperty function not available. Unable to adjust view distance.")
-        end
-    end)
+local spd = 16
+spawn(function()
+local player = game.Players.LocalPlayer
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        spd = player.Character.Humanoid.WalkSpeed
+    end
+
+end)
     serverSub:Txt("Client")
-    serverSub:Track("Speed", 16, 16, 100, 1, function(value)
+    serverSub:Track("Speed", spd, spd, 100, 1, function(value)
     local player = game.Players.LocalPlayer
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         player.Character.Humanoid.WalkSpeed = value
