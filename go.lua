@@ -347,7 +347,7 @@ local NetworkClient = game:GetService("NetworkClient")
         local TeleportService = game:GetService("TeleportService")
 
         if #game.Players:GetPlayers() <= 1 then
-            game.Players.LocalPlayer:Kick("\nRejoining...")
+            game.Players.LocalPlayer:Kick("\nAuto Reconect...")
             wait()
 
                     TeleportService:Teleport(PlaceId, game.Players.LocalPlayer)
