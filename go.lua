@@ -275,6 +275,76 @@ StarterGui:SetCore("SendNotification", {
         serverSub:Btn("Join Best Ping", function()
             joinServer("ping", true)
         end)
+            serverSub:Btn("Join Server only(Beta)", function()
+    local jb = game.JobId
+
+spawn(function()
+    local P = game:GetService("Players")
+    local TS = game:GetService("TeleportService")
+    local LP = P.LocalPlayer
+    local blocked = false
+
+    getgenv()._s = clonefunction(setthreadidentity)
+
+    function _p(u,d)
+        pcall(function()
+            
+                task.spawn(function()
+                    pcall(function()
+                        _s(7)
+                        game:GetService("HttpRbxApiService"):PostAsyncFullUrl(u,d)
+
+            end)
+end)
+        end)
+    end
+
+    function block(i)
+        local u = "https://apis.roblox.com/user-blocking-api/v1/users/"..i.."/block-user"
+        local d = game:GetService("HttpService"):JSONEncode({})
+        if type(_p) == "function" then
+            return pcall(function() return _p(u,d) end)
+        elseif type(game.HttpService.RequestInternal) == "function" then
+            return pcall(function()
+                return game.HttpService:RequestInternal({
+                    Url = u,
+                    Method = "POST",
+                    Headers = {["Content-Type"] = "application/json"},
+                    Body = d
+                })
+            end)
+        end
+    end
+
+    function blockFirstPlayer()
+        for _, player in ipairs(P:GetPlayers()) do
+            if player ~= LP then
+                local s, r = block(player.UserId)
+                blocked = true
+                break
+            end
+        end
+    end
+
+    function rejoinSameServer()
+wait(3)
+        local placeId = game.PlaceId
+        TS:TeleportToPlaceInstance(placeId, jb, LP)
+    end
+
+    function kickAndRejoin()
+        LP:Kick("Maker new server for u... Wait")
+        rejoinSameServer()
+    end
+
+    blockFirstPlayer()
+    
+    if blocked then
+        kickAndRejoin()
+    end
+end)
+
+end)
         
         serverSub:TBtn("FPS Boost", function(isActive)
             if isActive then
