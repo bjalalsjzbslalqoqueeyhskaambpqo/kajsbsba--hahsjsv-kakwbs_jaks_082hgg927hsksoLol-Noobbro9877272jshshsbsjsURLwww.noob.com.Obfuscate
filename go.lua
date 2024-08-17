@@ -20,42 +20,66 @@ end
 local function createUI(parent, isSubMenu)
     local ui = {}
     local frame = c("Frame", {
-        Size = isSubMenu and UDim2.new(0, 150, 0, 0) or UDim2.new(0, 200, 0, 30),
+        Size = UDim2.new(0, 200, 0, 30),
         Position = isSubMenu and UDim2.new(0, 205, 0, 0) or UDim2.new(0.5, -100, 0, 20),
         Parent = parent,
         Visible = not isSubMenu
     })
     s(frame, isSubMenu and Color3.fromRGB(25, 25, 25) or nil)
     
-    if not isSubMenu then
-        frame.Active = true
-        frame.Draggable = true
-        local title = c("TextLabel", {Size = UDim2.new(1, -30, 1, 0), Text = "Mini UI", Parent = frame})
-        s(title)
-        local minBtn = c("TextButton", {Size = UDim2.new(0, 30, 1, 0), Position = UDim2.new(1, -30, 0, 0), Text = "-", Parent = frame})
-        s(minBtn)
-        minBtn.MouseButton1Click:Connect(function()
-            frame.Size = frame.Size == UDim2.new(0, 200, 0, 30) and UDim2.new(0, 200, 0, frame.Size.Y.Offset) or UDim2.new(0, 200, 0, 30)
-            minBtn.Text = frame.Size == UDim2.new(0, 200, 0, 30) and "-" or "+"
-        end)
-    end
+    local title = c("TextLabel", {
+        Size = UDim2.new(1, -30, 0, 30),
+        Position = UDim2.new(0, 0, 0, 0),
+        Text = "Mini UI",
+        Parent = frame
+    })
+    s(title)
     
-    local content = c("Frame", {Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 0, 30), Parent = frame})
+    local minBtn = c("TextButton", {
+        Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(1, -30, 0, 0),
+        Text = "-",
+        Parent = frame
+    })
+    s(minBtn)
+    
+    local content = c("Frame", {
+        Size = UDim2.new(1, 0, 0, 0),
+        Position = UDim2.new(0, 0, 0, 30),
+        Parent = frame
+    })
     s(content, Color3.fromRGB(15, 15, 15))
-    local list = c("UIListLayout", {Parent = content, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 1)})
+    
+    local list = c("UIListLayout", {
+        Parent = content,
+        SortOrder = Enum.SortOrder.LayoutOrder,
+        Padding = UDim.new(0, 1)
+    })
     
     local function updateSize()
         content.Size = UDim2.new(1, 0, 0, list.AbsoluteContentSize.Y)
-        if isSubMenu then 
-            frame.Size = UDim2.new(0, 150, 0, list.AbsoluteContentSize.Y + 30)
-        else
-            frame.Size = UDim2.new(0, 200, 0, list.AbsoluteContentSize.Y + 30)
-        end
+        frame.Size = UDim2.new(0, 200, 0, 30 + list.AbsoluteContentSize.Y)
     end
     list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateSize)
     
+    minBtn.MouseButton1Click:Connect(function()
+        if content.Visible then
+            content.Visible = false
+            frame.Size = UDim2.new(0, 200, 0, 30)
+            minBtn.Text = "+"
+        else
+            content.Visible = true
+            updateSize()
+            minBtn.Text = "-"
+        end
+    end)
+    
     local function addElement(elemType, props)
-        local container = c("Frame", {Size = UDim2.new(1, 0, 0, props.CustomHeight or 30), BackgroundTransparency = 1, Parent = content})
+        local container = c("Frame", {
+            Size = UDim2.new(1, 0, 0, props.CustomHeight or 30),
+            BackgroundTransparency = 1,
+            Parent = content
+        })
         props.CustomHeight = nil
         local elem = c(elemType, props)
         elem.Size = UDim2.new(1, -10, 1, -2)
@@ -106,15 +130,23 @@ local function createUI(parent, isSubMenu)
         return container
     end
     
+    local activeSubMenu = nil
     function ui:Sub(text)
         local subBtn = self:Btn(text .. " >")
         local subFrame = createUI(parent, true)
         subFrame.frame.Visible = false
         subBtn.MouseButton1Click:Connect(function()
+            if activeSubMenu and activeSubMenu ~= subFrame then
+                activeSubMenu.frame.Visible = false
+                activeSubMenu.button.Text = activeSubMenu.button.Text:gsub(" <$", " >")
+            end
             subFrame.frame.Visible = not subFrame.frame.Visible
             subBtn.Text = subFrame.frame.Visible and text .. " <" or text .. " >"
             if subFrame.frame.Visible then
                 subFrame.frame.Position = UDim2.new(0, frame.AbsolutePosition.X + frame.AbsoluteSize.X + 5, 0, frame.AbsolutePosition.Y)
+                activeSubMenu = {frame = subFrame.frame, button = subBtn}
+            else
+                activeSubMenu = nil
             end
         end)
         frame:GetPropertyChangedSignal("Position"):Connect(function()
@@ -186,7 +218,7 @@ function MiniUI:new()
     -- Add default optimization options
     local optimizeSub = ui:Sub("Optimization")
     
-    optimizeSub:Btn("Reduce Graphics", function()
+    optimizeSub:Btn("Reduce G", function()
         settings().Rendering.QualityLevel = 1
     end)
     
@@ -198,7 +230,7 @@ function MiniUI:new()
         end
     end)
     
-    optimizeSub:Track("Render Distance", 1000, 100, 2000, 100, function(value)
+    optimizeSub:Track("Render", 1000, 100, 2000, 100, function(value)
         settings().Rendering.EagerBulkExecution = true
         settings().Rendering.ExportMergeByMaterial = true
         settings().Rendering.MeshCacheSize = 256
