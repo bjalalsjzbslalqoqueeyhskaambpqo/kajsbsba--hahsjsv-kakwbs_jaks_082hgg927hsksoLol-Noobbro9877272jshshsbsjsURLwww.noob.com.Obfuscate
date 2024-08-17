@@ -304,15 +304,7 @@ serverSub:Txt("Anti-AFK: ON")
             end
         end)
         
-        local player = game.Players.LocalPlayer
-        if player.Character and player.Character:FindFirstChild("Humanoid") then
-            serverSub:Track("Speed", player.Character.Humanoid.WalkSpeed, player.Character.Humanoid.WalkSpeed, 100, 1, function(value)
-                local player = game.Players.LocalPlayer
-                if player.Character and player.Character:FindFirstChild("Humanoid") then
-                    player.Character.Humanoid.WalkSpeed = value
-                end
-            end)
-        end
+       
         
         serverSub:Btn("Auto Claim UGC", function()
             (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Auto%20Buyer(Fast%20Claim)")
@@ -352,7 +344,7 @@ local NetworkClient = game:GetService("NetworkClient")
 
                     TeleportService:Teleport(PlaceId, game.Players.LocalPlayer)
         else
-            TeleportService:TeleportToPlaceInstance(PlaceId, JobId, game.Players.LocalPlayer)
+            TeleportService:TeleportToPlaceInstance(PlaceId, game.Players.LocalPlayer)
         end
     end)
 end)
