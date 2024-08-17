@@ -201,7 +201,7 @@ end
 
     local ui = createUI(sg)
     spawn(function()
-            wait(0.3))
+            wait(0.3)
     local serverSub = ui:Sub("Options Default")
     
     serverSub:Btn("Rejoin", function()
