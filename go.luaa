@@ -132,6 +132,7 @@ function MiniUI:new()
     end
     local ui = createUI(sg)
     
+    -- Add default server options
     local serverSub = ui:Sub("Server Options")
     
     serverSub:Btn("Rejoin", function()
@@ -178,6 +179,7 @@ function MiniUI:new()
         joinServer("ping", true)
     end)
     
+    -- Add default optimization options
     local optimizeSub = ui:Sub("Optimization")
     
     optimizeSub:Btn("Reduce Graphics", function()
@@ -192,13 +194,8 @@ function MiniUI:new()
         end
     end)
     
-    optimizeSub:Track("Render Distance", 1000, 100, 2000, 100, function(value)
-        settings().Rendering.EagerBulkExecution = true
-        settings().Rendering.ExportMergeByMaterial = true
-        settings().Rendering.MeshCacheSize = 256
-        settings().Rendering.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level04
-        settings().Rendering.ReloadAssets = true
-        settings().Rendering.RenderDistance = value
+    optimizeSub:Track("Graphics Quality", 5, 1, 10, 1, function(value)
+        settings().Rendering.QualityLevel = value
     end)
     
     return ui
