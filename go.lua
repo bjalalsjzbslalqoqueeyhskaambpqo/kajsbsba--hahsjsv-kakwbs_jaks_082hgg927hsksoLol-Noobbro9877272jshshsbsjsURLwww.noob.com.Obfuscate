@@ -291,6 +291,26 @@ game.Players.LocalPlayer:kick("Rejoin")
     end
 end)
             end
+            serverSub:Btn("Auto Claim UGC", function()
+(loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Auto%20Buyer(Fast%20Claim)")
+
+                end)
+            serverSub:Btn("Join Group", function()
+(loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Join%20Group")
+
+                end)
+            serverSub:Btn("Follow or unFollow", function()
+(loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Follow%20or%20UnFollow%20Users")
+
+                end)
+            serverSub:Btn("Active Fake Gamepass", function()
+(loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Fake%20Parchuses%20Gamepass")
+
+                end)
+            serverSub:Btn("Bypass Premium (Free)", function()
+(loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Bypass%20Premiun")
+
+                end)
     spawn(function()
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
