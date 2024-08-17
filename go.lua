@@ -147,10 +147,10 @@ gameName = cleanGameName(gameName)
         subBtn.MouseButton1Click:Connect(function()
             if activeSubMenu and activeSubMenu ~= subFrame then
                 activeSubMenu.frame.Visible = false
-                activeSubMenu.button.Text = activeSubMenu.button.Text:gsub(" <$", " >")
+                activeSubMenu.button.Text = activeSubMenu.button.Text:gsub(" >$", " >")
             end
             subFrame.frame.Visible = not subFrame.frame.Visible
-            subBtn.Text = subFrame.frame.Visible and text .. " <" or text .. " >"
+            subBtn.Text = subFrame.frame.Visible and text .. "  >" or text .. " >"
             if subFrame.frame.Visible then
                 subFrame.frame.Position = UDim2.new(0, frame.AbsolutePosition.X + frame.AbsoluteSize.X + 5, 0, frame.AbsolutePosition.Y)
                 activeSubMenu = {frame = subFrame.frame, button = subBtn}
@@ -271,13 +271,11 @@ game.Players.LocalPlayer:kick("Rejoin")
     end)
     
 local spd = 16
-spawn(function()
+
 local player = game.Players.LocalPlayer
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         spd = player.Character.Humanoid.WalkSpeed
     end
-
-end)
     serverSub:Txt("Client")
     serverSub:Track("Speed", spd, spd, 100, 1, function(value)
     local player = game.Players.LocalPlayer
