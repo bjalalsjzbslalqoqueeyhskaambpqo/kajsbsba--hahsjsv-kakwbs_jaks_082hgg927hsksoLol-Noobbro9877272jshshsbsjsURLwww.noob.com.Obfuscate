@@ -252,7 +252,13 @@ serverSub:Txt("Anti-AFK: ON")
                 end)
                 game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, servers[1].id)
             else
-                print("No suitable servers found.")
+                    local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "No + Server",
+    Text = "No suitable servers found",
+    Duration = 5,
+})
+
             end
         end
         
