@@ -17,7 +17,7 @@ local function s(i, bg)
     end
 end
 
-local function createUI(parent, isSubMenu)
+local function createUI(parent, isSubMenu, subMenuTitle)
     local ui = {}
     local frame = c("Frame", {
         Size = UDim2.new(0, 200, 0, 30),
@@ -28,11 +28,24 @@ local function createUI(parent, isSubMenu)
         Draggable = not isSubMenu
     })
     s(frame, isSubMenu and Color3.fromRGB(25, 25, 25) or nil)
+
+    local gameName = ""
+if gameName == "" then
+    gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+end
+
+local function cleanGameName(name)
+    name = name:gsub("%b[]", "")
+    name = name:match("^[^:]*")
+    return name:match("^%s*(.-)%s*$")
+end
+
+gameName = cleanGameName(gameName)
     
     local title = c("TextLabel", {
         Size = UDim2.new(1, -30, 0, 30),
         Position = UDim2.new(0, 0, 0, 0),
-        Text = "Mini UI",
+        Text = isSubMenu and subMenuTitle or gameName,
         Parent = frame
     })
     s(title)
@@ -129,7 +142,7 @@ local function createUI(parent, isSubMenu)
     local activeSubMenu = nil
     function ui:Sub(text)
         local subBtn = self:Btn(text .. " >")
-        local subFrame = createUI(parent, true)
+        local subFrame = createUI(parent, true, text)
         subFrame.frame.Visible = false
         subBtn.MouseButton1Click:Connect(function()
             if activeSubMenu and activeSubMenu ~= subFrame then
@@ -233,16 +246,29 @@ function MiniUI:new()
         end
     end)
     
-    optimizeSub:Track("Render Distance", 1000, 100, 2000, 100, function(value)
+    optimizeSub:Btn("Optimize Lighting", function()
+        local lighting = game:GetService("Lighting")
+        lighting.GlobalShadows = false
+        lighting.FogEnd = 9e9
+        lighting.Brightness = 2
+        settings().Rendering.QualityLevel = 1
+        for i, v in pairs(lighting:GetDescendants()) do
+            if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
+                v.Enabled = false
+            end
+        end
+    end)
+    
+    optimizeSub:Track("View Distance", 1000, 100, 2000, 100, function(value)
         settings().Rendering.EagerBulkExecution = true
         settings().Rendering.ExportMergeByMaterial = true
         settings().Rendering.MeshCacheSize = 256
         settings().Rendering.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level04
         settings().Rendering.ReloadAssets = true
-        if settings().Rendering:FindFirstChild("RenderDistance") then
-            settings().Rendering.RenderDistance = value
+        if sethiddenproperty then
+            sethiddenproperty(workspace.Terrain, "MaxExtents", Vector3.new(value, value, value))
         else
-            warn("RenderDistance setting not found. This might not be supported in the current Roblox version.")
+            warn("sethiddenproperty function not available. Unable to adjust view distance.")
         end
     end)
     
