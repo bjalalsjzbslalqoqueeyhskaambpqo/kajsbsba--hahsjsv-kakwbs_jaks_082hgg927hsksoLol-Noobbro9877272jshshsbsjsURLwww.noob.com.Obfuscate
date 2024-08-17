@@ -248,23 +248,15 @@ game.Players.LocalPlayer:kick("Rejoin")
     serverSub:Btn("Join Best Ping", function()
         joinServer("ping", true)
     end)
-
-    serverSub:Txt("Optimization")
     
-    serverSub:Btn("Reduce Graphics", function()
+    serverSub:Btn("+ FPS", function()
         settings().Rendering.QualityLevel = 1
-    end)
-    
- serverSub:Btn("Disable Particles", function()
-        for _, v in pairs(game:GetDescendants()) do
+                    for _, v in pairs(game:GetDescendants()) do
             if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
                 v.Enabled = false
             end
-        end
-    end)
-    
-    serverSub:Btn("Optimize Lighting", function()
-        local lighting = game:GetService("Lighting")
+                    end
+                    local lighting = game:GetService("Lighting")
         lighting.GlobalShadows = false
         lighting.FogEnd = 9e9
         lighting.Brightness = 2
@@ -273,16 +265,13 @@ game.Players.LocalPlayer:kick("Rejoin")
             if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
                 v.Enabled = false
             end
-        end
+                    end
+                    
     end)
     
-
-
-    serverSub:Txt("Client")
             local player = game.Players.LocalPlayer
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         
-    
     
     serverSub:Track("Speed", player.Character.Humanoid.WalkSpeed, player.Character.Humanoid.WalkSpeed, 100, 1, function(value)
     local player = game.Players.LocalPlayer
