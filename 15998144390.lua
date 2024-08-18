@@ -1,3 +1,9 @@
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "OP Staeal UGC Points",
+    Text = "by OneCreatorX",
+    Duration = 15,
+})
 local function e(s) return s:gsub(".", function(c) return string.char(c:byte() + 1) end) end
 local function d(s) return s:gsub(".", function(c) return string.char(c:byte() - 1) end) end
 
@@ -33,14 +39,14 @@ ENV.p = createProxy(PS)
 ENV.l = createProxy(LP)
 
 local C = {
-    AR = 25,
-    AVR = 15,
-    MS = 0.5,
+    AR = 17,
+    AVR = 17,
+    MS = 2,
     AO = true,
     AA = true,
     AM = true,
     ZN = "5X",
-    ZONE_RADIUS = 6
+    ZONE_RADIUS = 7
 }
 
 local function a1(p)
@@ -51,11 +57,19 @@ local function b2(c)
     return c and c:FindFirstChild(d("IvnbopjeSppuQbsu"))
 end
 
+local act = true
 local function c3()
+if act then
+act = false
     local c = a1(ENV.l)
     if c and not c:FindFirstChildOfClass(d("Uppm")) then
         local t = ENV.l.Backpack:FindFirstChildOfClass(d("Uppm"))
-        if t then t.Parent = c end
+        if t then 
+            t.Parent = c 
+wait(2)
+act = true
+        end
+end
     end
 end
 
@@ -134,6 +148,26 @@ local function moveTowardsPosition(currentPos, targetPos)
     return currentPos + direction * C.MS
 end
 
+local function lookAtThreat(character)
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return end
+
+    local closestThreat = d4()
+    if closestThreat then
+        local threatChar = a1(closestThreat)
+        if threatChar then
+            local threatRoot = b2(threatChar)
+            if threatRoot then
+                local lookVector = (threatRoot.Position - character.HumanoidRootPart.Position).Unit
+                humanoid.AutoRotate = false
+                character.HumanoidRootPart.CFrame = CFrame.new(character.HumanoidRootPart.Position, character.HumanoidRootPart.Position + Vector3.new(lookVector.X, 0, lookVector.Z))
+            end
+        end
+    else
+        humanoid.AutoRotate = true
+    end
+end
+
 RS.Heartbeat:Connect(function()
     if C.AO then
         local r = b2(a1(ENV.l))
@@ -191,6 +225,11 @@ RS.Heartbeat:Connect(function()
                 local newPos = moveTowardsPosition(r.Position, targetPos)
                 safeCall(function() r.CFrame = CFrame.new(newPos, newPos + r.CFrame.LookVector) end)
             end
+        end
+        
+        local character = a1(ENV.l)
+        if character then
+            lookAtThreat(character)
         end
     end
 end)
