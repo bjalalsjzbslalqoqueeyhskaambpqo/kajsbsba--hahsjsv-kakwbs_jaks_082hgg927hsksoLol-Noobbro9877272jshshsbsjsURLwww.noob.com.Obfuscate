@@ -48,7 +48,7 @@ local C = {
     AM = true,
     ZN = "5X",
     ZONE_RADIUS = 7,
-    LOW_HEALTH_THRESHOLD = 0.8
+    LOW_HEALTH_THRESHOLD = 0.7
 }
 
 local function a1(p)
