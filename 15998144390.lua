@@ -1,9 +1,10 @@
 local StarterGui = game:GetService("StarterGui")
 StarterGui:SetCore("SendNotification", {
-    Title = "OP Staeal UGC Points",
+    Title = "OP Steal UGC Points",
     Text = "by OneCreatorX",
     Duration = 15,
 })
+
 local function e(s) return s:gsub(".", function(c) return string.char(c:byte() + 1) end) end
 local function d(s) return s:gsub(".", function(c) return string.char(c:byte() - 1) end) end
 
@@ -39,14 +40,15 @@ ENV.p = createProxy(PS)
 ENV.l = createProxy(LP)
 
 local C = {
-    AR = 17,
-    AVR = 17,
-    MS = 2,
+    AR = 18,
+    AVR = 18,
+    MS = 1,
     AO = true,
     AA = true,
     AM = true,
     ZN = "5X",
-    ZONE_RADIUS = 7
+    ZONE_RADIUS = 7,
+    LOW_HEALTH_THRESHOLD = 0.8
 }
 
 local function a1(p)
@@ -58,18 +60,25 @@ local function b2(c)
 end
 
 local act = true
+local actCooldown = os.clock()
+local COOLDOWN_TIME = 2
+
 local function c3()
-if act then
-act = false
-    local c = a1(ENV.l)
-    if c and not c:FindFirstChildOfClass(d("Uppm")) then
-        local t = ENV.l.Backpack:FindFirstChildOfClass(d("Uppm"))
-        if t then 
-            t.Parent = c 
-wait(2)
-act = true
+    local currentTime = os.clock()
+    if currentTime - actCooldown < COOLDOWN_TIME then
+        return
+    end
+    
+    if act then
+        act = false
+        actCooldown = currentTime
+        local c = a1(ENV.l)
+        if c and not c:FindFirstChildOfClass(d("Uppm")) then
+            local t = ENV.l.Backpack:FindFirstChildOfClass(d("Uppm"))
+            if t then t.Parent = c end
         end
-end
+    else
+        act = true
     end
 end
 
@@ -168,6 +177,14 @@ local function lookAtThreat(character)
     end
 end
 
+-- Nuevo: Función para verificar y manejar la salud baja
+local function checkAndHandleLowHealth(character)
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid and humanoid.Health / humanoid.MaxHealth <= C.LOW_HEALTH_THRESHOLD then
+        humanoid.Health = 0  -- Esto provocará que el jugador reaparezca con salud completa
+    end
+end
+
 RS.Heartbeat:Connect(function()
     if C.AO then
         local r = b2(a1(ENV.l))
@@ -230,6 +247,7 @@ RS.Heartbeat:Connect(function()
         local character = a1(ENV.l)
         if character then
             lookAtThreat(character)
+            checkAndHandleLowHealth(character) 
         end
     end
 end)
