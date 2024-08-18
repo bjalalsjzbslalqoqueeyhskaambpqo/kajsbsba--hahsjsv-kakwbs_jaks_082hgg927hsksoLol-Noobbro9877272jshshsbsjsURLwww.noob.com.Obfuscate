@@ -86,8 +86,8 @@ local C = {
     AA = true,
     AM = true,
     ZN = "5X",
-    ZONE_RADIUS = 7,
-    LOW_HEALTH_THRESHOLD = 0.7
+    ZONE_RADIUS = 6.7,
+    LOW_HEALTH_THRESHOLD = 0.3
 }
 
 local function a1(p)
@@ -100,7 +100,7 @@ end
 
 local act = true
 local actCooldown = os.clock()
-local COOLDOWN_TIME = 2
+local COOLDOWN_TIME = 1
 
 local function c3()
     local currentTime = os.clock()
