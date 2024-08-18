@@ -15,6 +15,45 @@ local function getService(s)
     return g:GetService(d(s))
 end
 
+spawn(function()
+local Players = game:GetService("Players")
+local VirtualUser = game:GetService("VirtualUser")
+local LocalPlayer = Players.LocalPlayer
+
+local function testVirtualUserMethods()
+    local success, errorMessage
+    
+    success, errorMessage = pcall(function()
+        VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    end)
+    
+    
+    success, errorMessage = pcall(function()
+        VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    end)
+    
+    
+    success, errorMessage = pcall(function()
+        VirtualUser:MoveMouse(Vector2.new(10, 10))
+    end)
+    
+    
+    success, errorMessage = pcall(function()
+        VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    end)
+
+    
+    success, errorMessage = pcall(function()
+        VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    end)
+    
+end
+
+LocalPlayer.Idled:Connect(function()
+    testVirtualUserMethods()
+end)
+end)
+
 local RS = getService("SvoTfswjdf")
 local WS = getService("Xpsltqbdf")
 local PS = getService("Qmbzfst")
