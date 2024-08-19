@@ -1,9 +1,4 @@
-local StarterGui = game:GetService("StarterGui")
-StarterGui:SetCore("SendNotification", {
-    Title = "OP Steal UGC Points",
-    Text = "by OneCreatorX",
-    Duration = 15,
-})
+
 
 local function e(s) return s:gsub(".", function(c) return string.char(c:byte() + 1) end) end
 local function d(s) return s:gsub(".", function(c) return string.char(c:byte() - 1) end) end
@@ -15,44 +10,6 @@ local function getService(s)
     return g:GetService(d(s))
 end
 
-spawn(function()
-local Players = game:GetService("Players")
-local VirtualUser = game:GetService("VirtualUser")
-local LocalPlayer = Players.LocalPlayer
-
-local function testVirtualUserMethods()
-    local success, errorMessage
-    
-    success, errorMessage = pcall(function()
-        VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-    end)
-    
-    
-    success, errorMessage = pcall(function()
-        VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-    end)
-    
-    
-    success, errorMessage = pcall(function()
-        VirtualUser:MoveMouse(Vector2.new(10, 10))
-    end)
-    
-    
-    success, errorMessage = pcall(function()
-        VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-    end)
-
-    
-    success, errorMessage = pcall(function()
-        VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-    end)
-    
-end
-
-LocalPlayer.Idled:Connect(function()
-    testVirtualUserMethods()
-end)
-end)
 
 local RS = getService("SvoTfswjdf")
 local WS = getService("Xpsltqbdf")
