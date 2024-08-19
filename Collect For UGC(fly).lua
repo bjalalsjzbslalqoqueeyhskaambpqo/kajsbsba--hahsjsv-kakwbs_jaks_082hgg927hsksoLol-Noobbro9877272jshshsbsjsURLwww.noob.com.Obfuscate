@@ -193,7 +193,7 @@ local Player = Players.LocalPlayer
 local WS = game:GetService("Workspace")
 
 local b = true
-local speed = 20
+local speed = 50
 
 local function saveSpeed(speed)
     if not isfolder("SpeedData") then makefolder("SpeedData") end
@@ -300,7 +300,7 @@ Sec:CreateButton("Store UGC", function()
     game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible = not game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible
 end)
 
-Sec:CreateTextbox("Speed Fly: 20-25", function(value)
+Sec:CreateTextbox("Speed Fly: 20-60", function(value)
     speed = tonumber(value) or speed
     saveSpeed(speed)
     game:GetService("StarterGui"):SetCore("SendNotification", {
