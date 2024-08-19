@@ -21,7 +21,7 @@ end
 
 ENV.g, ENV.w, ENV.p, ENV.l = cP(g), cP(WS), cP(PS), cP(LP)
 
-C = {AO=true, AA=true, AM=true, BO=7, LHT=0.3, SHT=0.3, AHT=0.5}
+C = {AO=true, AA=true, AM=true, BO=6, LHT=0.3, SHT=0.4}
 
 safe = nil
 
@@ -81,7 +81,7 @@ ENV.firetouchinterest = function(...) return sC(oFTI, ...) end
 function mTP(t)
     lR, tR = fR(fC(ENV.l)), fR(fC(t))
     if lR and tR then
-        tP = tR.Position - Vector3.new(0, C.BO, 0) + Vector3.new(3, 0, -4) 
+        tP = tR.Position - Vector3.new(2, C.BO, 2)  -- Move behind and below the target
         sC(function() lR.CFrame = CFrame.new(tP) end)
     end
 end
@@ -118,7 +118,8 @@ function aTP(t, w)
             if p:IsA(d("CbtfQbsu")) then
                 sC(function()
                     if w.Handle:FindFirstChildOfClass(d("UpvdiUsbotnjuufs")) then
-                        w:Activate()
+                        ENV.firetouchinterest(w.Handle, p, 0)
+                        ENV.firetouchinterest(w.Handle, p, 1)
                     end
                 end)
             end
@@ -128,6 +129,7 @@ end
 
 attackPhase = 0
 attackCooldown = 0
+safetyTimer = 0
 
 RS.Heartbeat:Connect(function()
     if C.AO then
@@ -144,9 +146,25 @@ RS.Heartbeat:Connect(function()
     pH = gPH()
     tP = fTP()
 
-    if pH <= C.LHT or (not tP and pH < C.SHT) then
+    if pH <= C.LHT then
+        if safetyTimer == 0 then
+            safetyTimer = os.clock()
+        end
+        
         mTS()
-    elseif C.AM and tP then
+        
+        if os.clock() - safetyTimer >= 3 then
+            local character = fC(ENV.l)
+            if character then
+                local humanoid = character:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    humanoid.Health = 0
+                end
+            end
+            safetyTimer = 0
+        end
+    elseif C.AM and tP and pH > C.SHT then
+        safetyTimer = 0
         local targetChar = fC(tP)
         local localChar = fC(ENV.l)
         
@@ -156,15 +174,15 @@ RS.Heartbeat:Connect(function()
             
             if targetRoot and localRoot then
                 local targetPos = targetRoot.Position
-                local offset = Vector3.new(0, C.BO, 0)
+                local offset = Vector3.new(2, C.BO, 2)
                 local newPos
                 
-                if os.clock() - attackCooldown > 0 then
+                if os.clock() - attackCooldown > 0.01 then
                     if attackPhase == 0 then
-                        newPos = Vector3.new(targetPos.X, targetPos.Y - offset.Y, targetPos.Z)
+                        newPos = targetPos - offset
                         attackPhase = 1
                     else
-                        newPos = Vector3.new(targetPos.X, targetPos.Y + 1, targetPos.Z)
+                        newPos = targetPos + Vector3.new(0, 1, 0) - offset
                         attackPhase = 0
                     end
                     attackCooldown = os.clock()
@@ -186,9 +204,8 @@ RS.Heartbeat:Connect(function()
                 aTP(tP, t)
             end
         end
-    elseif pH >= C.AHT and tP then
-        mTP(tP)
     else
+        safetyTimer = 0
         mTS()
     end
 end)
