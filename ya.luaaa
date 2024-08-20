@@ -209,5 +209,44 @@ RSUI.sendButton = sBtn
 RSUI.loopButton = lBtn
 RSUI.clearButton = cBtn
 RSUI.copyButton = cpBtn
+sBtn.MouseButton1Click:Connect(function()
+    if sel then send(sel, {RSUI.argsTextBox.Text}) end
+end)
+
+lBtn.MouseButton1Click:Connect(function()
+    if sel then
+        if loop == sel then
+            loop = nil
+            lBtn.Text = "Start Loop"
+        else
+            send(sel, {RSUI.argsTextBox.Text}, true)
+            lBtn.Text = "Stop Loop"
+        end
+    end
+end)
+
+cBtn.MouseButton1Click:Connect(function()
+    sC = {}
+    rC = {}
+    RSUI.clearButtons()
+    sel, loop = nil, nil
+    RSUI.updateDetails("Hierarchy here...", "RemoteSpy v1 by: OneCreatorX")
+    lBtn.Text = "Start Loop"
+end)
+
+cpBtn.MouseButton1Click:Connect(function()
+    if sel then
+        local argsStr = ""
+        for i, v in ipairs(sel.a) do
+            argsStr = argsStr .. '"' .. tostring(v) .. '"'
+            if i < #sel.a then
+                argsStr = argsStr .. ", "
+            end
+        end
+        local fullStr = RSUI.buildHierarchy(sel.r) .. ":" .. sel.m .. "(" .. argsStr .. ")"
+        setclipboard(fullStr)
+    end
+end)
+
 
 return RSUI
