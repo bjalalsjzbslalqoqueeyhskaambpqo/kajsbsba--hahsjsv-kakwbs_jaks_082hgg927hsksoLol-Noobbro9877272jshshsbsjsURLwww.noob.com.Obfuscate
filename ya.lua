@@ -1,15 +1,24 @@
 local RSUI = {}
 
+local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+local screenGui = playerGui:FindFirstChild("ScreenGui")
+
+if not screenGui then
+    screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "ScreenGui"
+    screenGui.Parent = playerGui
+end
+
 RSUI.sentFrame = Instance.new("Frame")
 RSUI.sentFrame.Size = UDim2.new(0, 300, 0, 200)
 RSUI.sentFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
-RSUI.sentFrame.Parent = game.Players.LocalPlayer.PlayerGui:WaitForChild("ScreenGui")
+RSUI.sentFrame.Parent = screenGui
 RSUI.sentFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 
 RSUI.receivedFrame = Instance.new("Frame")
 RSUI.receivedFrame.Size = UDim2.new(0, 300, 0, 200)
 RSUI.receivedFrame.Position = UDim2.new(0.5, -150, 0.5, 120)
-RSUI.receivedFrame.Parent = game.Players.LocalPlayer.PlayerGui:WaitForChild("ScreenGui")
+RSUI.receivedFrame.Parent = screenGui
 RSUI.receivedFrame.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
 
 RSUI.argsTextBox = Instance.new("TextBox")
