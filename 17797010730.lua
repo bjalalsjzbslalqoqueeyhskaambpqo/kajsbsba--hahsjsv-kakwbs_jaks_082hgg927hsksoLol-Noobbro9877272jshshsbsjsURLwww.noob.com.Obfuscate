@@ -2,6 +2,7 @@ local MiniUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalal
 
 local ui = MiniUI:new()
 local plr = game.Players.LocalPlayer
+local currentSeat = nil
 
 local function tp(pos)
     plr.Character:MoveTo(pos)
@@ -43,6 +44,34 @@ local function fireNearProx(radius)
     end
 end
 
+local function findAvailableSeat()
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("Seat") and not v:FindFirstChild("SeatWeld") and not v:FindFirstChild("OccupiedFile") then
+            return v
+        end
+    end
+    return nil
+end
+
+local function moveSeatToPlayer()
+    local seat = findAvailableSeat()
+    if seat then
+        currentSeat = seat
+        local playerPosition = plr.Character.HumanoidRootPart.Position
+        seat.CFrame = CFrame.new(playerPosition)
+        return true
+    end
+    return false
+end
+
+local function moveSeatAway()
+    if currentSeat then
+        local randomPosition = Vector3.new(math.random(-100, 100), 5, math.random(-100, 100))
+        currentSeat.CFrame = CFrame.new(randomPosition)
+        currentSeat = nil
+    end
+end
+
 local function delivery()
     autoD = not autoD
     autoTxt.Text = "Auto Delivery: " .. tostring(autoD)
@@ -55,18 +84,23 @@ local function delivery()
         
         local curE, maxE = getE()
         if curE < 10 then
-            jump()
-            wait(2)
-            tp(Vector3.new(44, 5, 140))
-            repeat
-                wait(1)
-                curE, maxE = getE()
-            until curE > 30
-            jump()
-            wait(0.5)
-            tp(Vector3.new(47, 5, 141))
-            wait(0.5)
-            tp(workspace.Delivery.TakeOrderZone.Part.Position)
+            if moveSeatToPlayer() then
+                wait(2)
+                repeat
+                    wait(1)
+                    curE, maxE = getE()
+                until curE >= maxE
+                jump()
+                wait(0.5)
+                moveSeatAway()
+                wait(0.5)
+                tp(workspace.Delivery.TakeOrderZone.Part.Position)
+                wait(2)
+            else
+                print("No se pudo encontrar un asiento disponible")
+                wait(5)
+                continue
+            end
         end
         
         local pModel = workspace:FindFirstChild(tostring(plr.UserId))
@@ -96,9 +130,9 @@ local function delivery()
                 wait(1)
                 jump()
                 wait(2)
-                plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame
+               plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame * CFrame.new(0, 2, 0) jump()
                 fireNearProx(15)
-                wait(1)
+                wait(3)
                 fireproximityprompt(pModel.Chassis.EnterPrompt)
                 task.wait(1)
             end
@@ -111,7 +145,7 @@ ui:TBtn("Auto Delivery", delivery)
 
 task.wait(0.7)
 local infoSub = ui:Sub("Info Script")
-infoSub:Txt("Version: 0.6")
+infoSub:Txt("Version: 0.8")
 infoSub:Txt("Create: 29/08/24")
 infoSub:Txt("Update: 29/08/24")
 infoSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
