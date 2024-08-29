@@ -97,10 +97,10 @@ local function delivery()
                 moveSeatAway()
                 wait(1)
                 tp(workspace.Delivery.TakeOrderZone.Part.Position)
-                wait(3)
+                wait(1)
             else
                 print("No se pudo encontrar un asiento disponible")
-                wait(5)
+                wait(1)
                 continue
             end
         end
@@ -108,7 +108,7 @@ local function delivery()
         local pModel = workspace:FindFirstChild(tostring(plr.UserId))
         if not pModel then
             plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame * CFrame.new(0, 2, 0)
-            wait(1)
+            wait(2)
             plr.Character:MoveTo(workspace.Delivery.Vehicles:GetChildren()[1].PrimaryPart.Position)
             wait(1)
             fireproximityprompt(workspace.Delivery.Vehicles:GetChildren()[1].PrimaryPart.EnterPrompt)
@@ -127,17 +127,18 @@ local function delivery()
             end
             if not found then
                 local takeZone = workspace.Delivery.TakeOrderZone.Part.CFrame * CFrame.new(0, 2, 0)
-                local offset = takeZone.Position + Vector3.new(5, 0, 5)
+                local offset = takeZone.Position + Vector3.new(10, 0, 5)
                 pModel:SetPrimaryPartCFrame(CFrame.new(offset))
                 wait(1)
                 jump()
                 wait(2)
                plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame * CFrame.new(0, 2, 0)
+                wait(1)
                 jump()
                 fireNearProx(15)
-                wait(4)
+                wait(2)
                 fireproximityprompt(pModel.Chassis.EnterPrompt)
-                task.wait(1)
+                task.wait(2)
             end
         end
         task.wait(1)
