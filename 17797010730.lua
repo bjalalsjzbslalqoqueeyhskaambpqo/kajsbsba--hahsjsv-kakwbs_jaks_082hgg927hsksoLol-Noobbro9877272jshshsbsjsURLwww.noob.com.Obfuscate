@@ -11,8 +11,6 @@ local function jump()
     plr.Character.Humanoid.Jump = true
 end
 
-ui:Btn("Rest", function() tp(Vector3.new(44, 5, 141)) end)
-
 local autoD = false
 local autoTxt = ui:Txt("Auto Delivery: false")
 
@@ -57,7 +55,9 @@ local function delivery()
         if curE < 10 then
             jump()
             wait(2)
-            tp(Vector3.new(44, 5, 141))
+            tp(Vector3.new(44, 3, 135))
+            wait(0.5)
+            game.Players.LocalPlayer.Character.Humanoid:MoveTo(Vector3.new(43, 3, 148))
             repeat
                 wait(1)
                 curE, maxE = getE()
