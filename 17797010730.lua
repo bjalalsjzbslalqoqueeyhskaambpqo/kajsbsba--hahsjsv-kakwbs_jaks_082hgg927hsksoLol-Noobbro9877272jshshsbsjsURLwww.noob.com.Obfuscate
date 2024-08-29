@@ -40,7 +40,7 @@ local function Delivery()
                 wait(1)
                 game.Players.LocalPlayer.Character.Humanoid.Jump = true
                 wait(2)
-                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Workpace.Delivery.TakeOrderZone.Part.CFrame
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Workspace.Delivery.TakeOrderZone.Part.CFrame
                 wait(1)
                 fireproximityprompt(playerModel.Chassis.EnterPrompt)
                 task.wait(1)
