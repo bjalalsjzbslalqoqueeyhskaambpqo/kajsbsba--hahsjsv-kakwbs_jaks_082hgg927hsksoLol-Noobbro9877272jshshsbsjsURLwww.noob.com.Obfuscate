@@ -11,6 +11,21 @@ local function jump()
     plr.Character.Humanoid.Jump = true
 end
 
+local function smoothMove(targetPos, duration)
+    local char = plr.Character
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    local startPos = hrp.Position
+    local startTime = tick()
+    
+    while tick() - startTime < duration do
+        local alpha = (tick() - startTime) / duration
+        hrp.CFrame = CFrame.new(startPos:Lerp(targetPos, alpha))
+        task.wait()
+    end
+    
+    hrp.CFrame = CFrame.new(targetPos)
+end
+
 local autoD = false
 local autoTxt = ui:Txt("Auto Delivery: false")
 
@@ -54,28 +69,29 @@ local function delivery()
         local curE, maxE = getE()
         if curE < 10 then
             jump()
-            wait(2)
-            tp(Vector3.new(44, 3, 135))
             wait(0.5)
-            game.Players.LocalPlayer.Character.Humanoid:MoveTo(Vector3.new(43, 3, 148))
+            smoothMove(Vector3.new(44, 3, 135), 2)
+            wait(0.5)
+            plr.Character.Humanoid:MoveTo(Vector3.new(43, 3, 148))
+            plr.Character.Humanoid.MoveToFinished:Wait()
             repeat
                 wait(1)
                 curE, maxE = getE()
             until curE > 30
             jump()
             wait(0.5)
-            tp(Vector3.new(47, 5, 141))
+            smoothMove(Vector3.new(47, 5, 141), 1)
             wait(0.5)
-            tp(workspace.Delivery.TakeOrderZone.Part.Position)
+            smoothMove(workspace.Delivery.TakeOrderZone.Part.Position, 1)
             wait(1)
             fireNearProx(15)
         end
         
         local pModel = workspace:FindFirstChild(tostring(plr.UserId))
         if not pModel then
-            plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame
+            smoothMove(workspace.Delivery.TakeOrderZone.Part.Position, 1)
             wait(1)
-            plr.Character:MoveTo(workspace.Delivery.Vehicles:GetChildren()[1].PrimaryPart.Position)
+            smoothMove(workspace.Delivery.Vehicles:GetChildren()[1].PrimaryPart.Position, 1)
             wait(1)
             fireproximityprompt(workspace.Delivery.Vehicles:GetChildren()[1].PrimaryPart.EnterPrompt)
             wait(1)
@@ -86,19 +102,18 @@ local function delivery()
             for _, obj in ipairs(workspace.Delivery:GetDescendants()) do
                 if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") then
                     found = true
-                    pModel:SetPrimaryPartCFrame(CFrame.new(obj.Position))
-                    
+                    smoothMove(obj.Position, 1)
                     task.wait()
                 end
             end
             if not found then
                 local takeZone = workspace.Delivery.TakeOrderZone:GetModelCFrame()
                 local offset = takeZone.Position + Vector3.new(3, 0, 3)
-                pModel:SetPrimaryPartCFrame(CFrame.new(offset))
+                smoothMove(offset, 1)
                 wait(1)
                 jump()
-                wait(2)
-                plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame
+                wait(0.5)
+                smoothMove(workspace.Delivery.TakeOrderZone.Part.Position, 1)
                 wait(0.3)
                 fireNearProx(20)
                 wait(1)
@@ -114,7 +129,7 @@ ui:TBtn("Auto Delivery", delivery)
 
 task.wait(0.7)
 local infoSub = ui:Sub("Info Script")
-infoSub:Txt("Version: 0.7")
+infoSub:Txt("Version: 0.8")
 infoSub:Txt("Create: 29/08/24")
 infoSub:Txt("Update: 29/08/24")
 infoSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
