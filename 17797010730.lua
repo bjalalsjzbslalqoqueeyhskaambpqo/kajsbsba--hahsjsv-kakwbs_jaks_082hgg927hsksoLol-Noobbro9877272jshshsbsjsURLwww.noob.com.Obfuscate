@@ -55,7 +55,9 @@ local function delivery()
         
         local curE, maxE = getE()
         if curE < 10 then
-            tp(Vector3.new(44, 5, 141))
+            jump()
+            wait(2)
+            tp(Vector3.new(44, 5, 140))
             repeat
                 wait(1)
                 curE, maxE = getE()
