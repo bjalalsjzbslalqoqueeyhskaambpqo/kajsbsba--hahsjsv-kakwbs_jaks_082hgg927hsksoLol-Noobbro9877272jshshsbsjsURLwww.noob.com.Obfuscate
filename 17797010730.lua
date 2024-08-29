@@ -77,9 +77,8 @@ local function delivery()
     autoTxt.Text = "Auto Delivery: " .. tostring(autoD)
     
     while autoD do
-        wait(2)
+        wait(0.1)
         if chkNot() then
-            wait(5)
             continue
         end
         
@@ -96,9 +95,9 @@ local function delivery()
                 jump()
                 wait(0.5)
                 moveSeatAway()
-                wait(0.5)
+                wait(1)
                 tp(workspace.Delivery.TakeOrderZone.Part.Position)
-                wait(2)
+                wait(3)
             else
                 print("No se pudo encontrar un asiento disponible")
                 wait(5)
@@ -108,7 +107,7 @@ local function delivery()
         
         local pModel = workspace:FindFirstChild(tostring(plr.UserId))
         if not pModel then
-            plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame
+            plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame * CFrame.new(0, 2, 0)
             wait(1)
             plr.Character:MoveTo(workspace.Delivery.Vehicles:GetChildren()[1].PrimaryPart.Position)
             wait(1)
@@ -127,8 +126,8 @@ local function delivery()
                 end
             end
             if not found then
-                local takeZone = workspace.Delivery.TakeOrderZone:GetModelCFrame()
-                local offset = takeZone.Position + Vector3.new(3, 0, 3)
+                local takeZone = workspace.Delivery.TakeOrderZone.Part.CFrame * CFrame.new(0, 2, 0)
+                local offset = takeZone.Position + Vector3.new(5, 0, 5)
                 pModel:SetPrimaryPartCFrame(CFrame.new(offset))
                 wait(1)
                 jump()
@@ -136,7 +135,7 @@ local function delivery()
                plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame * CFrame.new(0, 2, 0)
                 jump()
                 fireNearProx(15)
-                wait(2)
+                wait(4)
                 fireproximityprompt(pModel.Chassis.EnterPrompt)
                 task.wait(1)
             end
