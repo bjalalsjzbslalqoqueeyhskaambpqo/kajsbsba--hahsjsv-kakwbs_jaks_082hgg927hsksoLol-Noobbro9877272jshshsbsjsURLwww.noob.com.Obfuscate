@@ -7,6 +7,10 @@ local function tp(pos)
     plr.Character:MoveTo(pos)
 end
 
+local function jump()
+    plr.Character.Humanoid.Jump = true
+end
+
 ui:Btn("Rest", function() tp(Vector3.new(44, 5, 141)) end)
 
 local autoD = false
@@ -56,6 +60,13 @@ local function delivery()
                 wait(1)
                 curE, maxE = getE()
             until curE > 30
+            jump()
+            wait(0.5)
+            tp(Vector3.new(47, 5, 141))
+            wait(0.5)
+            tp(workspace.Delivery.TakeOrderZone.Part.Position)
+            wait(1)
+            fireNearProx(15)
         end
         
         local pModel = workspace:FindFirstChild(tostring(plr.UserId))
@@ -74,7 +85,7 @@ local function delivery()
                 if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") then
                     found = true
                     pModel:SetPrimaryPartCFrame(CFrame.new(obj.Position))
-                    fireNearProx(15)  -- Activar ProximityPrompts cercanos
+                    
                     task.wait()
                 end
             end
@@ -83,10 +94,11 @@ local function delivery()
                 local offset = takeZone.Position + Vector3.new(3, 0, 3)
                 pModel:SetPrimaryPartCFrame(CFrame.new(offset))
                 wait(1)
-                plr.Character.Humanoid.Jump = true
+                jump()
                 wait(2)
                 plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame
-                fireNearProx(15)  -- Activar ProximityPrompts cercanos
+                wait(0.3)
+                fireNearProx(20)
                 wait(1)
                 fireproximityprompt(pModel.Chassis.EnterPrompt)
                 task.wait(1)
@@ -100,7 +112,7 @@ ui:TBtn("Auto Delivery", delivery)
 
 task.wait(0.7)
 local infoSub = ui:Sub("Info Script")
-infoSub:Txt("Version: 0.5")
+infoSub:Txt("Version: 0.6")
 infoSub:Txt("Create: 29/08/24")
 infoSub:Txt("Update: 29/08/24")
 infoSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
