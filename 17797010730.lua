@@ -2,6 +2,7 @@ local MiniUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalal
 
 local ui = MiniUI:new()
 local plr = game.Players.LocalPlayer
+local PathfindingService = game:GetService("PathfindingService")
 
 local function tp(pos)
     plr.Character:MoveTo(pos)
@@ -11,19 +12,28 @@ local function jump()
     plr.Character.Humanoid.Jump = true
 end
 
-local function smoothMove(targetPos, duration)
+local function moveTo(targetPos)
     local char = plr.Character
+    local humanoid = char:WaitForChild("Humanoid")
     local hrp = char:WaitForChild("HumanoidRootPart")
-    local startPos = hrp.Position
-    local startTime = tick()
     
-    while tick() - startTime < duration do
-        local alpha = (tick() - startTime) / duration
-        hrp.CFrame = CFrame.new(startPos:Lerp(targetPos, alpha))
-        task.wait()
+    local path = PathfindingService:CreatePath()
+    path:ComputeAsync(hrp.Position, targetPos)
+    
+    if path.Status == Enum.PathStatus.Success then
+        local waypoints = path:GetWaypoints()
+        for _, waypoint in ipairs(waypoints) do
+            humanoid:MoveTo(waypoint.Position)
+            humanoid.MoveToFinished:Wait()
+            
+            if waypoint.Action == Enum.PathWaypointAction.Jump then
+                humanoid.Jump = true
+            end
+        end
+    else
+        -- Si el pathfinding falla, usamos el movimiento directo
+        hrp.CFrame = CFrame.new(targetPos)
     end
-    
-    hrp.CFrame = CFrame.new(targetPos)
 end
 
 local autoD = false
@@ -70,28 +80,27 @@ local function delivery()
         if curE < 10 then
             jump()
             wait(0.5)
-            smoothMove(Vector3.new(44, 3, 135), 2)
+            moveTo(Vector3.new(44, 3, 135))
             wait(0.5)
-            plr.Character.Humanoid:MoveTo(Vector3.new(43, 3, 148))
-            plr.Character.Humanoid.MoveToFinished:Wait()
+            moveTo(Vector3.new(43, 3, 148))
             repeat
                 wait(1)
                 curE, maxE = getE()
             until curE > 30
             jump()
             wait(0.5)
-            smoothMove(Vector3.new(47, 5, 141), 1)
+            moveTo(Vector3.new(47, 5, 141))
             wait(0.5)
-            smoothMove(workspace.Delivery.TakeOrderZone.Part.Position, 1)
+            moveTo(workspace.Delivery.TakeOrderZone.Part.Position)
             wait(1)
             fireNearProx(15)
         end
         
         local pModel = workspace:FindFirstChild(tostring(plr.UserId))
         if not pModel then
-            smoothMove(workspace.Delivery.TakeOrderZone.Part.Position, 1)
+            moveTo(workspace.Delivery.TakeOrderZone.Part.Position)
             wait(1)
-            smoothMove(workspace.Delivery.Vehicles:GetChildren()[1].PrimaryPart.Position, 1)
+            moveTo(workspace.Delivery.Vehicles:GetChildren()[1].PrimaryPart.Position)
             wait(1)
             fireproximityprompt(workspace.Delivery.Vehicles:GetChildren()[1].PrimaryPart.EnterPrompt)
             wait(1)
@@ -102,18 +111,18 @@ local function delivery()
             for _, obj in ipairs(workspace.Delivery:GetDescendants()) do
                 if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") then
                     found = true
-                    smoothMove(obj.Position, 1)
+                    moveTo(obj.Position)
                     task.wait()
                 end
             end
             if not found then
                 local takeZone = workspace.Delivery.TakeOrderZone:GetModelCFrame()
                 local offset = takeZone.Position + Vector3.new(3, 0, 3)
-                smoothMove(offset, 1)
+                moveTo(offset)
                 wait(1)
                 jump()
                 wait(0.5)
-                smoothMove(workspace.Delivery.TakeOrderZone.Part.Position, 1)
+                moveTo(workspace.Delivery.TakeOrderZone.Part.Position)
                 wait(0.3)
                 fireNearProx(20)
                 wait(1)
@@ -129,8 +138,8 @@ ui:TBtn("Auto Delivery", delivery)
 
 task.wait(0.7)
 local infoSub = ui:Sub("Info Script")
-infoSub:Txt("Version: 0.8")
+infoSub:Txt("Version: 0.9")
 infoSub:Txt("Create: 29/08/24")
-infoSub:Txt("Update: 29/08/24")
+infoSub:Txt("Update: 30/08/24")
 infoSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 infoSub:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
