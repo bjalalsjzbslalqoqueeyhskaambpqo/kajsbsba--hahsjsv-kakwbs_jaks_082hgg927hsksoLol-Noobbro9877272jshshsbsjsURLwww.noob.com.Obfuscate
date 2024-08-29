@@ -3,52 +3,63 @@ local MiniUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalal
 local ui = MiniUI:new()
 local plr = game.Players.LocalPlayer
 
-local function teleportTo(position)
-    plr.Character:MoveTo(position)
+local function tp(pos)
+    plr.Character:MoveTo(pos)
 end
 
-ui:Btn("Rest", function() teleportTo(Vector3.new(44, 5, 141)) end)
+ui:Btn("Rest", function() tp(Vector3.new(44, 5, 141)) end)
 
-local autoDelivery = false
-local autoDeliveryText = ui:Txt("Auto Delivery: false")
+local autoD = false
+local autoTxt = ui:Txt("Auto Delivery: false")
 
-local function checkNotification()
-    for _, descendant in pairs(plr.PlayerGui.NotificationsGui:GetDescendants()) do
-        if descendant:IsA("TextLabel") and descendant.Name == "NotificationText" and descendant.Text == "Not enough energy to complete this action. Sit on the bench until the energy is restored!" then
+local function chkNot()
+    for _, d in pairs(plr.PlayerGui.NotificationsGui:GetDescendants()) do
+        if d:IsA("TextLabel") and d.Name == "NotificationText" and d.Text == "Not enough energy to complete this action. Sit on the bench until the energy is restored!" then
             return true
         end
     end
     return false
 end
 
-local function getEnergy()
-    local energyText = plr.PlayerGui.MainGui.Currency.Energy.TextLabel.Text
-    local current, max = energyText:match("(%d+)/(%d+)")
-    return tonumber(current), tonumber(max)
+local function getE()
+    local eText = plr.PlayerGui.MainGui.Currency.Energy.TextLabel.Text
+    local cur, max = eText:match("(%d+)/(%d+)")
+    return tonumber(cur), tonumber(max)
 end
 
-local function Delivery()
-    autoDelivery = not autoDelivery
-    autoDeliveryText.Text = "Auto Delivery: " .. tostring(autoDelivery)
+local function fireNearProx(radius)
+    local char = plr.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
     
-    while autoDelivery do
-        if checkNotification() then
-teleportTo(Vector3.new(44, 4, 144)) 
+    local hrp = char.HumanoidRootPart
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("ProximityPrompt") and (v.Parent.Position - hrp.Position).Magnitude <= radius then
+            fireproximityprompt(v)
+        end
+    end
+end
+
+local function delivery()
+    autoD = not autoD
+    autoTxt.Text = "Auto Delivery: " .. tostring(autoD)
+    
+    while autoD do
+        if chkNot() then
             wait(10)
             continue
         end
         
-        local currentEnergy, maxEnergy = getEnergy()
-        if currentEnergy < 10 then
-            teleportTo(Vector3.new(44, 5, 141))  -- Rest position
+        local curE, maxE = getE()
+        if curE < 10 then
+            tp(Vector3.new(44, 5, 141))
             repeat
                 wait(1)
-                currentEnergy, maxEnergy = getEnergy()
-            until currentEnergy > 30
+                curE, maxE = getE()
+            until curE > 30
         end
         
-        local playerModel = workspace:FindFirstChild(tostring(plr.UserId))
-        if not playerModel then
+        local pModel = workspace:FindFirstChild(tostring(plr.UserId))
+        if not pModel then
             plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame
             wait(1)
             plr.Character:MoveTo(workspace.Delivery.Vehicles:GetChildren()[1].PrimaryPart.Position)
@@ -57,25 +68,27 @@ teleportTo(Vector3.new(44, 4, 144))
             wait(1)
         end
         
-        if playerModel and playerModel:IsA("Model") then
-            local foundAny = false
+        if pModel and pModel:IsA("Model") then
+            local found = false
             for _, obj in ipairs(workspace.Delivery:GetDescendants()) do
                 if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") then
-                    foundAny = true
-                    playerModel:SetPrimaryPartCFrame(CFrame.new(obj.Position))
+                    found = true
+                    pModel:SetPrimaryPartCFrame(CFrame.new(obj.Position))
+                    fireNearProx(15)  -- Activar ProximityPrompts cercanos
                     task.wait()
                 end
             end
-            if not foundAny then
-                local takeOrderZone = workspace.Delivery.TakeOrderZone:GetModelCFrame()
-                local offsetPosition = takeOrderZone.Position + Vector3.new(3, 0, 3)
-                playerModel:SetPrimaryPartCFrame(CFrame.new(offsetPosition))
+            if not found then
+                local takeZone = workspace.Delivery.TakeOrderZone:GetModelCFrame()
+                local offset = takeZone.Position + Vector3.new(3, 0, 3)
+                pModel:SetPrimaryPartCFrame(CFrame.new(offset))
                 wait(1)
                 plr.Character.Humanoid.Jump = true
                 wait(2)
                 plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame
+                fireNearProx(15)  -- Activar ProximityPrompts cercanos
                 wait(1)
-                fireproximityprompt(playerModel.Chassis.EnterPrompt)
+                fireproximityprompt(pModel.Chassis.EnterPrompt)
                 task.wait(1)
             end
         end
@@ -83,11 +96,11 @@ teleportTo(Vector3.new(44, 4, 144))
     end
 end
 
-ui:TBtn("Auto Delivery", Delivery)
+ui:TBtn("Auto Delivery", delivery)
 
 task.wait(0.7)
 local infoSub = ui:Sub("Info Script")
-infoSub:Txt("Version: 0.3")
+infoSub:Txt("Version: 0.5")
 infoSub:Txt("Create: 29/08/24")
 infoSub:Txt("Update: 29/08/24")
 infoSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
