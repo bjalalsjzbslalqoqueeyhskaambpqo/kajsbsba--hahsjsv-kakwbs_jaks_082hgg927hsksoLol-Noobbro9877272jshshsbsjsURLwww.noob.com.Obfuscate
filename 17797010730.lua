@@ -40,7 +40,7 @@ local function Delivery()
                 wait(1)
                 game.Players.LocalPlayer.Character.Humanoid.Jump = true
                 wait(2)
-                teleportTo(Vector3.new(36, 3, 61))
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = Workpace.Delivery.TakeOrderZone.Part.CFrame
                 wait(1)
                 fireproximityprompt(playerModel.Chassis.EnterPrompt)
                 task.wait(1)
