@@ -77,13 +77,16 @@ local function delivery()
     autoTxt.Text = "Auto Delivery: " .. tostring(autoD)
     
     while autoD do
+        wait(2)
         if chkNot() then
-            wait(10)
+            wait(5)
             continue
         end
         
         local curE, maxE = getE()
-        if curE < 10 then
+        if curE < 9 then
+            jump()
+            wait(1)
             if moveSeatToPlayer() then
                 wait(2)
                 repeat
@@ -119,7 +122,7 @@ local function delivery()
                 if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") then
                     found = true
                     pModel:SetPrimaryPartCFrame(CFrame.new(obj.Position))
-                    fireNearProx(15)
+                    
                     task.wait()
                 end
             end
@@ -130,9 +133,10 @@ local function delivery()
                 wait(1)
                 jump()
                 wait(2)
-               plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame * CFrame.new(0, 2, 0) jump()
+               plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame * CFrame.new(0, 2, 0)
+                jump()
                 fireNearProx(15)
-                wait(3)
+                wait(2)
                 fireproximityprompt(pModel.Chassis.EnterPrompt)
                 task.wait(1)
             end
