@@ -49,12 +49,14 @@ local function delivery()
     
     while autoD do
         if chkNot() then
-            wait(10)
+            wait(3)
             continue
         end
         
         local curE, maxE = getE()
         if curE < 10 then
+            jump()
+            wait(2)
             tp(Vector3.new(44, 5, 141))
             repeat
                 wait(1)
@@ -112,7 +114,7 @@ ui:TBtn("Auto Delivery", delivery)
 
 task.wait(0.7)
 local infoSub = ui:Sub("Info Script")
-infoSub:Txt("Version: 0.6")
+infoSub:Txt("Version: 0.7")
 infoSub:Txt("Create: 29/08/24")
 infoSub:Txt("Update: 29/08/24")
 infoSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
