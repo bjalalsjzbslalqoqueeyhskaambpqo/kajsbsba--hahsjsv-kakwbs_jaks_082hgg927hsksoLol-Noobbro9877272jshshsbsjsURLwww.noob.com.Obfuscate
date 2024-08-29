@@ -4,15 +4,11 @@ local ui = MiniUI:new()
 local plr = game.Players.LocalPlayer
 local PathfindingService = game:GetService("PathfindingService")
 
-local function tp(pos)
-    plr.Character:MoveTo(pos)
-end
-
 local function jump()
     plr.Character.Humanoid.Jump = true
 end
 
-local function moveTo(targetPos)
+local function walkTo(targetPos)
     local char = plr.Character
     local humanoid = char:WaitForChild("Humanoid")
     local hrp = char:WaitForChild("HumanoidRootPart")
@@ -22,17 +18,33 @@ local function moveTo(targetPos)
     
     if path.Status == Enum.PathStatus.Success then
         local waypoints = path:GetWaypoints()
-        for _, waypoint in ipairs(waypoints) do
-            humanoid:MoveTo(waypoint.Position)
-            humanoid.MoveToFinished:Wait()
+        
+        for i, waypoint in ipairs(waypoints) do
+            humanoid.WalkToPoint = waypoint.Position
             
             if waypoint.Action == Enum.PathWaypointAction.Jump then
                 humanoid.Jump = true
             end
+            
+            -- Esperar hasta que el personaje esté cerca del waypoint o deje de moverse
+            repeat
+                task.wait()
+            until (hrp.Position - waypoint.Position).Magnitude < 1 or humanoid.MoveDirection == Vector3.new(0, 0, 0)
+            
+            -- Si es el último waypoint, asegurarse de llegar lo más cerca posible
+            if i == #waypoints then
+                humanoid.WalkToPoint = targetPos
+                repeat
+                    task.wait()
+                until (hrp.Position - targetPos).Magnitude < 1 or humanoid.MoveDirection == Vector3.new(0, 0, 0)
+            end
         end
     else
-        -- Si el pathfinding falla, usamos el movimiento directo
-        hrp.CFrame = CFrame.new(targetPos)
+        -- Si el pathfinding falla, intentar caminar directamente al punto
+        humanoid.WalkToPoint = targetPos
+        repeat
+            task.wait()
+        until (hrp.Position - targetPos).Magnitude < 1 or humanoid.MoveDirection == Vector3.new(0, 0, 0)
     end
 end
 
@@ -80,27 +92,27 @@ local function delivery()
         if curE < 10 then
             jump()
             wait(0.5)
-            moveTo(Vector3.new(44, 3, 135))
+            walkTo(Vector3.new(44, 3, 135))
             wait(0.5)
-            moveTo(Vector3.new(43, 3, 148))
+            walkTo(Vector3.new(43, 3, 148))
             repeat
                 wait(1)
                 curE, maxE = getE()
             until curE > 30
             jump()
             wait(0.5)
-            moveTo(Vector3.new(47, 5, 141))
+            walkTo(Vector3.new(47, 5, 141))
             wait(0.5)
-            moveTo(workspace.Delivery.TakeOrderZone.Part.Position)
+            walkTo(workspace.Delivery.TakeOrderZone.Part.Position)
             wait(1)
             fireNearProx(15)
         end
         
         local pModel = workspace:FindFirstChild(tostring(plr.UserId))
         if not pModel then
-            moveTo(workspace.Delivery.TakeOrderZone.Part.Position)
+            walkTo(workspace.Delivery.TakeOrderZone.Part.Position)
             wait(1)
-            moveTo(workspace.Delivery.Vehicles:GetChildren()[1].PrimaryPart.Position)
+            walkTo(workspace.Delivery.Vehicles:GetChildren()[1].PrimaryPart.Position)
             wait(1)
             fireproximityprompt(workspace.Delivery.Vehicles:GetChildren()[1].PrimaryPart.EnterPrompt)
             wait(1)
@@ -111,18 +123,18 @@ local function delivery()
             for _, obj in ipairs(workspace.Delivery:GetDescendants()) do
                 if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") then
                     found = true
-                    moveTo(obj.Position)
+                    walkTo(obj.Position)
                     task.wait()
                 end
             end
             if not found then
                 local takeZone = workspace.Delivery.TakeOrderZone:GetModelCFrame()
                 local offset = takeZone.Position + Vector3.new(3, 0, 3)
-                moveTo(offset)
+                walkTo(offset)
                 wait(1)
                 jump()
                 wait(0.5)
-                moveTo(workspace.Delivery.TakeOrderZone.Part.Position)
+                walkTo(workspace.Delivery.TakeOrderZone.Part.Position)
                 wait(0.3)
                 fireNearProx(20)
                 wait(1)
@@ -138,7 +150,7 @@ ui:TBtn("Auto Delivery", delivery)
 
 task.wait(0.7)
 local infoSub = ui:Sub("Info Script")
-infoSub:Txt("Version: 0.9")
+infoSub:Txt("Version: 1.3")
 infoSub:Txt("Create: 29/08/24")
 infoSub:Txt("Update: 30/08/24")
 infoSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
