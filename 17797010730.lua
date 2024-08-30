@@ -93,7 +93,7 @@ local function delivery()
                     curE, maxE = getE()
                 until curE >= maxE
                 jump()
-                wait(03)
+                wait(2)
                 moveSeatAway()
                 wait(1)
                 tp(workspace.Delivery.TakeOrderZone.Part.Position)
@@ -127,25 +127,24 @@ local function delivery()
             end
             if not found then
                 local takeZone = workspace.Delivery.TakeOrderZone.Part.CFrame * CFrame.new(0, 2, 0)
-                local offset = takeZone.Position + Vector3.new(-5, 0, 10)
+                local offset = takeZone.Position + Vector3.new(-7, 0, 10)
                 pModel:SetPrimaryPartCFrame(CFrame.new(offset))
                 wait(0.5)
                 jump()
-                wait(2)
+                wait(1)
                plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame * CFrame.new(0, 2, 0)
                 wait(1)
                 jump()
-
+fireNearProx(5)
                 
                 pcall(function()
-                game.Players.LocalPlayer.Character:MoveTo(pModel.PrimaryPart.Position)
-                wait(1)
+                wait(2)
                 fireproximityprompt(pModel.Chassis.EnterPrompt)
                     end)
-                task.wait(2)
+                task.wait(1)
             end
         end
-        task.wait(1)
+        task.wait()
     end
 end
 
