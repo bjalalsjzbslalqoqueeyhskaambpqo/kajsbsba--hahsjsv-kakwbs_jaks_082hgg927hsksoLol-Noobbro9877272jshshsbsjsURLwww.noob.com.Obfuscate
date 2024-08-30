@@ -93,11 +93,16 @@ local function delivery()
                     curE, maxE = getE()
                 until curE >= maxE
                 jump()
-                wait(2)
-                moveSeatAway()
                 wait(1)
+                moveSeatAway()
+                wait(0.5)
                 tp(workspace.Delivery.TakeOrderZone.Part.Position)
                 
+                pcall(function()
+                wait()
+                fireproximityprompt(pModel.Chassis.EnterPrompt)
+                    end)
+                wait(1)
             else
                 print("No se pudo encontrar un asiento disponible")
                 wait(1)
