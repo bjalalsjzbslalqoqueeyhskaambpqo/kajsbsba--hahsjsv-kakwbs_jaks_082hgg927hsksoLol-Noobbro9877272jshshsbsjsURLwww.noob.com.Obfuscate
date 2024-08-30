@@ -137,9 +137,11 @@ local function delivery()
                 jump()
                 fireNearProx(15)
                 wait(0.5)
+                pcall(function()
                 game.Players.LocalPlayer.Character:MoveTo(pModel.Chassis.Position)
                 wait(1)
                 fireproximityprompt(pModel.Chassis.EnterPrompt)
+                    end)
                 task.wait(2)
             end
         end
