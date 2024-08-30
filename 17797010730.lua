@@ -93,11 +93,11 @@ local function delivery()
                     curE, maxE = getE()
                 until curE >= maxE
                 jump()
-                wait(0.5)
+                wait(03)
                 moveSeatAway()
                 wait(1)
                 tp(workspace.Delivery.TakeOrderZone.Part.Position)
-                wait(1)
+                
             else
                 print("No se pudo encontrar un asiento disponible")
                 wait(1)
@@ -135,8 +135,8 @@ local function delivery()
                plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame * CFrame.new(0, 2, 0)
                 wait(1)
                 jump()
-                fireNearProx(15)
-                wait(3)
+
+                
                 pcall(function()
                 game.Players.LocalPlayer.Character:MoveTo(pModel.PrimaryPart.Position)
                 wait(1)
