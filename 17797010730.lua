@@ -100,6 +100,7 @@ local function delivery()
                 
                 pcall(function()
                 wait()
+                        pModel = workspace:FindFirstChild(tostring(plr.UserId))
                 fireproximityprompt(pModel.Chassis.EnterPrompt)
                     end)
                 wait(1)
