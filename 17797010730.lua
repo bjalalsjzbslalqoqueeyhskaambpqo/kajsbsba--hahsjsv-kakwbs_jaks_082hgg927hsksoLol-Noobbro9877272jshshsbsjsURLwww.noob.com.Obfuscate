@@ -128,7 +128,7 @@ local function delivery()
                     found = true
                     pModel:SetPrimaryPartCFrame(CFrame.new(obj.Position))
                     
-                    task.wait()
+                    task.wait(1)
                 end
             end
             if not found then
