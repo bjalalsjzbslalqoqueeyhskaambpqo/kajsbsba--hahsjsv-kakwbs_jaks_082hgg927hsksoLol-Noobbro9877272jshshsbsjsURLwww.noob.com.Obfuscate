@@ -261,12 +261,12 @@ local function cGUI()
     end)
     
     cB(ct, "YouTube", UDim2.new(0.02, 0, 0.85, 0), function()
-        setclipboard("https://www.youtube.com/c/TuCanalDeYouTube")
+        setclipboard("https://youtube.com/@onecreatorx")
         ntf("Enlace de YouTube copiado al portapapeles", 2)
     end, Color3.fromRGB(200, 50, 50))
     
     cB(ct, "Discord", UDim2.new(0.27, 0, 0.85, 0), function()
-        setclipboard("https://discord.gg/TuEnlaceDeDiscord")
+        setclipboard("https://discord.com/invite/AvgprcyK4w")
         ntf("Invitación de Discord copiada al portapapeles", 2)
     end, Color3.fromRGB(114, 137, 218))
     
