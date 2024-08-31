@@ -239,28 +239,73 @@ function MiniUI:new()
         serverSub:Btn("Join Server only(Beta)", function()
             local jb = game.JobId
             spawn(function()
-                local P = game:GetService("Players")
-                local TS = game:GetService("TeleportService")
-                local LP = P.LocalPlayer
                 
-                local function block(i)
-                    local u = "https://apis.roblox.com/user-blocking-api/v1/users/"..i.."/block-user"
-                    local d = game:GetService("HttpService"):JSONEncode({})
-                    pcall(function()
-                        game:GetService("HttpRbxApiService"):PostAsyncFullUrl(u,d)
-                    end)
-                end
-                
-                for _, player in ipairs(P:GetPlayers()) do
-                    if player ~= LP then
-                        block(player.UserId)
-                        break
-                    end
-                end
-                
-                wait(1)
-                TS:TeleportToPlaceInstance(game.PlaceId, jb, LP)
-            end)
+
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+local HttpRbxApiService = game:GetService("HttpRbxApiService")
+local TeleportService = game:GetService("TeleportService")
+
+local LocalPlayer = Players.LocalPlayer
+local JobId = game.JobId
+
+local function blockUser(userId)
+    local url = "https://apis.roblox.com/user-blocking-api/v1/users/" .. userId .. "/block-user"
+    local data = HttpService:JSONEncode({})
+    
+    local success, result = pcall(function()
+        return HttpRbxApiService:PostAsyncFullUrl(url, data)
+    end)
+    
+    return success, result
+end
+
+local function getRandomPlayer()
+    local playerList = Players:GetPlayers()
+    local eligiblePlayers = {}
+    
+    for _, player in ipairs(playerList) do
+        if player ~= LocalPlayer then
+            table.insert(eligiblePlayers, player)
+        end
+    end
+    
+    if #eligiblePlayers > 0 then
+        return eligiblePlayers[math.random(1, #eligiblePlayers)]
+    else
+        return nil
+    end
+end
+
+spawn(function()
+    local playerToBlock = getRandomPlayer()
+
+    if playerToBlock then
+        local success, result = blockUser(playerToBlock.UserId)
+        print("Intento de bloqueo para el usuario:", playerToBlock.Name)
+        print("ID del usuario:", playerToBlock.UserId)
+        print("Éxito:", success)
+        print("Resultado:", result)
+    else
+        print("No se encontraron jugadores elegibles para bloquear.")
+    end
+
+    wait(1)
+local TS = game:GetService("TeleportService")
+    local LP = game.Players.LocalPlayer
+local placeId = game.PlaceId
+        TS:Teleport(placeId, LP)
+
+    
+
+    if not success then
+        print("Error al teleportarse:", errorMessage)
+    end
+end)
+        
+
+    
+end)
         end)
         
         serverSub:TBtn("FPS Boost", function(isActive)
