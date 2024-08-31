@@ -192,9 +192,21 @@ end
 
 function MiniUI:new()
     local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-    local sg = playerGui:FindFirstChild("MiniUIScreenGui") or Instance.new("ScreenGui", playerGui)
-    sg.Name = "MiniUIScreenGui"
-    
+    local sg = nil
+
+    for _, gui in pairs(playerGui:GetChildren()) do
+        if gui:IsA("ScreenGui") and gui.Enabled then
+            sg = gui
+            break
+        end
+    end
+
+    if not sg then
+        sg = Instance.new("ScreenGui")
+        sg.Name = "MiniUIScreenGui"
+        sg.Parent = playerGui
+    end
+
     local ui = createUI(sg)
     
     spawn(function()
