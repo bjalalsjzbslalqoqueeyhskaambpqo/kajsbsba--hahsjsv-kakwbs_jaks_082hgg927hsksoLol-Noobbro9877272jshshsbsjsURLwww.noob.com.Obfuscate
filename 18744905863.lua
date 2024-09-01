@@ -213,6 +213,6 @@ local MiniUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalal
 
 local ui = MiniUI:new()
 
-ui:Btn("Start Game", startGame)
+ui:TBtn("Start Game", startGame)
 ui:Btn("Reset Plyer", killPlr)
 ui:Btn("Reiniciar Progreso", restartProgress)
