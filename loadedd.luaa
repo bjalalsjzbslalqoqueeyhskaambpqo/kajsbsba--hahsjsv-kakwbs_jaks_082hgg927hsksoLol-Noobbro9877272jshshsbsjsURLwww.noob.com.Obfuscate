@@ -1,19 +1,7 @@
-local P, RS, HS = game:GetService("Players"), game:GetService("RunService"), game:GetService("HttpService")
-local p, c, h = P.LocalPlayer, nil, nil
-local r, isR, isP = {}, false, false
-local FPS, pS, rD, hO = 60, 1, 0, 0
-local cC, sT, eT = nil, 0, 0
-local isL, isM, isPaused = false, false, false
-local cT, tL, rB, lB = 0, nil, nil, nil
-local WU = "https://create.api-x.site"
-local pausedIndex, pausedTime, i
-local startPercentage = 0
-local isGeneratingURL = false
-local isLoadingURL = false
-
-spawn(function()
-    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
-end)
+local P = game:GetService("Players")
+local RS = game:GetService("RunService")
+local HS = game:GetService("HttpService")
+local p = P.LocalPlayer
 
 local function fT(s) return string.format("%02d:%02d:%02d", s/3600, (s%3600)/60, s%60) end
 
@@ -53,94 +41,6 @@ local function cB(p, txt, pos, func, col)
     return b
 end
 
-local function sC()
-    c, h = p.Character or p.CharacterAdded:Wait(), nil
-    h = c:WaitForChild("HumanoidRootPart")
-end
-
-local function uP()
-    if isR and h and not isPaused then
-        table.insert(r, {pos = {h.CFrame:GetComponents()}})
-    end
-end
-
-local function sR()
-    r, isR, sT, isPaused = {}, true, tick(), false
-    rB.Text = "Pause"
-    rB.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
-    ntf("Grabación iniciada", 2)
-end
-
-local function pR()
-    if #r > 0 then
-        isP, isPaused = true, false
-        i = math.max(1, math.floor(#r * startPercentage / 100))
-        pST = tick() - (i - 1) / (FPS * pS)
-        pausedIndex, pausedTime = nil, nil
-        rB.Text = "Pause"
-        rB.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
-        cC = RS.Heartbeat:Connect(function()
-            if not isP or isPaused then return end
-            if not h then sC() return end
-            local dt = tick() - pST
-            i = 1 + dt * FPS * pS
-            if i > #r then 
-                if isL then 
-                    i = math.max(1, math.floor(#r * startPercentage / 100))
-                    pST = tick() - (i - 1) / (FPS * pS)
-                else 
-                    isP, cC, isPaused = false, cC and cC:Disconnect(), false 
-                    rB.Text = "Rec" 
-                    rB.BackgroundColor3 = Color3.fromRGB(220, 50, 50) 
-                    ntf("Reproducción terminada", 2) 
-                    return 
-                end
-            end
-            local cr, nx = r[math.floor(i)], r[math.min(math.floor(i) + 1, #r)]
-            local f = i - math.floor(i)
-            h.CFrame = CFrame.new(unpack(cr.pos)):Lerp(CFrame.new(unpack(nx.pos)), f) + Vector3.new(0, hO, 0)
-            tL.Text = fT(dt)
-        end)
-        ntf("Reproducción iniciada desde " .. startPercentage .. "%", 2)
-    else 
-        ntf("No hay ruta grabada para reproducir", 2) 
-    end
-end
-
-local function tRP()
-    if isR then
-        isPaused = not isPaused
-        if isPaused then
-            rB.Text = "Continue"
-            rB.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-            eT = tick() - sT
-            ntf("Grabación pausada", 2)
-        else
-            rB.Text = "Pause"
-            rB.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
-            sT = tick() - eT
-            ntf("Grabación continuada", 2)
-        end
-    elseif isP then
-        isPaused = not isPaused
-        if isPaused then
-            rB.Text = "Continue"
-            rB.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-            pausedIndex = i
-            pausedTime = tick() - pST
-            ntf("Reproducción pausada", 2)
-        else
-            rB.Text = "Pause"
-            rB.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
-            i = pausedIndex
-            pST = tick() - pausedTime
-            ntf("Reproducción continuada", 2)
-        end
-    else
-        sR()
-    end
-end
-
 local function cGUI()
     local sg = cE("ScreenGui", p.PlayerGui, {ResetOnSpawn = false, Name = "RecorderGUI"})
     local fr = cE("Frame", sg, {
@@ -174,12 +74,12 @@ local function cGUI()
     cE("UICorner", ct, {CornerRadius = UDim.new(0, 8)})
     
     mB.MouseButton1Click:Connect(function()
-        isM = not isM
-        ct.Visible = isM
-        mB.Text = isM and "-" or "+"
+        _G.isM = not _G.isM
+        ct.Visible = _G.isM
+        mB.Text = _G.isM and "-" or "+"
     end)
     
-    tL = cE("TextLabel", fr, {
+    _G.tL = cE("TextLabel", fr, {
         Size = UDim2.new(1, -80, 1, 0),
         Position = UDim2.new(0, 10, 0, 0),
         BackgroundTransparency = 1,
@@ -207,45 +107,37 @@ local function cGUI()
         return tb
     end
     
-    rB = cB(fr, "Rec", UDim2.new(0.55, 0, 0.1, 0), tRP, Color3.fromRGB(220, 50, 50))
-    rB.Size = UDim2.new(0.3, 0, 0.8, 0)
+    _G.rB = cB(fr, "Rec", UDim2.new(0.55, 0, 0.1, 0), _G.tRP, Color3.fromRGB(220, 50, 50))
+    _G.rB.Size = UDim2.new(0.3, 0, 0.8, 0)
     
-    cB(ct, "Play", UDim2.new(0.02, 0, 0.02, 0), pR)
+    cB(ct, "Play", UDim2.new(0.02, 0, 0.02, 0), _G.pR)
     
-    cB(ct, "Stop", UDim2.new(0.40, 0, 0.02, 0), function()
-        if isR then rD = tick() - sT end
-        isR, isP, isPaused = false, false, false
-        if cC then cC:Disconnect() cC = nil end
-        eT = isR and (tick() - sT) or eT
-        rB.Text = "Rec"
-        rB.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-        ntf("Grabación/Reproducción detenida", 2)
-    end)
+    cB(ct, "Stop", UDim2.new(0.40, 0, 0.02, 0), _G.sTP)
     
     local url = cTB("", UDim2.new(0.02, 0, 0.35, 0), "Ingrese URL de grabación")
     url.Size = UDim2.new(0.96, 0, 0.15, 0)
     url.TextScaled = true
     
     local loadButton = cB(ct, "Load", UDim2.new(0.75, 0, 0.85, 0), function()
-        if isLoadingURL then
+        if _G.isLoadingURL then
             ntf("Ya se está cargando una URL. Por favor, espere.", 2)
             return
         end
         local input = url.Text
         if input and input ~= "" then
-            isLoadingURL = true
+            _G.isLoadingURL = true
             ntf("Cargando desde URL... Esto puede tomar unos segundos.", 5)
             task.spawn(function()
                 if pcall(function() 
                     local content = game:HttpGet(input)
                     local data = HS:JSONDecode(content)
-                    rD, r = data.duration, data.data
+                    _G.rD, _G.r = data.duration, data.data
                 end) then
                     ntf("Ruta cargada con éxito", 2)
                 else
                     ntf("Error al cargar ruta desde URL", 2)
                 end
-                isLoadingURL = false
+                _G.isLoadingURL = false
             end)
         else 
             ntf("Por favor, ingrese una URL de grabación", 2) 
@@ -255,13 +147,13 @@ local function cGUI()
     local sS = cTB("1", UDim2.new(0.20, 0, 0.19, 0), "Velocidad")
     sS:GetPropertyChangedSignal("Text"):Connect(function()
         local nS = tonumber(sS.Text)
-        if nS and nS > 0 then pS = nS end
+        if nS and nS > 0 then _G.pS = nS end
     end)
     
-    lB = cB(ct, "Loop: Off", UDim2.new(0.75, 0, 0.02, 0), function()
-        isL = not isL
-        lB.Text = isL and "Loop: On" or "Loop: Off"
-        lB.BackgroundColor3 = isL and Color3.fromRGB(50, 200, 50) or Color3.fromRGB(60, 60, 60)
+    _G.lB = cB(ct, "Loop: Off", UDim2.new(0.75, 0, 0.02, 0), function()
+        _G.isL = not _G.isL
+        _G.lB.Text = _G.isL and "Loop: On" or "Loop: Off"
+        _G.lB.BackgroundColor3 = _G.isL and Color3.fromRGB(50, 200, 50) or Color3.fromRGB(60, 60, 60)
     end)
     
     cB(ct, "YouTube", UDim2.new(0.02, 0, 0.85, 0), function()
@@ -275,20 +167,20 @@ local function cGUI()
     end, Color3.fromRGB(114, 137, 218))
     
     local shareButton = cB(ct, "Share", UDim2.new(0.52, 0, 0.85, 0), function()
-        if isGeneratingURL then
+        if _G.isGeneratingURL then
             ntf("Ya se está generando una URL. Por favor, espere.", 2)
             return
         end
-        isGeneratingURL = true
+        _G.isGeneratingURL = true
         ntf("Generando enlace para compartir... Esto puede tomar unos segundos.", 5)
         task.spawn(function()
             local success, result = pcall(function()
-                local dataToSend = {duration = rD, data = r}
+                local dataToSend = {duration = _G.rD, data = _G.r}
                 local jsonData = HS:JSONEncode(dataToSend)
                 
                 local req = http_request or request or syn.request or http.request
                 local resp = req({
-                    Url = WU,
+                    Url = _G.WU,
                     Method = "POST",
                     Headers = {
                         ["Content-Type"] = "application/json",
@@ -306,14 +198,14 @@ local function cGUI()
             else
                 ntf("Error al generar enlace para compartir: " .. tostring(result), 5)
             end
-            isGeneratingURL = false
+            _G.isGeneratingURL = false
         end)
     end)
     
     local hOI = cTB("0", UDim2.new(0.53, 0, 0.19, 0), "Altura")
     hOI:GetPropertyChangedSignal("Text"):Connect(function()
         local nO = tonumber(hOI.Text)
-        if nO then hO = nO end
+        if nO then _G.hO = nO end
     end)
     
     local sPB = cTB("0", UDim2.new(0.02, 0, 0.52, 0), "% Inicio")
@@ -321,25 +213,22 @@ local function cGUI()
     sPB:GetPropertyChangedSignal("Text"):Connect(function()
         local nP = tonumber(sPB.Text)
         if nP and nP >= 0 and nP <= 100 then
-            startPercentage = nP
+            _G.startPercentage = nP
         end
     end)
     
     RS.Heartbeat:Connect(function()
-        uP()
-        if isR and not isPaused then
-            eT = tick() - sT
-            tL.Text = fT(eT)
-        elseif isP and not isPaused then
-            tL.Text = fT(rD)
-        elseif isPaused then
-            tL.Text = fT(isR and eT or rD)
+        if _G.isR and not _G.isPaused then
+            _G.eT = tick() - _G.sT
+            _G.tL.Text = fT(_G.eT)
+        elseif _G.isP and not _G.isPaused then
+            _G.tL.Text = fT(_G.rD)
+        elseif _G.isPaused then
+            _G.tL.Text = fT(_G.isR and _G.eT or _G.rD)
         else
-            tL.Text = fT(rD)
+            _G.tL.Text = fT(_G.rD)
         end
     end)
 end
 
-sC()
-p.CharacterAdded:Connect(sC)
 cGUI()
