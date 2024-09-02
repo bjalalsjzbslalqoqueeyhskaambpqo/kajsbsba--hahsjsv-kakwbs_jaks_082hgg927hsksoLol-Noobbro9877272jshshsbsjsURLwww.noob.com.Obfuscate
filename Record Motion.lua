@@ -13,6 +13,7 @@ _G.pausedIndex, _G.pausedTime, _G.i = nil, nil, 1
 _G.startPercentage = 0
 _G.isGeneratingURL = false
 _G.isLoadingURL = false
+_G.lastUpdateTime = 0
 
 local interactionConnections = {}
 
@@ -94,46 +95,45 @@ local function findInteraction(id)
     return (current:IsA("ProximityPrompt") or current:IsA("ClickDetector")) and current or nil
 end
 
-local function findNearestProximityPrompt(position)
-    local nearestPrompt = nil
-    local minDistance = math.huge
-    
-    for _, v in ipairs(workspace:GetDescendants()) do
-        if v:IsA("ProximityPrompt") then
-            local distance = (v.Parent.Position - position).Magnitude
-            if distance < minDistance then
-                nearestPrompt = v
-                minDistance = distance
-            end
+local function updatePlaybackTime(dt)
+    if _G.isP and not _G.isPaused then
+        _G.cT = _G.cT + dt * _G.pS
+    end
+end
+
+local function updateTotalTime()
+    if #_G.r > 0 then
+        local totalTime = _G.r[#_G.r].time / _G.pS
+        if _G.tL then
+            _G.tL.Text = string.format("%.2f", totalTime)
         end
     end
-    
-    return nearestPrompt
 end
 
 _G.pR = function()
     if #_G.r > 0 then
         _G.isP, _G.isPaused = true, false
         _G.i = math.max(1, math.floor(#_G.r * _G.startPercentage / 100))
-        _G.pST = tick() - _G.r[_G.i].time / _G.pS
+        _G.cT = _G.r[_G.i].time
+        _G.lastUpdateTime = tick()
         _G.pausedIndex, _G.pausedTime = nil, nil
         _G.rB.Text = "Pause"
         _G.rB.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
         
-        _G.cC = RS.Heartbeat:Connect(function()
+        updateTotalTime()
+        
+        _G.cC = RS.Heartbeat:Connect(function(dt)
             if not _G.isP or _G.isPaused then return end
             if not h then sC() return end
-            local currentTime = (tick() - _G.pST) * _G.pS
             
-            while _G.i <= #_G.r and _G.r[_G.i].time <= currentTime do
+            updatePlaybackTime(dt)
+            
+            while _G.i <= #_G.r and _G.r[_G.i].time <= _G.cT do
                 local currentFrame = _G.r[_G.i]
                 if currentFrame.type == "position" then
                     h.CFrame = CFrame.new(unpack(currentFrame.pos)) + Vector3.new(0, _G.hO, 0)
                 elseif currentFrame.type == "proximityPrompt" or currentFrame.type == "clickDetector" then
                     local interaction = findInteraction(currentFrame.id)
-                    if not interaction and currentFrame.type == "proximityPrompt" then
-                        interaction = findNearestProximityPrompt(h.Position)
-                    end
                     if interaction then
                         task.spawn(function()
                             local character = p.Character
@@ -172,7 +172,7 @@ _G.pR = function()
             if _G.i > #_G.r then 
                 if _G.isL then 
                     _G.i = 1
-                    _G.pST = tick() - _G.r[1].time / _G.pS
+                    _G.cT = 0
                 else 
                     _G.isP, _G.cC, _G.isPaused = false, _G.cC and _G.cC:Disconnect(), false 
                     _G.rB.Text = "Rec" 
@@ -203,12 +203,12 @@ _G.tRP = function()
             _G.rB.Text = "Continue"
             _G.rB.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
             _G.pausedIndex = _G.i
-            _G.pausedTime = tick() - _G.pST
+            _G.pausedTime = _G.cT
         else
             _G.rB.Text = "Pause"
             _G.rB.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
             _G.i = _G.pausedIndex
-            _G.pST = tick() - _G.pausedTime
+            _G.cT = _G.pausedTime
         end
     else
         _G.sR()
@@ -261,7 +261,10 @@ return {
     toggleRecordPlay = _G.tRP,
     stopRecording = _G.sTP,
     setLooping = function(value) _G.isL = value end,
-    setPlaybackSpeed = function(value) _G.pS = value end,
+    setPlaybackSpeed = function(value)
+        _G.pS = value
+        updateTotalTime()
+    end,
     setStartPercentage = function(value) _G.startPercentage = value end,
     setHeightOffset = function(value) _G.hO = value end,
     getRecordedData = function() return _G.r end,
