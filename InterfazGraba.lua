@@ -114,7 +114,7 @@ local function cGUI()
     
     cB(ct, "Stop", UDim2.new(0.40, 0, 0.02, 0), _G.sTP)
     
-    local url = cTB("", UDim2.new(0.30, 0, 0.35, 0), "Ingrese URL de grabación")
+    local url = cTB("", UDim2.new(0.26, 0, 0.35, 0), "Ingrese URL de grabación")
     url.Size = UDim2.new(0.70, 0, 0.15, 0)
     url.TextScaled = true
     
@@ -222,10 +222,11 @@ local function cGUI()
         end
     end)
     
-    local codeTextBox = cTB("", UDim2.new(0.02, 0, 0.68, 0), "Código")
+    local codeTextBox = cTB("", UDim2.new(0.02, 0, 0.68, 0), "Script Execute here)
     codeTextBox.Size = UDim2.new(0.7, 0, 0.15, 0)
     codeTextBox.TextXAlignment = Enum.TextXAlignment.Left
     codeTextBox.ClearTextOnFocus = true
+    codeTextBox.TextScaled = true
     
     local executeButton = cB(ct, "Exec", UDim2.new(0.75, 0, 0.68, 0), function()
         local code = codeTextBox.Text
@@ -268,7 +269,7 @@ end
         })
         cE("UICorner", textInput, {CornerRadius = UDim.new(0, 5)})
         
-        local submitButton = cB(textInputFrame, "Agregar", UDim2.new(0.5, -55, 1, -40), function()
+        local submitButton = cB(textInputFrame, "Add", UDim2.new(0.3, -55, 1, -40), function()
             local message = textInput.Text
             if message and message ~= "" then
                 _G.addTextMessage(message)
@@ -279,7 +280,7 @@ else
         end)
         submitButton.Size = UDim2.new(0, 100, 0, 30)
         
-        local cancelButton = cB(textInputFrame, "Cancelar", UDim2.new(0.5, 5, 1, -40), function()
+        local cancelButton = cB(textInputFrame, "Cancel", UDim2.new(0.6, 5, 1, -40), function()
             textInputFrame:Destroy()
         end)
         cancelButton.Size = UDim2.new(0, 100, 0, 30)
