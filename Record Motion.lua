@@ -92,7 +92,7 @@ local function sC()
 end
 
 local function uP()
-    if _G.isR and h and not _G.isPaused then
+    if _G.isR and h and not _G.isPaused and _G.isInteractionRecording then
         table.insert(_G.r, {type = "position", pos = {h.CFrame:GetComponents()}, time = tick() - _G.sT})
     end
 end
@@ -102,6 +102,7 @@ _G.sR = function()
     _G.isInteractionRecording = true
     _G.rB.Text = "Pause"
     _G.rB.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+    _G.lastUpdateTime = tick()
 end
 
 local function findInteraction(encodedPath)
@@ -111,7 +112,10 @@ end
 
 local function updatePlaybackTime(dt)
     if _G.isP and not _G.isPaused then
-        _G.cT = _G.cT + dt * _G.pS
+        local currentTime = tick()
+        local elapsedTime = currentTime - _G.lastUpdateTime
+        _G.lastUpdateTime = currentTime
+        _G.cT = _G.cT + elapsedTime * _G.pS
     end
 end
 
@@ -127,8 +131,13 @@ end
 _G.pR = function()
     if #_G.r > 0 then
         _G.isP, _G.isPaused = true, false
-        _G.i = math.max(1, math.floor(#_G.r * _G.startPercentage / 100))
-        _G.cT = _G.r[_G.i].time
+        if _G.pausedIndex and _G.pausedTime then
+            _G.i = _G.pausedIndex
+            _G.cT = _G.pausedTime
+        else
+            _G.i = math.max(1, math.floor(#_G.r * _G.startPercentage / 100))
+            _G.cT = _G.r[_G.i].time
+        end
         _G.lastUpdateTime = tick()
         _G.pausedIndex, _G.pausedTime = nil, nil
         _G.rB.Text = "Pause"
@@ -142,7 +151,7 @@ _G.pR = function()
             
             updatePlaybackTime(dt)
             
-            while _G.i <= #_G.r and _G.r[_G.i].time <= _G.cT do
+            while _G.i <= #_G.r and _G.r[_G.i] and _G.r[_G.i].time <= _G.cT do
                 local currentFrame = _G.r[_G.i]
                 if currentFrame.type == "position" then
                     h.CFrame = CFrame.new(unpack(currentFrame.pos)) + Vector3.new(0, _G.hO, 0)
@@ -183,7 +192,17 @@ _G.pR = function()
                     task.spawn(function()
                         loadstring(currentFrame.code)()
                     end)
+                elseif currentFrame.type == "text" and not currentFrame.shown then
+                    _G.showTextMessage(currentFrame.message)
+                    currentFrame.shown = true
+                    _G.isPaused = true
+                    _G.pausedIndex = _G.i
+                    _G.pausedTime = _G.cT
+                    _G.rB.Text = "Continue"
+                    _G.rB.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+                    return
                 end
+
                 _G.i = _G.i + 1
             end
             
@@ -191,6 +210,11 @@ _G.pR = function()
                 if _G.isL then 
                     _G.i = 1
                     _G.cT = 0
+                    for _, frame in ipairs(_G.r) do
+                        if frame.type == "text" then
+                            frame.shown = false
+                        end
+                    end
                 else 
                     _G.isP, _G.cC, _G.isPaused = false, _G.cC and _G.cC:Disconnect(), false 
                     _G.rB.Text = "Rec" 
@@ -225,8 +249,8 @@ _G.tRP = function()
         else
             _G.rB.Text = "Pause"
             _G.rB.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
-            _G.i = _G.pausedIndex
-            _G.cT = _G.pausedTime
+            _G.lastUpdateTime = tick()
+            _G.pR()
         end
     else
         _G.sR()
@@ -254,9 +278,65 @@ _G.handleCodeExecution = function(code)
     end)
 end
 
+_G.addTextMessage = function(message)
+    _G.eT = tick() - _G.sT
+    local recordTime = tick() - _G.sT
+    table.insert(_G.r, {type = "text", message = message, time = recordTime, shown = false})
+end
+
+_G.showTextMessage = function(message)
+    local sg = Instance.new("ScreenGui")
+    sg.Name = "TextMessageGui"
+    sg.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0.5, 0, 0.5, 0)
+    frame.Position = UDim2.new(0.25, 0, 0.25, 0)
+    frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    frame.BorderSizePixel = 0
+    frame.Parent = sg
+
+    local uiCorner = Instance.new("UICorner")
+    uiCorner.CornerRadius = UDim.new(0, 10)
+    uiCorner.Parent = frame
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, -20, 1, -60)
+    textLabel.Position = UDim2.new(0, 10, 0, 10)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Font = Enum.Font.GothamSemibold
+    textLabel.TextColor3 = Color3.new(1, 1, 1)
+    textLabel.TextSize = 18
+    textLabel.TextWrapped = true
+    textLabel.Text = message
+    textLabel.Parent = frame
+
+    local closeButton = Instance.new("TextButton")
+    closeButton.Size = UDim2.new(0, 100, 0, 30)
+    closeButton.Position = UDim2.new(0.5, -50, 1, -40)
+    closeButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    closeButton.BorderSizePixel = 0
+    closeButton.Font = Enum.Font.GothamSemibold
+    closeButton.TextColor3 = Color3.new(1, 1, 1)
+    closeButton.TextSize = 14
+    closeButton.Text = "Close"
+    closeButton.Parent = frame
+
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 5)
+    buttonCorner.Parent = closeButton
+
+    closeButton.MouseButton1Click:Connect(function()
+        sg:Destroy()
+    end)
+end
+
 _G.setPlaybackSpeed = function(value)
     _G.pS = value
     updateTotalTime()
+    if _G.isP and not _G.isPaused then
+        _G.lastUpdateTime = tick()
+    end
 end
 
 _G.setStartPercentage = function(value)
@@ -293,7 +373,7 @@ game.DescendantRemoving:Connect(function(v)
 end)
 
 local function loadInterface()
-    local interfaceUrl = "https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/loderr.lua"
+    local interfaceUrl = "https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/InterfaGraba.lua"
     local success, error = pcall(function()
         loadstring(game:HttpGet(interfaceUrl))()
     end)
@@ -319,5 +399,7 @@ return {
     getRecordingDuration = function() return _G.rD end,
     setRecordingDuration = function(value) _G.rD = value end,
     isRecording = function() return _G.isR and _G.isInteractionRecording end,
-    handleCodeExecution = _G.handleCodeExecution
+    handleCodeExecution = _G.handleCodeExecution,
+    addTextMessage = _G.addTextMessage,
+    showTextMessage = _G.showTextMessage
 }
