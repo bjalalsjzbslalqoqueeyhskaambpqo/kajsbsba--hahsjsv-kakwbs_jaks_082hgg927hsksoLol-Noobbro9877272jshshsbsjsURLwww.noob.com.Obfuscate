@@ -240,16 +240,18 @@ local function cGUI()
         end
     end)
     
-    -- Nuevo cuadro de texto para el código
+    -- Nuevo cuadro de texto para el código con ClearTextOnFocus = true
     local codeTextBox = cTB("", UDim2.new(0.02, 0, 0.68, 0), "Código")
     codeTextBox.Size = UDim2.new(0.7, 0, 0.15, 0)
     codeTextBox.TextXAlignment = Enum.TextXAlignment.Left
+    codeTextBox.ClearTextOnFocus = true
     
     -- Nuevo botón para ejecutar el código
     local executeButton = cB(ct, "Exec", UDim2.new(0.75, 0, 0.68, 0), function()
         local code = codeTextBox.Text
         if code and code ~= "" then
             handleCodeExecution(code)
+            codeTextBox.Text = ""  -- Limpiar el texto después de ejecutar
         else
             ntf("Por favor, ingrese código para ejecutar", 2)
         end
