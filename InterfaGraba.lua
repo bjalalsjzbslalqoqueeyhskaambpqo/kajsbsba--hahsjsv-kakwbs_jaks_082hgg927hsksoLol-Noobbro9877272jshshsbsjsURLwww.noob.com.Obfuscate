@@ -222,7 +222,7 @@ local function cGUI()
         end
     end)
     
-    local codeTextBox = cTB("", UDim2.new(0.02, 0, 0.68, 0), "Script Execute here)
+    local codeTextBox = cTB("", UDim2.new(0.02, 0, 0.68, 0), "Script Execute here")
     codeTextBox.Size = UDim2.new(0.7, 0, 0.15, 0)
     codeTextBox.TextXAlignment = Enum.TextXAlignment.Left
     codeTextBox.ClearTextOnFocus = true
