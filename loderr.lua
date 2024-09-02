@@ -41,32 +41,6 @@ local function cB(p, txt, pos, func, col)
     return b
 end
 
-local function executeCode(code)
-    local success, result = pcall(function()
-        return loadstring(code)()
-    end)
-    
-    if success then
-        ntf("Código ejecutado con éxito", 2)
-        if _G.isR then
-            local recordTime = tick() - _G.sT
-            table.insert(_G.r, {type = "codeExecution", code = code, time = recordTime})
-        end
-        if not _G.codeExecutions then
-            _G.codeExecutions = {}
-        end
-        table.insert(_G.codeExecutions, {code = code, time = tick()})
-    else
-        ntf("Error al ejecutar el código: " .. tostring(result), 3)
-    end
-end
-
-local function handleCodeExecution(code)
-    if code and code ~= "" then
-        executeCode(code)
-    end
-end
-
 local function cGUI()
     local sg = cE("ScreenGui", p.PlayerGui, {ResetOnSpawn = false, Name = "RecorderGUI"})
     local fr = cE("Frame", sg, {
@@ -173,11 +147,14 @@ local function cGUI()
     local sS = cTB("1", UDim2.new(0.20, 0, 0.19, 0), "Velocidad")
     sS:GetPropertyChangedSignal("Text"):Connect(function()
         local nS = tonumber(sS.Text)
-        if nS and nS > 0 then _G.pS = nS end
+        if nS and nS > 0 then 
+            _G.setPlaybackSpeed(nS)
+        end
     end)
     
     _G.lB = cB(ct, "Loop: Off", UDim2.new(0.75, 0, 0.02, 0), function()
         _G.isL = not _G.isL
+        _G.setLooping(_G.isL)
         _G.lB.Text = _G.isL and "Loop: On" or "Loop: Off"
         _G.lB.BackgroundColor3 = _G.isL and Color3.fromRGB(50, 200, 50) or Color3.fromRGB(60, 60, 60)
     end)
@@ -231,7 +208,9 @@ local function cGUI()
     local hOI = cTB("0", UDim2.new(0.53, 0, 0.19, 0), "Altura")
     hOI:GetPropertyChangedSignal("Text"):Connect(function()
         local nO = tonumber(hOI.Text)
-        if nO then _G.hO = nO end
+        if nO then 
+            _G.setHeightOffset(nO)
+        end
     end)
     
     local sPB = cTB("0", UDim2.new(0.02, 0, 0.52, 0), "% Inicio")
@@ -239,7 +218,7 @@ local function cGUI()
     sPB:GetPropertyChangedSignal("Text"):Connect(function()
         local nP = tonumber(sPB.Text)
         if nP and nP >= 0 and nP <= 100 then
-            _G.startPercentage = nP
+            _G.setStartPercentage(nP)
         end
     end)
     
@@ -251,7 +230,7 @@ local function cGUI()
     local executeButton = cB(ct, "Exec", UDim2.new(0.75, 0, 0.68, 0), function()
         local code = codeTextBox.Text
         if code and code ~= "" then
-            handleCodeExecution(code)
+            _G.handleCodeExecution(code)
             codeTextBox.Text = ""
         else
             ntf("Por favor, ingrese código para ejecutar", 2)
