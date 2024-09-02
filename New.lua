@@ -147,11 +147,14 @@ local function cGUI()
     local sS = cTB("1", UDim2.new(0.20, 0, 0.19, 0), "Velocidad")
     sS:GetPropertyChangedSignal("Text"):Connect(function()
         local nS = tonumber(sS.Text)
-        if nS and nS > 0 then _G.pS = nS end
+        if nS and nS > 0 then 
+            _G.setPlaybackSpeed(nS)
+        end
     end)
     
     _G.lB = cB(ct, "Loop: Off", UDim2.new(0.75, 0, 0.02, 0), function()
         _G.isL = not _G.isL
+        _G.setLooping(_G.isL)
         _G.lB.Text = _G.isL and "Loop: On" or "Loop: Off"
         _G.lB.BackgroundColor3 = _G.isL and Color3.fromRGB(50, 200, 50) or Color3.fromRGB(60, 60, 60)
     end)
@@ -205,7 +208,9 @@ local function cGUI()
     local hOI = cTB("0", UDim2.new(0.53, 0, 0.19, 0), "Altura")
     hOI:GetPropertyChangedSignal("Text"):Connect(function()
         local nO = tonumber(hOI.Text)
-        if nO then _G.hO = nO end
+        if nO then 
+            _G.setHeightOffset(nO)
+        end
     end)
     
     local sPB = cTB("0", UDim2.new(0.02, 0, 0.52, 0), "% Inicio")
@@ -213,9 +218,65 @@ local function cGUI()
     sPB:GetPropertyChangedSignal("Text"):Connect(function()
         local nP = tonumber(sPB.Text)
         if nP and nP >= 0 and nP <= 100 then
-            _G.startPercentage = nP
+            _G.setStartPercentage(nP)
         end
     end)
+    
+    local codeTextBox = cTB("", UDim2.new(0.02, 0, 0.68, 0), "Código")
+    codeTextBox.Size = UDim2.new(0.7, 0, 0.15, 0)
+    codeTextBox.TextXAlignment = Enum.TextXAlignment.Left
+    codeTextBox.ClearTextOnFocus = true
+    
+    local executeButton = cB(ct, "Exec", UDim2.new(0.75, 0, 0.68, 0), function()
+        local code = codeTextBox.Text
+        if code and code ~= "" then
+            _G.handleCodeExecution(code)
+            codeTextBox.Text = ""
+        else
+            ntf("Por favor, ingrese código para ejecutar", 2)
+        end
+    end)
+    executeButton.Size = UDim2.new(0.23, 0, 0.15, 0)
+    
+    local addTextButton = cB(ct, "Add Text", UDim2.new(0.02, 0, 0.35, 0), function()
+        local textInputFrame = cE("Frame", sg, {
+            Size = UDim2.new(0.5, 0, 0.5, 0),
+            Position = UDim2.new(0.25, 0, 0.25, 0),
+            BackgroundColor3 = Color3.fromRGB(40, 40, 40),
+            BorderSizePixel = 0
+        })
+        cE("UICorner", textInputFrame, {CornerRadius = UDim.new(0, 10)})
+        
+        local textInput = cE("TextBox", textInputFrame, {
+            Size = UDim2.new(1, -20, 1, -60),
+            Position = UDim2.new(0, 10, 0, 10),
+            BackgroundColor3 = Color3.fromRGB(60, 60, 60),
+            TextColor3 = Color3.new(1, 1, 1),
+            Font = Enum.Font.GothamSemibold,
+            TextSize = 14,
+            TextWrapped = true,
+            PlaceholderText = "Ingrese su mensaje aquí...",
+            ClearTextOnFocus = false
+        })
+        cE("UICorner", textInput, {CornerRadius = UDim.new(0, 5)})
+        
+        local submitButton = cB(textInputFrame, "Agregar", UDim2.new(0.5, -55, 1, -40), function()
+            local message = textInput.Text
+            if message and message ~= "" then
+                _G.addTextMessage(message)
+                textInputFrame:Destroy()
+            else
+                ntf("Por favor, ingrese un mensaje", 2)
+            end
+        })
+        submitButton.Size = UDim2.new(0, 100, 0, 30)
+        
+        local cancelButton = cB(textInputFrame, "Cancelar", UDim2.new(0.5, 5, 1, -40), function()
+            textInputFrame:Destroy()
+        })
+        cancelButton.Size = UDim2.new(0, 100, 0, 30)
+    end)
+    addTextButton.Size = UDim2.new(0.23, 0, 0.15, 0)
     
     RS.Heartbeat:Connect(function()
         if _G.isR and not _G.isPaused then
