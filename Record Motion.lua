@@ -13,20 +13,30 @@ _G.pausedIndex, _G.pausedTime, _G.i = nil, nil, 1
 _G.startPercentage = 0
 _G.isGeneratingURL = false
 _G.isLoadingURL = false
-spawn(function()
-    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
-end)
+_G.originalSpeed = 1
 
 local interactionConnections = {}
+
+local function fT(s)
+    return string.format("%02d:%02d:%02d", s/3600, (s%3600)/60, s%60)
+end
 
 local function hookInteraction(object)
     if interactionConnections[object] then return end
     
     local connection
-    if object:IsA("ProximityPrompt") or object:IsA("ClickDetector") then
-        connection = (object:IsA("ProximityPrompt") and object.Triggered or object.MouseClick):Connect(function()
+    if object:IsA("ProximityPrompt") then
+        connection = object.Triggered:Connect(function()
             if _G.isR and _G.isInteractionRecording then
-                table.insert(_G.r, {type = object.ClassName, id = object:GetFullName(), time = tick() - _G.sT})
+                local recordTime = tick() - _G.sT
+                table.insert(_G.r, {type = "proximityPrompt", id = object:GetFullName(), time = recordTime})
+            end
+        end)
+    elseif object:IsA("ClickDetector") then
+        connection = object.MouseClick:Connect(function()
+            if _G.isR and _G.isInteractionRecording then
+                local recordTime = tick() - _G.sT
+                table.insert(_G.r, {type = "clickDetector", id = object:GetFullName(), time = recordTime})
             end
         end)
     end
@@ -54,41 +64,30 @@ local function hookAllInteractions()
 end
 
 local function unhookAllInteractions()
-    for object in pairs(interactionConnections) do
+    for object, connection in pairs(interactionConnections) do
         unhookInteraction(object)
     end
+    interactionConnections = {}
 end
 
 local function sC()
     c, h = p.Character or p.CharacterAdded:Wait(), nil
     h = c:WaitForChild("HumanoidRootPart")
     hookAllInteractions()
+    
+    local humanoid = c:WaitForChild("Humanoid")
+    humanoid.Died:Connect(function()
+        if _G.isP and _G.pS > 1 then
+            _G.originalSpeed = _G.pS
+            _G.pS = 1
+        end
+    end)
 end
 
 local function uP()
     if _G.isR and h and not _G.isPaused then
         table.insert(_G.r, {type = "position", pos = {h.CFrame:GetComponents()}, time = tick() - _G.sT})
     end
-end
-
-_G.sR = function()
-    _G.r, _G.isR, _G.sT, _G.isPaused = {}, true, tick(), false
-    _G.isInteractionRecording = true
-    _G.rB.Text = "Pause"
-    _G.rB.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
-end
-
-local function findNearestInteraction(interactionType, playerPosition)
-    local nearestInteraction, nearestDistance = nil, math.huge
-    for _, object in ipairs(game:GetDescendants()) do
-        if object:IsA(interactionType) then
-            local distance = (object.Parent.Position - playerPosition).Magnitude
-            if distance < nearestDistance then
-                nearestInteraction, nearestDistance = object, distance
-            end
-        end
-    end
-    return nearestInteraction
 end
 
 local function findInteraction(id)
@@ -101,11 +100,18 @@ local function findInteraction(id)
     return (current:IsA("ProximityPrompt") or current:IsA("ClickDetector")) and current or nil
 end
 
+_G.sR = function()
+    _G.r, _G.isR, _G.sT, _G.isPaused = {}, true, tick(), false
+    _G.isInteractionRecording = true
+    _G.rB.Text = "Pause"
+    _G.rB.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+end
+
 _G.pR = function()
     if #_G.r > 0 then
         _G.isP, _G.isPaused = true, false
         _G.i = math.max(1, math.floor(#_G.r * _G.startPercentage / 100))
-        _G.pST = tick() - _G.r[_G.i].time
+        _G.pST = tick() - _G.r[_G.i].time / _G.pS
         _G.pausedIndex, _G.pausedTime = nil, nil
         _G.rB.Text = "Pause"
         _G.rB.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
@@ -113,30 +119,44 @@ _G.pR = function()
         _G.cC = RS.Heartbeat:Connect(function()
             if not _G.isP or _G.isPaused then return end
             if not h then sC() return end
-            local currentTime = tick() - _G.pST
+            local currentTime = (tick() - _G.pST) * _G.pS
+            local remainingTime = math.max(0, _G.rD - currentTime)
+            _G.tL.Text = fT(remainingTime / _G.pS)
             
             while _G.i <= #_G.r and _G.r[_G.i].time <= currentTime do
                 local currentFrame = _G.r[_G.i]
                 if currentFrame.type == "position" then
                     h.CFrame = CFrame.new(unpack(currentFrame.pos)) + Vector3.new(0, _G.hO, 0)
-                elseif currentFrame.type == "ProximityPrompt" or currentFrame.type == "ClickDetector" then
-                    local interaction = findInteraction(currentFrame.id) or findNearestInteraction(currentFrame.type, h.Position)
+                elseif currentFrame.type == "proximityPrompt" or currentFrame.type == "clickDetector" then
+                    local interaction = findInteraction(currentFrame.id)
                     if interaction then
                         task.spawn(function()
-                            local humanoid = c:FindFirstChildOfClass("Humanoid")
-                            if humanoid then
-                                local originalWalkSpeed, originalJumpHeight = humanoid.WalkSpeed, humanoid.JumpHeight
-                                humanoid.WalkSpeed, humanoid.JumpHeight = 0, 0
-                                
-                                local originalPosition = h.CFrame
-                                h.CFrame = interaction.Parent.CFrame
-                                task.wait(0.1)
-                                if interaction:IsA("ProximityPrompt") then fireproximityprompt(interaction)
-                                elseif interaction:IsA("ClickDetector") then fireclickdetector(interaction) end
-                                task.wait(0.1)
-                                h.CFrame = originalPosition
-                                
-                                humanoid.WalkSpeed, humanoid.JumpHeight = originalWalkSpeed, originalJumpHeight
+                            local character = p.Character
+                            if character then
+                                local humanoid = character:FindFirstChildOfClass("Humanoid")
+                                if humanoid then
+                                    humanoid.WalkSpeed = 0
+                                    humanoid.JumpHeight = 0
+                                end
+                            end
+                            
+                            local originalPosition = h.CFrame
+                            h.CFrame = interaction.Parent.CFrame
+                            task.wait(0.1 / _G.pS)
+                            if interaction:IsA("ProximityPrompt") then
+                                fireproximityprompt(interaction)
+                            elseif interaction:IsA("ClickDetector") then
+                                fireclickdetector(interaction)
+                            end
+                            task.wait(0.1 / _G.pS)
+                            h.CFrame = originalPosition
+                            
+                            if character then
+                                local humanoid = character:FindFirstChildOfClass("Humanoid")
+                                if humanoid then
+                                    humanoid.WalkSpeed = 16
+                                    humanoid.JumpHeight = 7.2
+                                end
                             end
                         end)
                     end
@@ -147,11 +167,12 @@ _G.pR = function()
             if _G.i > #_G.r then 
                 if _G.isL then 
                     _G.i = 1
-                    _G.pST = tick() - _G.r[1].time
+                    _G.pST = tick() - _G.r[1].time / _G.pS
                 else 
                     _G.isP, _G.cC, _G.isPaused = false, _G.cC and _G.cC:Disconnect(), false 
                     _G.rB.Text = "Rec" 
                     _G.rB.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+                    _G.tL.Text = "00:00:00"
                 end
             end
         end)
@@ -159,28 +180,31 @@ _G.pR = function()
 end
 
 _G.tRP = function()
-    if _G.isR or _G.isP then
+    if _G.isR then
         _G.isPaused = not _G.isPaused
         if _G.isPaused then
             _G.rB.Text = "Continue"
             _G.rB.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-            if _G.isR then
-                _G.eT = tick() - _G.sT
-                _G.isInteractionRecording = false
-            else
-                _G.pausedIndex = _G.i
-                _G.pausedTime = tick() - _G.pST
-            end
+            _G.eT = tick() - _G.sT
+            _G.isInteractionRecording = false
         else
             _G.rB.Text = "Pause"
             _G.rB.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
-            if _G.isR then
-                _G.sT = tick() - _G.eT
-                _G.isInteractionRecording = true
-            else
-                _G.i = _G.pausedIndex
-                _G.pST = tick() - _G.pausedTime
-            end
+            _G.sT = tick() - _G.eT
+            _G.isInteractionRecording = true
+        end
+    elseif _G.isP then
+        _G.isPaused = not _G.isPaused
+        if _G.isPaused then
+            _G.rB.Text = "Continue"
+            _G.rB.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+            _G.pausedIndex = _G.i
+            _G.pausedTime = tick() - _G.pST
+        else
+            _G.rB.Text = "Pause"
+            _G.rB.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+            _G.i = _G.pausedIndex
+            _G.pST = tick() - _G.pausedTime
         end
     else
         _G.sR()
@@ -195,12 +219,28 @@ _G.sTP = function()
     _G.eT = _G.isR and (tick() - _G.sT) or _G.eT
     _G.rB.Text = "Rec"
     _G.rB.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+    _G.tL.Text = fT(_G.rD)
 end
 
 RS.Heartbeat:Connect(uP)
 
 sC()
-p.CharacterAdded:Connect(sC)
+p.CharacterAdded:Connect(function(character)
+    sC()
+    local humanoid = character:WaitForChild("Humanoid")
+    humanoid.Died:Connect(function()
+        if _G.isP and _G.pS > 1 then
+            _G.originalSpeed = _G.pS
+            _G.pS = 1
+        end
+    end)
+end)
+
+p.CharacterRemoving:Connect(function()
+    if _G.isP and _G.pS == 1 and _G.originalSpeed > 1 then
+        _G.pS = _G.originalSpeed
+    end
+end)
 
 game.DescendantAdded:Connect(function(v)
     if v:IsA("ProximityPrompt") or v:IsA("ClickDetector") then
@@ -215,7 +255,7 @@ game.DescendantRemoving:Connect(function(v)
 end)
 
 local function loadInterface()
-    local interfaceUrl = "https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/loadedd.luaa"
+    local interfaceUrl = "https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/loadedd.lua"
     local success, error = pcall(function()
         loadstring(game:HttpGet(interfaceUrl))()
     end)
