@@ -13,13 +13,8 @@ _G.pausedIndex, _G.pausedTime, _G.i = nil, nil, 1
 _G.startPercentage = 0
 _G.isGeneratingURL = false
 _G.isLoadingURL = false
-_G.originalSpeed = 1
 
 local interactionConnections = {}
-
-local function fT(s)
-    return string.format("%02d:%02d:%02d", s/3600, (s%3600)/60, s%60)
-end
 
 local function hookInteraction(object)
     if interactionConnections[object] then return end
@@ -74,20 +69,19 @@ local function sC()
     c, h = p.Character or p.CharacterAdded:Wait(), nil
     h = c:WaitForChild("HumanoidRootPart")
     hookAllInteractions()
-    
-    local humanoid = c:WaitForChild("Humanoid")
-    humanoid.Died:Connect(function()
-        if _G.isP and _G.pS > 1 then
-            _G.originalSpeed = _G.pS
-            _G.pS = 1
-        end
-    end)
 end
 
 local function uP()
     if _G.isR and h and not _G.isPaused then
         table.insert(_G.r, {type = "position", pos = {h.CFrame:GetComponents()}, time = tick() - _G.sT})
     end
+end
+
+_G.sR = function()
+    _G.r, _G.isR, _G.sT, _G.isPaused = {}, true, tick(), false
+    _G.isInteractionRecording = true
+    _G.rB.Text = "Pause"
+    _G.rB.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
 end
 
 local function findInteraction(id)
@@ -100,11 +94,21 @@ local function findInteraction(id)
     return (current:IsA("ProximityPrompt") or current:IsA("ClickDetector")) and current or nil
 end
 
-_G.sR = function()
-    _G.r, _G.isR, _G.sT, _G.isPaused = {}, true, tick(), false
-    _G.isInteractionRecording = true
-    _G.rB.Text = "Pause"
-    _G.rB.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+local function findNearestProximityPrompt(position)
+    local nearestPrompt = nil
+    local minDistance = math.huge
+    
+    for _, v in ipairs(workspace:GetDescendants()) do
+        if v:IsA("ProximityPrompt") then
+            local distance = (v.Parent.Position - position).Magnitude
+            if distance < minDistance then
+                nearestPrompt = v
+                minDistance = distance
+            end
+        end
+    end
+    
+    return nearestPrompt
 end
 
 _G.pR = function()
@@ -120,8 +124,6 @@ _G.pR = function()
             if not _G.isP or _G.isPaused then return end
             if not h then sC() return end
             local currentTime = (tick() - _G.pST) * _G.pS
-            local remainingTime = math.max(0, _G.rD - currentTime)
-            _G.tL.Text = fT(remainingTime / _G.pS)
             
             while _G.i <= #_G.r and _G.r[_G.i].time <= currentTime do
                 local currentFrame = _G.r[_G.i]
@@ -129,6 +131,9 @@ _G.pR = function()
                     h.CFrame = CFrame.new(unpack(currentFrame.pos)) + Vector3.new(0, _G.hO, 0)
                 elseif currentFrame.type == "proximityPrompt" or currentFrame.type == "clickDetector" then
                     local interaction = findInteraction(currentFrame.id)
+                    if not interaction and currentFrame.type == "proximityPrompt" then
+                        interaction = findNearestProximityPrompt(h.Position)
+                    end
                     if interaction then
                         task.spawn(function()
                             local character = p.Character
@@ -172,7 +177,6 @@ _G.pR = function()
                     _G.isP, _G.cC, _G.isPaused = false, _G.cC and _G.cC:Disconnect(), false 
                     _G.rB.Text = "Rec" 
                     _G.rB.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-                    _G.tL.Text = "00:00:00"
                 end
             end
         end)
@@ -219,28 +223,12 @@ _G.sTP = function()
     _G.eT = _G.isR and (tick() - _G.sT) or _G.eT
     _G.rB.Text = "Rec"
     _G.rB.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-    _G.tL.Text = fT(_G.rD)
 end
 
 RS.Heartbeat:Connect(uP)
 
 sC()
-p.CharacterAdded:Connect(function(character)
-    sC()
-    local humanoid = character:WaitForChild("Humanoid")
-    humanoid.Died:Connect(function()
-        if _G.isP and _G.pS > 1 then
-            _G.originalSpeed = _G.pS
-            _G.pS = 1
-        end
-    end)
-end)
-
-p.CharacterRemoving:Connect(function()
-    if _G.isP and _G.pS == 1 and _G.originalSpeed > 1 then
-        _G.pS = _G.originalSpeed
-    end
-end)
+p.CharacterAdded:Connect(sC)
 
 game.DescendantAdded:Connect(function(v)
     if v:IsA("ProximityPrompt") or v:IsA("ClickDetector") then
