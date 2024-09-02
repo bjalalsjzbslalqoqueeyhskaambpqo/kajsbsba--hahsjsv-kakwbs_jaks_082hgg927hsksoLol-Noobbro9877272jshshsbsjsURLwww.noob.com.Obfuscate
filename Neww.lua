@@ -245,7 +245,6 @@ local function cGUI()
         _G.isInteractionRecording = false
         _G.rB.Text = "Continue"
         _G.rB.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-        _G.eT = tick() - _G.sT
 end
                     end)
         local textInputFrame = cE("Frame", sg, {
