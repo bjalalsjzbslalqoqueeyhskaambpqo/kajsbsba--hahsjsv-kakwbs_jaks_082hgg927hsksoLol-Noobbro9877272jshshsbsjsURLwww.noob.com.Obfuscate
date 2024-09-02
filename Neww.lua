@@ -265,15 +265,15 @@ local function cGUI()
             if message and message ~= "" then
                 _G.addTextMessage(message)
                 textInputFrame:Destroy()
-            else
+else
                 ntf("Por favor, ingrese un mensaje", 2)
             end
-        })
+        end)
         submitButton.Size = UDim2.new(0, 100, 0, 30)
         
         local cancelButton = cB(textInputFrame, "Cancelar", UDim2.new(0.5, 5, 1, -40), function()
             textInputFrame:Destroy()
-        })
+        end)
         cancelButton.Size = UDim2.new(0, 100, 0, 30)
     end)
     addTextButton.Size = UDim2.new(0.23, 0, 0.15, 0)
