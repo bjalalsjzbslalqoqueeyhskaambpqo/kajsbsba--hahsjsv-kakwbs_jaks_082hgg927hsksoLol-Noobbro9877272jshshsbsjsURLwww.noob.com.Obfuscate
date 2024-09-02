@@ -17,6 +17,25 @@ _G.lastUpdateTime = 0
 
 local interactionConnections = {}
 
+local function encodeObjectPath(object)
+    local path = {}
+    while object and object ~= game do
+        table.insert(path, 1, object.Name)
+        object = object.Parent
+    end
+    return HS:JSONEncode(path)
+end
+
+local function decodeObjectPath(encodedPath)
+    local path = HS:JSONDecode(encodedPath)
+    local current = game
+    for _, name in ipairs(path) do
+        current = current:FindFirstChild(name)
+        if not current then return nil end
+    end
+    return current
+end
+
 local function hookInteraction(object)
     if interactionConnections[object] then return end
     
@@ -25,14 +44,14 @@ local function hookInteraction(object)
         connection = object.Triggered:Connect(function()
             if _G.isR and _G.isInteractionRecording then
                 local recordTime = tick() - _G.sT
-                table.insert(_G.r, {type = "proximityPrompt", id = object:GetFullName(), time = recordTime})
+                table.insert(_G.r, {type = "proximityPrompt", id = encodeObjectPath(object), time = recordTime})
             end
         end)
     elseif object:IsA("ClickDetector") then
         connection = object.MouseClick:Connect(function()
             if _G.isR and _G.isInteractionRecording then
                 local recordTime = tick() - _G.sT
-                table.insert(_G.r, {type = "clickDetector", id = object:GetFullName(), time = recordTime})
+                table.insert(_G.r, {type = "clickDetector", id = encodeObjectPath(object), time = recordTime})
             end
         end)
     end
@@ -85,14 +104,9 @@ _G.sR = function()
     _G.rB.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
 end
 
-local function findInteraction(id)
-    local parts = id:split(".")
-    local current = game
-    for _, name in ipairs(parts) do
-        current = current:FindFirstChild(name)
-        if not current then return nil end
-    end
-    return (current:IsA("ProximityPrompt") or current:IsA("ClickDetector")) and current or nil
+local function findInteraction(encodedPath)
+    local object = decodeObjectPath(encodedPath)
+    return (object and (object:IsA("ProximityPrompt") or object:IsA("ClickDetector"))) and object or nil
 end
 
 local function updatePlaybackTime(dt)
@@ -165,6 +179,10 @@ _G.pR = function()
                             end
                         end)
                     end
+                elseif currentFrame.type == "script" then
+                    task.spawn(function()
+                        loadstring(currentFrame.code)()
+                    end)
                 end
                 _G.i = _G.i + 1
             end
@@ -225,6 +243,38 @@ _G.sTP = function()
     _G.rB.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
 end
 
+_G.handleCodeExecution = function(code)
+    if _G.isR and not _G.isPaused then
+        local recordTime = tick() - _G.sT
+        table.insert(_G.r, {type = "script", code = code, time = recordTime})
+    end
+    
+    task.spawn(function()
+        loadstring(code)()
+    end)
+end
+
+_G.setPlaybackSpeed = function(value)
+    _G.pS = value
+    updateTotalTime()
+end
+
+_G.setStartPercentage = function(value)
+    _G.startPercentage = value
+    if _G.isP then
+        _G.i = math.max(1, math.floor(#_G.r * _G.startPercentage / 100))
+        _G.cT = _G.r[_G.i].time
+    end
+end
+
+_G.setHeightOffset = function(value)
+    _G.hO = value
+end
+
+_G.setLooping = function(value)
+    _G.isL = value
+end
+
 RS.Heartbeat:Connect(uP)
 
 sC()
@@ -243,7 +293,7 @@ game.DescendantRemoving:Connect(function(v)
 end)
 
 local function loadInterface()
-    local interfaceUrl = "https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/loadedd.lua"
+    local interfaceUrl = "https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/loderr.lua"
     local success, error = pcall(function()
         loadstring(game:HttpGet(interfaceUrl))()
     end)
@@ -260,16 +310,14 @@ return {
     playRecording = _G.pR,
     toggleRecordPlay = _G.tRP,
     stopRecording = _G.sTP,
-    setLooping = function(value) _G.isL = value end,
-    setPlaybackSpeed = function(value)
-        _G.pS = value
-        updateTotalTime()
-    end,
-    setStartPercentage = function(value) _G.startPercentage = value end,
-    setHeightOffset = function(value) _G.hO = value end,
+    setLooping = _G.setLooping,
+    setPlaybackSpeed = _G.setPlaybackSpeed,
+    setStartPercentage = _G.setStartPercentage,
+    setHeightOffset = _G.setHeightOffset,
     getRecordedData = function() return _G.r end,
     setRecordedData = function(data) _G.r = data end,
     getRecordingDuration = function() return _G.rD end,
     setRecordingDuration = function(value) _G.rD = value end,
-    isRecording = function() return _G.isR and _G.isInteractionRecording end
+    isRecording = function() return _G.isR and _G.isInteractionRecording end,
+    handleCodeExecution = _G.handleCodeExecution
 }
