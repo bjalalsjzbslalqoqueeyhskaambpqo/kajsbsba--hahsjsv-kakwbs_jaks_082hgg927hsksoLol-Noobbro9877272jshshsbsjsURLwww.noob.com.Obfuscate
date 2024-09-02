@@ -41,28 +41,7 @@ local function cB(p, txt, pos, func, col)
     return b
 end
 
-local function executeCode(code)
-    local success, result = pcall(function()
-        return loadstring(code)()
-    end)
-    
-    if success then
-        ntf("Código ejecutado con éxito", 2)
-    else
-        ntf("Error al ejecutar el código: " .. tostring(result), 3)
-    end
-    
-    if _G.isR then
-        local recordTime = tick() - _G.sT
-        table.insert(_G.r, {type = "codeExecution", code = code, time = recordTime})
-    end
-end
 
-local function handleCodeExecution(code)
-    if code and code ~= "" then
-        executeCode(code)
-    end
-end
 
 local function cGUI()
     local sg = cE("ScreenGui", p.PlayerGui, {ResetOnSpawn = false, Name = "RecorderGUI"})
@@ -78,7 +57,37 @@ local function cGUI()
     
     local mB = cE("TextButton", fr, {
         Size = UDim2.new(0, 20, 0, 20),
-        Position = UDim2.new(1.05, -35, 0, 0),
+        Position = UDim2.new(1.05, local function executeCode(code)
+    local success, result = pcall(function()
+        return loadstring(code)()
+    end)
+    
+    if success then
+        ntf("Código ejecutado con éxito", 2)
+        
+        -- Registrar la ejecución del código en la tabla global de grabación
+        if _G.isR then
+            local recordTime = tick() - _G.sT
+            table.insert(_G.r, {type = "codeExecution", code = code, time = recordTime})
+        end
+        
+        -- Agregar el código a la tabla global de ejecuciones de código
+        if not _G.codeExecutions then
+            _G.codeExecutions = {}
+        end
+        table.insert(_G.codeExecutions, {code = code, time = tick()})
+        
+    else
+        ntf("Error al ejecutar el código: " .. tostring(result), 3)
+    end
+end
+
+local function handleCodeExecution(code)
+    if code and code ~= "" then
+        executeCode(code)
+    end
+end
+-35, 0, 0),
         Text = "+",
         BackgroundColor3 = Color3.fromRGB(50, 50, 50),
         TextColor3 = Color3.new(1, 1, 1),
