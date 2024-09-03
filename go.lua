@@ -105,7 +105,7 @@ local function createUI(parent, isSubMenu, subMenuTitle, customTitle)
     end
     
     function ui:TBox(text, callback)
-        local tbox = addElement("TextBox", {Text = text, ClearTextOnFocus = false})
+        local tbox = addElement("TextBox", {Text = text, ClearTextOnFocus = true})
         if callback then tbox.FocusLost:Connect(function(enterPressed) callback(tbox.Text, enterPressed) end) end
         return tbox
     end
