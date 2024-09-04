@@ -1,7 +1,6 @@
 local MiniUI = {}
 
 local TS = game:GetService("TweenService")
-local CP = game:GetService("ContentProvider")
 local UIS = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 local HttpService = game:GetService("HttpService")
@@ -27,20 +26,15 @@ local function s(i, p)
     end
 end
 
-local function lImg(url)
-    local img = c("ImageLabel", {BackgroundTransparency = 1, Image = url})
-    CP:PreloadAsync({img})
-    return img
-end
-
 local colors = {
     background = Color3.fromRGB(30, 30, 40),
-    foreground = Color3.fromRGB(50, 50, 60),
+    foreground = Color3.fromRGB(45, 45, 55),
     accent = Color3.fromRGB(70, 130, 180),
     text = Color3.fromRGB(220, 220, 220),
     button = Color3.fromRGB(60, 60, 70),
     buttonHover = Color3.fromRGB(80, 80, 90),
     toggle = Color3.fromRGB(60, 180, 75),
+    toggleOff = Color3.fromRGB(180, 60, 60),
     slider = Color3.fromRGB(100, 100, 110),
 }
 
@@ -57,12 +51,6 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         BorderSizePixel = 0,
         ZIndex = 10000
     })
-
-    local bg = lImg("rbxassetid://6073628839")
-    bg.Parent = f
-    bg.Size = UDim2.new(1, 0, 1, 0)
-    bg.ImageTransparency = 0.9
-    bg.ZIndex = 10001
 
     c("UICorner", {CornerRadius = UDim.new(0, 8), Parent = f})
     c("UIStroke", {Color = colors.accent, Thickness = 2, Parent = f})
@@ -200,47 +188,37 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     end
     
     function ui:Txt(text)
-        local txt = addElem("TextLabel", {Text = text})
+        local txt = addElem("TextLabel", {Text = text, TextWrapped = true})
         if #text > 50 then
+            local originalText = text
             txt.Text = string.sub(text, 1, 47) .. "..."
-            txt.MouseButton1Click:Connect(function()
-                local fullTextFrame = c("Frame", {
-                    Size = UDim2.new(0, 300, 0, 200),
-                    Position = UDim2.new(0.5, -150, 0.5, -100),
-                    BackgroundColor3 = colors.background,
-                    Parent = CoreGui,
-                    ZIndex = 10100
-                })
-                c("UICorner", {CornerRadius = UDim.new(0, 8), Parent = fullTextFrame})
-                c("UIStroke", {Color = colors.accent, Thickness = 2, Parent = fullTextFrame})
-                
-                local fullText = c("TextLabel", {
-                    Size = UDim2.new(1, -20, 1, -50),
-                    Position = UDim2.new(0, 10, 0, 10),
-                    Text = text,
-                    Parent = fullTextFrame,
-                    BackgroundTransparency = 1,
-                    TextColor3 = colors.text,
-                    TextWrapped = true,
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    TextYAlignment = Enum.TextYAlignment.Top,
-                    ZIndex = 10101
-                })
-                
-                local closeBtn = c("TextButton", {
-                    Size = UDim2.new(0, 80, 0, 30),
-                    Position = UDim2.new(0.5, -40, 1, -40),
-                    Text = "Close",
-                    Parent = fullTextFrame,
-                    BackgroundColor3 = colors.button,
-                    TextColor3 = colors.text,
-                    ZIndex = 10101
-                })
-                c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = closeBtn})
-                
-                closeBtn.MouseButton1Click:Connect(function()
-                    fullTextFrame:Destroy()
-                end)
+            local expanded = false
+            
+            local expandBtn = c("TextButton", {
+                Size = UDim2.new(1, 0, 0, 20),
+                Position = UDim2.new(0, 0, 1, 0),
+                Text = "Expand",
+                Parent = txt.Parent,
+                BackgroundColor3 = colors.button,
+                TextColor3 = colors.text,
+                Font = Enum.Font.Gotham,
+                TextSize = 12,
+                ZIndex = 10005
+            })
+            c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = expandBtn})
+            
+            expandBtn.MouseButton1Click:Connect(function()
+                expanded = not expanded
+                if expanded then
+                    txt.Text = originalText
+                    expandBtn.Text = "Collapse"
+                    txt.Parent.Size = UDim2.new(1, 0, 0, txt.TextBounds.Y + 30)
+                else
+                    txt.Text = string.sub(originalText, 1, 47) .. "..."
+                    expandBtn.Text = "Expand"
+                    txt.Parent.Size = UDim2.new(1, 0, 0, 52)
+                end
+                upSize()
             end)
         end
         return txt
@@ -318,7 +296,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         local active = false
         
         local function upApp()
-            btn.BackgroundColor3 = active and colors.toggle or colors.button
+            btn.BackgroundColor3 = active and colors.toggle or colors.toggleOff
         end
         
         btn.MouseButton1Click:Connect(function()
@@ -329,44 +307,6 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         
         upApp()
         return btn
-    end
-    
-    function ui:Img(url)
-        local imgCont = addElem("Frame", {Size = UDim2.new(1, 0, 0, 100), BackgroundTransparency = 1})
-        local img = c("ImageLabel", {
-            Size = UDim2.new(1, 0, 1, 0),
-            Position = UDim2.new(0, 0, 0, 0),
-            Image = url,
-            Parent = imgCont,
-            BackgroundTransparency = 1,
-            ZIndex = 10004
-        })
-        c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = img})
-        
-        spawn(function()
-            local success, result = pcall(function()
-                return game:GetService("HttpService"):GetAsync(url)
-            end)
-            
-            if success then
-                img.Image = url
-            else
-                img.Image = "rbxassetid://0"
-                local errorText = c("TextLabel", {
-                    Size = UDim2.new(1, 0, 1, 0),
-                    Position = UDim2.new(0, 0, 0, 0),
-                    Text = "Failed to load image",
-                    Parent = imgCont,
-                    BackgroundTransparency = 1,
-                    TextColor3 = colors.text,
-                    Font = Enum.Font.Gotham,
-                    TextSize = 14,
-                    ZIndex = 10005
-                })
-            end
-        end)
-        
-        return imgCont
     end
     
     local activeSub = nil
@@ -418,14 +358,15 @@ function MiniUI:new(cusTitle)
     local ui = cUI(sg, false, nil, cusTitle)
     
     local notificationQueue = {}
-    local currentNotification = nil
+    local currentNotifications = {}
+    local maxNotifications = 5
     
     local function showNextNotification()
-        if #notificationQueue > 0 and not currentNotification then
-            currentNotification = table.remove(notificationQueue, 1)
+        if #notificationQueue > 0 and #currentNotifications < maxNotifications then
+            local notifData = table.remove(notificationQueue, 1)
             local notif = c("Frame", {
                 Size = UDim2.new(0, 200, 0, 50),
-                Position = UDim2.new(1, -220, 1, 20),
+                Position = UDim2.new(1, -220, 1, 20 + (#currentNotifications * 60)),
                 BackgroundColor3 = colors.background,
                 BorderSizePixel = 0,
                 Parent = sg,
@@ -437,7 +378,7 @@ function MiniUI:new(cusTitle)
             local text = c("TextLabel", {
                 Size = UDim2.new(1, -20, 1, 0),
                 Position = UDim2.new(0, 10, 0, 0),
-                Text = currentNotification.message,
+                Text = notifData.message,
                 Parent = notif,
                 BackgroundTransparency = 1,
                 Font = Enum.Font.Gotham,
@@ -447,13 +388,23 @@ function MiniUI:new(cusTitle)
                 ZIndex = 10011
             })
             
-            TS:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1, -220, 1, -70)}):Play()
+            table.insert(currentNotifications, notif)
+            
+            TS:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1, -220, 1, -70 - ((#currentNotifications - 1) * 60))}):Play()
             spawn(function()
-                wait(currentNotification.duration)
+                wait(notifData.duration)
                 TS:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1, -220, 1, 20)}):Play()
                 wait(0.5)
+                for i, v in ipairs(currentNotifications) do
+                    if v == notif then
+                        table.remove(currentNotifications, i)
+                        break
+                    end
+                end
                 notif:Destroy()
-                currentNotification = nil
+                for i, v in ipairs(currentNotifications) do
+                    TS:Create(v, TweenInfo.new(0.3), {Position = UDim2.new(1, -220, 1, -70 - ((i - 1) * 60))}):Play()
+                end
                 showNextNotification()
             end)
         end
@@ -461,7 +412,7 @@ function MiniUI:new(cusTitle)
     
     function ui:Notify(message, duration)
         table.insert(notificationQueue, {message = message, duration = duration or 3})
-        if not currentNotification then
+        if #currentNotifications < maxNotifications then
             showNextNotification()
         end
     end
@@ -545,8 +496,6 @@ function MiniUI:new(cusTitle)
         serverSub:Btn("Follow/Unfollow", function() loadScript("Follow%20or%20UnFollow%20Users") end)
         serverSub:Btn("Fake Gamepass", function() loadScript("Fake%20Parchuses%20Gamepass") end)
         serverSub:Btn("Bypass Premium", function() loadScript("Bypass%20Premiun") end)
-        
-        serverSub:Img("https://www.roblox.com/headshot-thumbnail/image?userId=" .. Players.LocalPlayer.UserId .. "&width=420&height=420&format=png")
         
         game:GetService("NetworkClient").ChildRemoved:Connect(function()
             if #Players:GetPlayers() <= 1 then
