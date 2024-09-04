@@ -6,17 +6,14 @@ local UIS = game:GetService("UserInputService")
 
 local function c(t, p)
     local i = Instance.new(t)
-    for k, v in pairs(p) do
-        if i[k] ~= nil then
-            i[k] = v
-        end
-    end
+    for k, v in pairs(p) do i[k] = v end
     return i
 end
 
 local function s(i, p)
     for k, v in pairs(p) do
-        if i[k] ~= nil then
+        if (k ~= "Font" or (k == "Font" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")))) and
+           (k ~= "TextColor3" or (k == "TextColor3" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")))) then
             i[k] = v
         end
     end
@@ -132,15 +129,11 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         elem.Parent = cont
         s(elem, {
             BackgroundColor3 = Color3.fromRGB(50, 50, 50),
-            BorderSizePixel = 0
+            BorderSizePixel = 0,
+            Font = Enum.Font.Gotham,
+            TextColor3 = Color3.fromRGB(255, 255, 255),
+            TextSize = 14
         })
-        if elem:IsA("TextLabel") or elem:IsA("TextButton") or elem:IsA("TextBox") then
-            s(elem, {
-                Font = Enum.Font.Gotham,
-                TextColor3 = Color3.fromRGB(255, 255, 255),
-                TextSize = 14
-            })
-        end
         c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = elem})
         c("UIStroke", {Color = Color3.fromRGB(80, 80, 80), Thickness = 1, Parent = elem})
         upSize()
@@ -318,7 +311,7 @@ function MiniUI:new(cusTitle)
                     if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
                         v.Enabled = level == 4
                     end
-                end
+                en
                 local lighting = game:GetService("Lighting")
                 lighting.GlobalShadows = level == 4
                 lighting.FogEnd = level == 4 and 100000 or 9e9
