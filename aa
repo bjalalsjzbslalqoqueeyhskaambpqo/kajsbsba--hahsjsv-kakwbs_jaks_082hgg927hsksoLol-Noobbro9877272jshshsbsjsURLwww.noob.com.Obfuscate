@@ -27,10 +27,10 @@ local function s(i, p)
 end
 
 local colors = {
-    background = Color3.fromRGB(250, 205, 305),
-    foreground = Color3.fromRGB(255, 250, 255),
-    accent = Color3.fromRGB(250, 250, 255),
-    text = Color3.fromRGB(220, 220, 220),
+    background = Color3.fromRGB(25, 25, 35),
+    foreground = Color3.fromRGB(35, 35, 45),
+    accent = Color3.fromRGB(250, 205, 225),
+    text = Color3.fromRGB(100, 180, 220),
     button = Color3.fromRGB(45, 45, 55),
     buttonHover = Color3.fromRGB(55, 55, 65),
     toggle = Color3.fromRGB(65, 185, 65),
