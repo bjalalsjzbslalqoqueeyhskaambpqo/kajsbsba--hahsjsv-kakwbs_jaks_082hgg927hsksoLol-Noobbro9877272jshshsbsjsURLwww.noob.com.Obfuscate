@@ -158,10 +158,10 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     end
     
     function ui:Track(label, def, min, max, step, callback)
-        local cont = addElem("Frame", {Size = UDim2.new(1, 0, 0, 40)})
-        local sl = c("Frame", {Size = UDim2.new(1, -70, 0, 6), Position = UDim2.new(0, 35, 0.5, -3), Parent = cont, BackgroundColor3 = Color3.fromRGB(100, 100, 100)})
+        local cont = addElem("Frame", {Size = UDim2.new(1, 0, 0, 50)})
+        local sl = c("Frame", {Size = UDim2.new(1, -70, 0, 6), Position = UDim2.new(0, 35, 0.7, -3), Parent = cont, BackgroundColor3 = Color3.fromRGB(100, 100, 100)})
         local sb = c("TextButton", {Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 0, 0.5, -8), Text = "", Parent = sl, BackgroundColor3 = Color3.fromRGB(200, 200, 200)})
-        local tl = c("TextLabel", {Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 0, -22), Text = label .. ": " .. def, Parent = cont, BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Enum.Font.Gotham, TextSize = 14})
+        local tl = c("TextLabel", {Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 0, 0), Text = label .. ": " .. def, Parent = cont, BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Enum.Font.Gotham, TextSize = 14})
         c("UICorner", {CornerRadius = UDim.new(0, 3), Parent = sl})
         c("UICorner", {CornerRadius = UDim.new(0, 8), Parent = sb})
         
@@ -175,23 +175,40 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         end
         
         local drag = false
-        sb.MouseButton1Down:Connect(function() drag = true end)
+        local function startDrag()
+            drag = true
+            sb.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
+        end
+        local function endDrag()
+            drag = false
+            sb.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+        end
+        
+        sb.MouseButton1Down:Connect(startDrag)
+        sb.TouchStarted:Connect(startDrag)
+        
         UIS.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then drag = false end
-        end)
-        sl.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                local relX = input.Position.X - sl.AbsolutePosition.X
-                local perc = math.clamp(relX / sl.AbsoluteSize.X, 0, 1)
-                update(min + (max - min) * perc)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                endDrag()
             end
         end)
+        
+        sl.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                local relX = (input.Position.X - sl.AbsolutePosition.X) / sl.AbsoluteSize.X
+                update(min + (max - min) * relX)
+            end
+        end)
+        
         game:GetService("RunService").RenderStepped:Connect(function()
             if drag then
-                local mp = UIS:GetMouseLocation()
-                local relX = mp.X - sl.AbsolutePosition.X
-                local perc = math.clamp(relX / sl.AbsoluteSize.X, 0, 1)
-                update(min + (max - min) * perc)
+                local mousePos = UIS:GetMouseLocation()
+                local touchPos = UIS:GetTouchPosition()
+                local pos = touchPos or mousePos
+                if pos then
+                    local relX = (pos.X - sl.AbsolutePosition.X) / sl.AbsoluteSize.X
+                    update(min + (max - min) * math.clamp(relX, 0, 1))
+                end
             end
         end)
         
@@ -253,8 +270,6 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     ui.frame = f
     return ui
 end
- 
-
 
 function MiniUI:new(cusTitle)
     local pg = game.Players.LocalPlayer:WaitForChild("PlayerGui")
@@ -285,7 +300,7 @@ function MiniUI:new(cusTitle)
             local result = game:HttpGet(endpoint)
             result = game:GetService("HttpService"):JSONDecode(result)
             for _, server in ipairs(result.data) do
-                if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                if server.playing < server.maxPlayers - 1 and server.id ~= game.JobId then
                     table.insert(servers, server)
                 end
             end
@@ -362,4 +377,3 @@ function MiniUI:new(cusTitle)
 end
 
 return MiniUI
-
