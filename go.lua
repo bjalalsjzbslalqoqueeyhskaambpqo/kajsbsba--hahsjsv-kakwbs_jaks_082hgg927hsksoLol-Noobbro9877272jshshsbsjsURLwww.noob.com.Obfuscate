@@ -223,7 +223,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     end
     
     function ui:TBox(text, callback)
-        local tb = addElem("TextBox", {Text = text, ClearTextOnFocus = false, PlaceholderText = "Enter text..."})
+        local tb = addElem("TextBox", {Text = text, ClearTextOnFocus = true, PlaceholderText = text})
         if callback then tb.FocusLost:Connect(function(ep) callback(tb.Text, ep) end) end
         return tb
     end
