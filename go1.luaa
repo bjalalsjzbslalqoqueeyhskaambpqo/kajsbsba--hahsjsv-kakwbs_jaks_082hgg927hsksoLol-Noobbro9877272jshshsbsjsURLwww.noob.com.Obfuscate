@@ -311,7 +311,7 @@ function MiniUI:new(cusTitle)
                     if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
                         v.Enabled = level == 4
                     end
-                en
+                        end
                 local lighting = game:GetService("Lighting")
                 lighting.GlobalShadows = level == 4
                 lighting.FogEnd = level == 4 and 100000 or 9e9
