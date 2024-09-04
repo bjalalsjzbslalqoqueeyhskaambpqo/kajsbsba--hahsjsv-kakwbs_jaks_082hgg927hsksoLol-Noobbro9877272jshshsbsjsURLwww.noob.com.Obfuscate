@@ -1,8 +1,10 @@
 local MiniUI = {}
 
 local TS = game:GetService("TweenService")
-local CP = game:GetService("ContentProvider")
 local UIS = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
 
 local function c(t, p)
     local i = Instance.new(t)
@@ -24,11 +26,17 @@ local function s(i, p)
     end
 end
 
-local function lImg(url)
-    local img = c("ImageLabel", {BackgroundTransparency = 1, Image = url})
-    CP:PreloadAsync({img})
-    return img
-end
+local colors = {
+    background = Color3.fromRGB(30, 30, 40),
+    foreground = Color3.fromRGB(45, 45, 55),
+    accent = Color3.fromRGB(70, 130, 180),
+    text = Color3.fromRGB(220, 220, 220),
+    button = Color3.fromRGB(60, 60, 70),
+    buttonHover = Color3.fromRGB(80, 80, 90),
+    toggle = Color3.fromRGB(60, 180, 75),
+    toggleOff = Color3.fromRGB(180, 60, 60),
+    slider = Color3.fromRGB(100, 100, 110),
+}
 
 local function cUI(parent, isSub, subTitle, cusTitle)
     local ui = {}
@@ -39,19 +47,13 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         Visible = not isSub,
         Active = not isSub,
         Draggable = not isSub,
-        BackgroundColor3 = Color3.fromRGB(30, 30, 30),
+        BackgroundColor3 = colors.background,
         BorderSizePixel = 0,
-        ZIndex = 1000
+        ZIndex = 10000
     })
 
-    local bg = lImg("rbxassetid://6073628839")
-    bg.Parent = f
-    bg.Size = UDim2.new(1, 0, 1, 0)
-    bg.ImageTransparency = 0.8
-    bg.ZIndex = 1001
-
     c("UICorner", {CornerRadius = UDim.new(0, 8), Parent = f})
-    c("UIStroke", {Color = Color3.fromRGB(60, 60, 60), Thickness = 2, Parent = f})
+    c("UIStroke", {Color = colors.accent, Thickness = 2, Parent = f})
 
     local title = isSub and subTitle or cusTitle or game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
     
@@ -62,9 +64,9 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         Parent = f,
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
-        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextColor3 = colors.text,
         TextSize = 16,
-        ZIndex = 1002
+        ZIndex = 10002
     })
     
     local mb = c("TextButton", {
@@ -72,11 +74,11 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         Position = UDim2.new(1, -55, 0, 2),
         Text = "-",
         Parent = f,
-        BackgroundColor3 = Color3.fromRGB(60, 60, 60),
-        TextColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundColor3 = colors.button,
+        TextColor3 = colors.text,
         Font = Enum.Font.GothamBold,
         TextSize = 18,
-        ZIndex = 1002
+        ZIndex = 10002
     })
     c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = mb})
     
@@ -86,10 +88,10 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         Text = "X",
         Parent = f,
         BackgroundColor3 = Color3.fromRGB(200, 60, 60),
-        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextColor3 = colors.text,
         Font = Enum.Font.GothamBold,
         TextSize = 14,
-        ZIndex = 1002
+        ZIndex = 10002
     })
     c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = cb})
     
@@ -99,9 +101,9 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         Parent = f,
         BackgroundTransparency = 1,
         ScrollBarThickness = 4,
-        ScrollBarImageColor3 = Color3.fromRGB(200, 200, 200),
+        ScrollBarImageColor3 = colors.accent,
         CanvasSize = UDim2.new(0, 0, 0, 0),
-        ZIndex = 1002
+        ZIndex = 10002
     })
     
     local list = c("UIListLayout", {
@@ -133,22 +135,48 @@ local function cUI(parent, isSub, subTitle, cusTitle)
             Size = UDim2.new(1, 0, 0, props.CusHeight or 32),
             BackgroundTransparency = 1,
             Parent = sf,
-            ZIndex = 1003
+            ZIndex = 10003
         })
         props.CusHeight = nil
         local elem = c(eType, props)
         elem.Size = UDim2.new(1, 0, 1, 0)
         elem.Parent = cont
         s(elem, {
-            BackgroundColor3 = Color3.fromRGB(50, 50, 50),
+            BackgroundColor3 = colors.foreground,
             BorderSizePixel = 0,
             Font = Enum.Font.Gotham,
-            TextColor3 = Color3.fromRGB(255, 255, 255),
+            TextColor3 = colors.text,
             TextSize = 14,
-            ZIndex = 1004
+            ZIndex = 10004
         })
         c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = elem})
-        c("UIStroke", {Color = Color3.fromRGB(80, 80, 80), Thickness = 1, Parent = elem})
+        c("UIStroke", {Color = colors.accent, Thickness = 1, Parent = elem})
+        
+        if eType == "TextButton" then
+            elem.BackgroundColor3 = colors.button
+            c("UIGradient", {
+                Color = ColorSequence.new({
+                    ColorSequenceKeypoint.new(0, colors.button),
+                    ColorSequenceKeypoint.new(1, colors.buttonHover)
+                }),
+                Rotation = 90,
+                Parent = elem
+            })
+        elseif eType == "TextLabel" then
+            elem.BackgroundColor3 = colors.foreground
+        elseif eType == "TextBox" then
+            elem.BackgroundColor3 = colors.foreground
+            elem.PlaceholderColor3 = Color3.fromRGB(180, 180, 180)
+        end
+        
+        local originalColor = elem.BackgroundColor3
+        elem.MouseEnter:Connect(function()
+            TS:Create(elem, TweenInfo.new(0.1), {BackgroundColor3 = originalColor:Lerp(colors.buttonHover, 0.3)}):Play()
+        end)
+        elem.MouseLeave:Connect(function()
+            TS:Create(elem, TweenInfo.new(0.1), {BackgroundColor3 = originalColor}):Play()
+        end)
+        
         upSize()
         return elem
     end
@@ -160,20 +188,53 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     end
     
     function ui:Txt(text)
-        return addElem("TextLabel", {Text = text})
+        local txt = addElem("TextLabel", {Text = text, TextWrapped = true})
+        if #text > 50 then
+            local originalText = text
+            txt.Text = string.sub(text, 1, 47) .. "..."
+            local expanded = false
+            
+            local expandBtn = c("TextButton", {
+                Size = UDim2.new(1, 0, 0, 20),
+                Position = UDim2.new(0, 0, 1, 0),
+                Text = "Expand",
+                Parent = txt.Parent,
+                BackgroundColor3 = colors.button,
+                TextColor3 = colors.text,
+                Font = Enum.Font.Gotham,
+                TextSize = 12,
+                ZIndex = 10005
+            })
+            c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = expandBtn})
+            
+            expandBtn.MouseButton1Click:Connect(function()
+                expanded = not expanded
+                if expanded then
+                    txt.Text = originalText
+                    expandBtn.Text = "Collapse"
+                    txt.Parent.Size = UDim2.new(1, 0, 0, txt.TextBounds.Y + 30)
+                else
+                    txt.Text = string.sub(originalText, 1, 47) .. "..."
+                    expandBtn.Text = "Expand"
+                    txt.Parent.Size = UDim2.new(1, 0, 0, 52)
+                end
+                upSize()
+            end)
+        end
+        return txt
     end
     
     function ui:TBox(text, callback)
-        local tb = addElem("TextBox", {Text = text, ClearTextOnFocus = true})
+        local tb = addElem("TextBox", {Text = text, ClearTextOnFocus = false, PlaceholderText = "Enter text..."})
         if callback then tb.FocusLost:Connect(function(ep) callback(tb.Text, ep) end) end
         return tb
     end
     
     function ui:Track(label, def, min, max, callback)
         local cont = addElem("Frame", {Size = UDim2.new(1, 0, 0, 50)})
-        local sl = c("Frame", {Size = UDim2.new(1, -70, 0, 6), Position = UDim2.new(0, 35, 0.7, -3), Parent = cont, BackgroundColor3 = Color3.fromRGB(100, 100, 100), ZIndex = 1005})
-        local sb = c("TextButton", {Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 0, 0.5, -8), Text = "", Parent = sl, BackgroundColor3 = Color3.fromRGB(200, 200, 200), ZIndex = 1006})
-        local tl = c("TextLabel", {Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 0, 0), Text = label .. ": " .. def, Parent = cont, BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Enum.Font.Gotham, TextSize = 14, ZIndex = 1005})
+        local sl = c("Frame", {Size = UDim2.new(1, -70, 0, 6), Position = UDim2.new(0, 35, 0.7, -3), Parent = cont, BackgroundColor3 = colors.slider, ZIndex = 10005})
+        local sb = c("TextButton", {Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 0, 0.5, -8), Text = "", Parent = sl, BackgroundColor3 = colors.accent, ZIndex = 10006})
+        local tl = c("TextLabel", {Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 0, 0), Text = label .. ": " .. def, Parent = cont, BackgroundTransparency = 1, TextColor3 = colors.text, Font = Enum.Font.Gotham, TextSize = 14, ZIndex = 10005})
         c("UICorner", {CornerRadius = UDim.new(0, 3), Parent = sl})
         c("UICorner", {CornerRadius = UDim.new(0, 8), Parent = sb})
         
@@ -189,11 +250,11 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         local drag = false
         local function startDrag()
             drag = true
-            sb.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
+            sb.BackgroundColor3 = colors.buttonHover
         end
         local function endDrag()
             drag = false
-            sb.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+            sb.BackgroundColor3 = colors.accent
         end
         
         sb.InputBegan:Connect(function(input)
@@ -235,17 +296,21 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         local active = false
         
         local function upApp()
-            btn.BackgroundColor3 = active and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(50, 50, 50)
+            btn.BackgroundColor3 = active and colors.toggle or colors.toggleOff
         end
         
         btn.MouseButton1Click:Connect(function()
             active = not active
             upApp()
-            if callback then callback(active) end
+            if callback then 
+                task.spawn(function()
+                    callback(active)
+                end)
+            end
         end)
         
         upApp()
-        return btn
+        return btn, function() return active end
     end
     
     local activeSub = nil
@@ -287,13 +352,74 @@ local function cUI(parent, isSub, subTitle, cusTitle)
 end
 
 function MiniUI:new(cusTitle)
-    local pg = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-    local sg = pg:FindFirstChild("MiniUIScreenGui") or Instance.new("ScreenGui", pg)
-    sg.Name = "MiniUIScreenGui"
-    sg.ResetOnSpawn = false
-    sg.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    local sg = c("ScreenGui", {
+        Name = "MiniUIScreenGui",
+        ResetOnSpawn = false,
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        Parent = CoreGui
+    })
 
     local ui = cUI(sg, false, nil, cusTitle)
+    
+    local notificationQueue = {}
+    local currentNotifications = {}
+    local maxNotifications = 5
+    
+    local function showNextNotification()
+        if #notificationQueue > 0 and #currentNotifications < maxNotifications then
+            local notifData = table.remove(notificationQueue, 1)
+            local notif = c("Frame", {
+                Size = UDim2.new(0, 200, 0, 50),
+                Position = UDim2.new(1, -220, 1, 20 + (#currentNotifications * 60)),
+                BackgroundColor3 = colors.background,
+                BorderSizePixel = 0,
+                Parent = sg,
+                ZIndex = 10010
+            })
+            c("UICorner", {CornerRadius = UDim.new(0, 8), Parent = notif})
+            c("UIStroke", {Color = colors.accent, Thickness = 2, Parent = notif})
+            
+            local text = c("TextLabel", {
+                Size = UDim2.new(1, -20, 1, 0),
+                Position = UDim2.new(0, 10, 0, 0),
+                Text = notifData.message,
+                Parent = notif,
+                BackgroundTransparency = 1,
+                Font = Enum.Font.Gotham,
+                TextColor3 = colors.text,
+                TextSize = 14,
+                TextWrapped = true,
+                ZIndex = 10011
+            })
+            
+            table.insert(currentNotifications, notif)
+            
+            TS:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1, -220, 1, -70 - ((#currentNotifications - 1) * 60))}):Play()
+            spawn(function()
+                wait(notifData.duration)
+                TS:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1, -220, 1, 20)}):Play()
+                wait(0.5)
+                for i, v in ipairs(currentNotifications) do
+                    if v == notif then
+                        table.remove(currentNotifications, i)
+                        break
+                    end
+                end
+                notif:Destroy()
+                for i, v in ipairs(currentNotifications) do
+                    TS:Create(v, TweenInfo.new(0.3), {Position = UDim2.new(1, -220, 1, -70 - ((i - 1) * 60))}):Play()
+                end
+                showNextNotification()
+            end)
+        end
+    end
+    
+    function ui:Notify(message, duration)
+        table.insert(notificationQueue, {message = message, duration = duration or 3})
+        if #currentNotifications < maxNotifications then
+            showNextNotification()
+        end
+    end
     
     spawn(function()
         wait(0.3)
@@ -312,24 +438,26 @@ function MiniUI:new(cusTitle)
                 tostring(game.PlaceId),
                 sortOrder
             )
-            local result = game:HttpGet(endpoint)
-            result = game:GetService("HttpService"):JSONDecode(result)
-            for _, server in ipairs(result.data) do
-                if server.playing < server.maxPlayers - 1 and server.id ~= game.JobId then
-                    table.insert(servers, server)
+            local success, result = pcall(function()
+                return game:HttpGet(endpoint)
+            end)
+            if success then
+                result = HttpService:JSONDecode(result)
+                for _, server in ipairs(result.data) do
+                    if server.playing < server.maxPlayers - 1 and server.id ~= game.JobId then
+                        table.insert(servers, server)
+                    end
                 end
-            end
-            if #servers > 0 then
-                table.sort(servers, function(a, b)
-                    return ascending and a[sortOrder] < b[sortOrder] or a[sortOrder] > b[sortOrder]
-                end)
-                game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, servers[1].id)
+                if #servers > 0 then
+                    table.sort(servers, function(a, b)
+                        return ascending and a[sortOrder] < b[sortOrder] or a[sortOrder] > b[sortOrder]
+                    end)
+                    game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, servers[1].id)
+                else
+                    ui:Notify("No suitable servers found", 5)
+                end
             else
-                game:GetService("StarterGui"):SetCore("SendNotification", {
-                    Title = "No Server",
-                    Text = "No suitable servers found",
-                    Duration = 5,
-                })
+                ui:Notify("Failed to fetch server list", 5)
             end
         end
         
@@ -340,7 +468,7 @@ function MiniUI:new(cusTitle)
             settings().Rendering.QualityLevel = value
         end)
         
-        serverSub:TBtn("FPS Boost", function(isActive)
+        local fpsBoostToggle, getFpsBoostState = serverSub:TBtn("FPS Boost", function(isActive)
             local function setGraphics(level)
                 settings().Rendering.QualityLevel = level
                 for _, v in pairs(game:GetDescendants()) do
@@ -362,7 +490,9 @@ function MiniUI:new(cusTitle)
         end)
         
         local function loadScript(scriptName)
-            (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())(scriptName)
+            spawn(function()
+                (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())(scriptName)
+            end)
         end
         
         serverSub:Btn("Auto Claim UGC", function() loadScript("Auto%20Buyer(Fast%20Claim)") end)
@@ -372,16 +502,16 @@ function MiniUI:new(cusTitle)
         serverSub:Btn("Bypass Premium", function() loadScript("Bypass%20Premiun") end)
         
         game:GetService("NetworkClient").ChildRemoved:Connect(function()
-            if #game.Players:GetPlayers() <= 1 then
-                game.Players.LocalPlayer:Kick("\nAuto Reconnect...")
+            if #Players:GetPlayers() <= 1 then
+                Players.LocalPlayer:Kick("\nAuto Reconnect...")
                 wait()
-                game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
+                game:GetService("TeleportService"):Teleport(game.PlaceId, Players.LocalPlayer)
             else
-                game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, game.Players.LocalPlayer)
+                game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
             end
         end)
         
-        game.Players.LocalPlayer.Idled:Connect(function()
+        Players.LocalPlayer.Idled:Connect(function()
             local VU = game:GetService("VirtualUser")
             VU:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
             wait(1)
