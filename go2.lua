@@ -567,7 +567,7 @@ function MiniUI:new(cusTitle)
                     sortOrder
                 )
                 local success, result = pcall(function()
-                    return HttpService:GetAsync(endpoint)
+                    return game:HttpGet(endpoint)
                 end)
                 if success then
                     result = HttpService:JSONDecode(result)
