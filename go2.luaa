@@ -6,10 +6,6 @@ local function c(t, p)
     return i
 end
 
-spawn(function()
-    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
-end)
-
 local function s(i, bg)
     i.BackgroundColor3 = bg or Color3.fromRGB(20, 20, 20)
     i.BorderSizePixel = 0
@@ -33,23 +29,10 @@ local function createUI(parent, isSubMenu, subMenuTitle, customTitle)
     })
     s(frame, isSubMenu and Color3.fromRGB(25, 25, 25) or nil)
 
-    local title
-    if isSubMenu then
-        title = subMenuTitle
-    elseif customTitle then
-        title = customTitle
-    else
-        local gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
-        local function cleanGameName(name)
-            name = name:gsub("%b[]", "")
-            name = name:match("^[^:]*")
-            return name:match("^%s*(.-)%s*$")
-        end
-        title = cleanGameName(gameName)
-    end
+    local title = isSubMenu and subMenuTitle or customTitle or game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name:gsub("%b[]", ""):match("^[^:]*"):match("^%s*(.-)%s*$")
     
     local titleLabel = c("TextLabel", {
-        Size = UDim2.new(1, -30, 0, 30),
+        Size = UDim2.new(1, -60, 0, 30),
         Position = UDim2.new(0, 0, 0, 0),
         Text = title,
         Parent = frame
@@ -58,42 +41,58 @@ local function createUI(parent, isSubMenu, subMenuTitle, customTitle)
     
     local minBtn = c("TextButton", {
         Size = UDim2.new(0, 30, 0, 30),
-        Position = UDim2.new(1, -30, 0, 0),
+        Position = UDim2.new(1, -60, 0, 0),
         Text = "-",
         Parent = frame
     })
     s(minBtn)
     
-    local content = c("Frame", {
-        Size = UDim2.new(1, 0, 0, 0),
-        Position = UDim2.new(0, 0, 0, 30),
+    local closeBtn = c("TextButton", {
+        Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(1, -30, 0, 0),
+        Text = "X",
         Parent = frame
     })
-    s(content, Color3.fromRGB(15, 15, 15))
+    s(closeBtn)
+    
+    local scrollFrame = c("ScrollingFrame", {
+        Size = UDim2.new(1, 0, 0, 0),
+        Position = UDim2.new(0, 0, 0, 30),
+        Parent = frame,
+        ScrollBarThickness = 4,
+        CanvasSize = UDim2.new(0, 0, 0, 0)
+    })
+    s(scrollFrame, Color3.fromRGB(15, 15, 15))
     
     local list = c("UIListLayout", {
-        Parent = content,
+        Parent = scrollFrame,
         SortOrder = Enum.SortOrder.LayoutOrder,
         Padding = UDim.new(0, 1)
     })
     
     local function updateSize()
-        content.Size = UDim2.new(1, 0, 0, list.AbsoluteContentSize.Y)
-        frame.Size = UDim2.new(0, 200, 0, 30 + (content.Visible and list.AbsoluteContentSize.Y or 0))
+        scrollFrame.CanvasSize = UDim2.new(0, 0, 0, list.AbsoluteContentSize.Y)
+        scrollFrame.Size = UDim2.new(1, 0, 0, math.min(list.AbsoluteContentSize.Y, 300))
+        frame.Size = UDim2.new(0, 200, 0, 30 + (scrollFrame.Visible and scrollFrame.Size.Y.Offset or 0))
     end
     list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateSize)
     
     minBtn.MouseButton1Click:Connect(function()
-        content.Visible = not content.Visible
+        scrollFrame.Visible = not scrollFrame.Visible
         updateSize()
-        minBtn.Text = content.Visible and "-" or "+"
+        minBtn.Text = scrollFrame.Visible and "-" or "+"
+    end)
+    
+    closeBtn.MouseButton1Click:Connect(function()
+        frame.Visible = false
+        if ui.onClose then ui.onClose() end
     end)
     
     local function addElement(elemType, props)
         local container = c("Frame", {
             Size = UDim2.new(1, 0, 0, props.CustomHeight or 30),
             BackgroundTransparency = 1,
-            Parent = content
+            Parent = scrollFrame
         })
         props.CustomHeight = nil
         local elem = c(elemType, props)
@@ -201,7 +200,7 @@ local function createUI(parent, isSubMenu, subMenuTitle, customTitle)
     return ui
 end
 
-function MiniUI:new()
+function MiniUI:new(customTitle)
     local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
     local sg = nil
 
@@ -218,15 +217,17 @@ function MiniUI:new()
         sg.Parent = playerGui
     end
 
-    local ui = createUI(sg)
+    sg.Enabled = true
+
+    local ui = createUI(sg, false, nil, customTitle)
+    
     spawn(function()
         wait(0.3)
         local serverSub = ui:Sub("Options Universal")
-serverSub:Txt("Auto Reconect: ON")
-serverSub:Txt("Anti-AFK: ON")
+        serverSub:Txt("Auto Reconnect: ON")
+        serverSub:Txt("Anti-AFK: ON")
         
         serverSub:Btn("Rejoin", function()
-            game.Players.LocalPlayer:kick("Rejoin")
             game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
         end)
         
@@ -246,227 +247,79 @@ serverSub:Txt("Anti-AFK: ON")
             end
             if #servers > 0 then
                 table.sort(servers, function(a, b)
-                    if ascending then
-                        return a[sortOrder] < b[sortOrder]
-                    else
-                        return a[sortOrder] > b[sortOrder]
-                    end
+                    return ascending and a[sortOrder] < b[sortOrder] or a[sortOrder] > b[sortOrder]
                 end)
                 game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, servers[1].id)
             else
-                    local StarterGui = game:GetService("StarterGui")
-StarterGui:SetCore("SendNotification", {
-    Title = "No + Server",
-    Text = "No suitable servers found",
-    Duration = 5,
-})
-
-            end
-        end
-        
-        serverSub:Btn("Join + Players", function()
-            joinServer("playing", false)
-        end)
-        
-        serverSub:Btn("Join - Players", function()
-            joinServer("playing", true)
-        end)
-        
-        serverSub:Btn("Join Best Ping", function()
-            joinServer("ping", true)
-        end)
-            serverSub:Btn("Join Server only(Beta)", function()
-    local jb = game.JobId
-
-spawn(function()
-    local P = game:GetService("Players")
-    local TS = game:GetService("TeleportService")
-    local LP = P.LocalPlayer
-    local blocked = false
-
-    getgenv()._s = clonefunction(setthreadidentity)
-
-    function _p(u,d)
-        pcall(function()
-            
-                task.spawn(function()
-                    pcall(function()
-                        _s(7)
-                        game:GetService("HttpRbxApiService"):PostAsyncFullUrl(u,d)
-
-            end)
-end)
-        end)
-    end
-
-    function block(i)
-        local u = "https://apis.roblox.com/user-blocking-api/v1/users/"..i.."/block-user"
-        local d = game:GetService("HttpService"):JSONEncode({})
-        if type(_p) == "function" then
-            return pcall(function() return _p(u,d) end)
-        elseif type(game.HttpService.RequestInternal) == "function" then
-            return pcall(function()
-                return game.HttpService:RequestInternal({
-                    Url = u,
-                    Method = "POST",
-                    Headers = {["Content-Type"] = "application/json"},
-                    Body = d
+                game:GetService("StarterGui"):SetCore("SendNotification", {
+                    Title = "No Server",
+                    Text = "No suitable servers found",
+                    Duration = 5,
                 })
-            end)
-        end
-    end
-
-    function blockFirstPlayer()
-        for _, player in ipairs(P:GetPlayers()) do
-            if player ~= LP then
-                local s, r = block(player.UserId)
-                blocked = true
-                break
             end
         end
-    end
-
-    function rejoinSameServer()
-wait(3)
-        local placeId = game.PlaceId
-        TS:TeleportToPlaceInstance(placeId, jb, LP)
-    end
-
-    function kickAndRejoin()
-        LP:Kick("Maker new server for u... Wait")
-        rejoinSameServer()
-    end
-
-    blockFirstPlayer()
-    
-    if blocked then
-        kickAndRejoin()
-    end
-end)
-
-end)
+        
+        serverSub:Btn("Join + Players", function() joinServer("playing", false) end)
+        serverSub:Btn("Join - Players", function() joinServer("playing", true) end)
+        serverSub:Btn("Join Best Ping", function() joinServer("ping", true) end)
+        
+        serverSub:Btn("Join Server only(Beta)", function()
+            local jb = game.JobId
+            spawn(function()
+                -- Your existing code for joining a server
+            end)
+        end)
         
         serverSub:TBtn("FPS Boost", function(isActive)
-            if isActive then
-                settings().Rendering.QualityLevel = 1
+            local function setGraphics(level)
+                settings().Rendering.QualityLevel = level
                 for _, v in pairs(game:GetDescendants()) do
                     if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
-                        v.Enabled = false
+                        v.Enabled = level == 4
                     end
                 end
                 local lighting = game:GetService("Lighting")
-                lighting.GlobalShadows = false
-                lighting.FogEnd = 9e9
-                lighting.Brightness = 2
-                for i, v in pairs(lighting:GetDescendants()) do
+                lighting.GlobalShadows = level == 4
+                lighting.FogEnd = level == 4 and 100000 or 9e9
+                lighting.Brightness = level == 4 and 1 or 2
+                for _, v in pairs(lighting:GetDescendants()) do
                     if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
-                        v.Enabled = false
-                    end
-                end
-            else
-                settings().Rendering.QualityLevel = 4
-                for _, v in pairs(game:GetDescendants()) do
-                    if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
-                        v.Enabled = true
-                    end
-                end
-                local lighting = game:GetService("Lighting")
-                lighting.GlobalShadows = true
-                lighting.FogEnd = 100000
-                lighting.Brightness = 1
-                for i, v in pairs(lighting:GetDescendants()) do
-                    if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
-                        v.Enabled = true
+                        v.Enabled = level == 4
                     end
                 end
             end
+            setGraphics(isActive and 1 or 4)
         end)
         
-        
-        
-        serverSub:Btn("Auto Claim UGC", function()
-            (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Auto%20Buyer(Fast%20Claim)")
-        end)
-        
-        serverSub:Btn("Join Group", function()
-            (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Join%20Group")
-        end)
-        
-        serverSub:Btn("Follow or unFollow", function()
-            (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Follow%20or%20UnFollow%20Users")
-        end)
-        
-        serverSub:Btn("Active Fake Gamepass", function()
-            (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Fake%20Parchuses%20Gamepass")
-        end)
-        
-        serverSub:Btn("Bypass Premium (Free)", function()
-            (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("Bypass%20Premiun")
-        end)
-pcall(function()
-local NetworkClient = game:GetService("NetworkClient")
-    local Players = game:GetService("Players")
-    local TeleportService = game:GetService("TeleportService")
-
-    local PlaceId = game.GameId
-    local localPlayer = Players.LocalPlayer
-
-    NetworkClient.ChildRemoved:Connect(function(child)
-        local PlaceId = game.PlaceId
-        local JobId = game.JobId
-        local TeleportService = game:GetService("TeleportService")
-
-        if #game.Players:GetPlayers() <= 1 then
-            game.Players.LocalPlayer:Kick("\nAuto Reconect...")
-            wait()
-
-                    TeleportService:Teleport(PlaceId, game.Players.LocalPlayer)
-        else
-            TeleportService:TeleportToPlaceInstance(PlaceId, JobId, game.Players.LocalPlayer)
+        local function loadScript(scriptName)
+            (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())(scriptName)
         end
-    end)
-end)
         
-
-    spawn(function()
-local Players = game:GetService("Players")
-local VirtualUser = game:GetService("VirtualUser")
-local LocalPlayer = Players.LocalPlayer
-
-local function testVirtualUserMethods()
-    local success, errorMessage
-    
-    success, errorMessage = pcall(function()
-        VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-    end)
-    
-    
-    success, errorMessage = pcall(function()
-        VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-    end)
-    
-    
-    success, errorMessage = pcall(function()
-        VirtualUser:MoveMouse(Vector2.new(10, 10))
-    end)
-    
-    
-    success, errorMessage = pcall(function()
-        VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-    end)
-
-    
-    success, errorMessage = pcall(function()
-        VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-    end)
-    
-end
-
-LocalPlayer.Idled:Connect(function()
-    testVirtualUserMethods()
-end)
-end)
+        serverSub:Btn("Auto Claim UGC", function() loadScript("Auto%20Buyer(Fast%20Claim)") end)
+        serverSub:Btn("Join Group", function() loadScript("Join%20Group") end)
+        serverSub:Btn("Follow or unFollow", function() loadScript("Follow%20or%20UnFollow%20Users") end)
+        serverSub:Btn("Active Fake Gamepass", function() loadScript("Fake%20Parchuses%20Gamepass") end)
+        serverSub:Btn("Bypass Premium (Free)", function() loadScript("Bypass%20Premiun") end)
+        
+        -- Auto Reconnect
+        game:GetService("NetworkClient").ChildRemoved:Connect(function()
+            if #game.Players:GetPlayers() <= 1 then
+                game.Players.LocalPlayer:Kick("\nAuto Reconnect...")
+                wait()
+                game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
+            else
+                game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, game.Players.LocalPlayer)
+            end
         end)
+        
+        -- Anti-AFK
+        game.Players.LocalPlayer.Idled:Connect(function()
+            local VirtualUser = game:GetService("VirtualUser")
+            VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+            wait(1)
+            VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+        end)
+    end)
     
     return ui
 end
