@@ -3,6 +3,7 @@ local MiniUI = {}
 local TS = game:GetService("TweenService")
 local CP = game:GetService("ContentProvider")
 local UIS = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
 
 local function c(t, p)
     local i = Instance.new(t)
@@ -41,14 +42,14 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         Draggable = not isSub,
         BackgroundColor3 = Color3.fromRGB(30, 30, 30),
         BorderSizePixel = 0,
-        ZIndex = 1000
+        ZIndex = 10000
     })
 
     local bg = lImg("rbxassetid://6073628839")
     bg.Parent = f
     bg.Size = UDim2.new(1, 0, 1, 0)
     bg.ImageTransparency = 0.8
-    bg.ZIndex = 1001
+    bg.ZIndex = 10001
 
     c("UICorner", {CornerRadius = UDim.new(0, 8), Parent = f})
     c("UIStroke", {Color = Color3.fromRGB(60, 60, 60), Thickness = 2, Parent = f})
@@ -64,7 +65,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         Font = Enum.Font.GothamBold,
         TextColor3 = Color3.fromRGB(255, 255, 255),
         TextSize = 16,
-        ZIndex = 1002
+        ZIndex = 10002
     })
     
     local mb = c("TextButton", {
@@ -76,7 +77,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         TextColor3 = Color3.fromRGB(255, 255, 255),
         Font = Enum.Font.GothamBold,
         TextSize = 18,
-        ZIndex = 1002
+        ZIndex = 10002
     })
     c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = mb})
     
@@ -89,7 +90,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         TextColor3 = Color3.fromRGB(255, 255, 255),
         Font = Enum.Font.GothamBold,
         TextSize = 14,
-        ZIndex = 1002
+        ZIndex = 10002
     })
     c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = cb})
     
@@ -101,7 +102,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         ScrollBarThickness = 4,
         ScrollBarImageColor3 = Color3.fromRGB(200, 200, 200),
         CanvasSize = UDim2.new(0, 0, 0, 0),
-        ZIndex = 1002
+        ZIndex = 10002
     })
     
     local list = c("UIListLayout", {
@@ -133,7 +134,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
             Size = UDim2.new(1, 0, 0, props.CusHeight or 32),
             BackgroundTransparency = 1,
             Parent = sf,
-            ZIndex = 1003
+            ZIndex = 10003
         })
         props.CusHeight = nil
         local elem = c(eType, props)
@@ -145,35 +146,55 @@ local function cUI(parent, isSub, subTitle, cusTitle)
             Font = Enum.Font.Gotham,
             TextColor3 = Color3.fromRGB(255, 255, 255),
             TextSize = 14,
-            ZIndex = 1004
+            ZIndex = 10004
         })
         c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = elem})
         c("UIStroke", {Color = Color3.fromRGB(80, 80, 80), Thickness = 1, Parent = elem})
+        
+        if eType == "TextButton" then
+            elem.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+            elem.TextColor3 = Color3.fromRGB(255, 255, 255)
+        elseif eType == "TextLabel" then
+            elem.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+            elem.TextColor3 = Color3.fromRGB(200, 200, 200)
+        elseif eType == "TextBox" then
+            elem.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+            elem.TextColor3 = Color3.fromRGB(255, 255, 255)
+            elem.PlaceholderColor3 = Color3.fromRGB(180, 180, 180)
+        end
+        
+        elem.MouseEnter:Connect(function()
+            TS:Create(elem, TweenInfo.new(0.1), {BackgroundColor3 = elem.BackgroundColor3:Lerp(Color3.fromRGB(80, 80, 80), 0.3)}):Play()
+        end)
+        elem.MouseLeave:Connect(function()
+            TS:Create(elem, TweenInfo.new(0.1), {BackgroundColor3 = props.OriginalColor or elem.BackgroundColor3}):Play()
+        end)
+        
         upSize()
         return elem
     end
     
     function ui:Btn(text, callback)
-        local btn = addElem("TextButton", {Text = text})
+        local btn = addElem("TextButton", {Text = text, OriginalColor = Color3.fromRGB(60, 60, 60)})
         if callback then btn.MouseButton1Click:Connect(callback) end
         return btn
     end
     
     function ui:Txt(text)
-        return addElem("TextLabel", {Text = text})
+        return addElem("TextLabel", {Text = text, OriginalColor = Color3.fromRGB(40, 40, 40)})
     end
     
     function ui:TBox(text, callback)
-        local tb = addElem("TextBox", {Text = text, ClearTextOnFocus = true})
+        local tb = addElem("TextBox", {Text = text, ClearTextOnFocus = false, PlaceholderText = "Enter text...", OriginalColor = Color3.fromRGB(70, 70, 70)})
         if callback then tb.FocusLost:Connect(function(ep) callback(tb.Text, ep) end) end
         return tb
     end
     
     function ui:Track(label, def, min, max, callback)
-        local cont = addElem("Frame", {Size = UDim2.new(1, 0, 0, 50)})
-        local sl = c("Frame", {Size = UDim2.new(1, -70, 0, 6), Position = UDim2.new(0, 35, 0.7, -3), Parent = cont, BackgroundColor3 = Color3.fromRGB(100, 100, 100), ZIndex = 1005})
-        local sb = c("TextButton", {Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 0, 0.5, -8), Text = "", Parent = sl, BackgroundColor3 = Color3.fromRGB(200, 200, 200), ZIndex = 1006})
-        local tl = c("TextLabel", {Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 0, 0), Text = label .. ": " .. def, Parent = cont, BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Enum.Font.Gotham, TextSize = 14, ZIndex = 1005})
+        local cont = addElem("Frame", {Size = UDim2.new(1, 0, 0, 50), OriginalColor = Color3.fromRGB(50, 50, 50)})
+        local sl = c("Frame", {Size = UDim2.new(1, -70, 0, 6), Position = UDim2.new(0, 35, 0.7, -3), Parent = cont, BackgroundColor3 = Color3.fromRGB(100, 100, 100), ZIndex = 10005})
+        local sb = c("TextButton", {Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 0, 0.5, -8), Text = "", Parent = sl, BackgroundColor3 = Color3.fromRGB(200, 200, 200), ZIndex = 10006})
+        local tl = c("TextLabel", {Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 0, 0), Text = label .. ": " .. def, Parent = cont, BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Enum.Font.Gotham, TextSize = 14, ZIndex = 10005})
         c("UICorner", {CornerRadius = UDim.new(0, 3), Parent = sl})
         c("UICorner", {CornerRadius = UDim.new(0, 8), Parent = sb})
         
@@ -231,11 +252,11 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     end
     
     function ui:TBtn(text, callback)
-        local btn = addElem("TextButton", {Text = text})
+        local btn = addElem("TextButton", {Text = text, OriginalColor = Color3.fromRGB(60, 60, 60)})
         local active = false
         
         local function upApp()
-            btn.BackgroundColor3 = active and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(50, 50, 50)
+            btn.BackgroundColor3 = active and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(60, 60, 60)
         end
         
         btn.MouseButton1Click:Connect(function()
@@ -287,11 +308,12 @@ local function cUI(parent, isSub, subTitle, cusTitle)
 end
 
 function MiniUI:new(cusTitle)
-    local pg = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-    local sg = pg:FindFirstChild("MiniUIScreenGui") or Instance.new("ScreenGui", pg)
-    sg.Name = "MiniUIScreenGui"
-    sg.ResetOnSpawn = false
-    sg.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    local sg = c("ScreenGui", {
+        Name = "MiniUIScreenGui",
+        ResetOnSpawn = false,
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        Parent = CoreGui
+    })
 
     local ui = cUI(sg, false, nil, cusTitle)
     
