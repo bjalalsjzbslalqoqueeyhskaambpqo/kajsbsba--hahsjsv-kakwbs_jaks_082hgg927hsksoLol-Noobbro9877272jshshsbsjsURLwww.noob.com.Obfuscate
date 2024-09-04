@@ -17,9 +17,11 @@ end
 local function s(i, p)
     for k, v in pairs(p) do
         if i[k] ~= nil then
-            if (k == "Font" or k == "TextColor3" or k == "TextSize") and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")) then
-                i[k] = v
-            elseif k ~= "Font" and k ~= "TextColor3" and k ~= "TextSize" then
+            if (k == "Font" or k == "TextColor3" or k == "TextSize") then
+                if i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox") then
+                    i[k] = v
+                end
+            else
                 i[k] = v
             end
         end
@@ -32,9 +34,16 @@ local function lImg(url)
     return img
 end
 
+local frameCounter = 0
+local function getUniqueFrameName()
+    frameCounter = frameCounter + 1
+    return "MiniUIFrame_" .. frameCounter
+end
+
 local function cUI(parent, isSub, subTitle, cusTitle)
     local ui = {}
     local f = c("Frame", {
+        Name = getUniqueFrameName(),
         Size = UDim2.new(0, 250, 0, 300),
         Position = isSub and UDim2.new(0, 260, 0, 0) or UDim2.new(0.5, -125, 0.5, -150),
         Parent = parent,
@@ -56,6 +65,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     local title = isSub and subTitle or cusTitle or game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
     
     c("TextLabel", {
+        Name = "TitleLabel",
         Size = UDim2.new(1, -60, 0, 30),
         Position = UDim2.new(0, 0, 0, 0),
         Text = title,
@@ -67,6 +77,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     })
     
     local mb = c("TextButton", {
+        Name = "MinimizeButton",
         Size = UDim2.new(0, 25, 0, 25),
         Position = UDim2.new(1, -55, 0, 2),
         Text = "-",
@@ -79,6 +90,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = mb})
     
     local cb = c("TextButton", {
+        Name = "CloseButton",
         Size = UDim2.new(0, 25, 0, 25),
         Position = UDim2.new(1, -28, 0, 2),
         Text = "X",
@@ -91,6 +103,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = cb})
     
     local sf = c("ScrollingFrame", {
+        Name = "ContentFrame",
         Size = UDim2.new(1, -16, 1, -36),
         Position = UDim2.new(0, 8, 0, 32),
         Parent = f,
@@ -126,21 +139,27 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     
     local function addElem(eType, props)
         local cont = c("Frame", {
+            Name = getUniqueFrameName(),
             Size = UDim2.new(1, 0, 0, props.CusHeight or 32),
             BackgroundTransparency = 1,
             Parent = sf
         })
         props.CusHeight = nil
         local elem = c(eType, props)
+        elem.Name = eType .. "_" .. cont.Name
         elem.Size = UDim2.new(1, 0, 1, 0)
         elem.Parent = cont
         s(elem, {
             BackgroundColor3 = Color3.fromRGB(50, 50, 50),
-            BorderSizePixel = 0,
-            Font = Enum.Font.Gotham,
-            TextColor3 = Color3.fromRGB(255, 255, 255),
-            TextSize = 14
+            BorderSizePixel = 0
         })
+        if elem:IsA("TextLabel") or elem:IsA("TextButton") or elem:IsA("TextBox") then
+            s(elem, {
+                Font = Enum.Font.Gotham,
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+                TextSize = 14
+            })
+        end
         c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = elem})
         c("UIStroke", {Color = Color3.fromRGB(80, 80, 80), Thickness = 1, Parent = elem})
         upSize()
@@ -165,9 +184,23 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     
     function ui:Track(label, def, min, max, step, callback)
         local cont = addElem("Frame", {Size = UDim2.new(1, 0, 0, 40)})
-        local sl = c("Frame", {Size = UDim2.new(1, -70, 0, 6), Position = UDim2.new(0, 35, 0.5, -3), Parent = cont, BackgroundColor3 = Color3.fromRGB(100, 100, 100)})
-        local sb = c("TextButton", {Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 0, 0.5, -8), Text = "", Parent = sl, BackgroundColor3 = Color3.fromRGB(200, 200, 200)})
-        c("TextLabel", {
+        local sl = c("Frame", {
+            Name = "SliderFrame",
+            Size = UDim2.new(1, -70, 0, 6),
+            Position = UDim2.new(0, 35, 0.5, -3),
+            Parent = cont,
+            BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+        })
+        local sb = c("TextButton", {
+            Name = "SliderButton",
+            Size = UDim2.new(0, 16, 0, 16),
+            Position = UDim2.new(0, 0, 0.5, -8),
+            Text = "",
+            Parent = sl,
+            BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+        })
+        local tl = c("TextLabel", {
+            Name = "TrackLabel",
             Size = UDim2.new(1, 0, 0, 20),
             Position = UDim2.new(0, 0, 0, -22),
             Text = label .. ": " .. def,
@@ -183,7 +216,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         local val = def
         local function update(nv)
             val = math.clamp(nv, min, max)
-            cont:FindFirstChildOfClass("TextLabel").Text = label .. ": " .. val
+            tl.Text = label .. ": " .. val
             local pos = (val - min) / (max - min)
             sb.Position = UDim2.new(pos, -8, 0.5, -8)
             if callback then callback(val) end
