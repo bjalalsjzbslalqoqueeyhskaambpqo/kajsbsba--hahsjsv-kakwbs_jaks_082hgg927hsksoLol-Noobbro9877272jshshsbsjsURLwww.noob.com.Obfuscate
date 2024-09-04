@@ -172,11 +172,12 @@ local function cUI(parent, isSub, subTitle, cusTitle)
             elem.PlaceholderColor3 = Color3.fromRGB(180, 180, 180)
         end
         
+        local originalColor = elem.BackgroundColor3
         elem.MouseEnter:Connect(function()
-            TS:Create(elem, TweenInfo.new(0.1), {BackgroundColor3 = elem.BackgroundColor3:Lerp(Color3.fromRGB(80, 80, 80), 0.3)}):Play()
+            TS:Create(elem, TweenInfo.new(0.1), {BackgroundColor3 = originalColor:Lerp(Color3.fromRGB(80, 80, 80), 0.3)}):Play()
         end)
         elem.MouseLeave:Connect(function()
-            TS:Create(elem, TweenInfo.new(0.1), {BackgroundColor3 = props.OriginalColor or elem.BackgroundColor3}):Play()
+            TS:Create(elem, TweenInfo.new(0.1), {BackgroundColor3 = originalColor}):Play()
         end)
         
         upSize()
@@ -184,23 +185,23 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     end
     
     function ui:Btn(text, callback)
-        local btn = addElem("TextButton", {Text = text, OriginalColor = Color3.fromRGB(60, 60, 60)})
+        local btn = addElem("TextButton", {Text = text})
         if callback then btn.MouseButton1Click:Connect(callback) end
         return btn
     end
     
     function ui:Txt(text)
-        return addElem("TextLabel", {Text = text, OriginalColor = Color3.fromRGB(40, 40, 40)})
+        return addElem("TextLabel", {Text = text})
     end
     
     function ui:TBox(text, callback)
-        local tb = addElem("TextBox", {Text = text, ClearTextOnFocus = false, PlaceholderText = "Enter text...", OriginalColor = Color3.fromRGB(70, 70, 70)})
+        local tb = addElem("TextBox", {Text = text, ClearTextOnFocus = false, PlaceholderText = "Enter text..."})
         if callback then tb.FocusLost:Connect(function(ep) callback(tb.Text, ep) end) end
         return tb
     end
     
     function ui:Track(label, def, min, max, callback)
-        local cont = addElem("Frame", {Size = UDim2.new(1, 0, 0, 50), OriginalColor = Color3.fromRGB(50, 50, 50)})
+        local cont = addElem("Frame", {Size = UDim2.new(1, 0, 0, 50)})
         local sl = c("Frame", {Size = UDim2.new(1, -70, 0, 6), Position = UDim2.new(0, 35, 0.7, -3), Parent = cont, BackgroundColor3 = Color3.fromRGB(100, 100, 100), ZIndex = 10005})
         local sb = c("TextButton", {Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 0, 0.5, -8), Text = "", Parent = sl, BackgroundColor3 = Color3.fromRGB(200, 200, 200), ZIndex = 10006})
         local tl = c("TextLabel", {Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 0, 0), Text = label .. ": " .. def, Parent = cont, BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Enum.Font.Gotham, TextSize = 14, ZIndex = 10005})
@@ -261,7 +262,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     end
     
     function ui:TBtn(text, callback)
-        local btn = addElem("TextButton", {Text = text, OriginalColor = Color3.fromRGB(60, 60, 60)})
+        local btn = addElem("TextButton", {Text = text})
         local active = false
         
         local function upApp()
