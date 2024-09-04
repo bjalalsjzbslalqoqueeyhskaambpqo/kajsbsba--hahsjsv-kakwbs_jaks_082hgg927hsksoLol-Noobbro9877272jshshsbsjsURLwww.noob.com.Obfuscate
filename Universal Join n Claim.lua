@@ -2,17 +2,7 @@
 
 local MiniUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/go.lua"))()
 
-local ui = MiniUI:new()
-
-local customTitle = "Universal Join n Claim"
-if ui.frame then
-    for _, child in pairs(ui.frame:GetChildren()) do
-        if child:IsA("TextLabel") then
-            child.Text = customTitle
-            break
-        end
-    end
-end
+local ui = MiniUI:new("Universal Join n Claim")
 
 ui:TBtn("Hide Players", function()
     a = not a
@@ -44,6 +34,7 @@ ui:TBtn("Use ProximityP", function()
 
         if closestPrompt then
             fireproximityprompt(closestPrompt)
+                wait()
         end
         
         wait()
@@ -65,7 +56,7 @@ fireproximityprompt(d)
 wait(0.1)
     end
 end
-
+wait(1)
 end
 
 end)
