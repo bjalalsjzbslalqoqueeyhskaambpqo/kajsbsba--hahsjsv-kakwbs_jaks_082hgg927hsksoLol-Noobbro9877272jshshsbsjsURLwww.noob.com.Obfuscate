@@ -27,15 +27,15 @@ local function s(i, p)
 end
 
 local colors = {
-    background = Color3.fromRGB(20, 20, 30),
-    foreground = Color3.fromRGB(30, 30, 40),
-    accent = Color3.fromRGB(100, 180, 255),
-    text = Color3.fromRGB(255, 255, 255),
-    button = Color3.fromRGB(50, 50, 60),
-    buttonHover = Color3.fromRGB(70, 70, 80),
-    toggle = Color3.fromRGB(60, 200, 60),
-    toggleOff = Color3.fromRGB(200, 60, 60),
-    slider = Color3.fromRGB(80, 80, 100),
+    background = Color3.fromRGB(25, 25, 35),
+    foreground = Color3.fromRGB(35, 35, 45),
+    accent = Color3.fromRGB(65, 105, 225),
+    text = Color3.fromRGB(220, 220, 220),
+    button = Color3.fromRGB(45, 45, 55),
+    buttonHover = Color3.fromRGB(55, 55, 65),
+    toggle = Color3.fromRGB(65, 185, 65),
+    toggleOff = Color3.fromRGB(185, 65, 65),
+    slider = Color3.fromRGB(75, 75, 85),
 }
 
 local function cUI(parent, isSub, subTitle, cusTitle)
@@ -87,7 +87,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         Position = UDim2.new(1, -28, 0, 2),
         Text = "X",
         Parent = f,
-        BackgroundColor3 = Color3.fromRGB(200, 60, 60),
+        BackgroundColor3 = Color3.fromRGB(185, 65, 65),
         TextColor3 = colors.text,
         Font = Enum.Font.GothamBold,
         TextSize = 14,
@@ -172,7 +172,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
             elem.BackgroundColor3 = colors.foreground
         elseif eType == "TextBox" then
             elem.BackgroundColor3 = colors.foreground
-            elem.PlaceholderColor3 = Color3.fromRGB(180, 180, 180)
+            elem.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
         end
         
         upSize()
@@ -193,14 +193,14 @@ local function cUI(parent, isSub, subTitle, cusTitle)
             local expanded = false
             
             local expandBtn = c("TextButton", {
-                Size = UDim2.new(1, 0, 0, 20),
-                Position = UDim2.new(0, 0, 1, 0),
-                Text = "Expand",
+                Size = UDim2.new(0, 20, 0, 20),
+                Position = UDim2.new(1, -25, 0, 5),
+                Text = "+",
                 Parent = txt.Parent,
                 BackgroundColor3 = colors.button,
                 TextColor3 = colors.text,
-                Font = Enum.Font.Gotham,
-                TextSize = 12,
+                Font = Enum.Font.GothamBold,
+                TextSize = 14,
                 ZIndex = 10005
             })
             c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = expandBtn})
@@ -209,12 +209,12 @@ local function cUI(parent, isSub, subTitle, cusTitle)
                 expanded = not expanded
                 if expanded then
                     txt.Text = originalText
-                    expandBtn.Text = "Collapse"
-                    txt.Parent.Size = UDim2.new(1, 0, 0, txt.TextBounds.Y + 30)
+                    expandBtn.Text = "-"
+                    txt.Parent.Size = UDim2.new(1, 0, 0, txt.TextBounds.Y + 10)
                 else
                     txt.Text = string.sub(originalText, 1, 47) .. "..."
-                    expandBtn.Text = "Expand"
-                    txt.Parent.Size = UDim2.new(1, 0, 0, 52)
+                    expandBtn.Text = "+"
+                    txt.Parent.Size = UDim2.new(1, 0, 0, 32)
                 end
                 upSize()
             end)
@@ -415,6 +415,76 @@ function MiniUI:new(cusTitle)
         end
     end
     
+    function ui:Pass(name, password)
+        local passFrame = c("Frame", {
+            Size = UDim2.new(0, 250, 0, 100),
+            Position = UDim2.new(0.5, -125, 0.5, -50),
+            BackgroundColor3 = colors.background,
+            Parent = sg,
+            ZIndex = 10100
+        })
+        c("UICorner", {CornerRadius = UDim.new(0, 8), Parent = passFrame})
+        c("UIStroke", {Color = colors.accent, Thickness = 2, Parent = passFrame})
+        
+        local title = c("TextLabel", {
+            Size = UDim2.new(1, 0, 0, 30),
+            Position = UDim2.new(0, 0, 0, 0),
+            Text = name,
+            Parent = passFrame,
+            BackgroundTransparency = 1,
+            Font = Enum.Font.GothamBold,
+            TextColor3 = colors.text,
+            TextSize = 16,
+            ZIndex = 10101
+        })
+        
+        local passBox = c("TextBox", {
+            Size = UDim2.new(1, -20, 0, 30),
+            Position = UDim2.new(0, 10, 0, 35),
+            Text = "",
+            PlaceholderText = "Enter password",
+            Parent = passFrame,
+            BackgroundColor3 = colors.foreground,
+            Font = Enum.Font.Gotham,
+            TextColor3 = colors.text,
+            TextSize = 14,
+            ZIndex = 10101
+        })
+        c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = passBox})
+        
+        local submitBtn = c("TextButton", {
+            Size = UDim2.new(0, 100, 0, 25),
+            Position = UDim2.new(0.5, -50, 1, -30),
+            Text = "Submit",
+            Parent = passFrame,
+            BackgroundColor3 = colors.button,
+            Font = Enum.Font.GothamBold,
+            TextColor3 = colors.text,
+            TextSize = 14,
+            ZIndex = 10101
+        })
+        c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = submitBtn})
+        
+        local function checkPassword()
+            if passBox.Text == password then
+                passFrame:Destroy()
+                ui.frame.Visible = true
+            else
+                passBox.Text = ""
+                passBox.PlaceholderText = "Incorrect password"
+            end
+        end
+        
+        submitBtn.MouseButton1Click:Connect(checkPassword)
+        passBox.FocusLost:Connect(function(enterPressed)
+            if enterPressed then
+                checkPassword()
+            end
+        end)
+        
+        ui.frame.Visible = false
+    end
+    
     spawn(function()
         wait(0.3)
         local serverSub = ui:Sub("Universal Options")
@@ -426,34 +496,38 @@ function MiniUI:new(cusTitle)
         end)
         
         local function joinServer(sortOrder, ascending)
-            local servers = {}
-            local endpoint = string.format(
-                "https://games.roblox.com/v1/games/%s/servers/Public?sortOrder=%s&limit=100",
-                tostring(game.PlaceId),
-                sortOrder
-            )
-            local success, result = pcall(function()
-                return game:HttpGet(endpoint)
-            end)
-            if success then
-                result = HttpService:JSONDecode(result)
-                for _, server in ipairs(result.data) do
-                    if server.playing < server.maxPlayers - 1 and server.id ~= game.JobId then
-                        table.insert(servers, server)
+                local servers = {}
+                local endpoint = string.format(
+                    "https://games.roblox.com/v1/games/%s/servers/Public?sortOrder=%s&limit=100",
+                    tostring(game.PlaceId),
+                    sortOrder
+                )
+                local success, result = pcall(function()
+                    return game:HttpGet(endpoint)
+                end)
+                if success then
+                    result = HttpService:JSONDecode(result)
+                    for _, server in ipairs(result.data) do
+                        if server.playing < server.maxPlayers - 1 and server.id ~= game.JobId then
+                            table.insert(servers, server)
+                        end
                     end
-                end
-                if #servers > 0 then
-                    table.sort(servers, function(a, b)
-                        return ascending and a[sortOrder] < b[sortOrder] or a[sortOrder] > b[sortOrder]
-                    end)
-                    game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, servers[1].id)
+                    if #servers > 0 then
+                        table.sort(servers, function(a, b)
+                            if ascending then
+                                return a[sortOrder] < b[sortOrder]
+                            else
+                                return a[sortOrder] > b[sortOrder]
+                            end
+                        end)
+                        game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, servers[1].id)
+                    else
+                        ui:Notify("No suitable servers found", 5)
+                    end
                 else
-                    ui:Notify("No suitable servers found", 5)
+                    ui:Notify("Failed to fetch server list", 5)
                 end
-            else
-                ui:Notify("Failed to fetch server list", 5)
             end
-        end
         
         serverSub:Btn("Join +Players", function() joinServer("playing", false) end)
         serverSub:Btn("Join -Players", function() joinServer("playing", true) end)
