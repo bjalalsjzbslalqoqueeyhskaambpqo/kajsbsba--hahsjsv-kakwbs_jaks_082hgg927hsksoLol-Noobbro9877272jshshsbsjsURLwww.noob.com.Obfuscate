@@ -30,7 +30,7 @@ ui:Btn("Checkpoints", function()
 
 for i = 2, 28 do
 
-game.Players.LocalPlayer.Character.PrimaryPart.CFrame = workspace.Checkpoints.Zones:FindFirstChild([i]).CFrame
+game.Players.LocalPlayer.Character.PrimaryPart.CFrame = workspace.Checkpoints.Zones:FindFirstChild(i).CFrame
 wait(1)
 end
 end)
