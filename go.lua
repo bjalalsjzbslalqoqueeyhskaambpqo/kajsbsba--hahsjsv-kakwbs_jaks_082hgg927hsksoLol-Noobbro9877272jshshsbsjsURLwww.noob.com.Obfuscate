@@ -152,7 +152,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     end
     
     function ui:TBox(text, callback)
-        local tb = addElem("TextBox", {Text = text, ClearTextOnFocus = false})
+        local tb = addElem("TextBox", {Text = text, ClearTextOnFocus = true})
         if callback then tb.FocusLost:Connect(function(ep) callback(tb.Text, ep) end) end
         return tb
     end
@@ -285,7 +285,7 @@ function MiniUI:new(cusTitle)
     
     spawn(function()
         wait(0.3)
-        local serverSub = ui:Sub("Options")
+        local serverSub = ui:Sub("Universal Options")
         serverSub:Txt("Auto Reconnect: ON")
         serverSub:Txt("Anti-AFK: ON")
         
@@ -324,8 +324,7 @@ function MiniUI:new(cusTitle)
         serverSub:Btn("Join +Players", function() joinServer("playing", false) end)
         serverSub:Btn("Join -Players", function() joinServer("playing", true) end)
         serverSub:Btn("Join Best Ping", function() joinServer("ping", true) end)
-        
-        serverSub:Track("Graphics Quality", 5, 1, 10, function(value)
+        serverSub:Track("Graphics Quality", 1, 1, 10, function(value)
             settings().Rendering.QualityLevel = value
         end)
         
