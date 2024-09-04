@@ -12,12 +12,17 @@ end
 
 local function s(i, p)
     for k, v in pairs(p) do
-        if (k ~= "Font" or (k == "Font" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")))) and
-           (k ~= "TextColor3" or (k == "TextColor3" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")))) then
+        if k == "Font" or k == "TextColor3" or k == "TextSize" then
+            if i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox") then
+                i[k] = v
+            end
+        else
             i[k] = v
         end
     end
 end
+
+
 
 local function lImg(url)
     local img = c("ImageLabel", {BackgroundTransparency = 1, Image = url})
@@ -117,28 +122,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         if ui.onClose then ui.onClose() end
     end)
     
-    local function addElem(eType, props)
-        local cont = c("Frame", {
-            Size = UDim2.new(1, 0, 0, props.CusHeight or 32),
-            BackgroundTransparency = 1,
-            Parent = sf
-        })
-        props.CusHeight = nil
-        local elem = c(eType, props)
-        elem.Size = UDim2.new(1, 0, 1, 0)
-        elem.Parent = cont
-        s(elem, {
-            BackgroundColor3 = Color3.fromRGB(50, 50, 50),
-            BorderSizePixel = 0,
-            Font = Enum.Font.Gotham,
-            TextColor3 = Color3.fromRGB(255, 255, 255),
-            TextSize = 14
-        })
-        c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = elem})
-        c("UIStroke", {Color = Color3.fromRGB(80, 80, 80), Thickness = 1, Parent = elem})
-        upSize()
-        return elem
-    end
+    
     
     function ui:Btn(text, callback)
         local btn = addElem("TextButton", {Text = text})
@@ -154,7 +138,29 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         local tb = addElem("TextBox", {Text = text, ClearTextOnFocus = false})
         if callback then tb.FocusLost:Connect(function(ep) callback(tb.Text, ep) end) end
         return tb
-    end
+   local function addElem(eType, props)
+    local cont = c("Frame", {
+        Size = UDim2.new(1, 0, 0, props.CusHeight or 32),
+        BackgroundTransparency = 1,
+        Parent = sf
+    })
+    local cusHeight = props.CusHeight
+    props.CusHeight = nil
+    local elem = c(eType, props)
+    elem.Size = UDim2.new(1, 0, 1, 0)
+    elem.Parent = cont
+    s(elem, {
+        BackgroundColor3 = Color3.fromRGB(50, 50, 50),
+        BorderSizePixel = 0,
+        Font = Enum.Font.Gotham,
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 14
+    })
+    c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = elem})
+    c("UIStroke", {Color = Color3.fromRGB(80, 80, 80), Thickness = 1, Parent = elem})
+    upSize()
+    return elem
+end
     
     function ui:Track(label, def, min, max, step, callback)
     local cont = addElem("Frame", {CusHeight = 40})
