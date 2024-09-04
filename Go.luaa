@@ -1,4 +1,4 @@
- MiniUI = {}
+local MiniUI = {}
 
 local TS = game:GetService("TweenService")
 local CP = game:GetService("ContentProvider")
@@ -253,6 +253,8 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     ui.frame = f
     return ui
 end
+ 
+
 
 function MiniUI:new(cusTitle)
     local pg = game.Players.LocalPlayer:WaitForChild("PlayerGui")
@@ -303,7 +305,35 @@ function MiniUI:new(cusTitle)
         
         serverSub:Btn("Join +Players", function() joinServer("playing", false) end)
         serverSub:Btn("Join -Players", function() joinServer("playing", true) end)
+        serverSub:Btn("Join Best Ping", function() joinServer("ping", true) end)
         
+        serverSub:TBtn("FPS Boost", function(isActive)
+            local function setGraphics(level)
+                settings().Rendering.QualityLevel = level
+                for _, v in pairs(game:GetDescendants()) do
+                    if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
+                        v.Enabled = level == 4
+                    end
+                end
+                local lighting = game:GetService("Lighting")
+                lighting.GlobalShadows = level == 4
+                lighting.FogEnd = level == 4 and 100000 or 9e9
+                lighting.Brightness = level == 4 and 1 or 2
+                for _, v in pairs(lighting:GetDescendants()) do
+                    if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
+                        v.Enabled = level == 4
+                    end
+                end
+            end
+            setGraphics(isActive and 1 or 4)
+        end)
+        
+        local function loadScript(scriptName)
+            (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())(scriptName)
+        end
+        
+        serverSub:Btn("Auto Claim UGC", function() loadScript("Auto%20Buyer(Fast%20Claim)") end)
+        serverSub:Btn("Join Group", function() loadScript("Join%20Group") end)
         serverSub:Btn("Follow/Unfollow", function() loadScript("Follow%20or%20UnFollow%20Users") end)
         serverSub:Btn("Fake Gamepass", function() loadScript("Fake%20Parchuses%20Gamepass") end)
         serverSub:Btn("Bypass Premium", function() loadScript("Bypass%20Premiun") end)
@@ -332,3 +362,4 @@ function MiniUI:new(cusTitle)
 end
 
 return MiniUI
+
