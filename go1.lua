@@ -1,16 +1,4 @@
-       -- Anti-AFK
-        game.Players.LocalPlayer.Idled:Connect(function()
-            local VU = game:GetService("VirtualUser")
-            VU:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-            wait(1)
-            VU:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-        end)
-    end)
-    
-    return ui
-end
-
-return MiniU local MiniUI = {}
+ MiniUI = {}
 
 local TS = game:GetService("TweenService")
 local CP = game:GetService("ContentProvider")
