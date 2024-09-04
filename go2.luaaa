@@ -643,15 +643,21 @@ function MiniUI:new(cusTitle)
                 end
             end)
             
-
-        Players.LocalPlayer.Idled:Connect(function()
-            local VU = game:GetService("VirtualUser")
-            VU:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-            wait(1)
-            VU:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+            Players.LocalPlayer.Idled:Connect(function()
+                local VU = game:GetService("VirtualUser")
+                VU:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+                wait(1)
+                VU:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+            end)
         end)
-    end)
-end
+    end
+
+    if not cusTitle then
+        createIntroAnimation()
+        wait(3)
+        ui.mainUI = cUI(sg, false, nil, cusTitle)
+        ui:initializeUI()
+    end
     
     return ui
 end
