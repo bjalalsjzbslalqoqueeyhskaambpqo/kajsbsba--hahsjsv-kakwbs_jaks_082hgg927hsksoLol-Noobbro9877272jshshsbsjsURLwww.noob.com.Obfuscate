@@ -157,45 +157,66 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     end
     
     function ui:Track(label, def, min, max, step, callback)
-        local cont = addElem("Frame", {Size = UDim2.new(1, 0, 0, 40)})
-        local sl = c("Frame", {Size = UDim2.new(1, -70, 0, 6), Position = UDim2.new(0, 35, 0.5, -3), Parent = cont, BackgroundColor3 = Color3.fromRGB(100, 100, 100)})
-        local sb = c("TextButton", {Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 0, 0.5, -8), Text = "", Parent = sl, BackgroundColor3 = Color3.fromRGB(200, 200, 200)})
-        local tl = c("TextLabel", {Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 0, -22), Text = label .. ": " .. def, Parent = cont, BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Enum.Font.Gotham, TextSize = 14})
-        c("UICorner", {CornerRadius = UDim.new(0, 3), Parent = sl})
-        c("UICorner", {CornerRadius = UDim.new(0, 8), Parent = sb})
-        
-        local val = def
-        local function update(nv)
-            val = math.clamp(nv, min, max)
-            tl.Text = label .. ": " .. val
-            local pos = (val - min) / (max - min)
-            sb.Position = UDim2.new(pos, -8, 0.5, -8)
-            if callback then callback(val) end
-        end
-        
-        local drag = false
-        sb.MouseButton1Down:Connect(function() drag = true end)
-        UIS.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then drag = false end
-        end)
-        sl.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                local relX = input.Position.X - sl.AbsolutePosition.X
-                local perc = math.clamp(relX / sl.AbsoluteSize.X, 0, 1)
-                update(min + (max - min) * perc)
-            end
-        end)
-        game:GetService("RunService").RenderStepped:Connect(function()
-            if drag then
-                local mp = UIS:GetMouseLocation()
-                local relX = mp.X - sl.AbsolutePosition.X
-                local perc = math.clamp(relX / sl.AbsoluteSize.X, 0, 1)
-                update(min + (max - min) * perc)
-            end
-        end)
-        
-        return cont
+    local cont = addElem("Frame", {CusHeight = 40})
+    local sl = c("Frame", {
+        Size = UDim2.new(1, -70, 0, 6),
+        Position = UDim2.new(0, 35, 0.5, -3),
+        Parent = cont,
+        BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    })
+    local sb = c("TextButton", {
+        Size = UDim2.new(0, 16, 0, 16),
+        Position = UDim2.new(0, 0, 0.5, -8),
+        Text = "",
+        Parent = sl,
+        BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+    })
+    local tl = c("TextLabel", {
+        Size = UDim2.new(1, 0, 0, 20),
+        Position = UDim2.new(0, 0, 0, -22),
+        Text = label .. ": " .. def,
+        Parent = cont,
+        BackgroundTransparency = 1,
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        Font = Enum.Font.Gotham,
+        TextSize = 14
+    })
+    c("UICorner", {CornerRadius = UDim.new(0, 3), Parent = sl})
+    c("UICorner", {CornerRadius = UDim.new(0, 8), Parent = sb})
+    
+    local val = def
+    local function update(nv)
+        val = math.clamp(nv, min, max)
+        tl.Text = label .. ": " .. val
+        local pos = (val - min) / (max - min)
+        sb.Position = UDim2.new(pos, -8, 0.5, -8)
+        if callback then callback(val) end
     end
+    
+    local drag = false
+    sb.MouseButton1Down:Connect(function() drag = true end)
+    UIS.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then drag = false end
+    end)
+    sl.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            local relX = input.Position.X - sl.AbsolutePosition.X
+            local perc = math.clamp(relX / sl.AbsoluteSize.X, 0, 1)
+            update(min + (max - min) * perc)
+        end
+    end)
+    game:GetService("RunService").RenderStepped:Connect(function()
+        if drag then
+            local mp = UIS:GetMouseLocation()
+            local relX = mp.X - sl.AbsolutePosition.X
+            local perc = math.clamp(relX / sl.AbsoluteSize.X, 0, 1)
+            update(min + (max - min) * perc)
+        end
+    end)
+    
+    return cont
+end
+    
     
     function ui:TBtn(text, callback)
         local btn = addElem("TextButton", {Text = text})
