@@ -12,7 +12,8 @@ end
 
 local function s(i, p)
     for k, v in pairs(p) do
-        if k ~= "Font" or (k == "Font" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox"))) then
+        if (k ~= "Font" or (k == "Font" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")))) and
+           (k ~= "TextColor3" or (k == "TextColor3" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")))) then
             i[k] = v
         end
     end
@@ -261,17 +262,6 @@ function MiniUI:new(cusTitle)
 
     local ui = cUI(sg, false, nil, cusTitle)
     
-    -- Ajuste automático de tamaño
-    local function adjustSize()
-        local viewportSize = workspace.CurrentCamera.ViewportSize
-        local scale = math.min(viewportSize.X / 1920, viewportSize.Y / 1080)
-        ui.frame.Size = UDim2.new(0, 250 * scale, 0, 300 * scale)
-        ui.frame.Position = UDim2.new(0.5, -125 * scale, 0.5, -150 * scale)
-    end
-    
-    adjustSize()
-    workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(adjustSize)
-    
     spawn(function()
         wait(0.3)
         local serverSub = ui:Sub("Options")
@@ -310,8 +300,8 @@ function MiniUI:new(cusTitle)
             end
         end
         
-        serverSub:Btn("Join + Players", function() joinServer("playing", false) end)
-        serverSub:Btn("Join - Players", function() joinServer("playing", true) end)
+        serverSub:Btn("Join +Players", function() joinServer("playing", false) end)
+        serverSub:Btn("Join -Players", function() joinServer("playing", true) end)
         serverSub:Btn("Join Best Ping", function() joinServer("ping", true) end)
         
         serverSub:TBtn("FPS Boost", function(isActive)
