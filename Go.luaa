@@ -97,7 +97,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     local list = c("UIListLayout", {
         Parent = sf,
         SortOrder = Enum.SortOrder.LayoutOrder,
-        Padding = UDim.new(0, 4)
+        Padding = UDim.new(0, 8)
     })
     
     local function upSize()
@@ -157,7 +157,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         return tb
     end
     
-    function ui:Track(label, def, min, max, step, callback)
+    function ui:Track(label, def, min, max, callback)
         local cont = addElem("Frame", {Size = UDim2.new(1, 0, 0, 50)})
         local sl = c("Frame", {Size = UDim2.new(1, -70, 0, 6), Position = UDim2.new(0, 35, 0.7, -3), Parent = cont, BackgroundColor3 = Color3.fromRGB(100, 100, 100)})
         local sb = c("TextButton", {Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 0, 0.5, -8), Text = "", Parent = sl, BackgroundColor3 = Color3.fromRGB(200, 200, 200)})
@@ -167,7 +167,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         
         local val = def
         local function update(nv)
-            val = math.clamp(nv, min, max)
+            val = math.clamp(math.floor(nv), min, max)
             tl.Text = label .. ": " .. val
             local pos = (val - min) / (max - min)
             sb.Position = UDim2.new(pos, -8, 0.5, -8)
@@ -301,7 +301,7 @@ function MiniUI:new(cusTitle)
                 sortOrder
             )
             local result = game:HttpGet(endpoint)
-            result = game:GetService("HttpService"):JSONDecode(result)
+            result = game: GetService("HttpService"):JSONDecode(result)
             for _, server in ipairs(result.data) do
                 if server.playing < server.maxPlayers - 1 and server.id ~= game.JobId then
                     table.insert(servers, server)
@@ -325,25 +325,29 @@ function MiniUI:new(cusTitle)
         serverSub:Btn("Join -Players", function() joinServer("playing", true) end)
         serverSub:Btn("Join Best Ping", function() joinServer("ping", true) end)
         
+        serverSub:Track("Graphics Quality", 5, 1, 10, function(value)
+            settings().Rendering.QualityLevel = value
+        end)
+        
         serverSub:TBtn("FPS Boost", function(isActive)
             local function setGraphics(level)
                 settings().Rendering.QualityLevel = level
                 for _, v in pairs(game:GetDescendants()) do
                     if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
-                        v.Enabled = level == 4
+                        v.Enabled = level == 10
                     end
                 end
                 local lighting = game:GetService("Lighting")
-                lighting.GlobalShadows = level == 4
-                lighting.FogEnd = level == 4 and 100000 or 9e9
-                lighting.Brightness = level == 4 and 1 or 2
+                lighting.GlobalShadows = level == 10
+                lighting.FogEnd = level == 10 and 100000 or 9e9
+                lighting.Brightness = level == 10 and 1 or 2
                 for _, v in pairs(lighting:GetDescendants()) do
                     if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
-                        v.Enabled = level == 4
+                        v.Enabled = level == 10
                     end
                 end
             end
-            setGraphics(isActive and 1 or 4)
+            setGraphics(isActive and 1 or 10)
         end)
         
         local function loadScript(scriptName)
