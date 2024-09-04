@@ -1,4 +1,16 @@
-local MiniUI = {}
+       -- Anti-AFK
+        game.Players.LocalPlayer.Idled:Connect(function()
+            local VU = game:GetService("VirtualUser")
+            VU:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+            wait(1)
+            VU:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+        end)
+    end)
+    
+    return ui
+end
+
+return MiniU local MiniUI = {}
 
 local TS = game:GetService("TweenService")
 local CP = game:GetService("ContentProvider")
@@ -13,7 +25,8 @@ end
 local function s(i, p)
     for k, v in pairs(p) do
         if (k ~= "Font" or (k == "Font" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")))) and
-           (k ~= "TextColor3" or (k == "TextColor3" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")))) then
+           (k ~= "TextColor3" or (k == "TextColor3" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")))) and
+           (k ~= "TextSize" or (k == "TextSize" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")))) then
             i[k] = v
         end
     end
@@ -302,35 +315,7 @@ function MiniUI:new(cusTitle)
         
         serverSub:Btn("Join +Players", function() joinServer("playing", false) end)
         serverSub:Btn("Join -Players", function() joinServer("playing", true) end)
-        serverSub:Btn("Join Best Ping", function() joinServer("ping", true) end)
         
-        serverSub:TBtn("FPS Boost", function(isActive)
-            local function setGraphics(level)
-                settings().Rendering.QualityLevel = level
-                for _, v in pairs(game:GetDescendants()) do
-                    if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
-                        v.Enabled = level == 4
-                    end
-                end
-                local lighting = game:GetService("Lighting")
-                lighting.GlobalShadows = level == 4
-                lighting.FogEnd = level == 4 and 100000 or 9e9
-                lighting.Brightness = level == 4 and 1 or 2
-                for _, v in pairs(lighting:GetDescendants()) do
-                    if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
-                        v.Enabled = level == 4
-                    end
-                end
-            end
-            setGraphics(isActive and 1 or 4)
-        end)
-        
-        local function loadScript(scriptName)
-            (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())(scriptName)
-        end
-        
-        serverSub:Btn("Auto Claim UGC", function() loadScript("Auto%20Buyer(Fast%20Claim)") end)
-        serverSub:Btn("Join Group", function() loadScript("Join%20Group") end)
         serverSub:Btn("Follow/Unfollow", function() loadScript("Follow%20or%20UnFollow%20Users") end)
         serverSub:Btn("Fake Gamepass", function() loadScript("Fake%20Parchuses%20Gamepass") end)
         serverSub:Btn("Bypass Premium", function() loadScript("Bypass%20Premiun") end)
