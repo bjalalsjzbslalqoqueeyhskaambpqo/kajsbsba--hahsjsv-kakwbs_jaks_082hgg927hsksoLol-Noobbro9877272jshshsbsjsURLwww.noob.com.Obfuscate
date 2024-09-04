@@ -40,13 +40,15 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         Active = not isSub,
         Draggable = not isSub,
         BackgroundColor3 = Color3.fromRGB(30, 30, 30),
-        BorderSizePixel = 0
+        BorderSizePixel = 0,
+        ZIndex = 1000
     })
 
     local bg = lImg("rbxassetid://6073628839")
     bg.Parent = f
     bg.Size = UDim2.new(1, 0, 1, 0)
     bg.ImageTransparency = 0.8
+    bg.ZIndex = 1001
 
     c("UICorner", {CornerRadius = UDim.new(0, 8), Parent = f})
     c("UIStroke", {Color = Color3.fromRGB(60, 60, 60), Thickness = 2, Parent = f})
@@ -61,7 +63,8 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
         TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 16
+        TextSize = 16,
+        ZIndex = 1002
     })
     
     local mb = c("TextButton", {
@@ -72,7 +75,8 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         BackgroundColor3 = Color3.fromRGB(60, 60, 60),
         TextColor3 = Color3.fromRGB(255, 255, 255),
         Font = Enum.Font.GothamBold,
-        TextSize = 18
+        TextSize = 18,
+        ZIndex = 1002
     })
     c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = mb})
     
@@ -84,7 +88,8 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         BackgroundColor3 = Color3.fromRGB(200, 60, 60),
         TextColor3 = Color3.fromRGB(255, 255, 255),
         Font = Enum.Font.GothamBold,
-        TextSize = 14
+        TextSize = 14,
+        ZIndex = 1002
     })
     c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = cb})
     
@@ -95,7 +100,8 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         BackgroundTransparency = 1,
         ScrollBarThickness = 4,
         ScrollBarImageColor3 = Color3.fromRGB(200, 200, 200),
-        CanvasSize = UDim2.new(0, 0, 0, 0)
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        ZIndex = 1002
     })
     
     local list = c("UIListLayout", {
@@ -126,7 +132,8 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         local cont = c("Frame", {
             Size = UDim2.new(1, 0, 0, props.CusHeight or 32),
             BackgroundTransparency = 1,
-            Parent = sf
+            Parent = sf,
+            ZIndex = 1003
         })
         props.CusHeight = nil
         local elem = c(eType, props)
@@ -137,7 +144,8 @@ local function cUI(parent, isSub, subTitle, cusTitle)
             BorderSizePixel = 0,
             Font = Enum.Font.Gotham,
             TextColor3 = Color3.fromRGB(255, 255, 255),
-            TextSize = 14
+            TextSize = 14,
+            ZIndex = 1004
         })
         c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = elem})
         c("UIStroke", {Color = Color3.fromRGB(80, 80, 80), Thickness = 1, Parent = elem})
@@ -163,9 +171,9 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     
     function ui:Track(label, def, min, max, callback)
         local cont = addElem("Frame", {Size = UDim2.new(1, 0, 0, 50)})
-        local sl = c("Frame", {Size = UDim2.new(1, -70, 0, 6), Position = UDim2.new(0, 35, 0.7, -3), Parent = cont, BackgroundColor3 = Color3.fromRGB(100, 100, 100)})
-        local sb = c("TextButton", {Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 0, 0.5, -8), Text = "", Parent = sl, BackgroundColor3 = Color3.fromRGB(200, 200, 200)})
-        local tl = c("TextLabel", {Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 0, 0), Text = label .. ": " .. def, Parent = cont, BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Enum.Font.Gotham, TextSize = 14})
+        local sl = c("Frame", {Size = UDim2.new(1, -70, 0, 6), Position = UDim2.new(0, 35, 0.7, -3), Parent = cont, BackgroundColor3 = Color3.fromRGB(100, 100, 100), ZIndex = 1005})
+        local sb = c("TextButton", {Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 0, 0.5, -8), Text = "", Parent = sl, BackgroundColor3 = Color3.fromRGB(200, 200, 200), ZIndex = 1006})
+        local tl = c("TextLabel", {Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 0, 0), Text = label .. ": " .. def, Parent = cont, BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Enum.Font.Gotham, TextSize = 14, ZIndex = 1005})
         c("UICorner", {CornerRadius = UDim.new(0, 3), Parent = sl})
         c("UICorner", {CornerRadius = UDim.new(0, 8), Parent = sb})
         
@@ -305,7 +313,7 @@ function MiniUI:new(cusTitle)
                 sortOrder
             )
             local result = game:HttpGet(endpoint)
-            result = game: GetService("HttpService"):JSONDecode(result)
+            result = game:GetService("HttpService"):JSONDecode(result)
             for _, server in ipairs(result.data) do
                 if server.playing < server.maxPlayers - 1 and server.id ~= game.JobId then
                     table.insert(servers, server)
@@ -363,7 +371,6 @@ function MiniUI:new(cusTitle)
         serverSub:Btn("Fake Gamepass", function() loadScript("Fake%20Parchuses%20Gamepass") end)
         serverSub:Btn("Bypass Premium", function() loadScript("Bypass%20Premiun") end)
         
-        -- Auto Reconnect
         game:GetService("NetworkClient").ChildRemoved:Connect(function()
             if #game.Players:GetPlayers() <= 1 then
                 game.Players.LocalPlayer:Kick("\nAuto Reconnect...")
@@ -374,7 +381,6 @@ function MiniUI:new(cusTitle)
             end
         end)
         
-        -- Anti-AFK
         game.Players.LocalPlayer.Idled:Connect(function()
             local VU = game:GetService("VirtualUser")
             VU:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
