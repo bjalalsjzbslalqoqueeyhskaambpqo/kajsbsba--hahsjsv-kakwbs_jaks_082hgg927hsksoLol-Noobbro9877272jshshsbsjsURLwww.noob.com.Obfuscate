@@ -184,8 +184,11 @@ local function cUI(parent, isSub, subTitle, cusTitle)
             sb.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
         end
         
-        sb.MouseButton1Down:Connect(startDrag)
-        sb.TouchStarted:Connect(startDrag)
+        sb.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                startDrag()
+            end
+        end)
         
         UIS.InputEnded:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
