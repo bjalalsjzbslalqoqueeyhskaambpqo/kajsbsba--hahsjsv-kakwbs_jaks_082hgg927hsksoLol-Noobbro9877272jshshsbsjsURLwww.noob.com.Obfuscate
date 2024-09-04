@@ -82,12 +82,47 @@ local plr = game.Players.LocalPlayer
 firetouchinterest(plr.Character.HumanoidRootPart, obj, 0)
         wait()
         firetouchinterest(plr.Character.HumanoidRootPart, obj, 1)
+                    wait()
 end end
-wait()
+wait(0.1)
 end
 
 end)
 
+local p = game.Players.LocalPlayer
+local pr = p.Character.HumanoidRootPart
+
+local function d(p1, p2)
+    return (p1 - p2).magnitude
+end
+
+local function s(o)
+    table.sort(o, function(a, b)
+        local da = d(pr.Position, a.Parent.Position)
+        local db = d(pr.Position, b.Parent.Position)
+        return da < db
+    end)
+    return o
+end
+
+local function m()
+    local t = workspace:GetDescendants()
+    t = s(t)
+
+    for _, o in ipairs(t) do
+        if o:IsA("BasePart") and o:FindFirstChild("TouchInterest") then
+            pcall(function()
+            local p = game.Players.LocalPlayer
+local pr = p.Character.HumanoidRootPart
+
+            pr.CFrame = o.Parent.CFrame
+                end)
+            wait(0.5)
+        end
+    end
+end
+
+ui:Btn("Move Touch", m)
 
 
 ui:Btn("Inifnity Yield", function()
