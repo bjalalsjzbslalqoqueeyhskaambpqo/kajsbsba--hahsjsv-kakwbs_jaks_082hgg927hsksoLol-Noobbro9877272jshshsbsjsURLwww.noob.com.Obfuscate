@@ -27,15 +27,15 @@ local function s(i, p)
 end
 
 local colors = {
-    background = Color3.fromRGB(30, 30, 40),
-    foreground = Color3.fromRGB(45, 45, 55),
-    accent = Color3.fromRGB(70, 130, 180),
-    text = Color3.fromRGB(220, 220, 220),
-    button = Color3.fromRGB(60, 60, 70),
-    buttonHover = Color3.fromRGB(80, 80, 90),
-    toggle = Color3.fromRGB(60, 180, 75),
-    toggleOff = Color3.fromRGB(180, 60, 60),
-    slider = Color3.fromRGB(100, 100, 110),
+    background = Color3.fromRGB(20, 20, 30),
+    foreground = Color3.fromRGB(30, 30, 40),
+    accent = Color3.fromRGB(100, 180, 255),
+    text = Color3.fromRGB(255, 255, 255),
+    button = Color3.fromRGB(50, 50, 60),
+    buttonHover = Color3.fromRGB(70, 70, 80),
+    toggle = Color3.fromRGB(60, 200, 60),
+    toggleOff = Color3.fromRGB(200, 60, 60),
+    slider = Color3.fromRGB(80, 80, 100),
 }
 
 local function cUI(parent, isSub, subTitle, cusTitle)
@@ -154,7 +154,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         
         if eType == "TextButton" then
             elem.BackgroundColor3 = colors.button
-            c("UIGradient", {
+            local gradient = c("UIGradient", {
                 Color = ColorSequence.new({
                     ColorSequenceKeypoint.new(0, colors.button),
                     ColorSequenceKeypoint.new(1, colors.buttonHover)
@@ -162,20 +162,18 @@ local function cUI(parent, isSub, subTitle, cusTitle)
                 Rotation = 90,
                 Parent = elem
             })
+            elem.MouseEnter:Connect(function()
+                TS:Create(gradient, TweenInfo.new(0.2), {Offset = Vector2.new(0, -0.5)}):Play()
+            end)
+            elem.MouseLeave:Connect(function()
+                TS:Create(gradient, TweenInfo.new(0.2), {Offset = Vector2.new(0, 0)}):Play()
+            end)
         elseif eType == "TextLabel" then
             elem.BackgroundColor3 = colors.foreground
         elseif eType == "TextBox" then
             elem.BackgroundColor3 = colors.foreground
             elem.PlaceholderColor3 = Color3.fromRGB(180, 180, 180)
         end
-        
-        local originalColor = elem.BackgroundColor3
-        elem.MouseEnter:Connect(function()
-            TS:Create(elem, TweenInfo.new(0.1), {BackgroundColor3 = originalColor:Lerp(colors.buttonHover, 0.3)}):Play()
-        end)
-        elem.MouseLeave:Connect(function()
-            TS:Create(elem, TweenInfo.new(0.1), {BackgroundColor3 = originalColor}):Play()
-        end)
         
         upSize()
         return elem
@@ -302,15 +300,11 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         btn.MouseButton1Click:Connect(function()
             active = not active
             upApp()
-            if callback then 
-                task.spawn(function()
-                    callback(active)
-                end)
-            end
+            if callback then callback(active) end
         end)
         
         upApp()
-        return btn, function() return active end
+        return btn
     end
     
     local activeSub = nil
@@ -468,7 +462,7 @@ function MiniUI:new(cusTitle)
             settings().Rendering.QualityLevel = value
         end)
         
-        local fpsBoostToggle, getFpsBoostState = serverSub:TBtn("FPS Boost", function(isActive)
+        serverSub:TBtn("FPS Boost", function(isActive)
             local function setGraphics(level)
                 settings().Rendering.QualityLevel = level
                 for _, v in pairs(game:GetDescendants()) do
