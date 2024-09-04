@@ -643,6 +643,7 @@ function MiniUI:new(cusTitle)
                 end
             end)
             
+
         Players.LocalPlayer.Idled:Connect(function()
             local VU = game:GetService("VirtualUser")
             VU:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
@@ -650,6 +651,7 @@ function MiniUI:new(cusTitle)
             VU:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
         end)
     end)
+end
     
     return ui
 end
