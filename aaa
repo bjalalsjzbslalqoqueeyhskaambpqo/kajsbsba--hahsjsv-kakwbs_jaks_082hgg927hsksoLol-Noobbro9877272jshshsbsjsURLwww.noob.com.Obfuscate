@@ -27,7 +27,7 @@ local function s(i, p)
 end
 
 local colors = {
-    background = Color3.fromRGB(25, 25, 35),
+    background = Color3.fromRGB(250, 205, 305),
     foreground = Color3.fromRGB(255, 250, 255),
     accent = Color3.fromRGB(65, 105, 225),
     text = Color3.fromRGB(220, 220, 220),
