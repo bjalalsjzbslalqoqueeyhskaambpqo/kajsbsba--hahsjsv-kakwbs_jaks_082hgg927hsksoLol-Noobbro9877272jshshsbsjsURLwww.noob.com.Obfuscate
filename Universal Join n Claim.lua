@@ -88,17 +88,21 @@ local function d(p1, p2)
 end
 
 local function s(o)
+    pcall(function()
     table.sort(o, function(a, b)
         local da = d(pr.Position, a.Parent.Position)
         local db = d(pr.Position, b.Parent.Position)
         return da < db
     end)
     return o
+        end)
 end
 
 local function m()
     local t = workspace:GetDescendants()
+    pcall(function()
     t = s(t)
+        end)
 
     for _, o in ipairs(t) do
         if o:IsA("BasePart") and o:FindFirstChild("TouchInterest") then
