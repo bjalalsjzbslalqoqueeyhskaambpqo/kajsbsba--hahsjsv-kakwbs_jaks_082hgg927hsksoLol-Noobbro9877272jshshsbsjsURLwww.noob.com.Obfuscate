@@ -302,9 +302,7 @@ function MiniUI:new(cusTitle)
                 table.sort(servers, function(a, b)
                     return ascending and a[sortOrder] < b[sortOrder] or a[sortOrder] > b[sortOrder]
                 end)
-                game:GetService("TeleportService"):T
-
-eleportToPlaceInstance(game.PlaceId, servers[1].id)
+                game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, servers[1].id)
             else
                 game:GetService("StarterGui"):SetCore("SendNotification", {
                     Title = "No Server",
