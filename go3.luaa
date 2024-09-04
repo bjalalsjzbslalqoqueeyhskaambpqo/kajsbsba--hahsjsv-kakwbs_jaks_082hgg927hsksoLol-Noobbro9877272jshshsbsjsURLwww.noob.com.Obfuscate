@@ -6,14 +6,17 @@ local UIS = game:GetService("UserInputService")
 
 local function c(t, p)
     local i = Instance.new(t)
-    for k, v in pairs(p) do i[k] = v end
+    for k, v in pairs(p) do
+        if i[k] ~= nil then
+            i[k] = v
+        end
+    end
     return i
 end
 
 local function s(i, p)
     for k, v in pairs(p) do
-        if (k ~= "Font" or (k == "Font" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")))) and
-           (k ~= "TextColor3" or (k == "TextColor3" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")))) then
+        if i[k] ~= nil then
             i[k] = v
         end
     end
@@ -129,11 +132,15 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         elem.Parent = cont
         s(elem, {
             BackgroundColor3 = Color3.fromRGB(50, 50, 50),
-            BorderSizePixel = 0,
-            Font = Enum.Font.Gotham,
-            TextColor3 = Color3.fromRGB(255, 255, 255),
-            TextSize = 14
+            BorderSizePixel = 0
         })
+        if elem:IsA("TextLabel") or elem:IsA("TextButton") or elem:IsA("TextBox") then
+            s(elem, {
+                Font = Enum.Font.Gotham,
+                TextColor3 = Color3.fromRGB(255, 255, 255),
+                TextSize = 14
+            })
+        end
         c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = elem})
         c("UIStroke", {Color = Color3.fromRGB(80, 80, 80), Thickness = 1, Parent = elem})
         upSize()
@@ -335,7 +342,6 @@ function MiniUI:new(cusTitle)
         serverSub:Btn("Fake Gamepass", function() loadScript("Fake%20Parchuses%20Gamepass") end)
         serverSub:Btn("Bypass Premium", function() loadScript("Bypass%20Premiun") end)
         
-        -- Auto Reconnect
         game:GetService("NetworkClient").ChildRemoved:Connect(function()
             if #game.Players:GetPlayers() <= 1 then
                 game.Players.LocalPlayer:Kick("\nAuto Reconnect...")
@@ -346,7 +352,6 @@ function MiniUI:new(cusTitle)
             end
         end)
         
-        -- Anti-AFK
         game.Players.LocalPlayer.Idled:Connect(function()
             local VU = game:GetService("VirtualUser")
             VU:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
