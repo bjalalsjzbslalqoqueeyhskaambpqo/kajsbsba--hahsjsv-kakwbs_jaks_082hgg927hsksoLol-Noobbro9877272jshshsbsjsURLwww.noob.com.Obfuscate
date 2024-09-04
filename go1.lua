@@ -138,6 +138,8 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         local tb = addElem("TextBox", {Text = text, ClearTextOnFocus = false})
         if callback then tb.FocusLost:Connect(function(ep) callback(tb.Text, ep) end) end
         return tb
+end
+
    local function addElem(eType, props)
     local cont = c("Frame", {
         Size = UDim2.new(1, 0, 0, props.CusHeight or 32),
