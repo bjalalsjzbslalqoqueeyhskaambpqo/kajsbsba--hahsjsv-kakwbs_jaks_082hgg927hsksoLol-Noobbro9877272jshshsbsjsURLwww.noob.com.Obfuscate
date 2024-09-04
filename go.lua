@@ -10,6 +10,10 @@ local function c(t, p)
     return i
 end
 
+spawn(function()
+    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+end)
+
 local function s(i, p)
     for k, v in pairs(p) do
         if (k ~= "Font" or (k == "Font" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")))) and
