@@ -6,15 +6,22 @@ local UIS = game:GetService("UserInputService")
 
 local function c(t, p)
     local i = Instance.new(t)
-    for k, v in pairs(p) do i[k] = v end
+    for k, v in pairs(p) do
+        if i[k] ~= nil then
+            i[k] = v
+        end
+    end
     return i
 end
 
 local function s(i, p)
     for k, v in pairs(p) do
-        if (k ~= "Font" or (k == "Font" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")))) and
-           (k ~= "TextColor3" or (k == "TextColor3" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")))) then
-            i[k] = v
+        if i[k] ~= nil then
+            if (k == "Font" or k == "TextColor3" or k == "TextSize") and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")) then
+                i[k] = v
+            elseif k ~= "Font" and k ~= "TextColor3" and k ~= "TextSize" then
+                i[k] = v
+            end
         end
     end
 end
@@ -48,7 +55,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
 
     local title = isSub and subTitle or cusTitle or game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
     
-    local tl = c("TextLabel", {
+    c("TextLabel", {
         Size = UDim2.new(1, -60, 0, 30),
         Position = UDim2.new(0, 0, 0, 0),
         Text = title,
@@ -160,14 +167,23 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         local cont = addElem("Frame", {Size = UDim2.new(1, 0, 0, 40)})
         local sl = c("Frame", {Size = UDim2.new(1, -70, 0, 6), Position = UDim2.new(0, 35, 0.5, -3), Parent = cont, BackgroundColor3 = Color3.fromRGB(100, 100, 100)})
         local sb = c("TextButton", {Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 0, 0.5, -8), Text = "", Parent = sl, BackgroundColor3 = Color3.fromRGB(200, 200, 200)})
-        local tl = c("TextLabel", {Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 0, -22), Text = label .. ": " .. def, Parent = cont, BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Enum.Font.Gotham, TextSize = 14})
+        c("TextLabel", {
+            Size = UDim2.new(1, 0, 0, 20),
+            Position = UDim2.new(0, 0, 0, -22),
+            Text = label .. ": " .. def,
+            Parent = cont,
+            BackgroundTransparency = 1,
+            TextColor3 = Color3.fromRGB(255, 255, 255),
+            Font = Enum.Font.Gotham,
+            TextSize = 14
+        })
         c("UICorner", {CornerRadius = UDim.new(0, 3), Parent = sl})
         c("UICorner", {CornerRadius = UDim.new(0, 8), Parent = sb})
         
         local val = def
         local function update(nv)
             val = math.clamp(nv, min, max)
-            tl.Text = label .. ": " .. val
+            cont:FindFirstChildOfClass("TextLabel").Text = label .. ": " .. val
             local pos = (val - min) / (max - min)
             sb.Position = UDim2.new(pos, -8, 0.5, -8)
             if callback then callback(val) end
@@ -311,7 +327,7 @@ function MiniUI:new(cusTitle)
                     if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
                         v.Enabled = level == 4
                     end
-                        end
+                end
                 local lighting = game:GetService("Lighting")
                 lighting.GlobalShadows = level == 4
                 lighting.FogEnd = level == 4 and 100000 or 9e9
@@ -326,7 +342,7 @@ function MiniUI:new(cusTitle)
         end)
         
         local function loadScript(scriptName)
-            (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())(scriptName)
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))()(scriptName)
         end
         
         serverSub:Btn("Auto Claim UGC", function() loadScript("Auto%20Buyer(Fast%20Claim)") end)
