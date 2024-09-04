@@ -4,7 +4,6 @@ local TS = game:GetService("TweenService")
 local CP = game:GetService("ContentProvider")
 local UIS = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
-local HttpService = game:GetService("HttpService")
 
 local function c(t, p)
     local i = Instance.new(t)
@@ -155,14 +154,6 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         if eType == "TextButton" then
             elem.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
             elem.TextColor3 = Color3.fromRGB(255, 255, 255)
-            c("UIGradient", {
-                Color = ColorSequence.new({
-                    ColorSequenceKeypoint.new(0, Color3.fromRGB(70, 70, 70)),
-                    ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 60, 60))
-                }),
-                Rotation = 90,
-                Parent = elem
-            })
         elseif eType == "TextLabel" then
             elem.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
             elem.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -172,12 +163,11 @@ local function cUI(parent, isSub, subTitle, cusTitle)
             elem.PlaceholderColor3 = Color3.fromRGB(180, 180, 180)
         end
         
-        local originalColor = elem.BackgroundColor3
         elem.MouseEnter:Connect(function()
-            TS:Create(elem, TweenInfo.new(0.1), {BackgroundColor3 = originalColor:Lerp(Color3.fromRGB(80, 80, 80), 0.3)}):Play()
+            TS:Create(elem, TweenInfo.new(0.1), {BackgroundColor3 = elem.BackgroundColor3:Lerp(Color3.fromRGB(80, 80, 80), 0.3)}):Play()
         end)
         elem.MouseLeave:Connect(function()
-            TS:Create(elem, TweenInfo.new(0.1), {BackgroundColor3 = originalColor}):Play()
+            TS:Create(elem, TweenInfo.new(0.1), {BackgroundColor3 = props.OriginalColor or elem.BackgroundColor3}):Play()
         end)
         
         upSize()
@@ -185,23 +175,23 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     end
     
     function ui:Btn(text, callback)
-        local btn = addElem("TextButton", {Text = text})
+        local btn = addElem("TextButton", {Text = text, OriginalColor = Color3.fromRGB(60, 60, 60)})
         if callback then btn.MouseButton1Click:Connect(callback) end
         return btn
     end
     
     function ui:Txt(text)
-        return addElem("TextLabel", {Text = text})
+        return addElem("TextLabel", {Text = text, OriginalColor = Color3.fromRGB(40, 40, 40)})
     end
     
     function ui:TBox(text, callback)
-        local tb = addElem("TextBox", {Text = text, ClearTextOnFocus = false, PlaceholderText = "Enter text..."})
+        local tb = addElem("TextBox", {Text = text, ClearTextOnFocus = false, PlaceholderText = "Enter text...", OriginalColor = Color3.fromRGB(70, 70, 70)})
         if callback then tb.FocusLost:Connect(function(ep) callback(tb.Text, ep) end) end
         return tb
     end
     
     function ui:Track(label, def, min, max, callback)
-        local cont = addElem("Frame", {Size = UDim2.new(1, 0, 0, 50)})
+        local cont = addElem("Frame", {Size = UDim2.new(1, 0, 0, 50), OriginalColor = Color3.fromRGB(50, 50, 50)})
         local sl = c("Frame", {Size = UDim2.new(1, -70, 0, 6), Position = UDim2.new(0, 35, 0.7, -3), Parent = cont, BackgroundColor3 = Color3.fromRGB(100, 100, 100), ZIndex = 10005})
         local sb = c("TextButton", {Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 0, 0.5, -8), Text = "", Parent = sl, BackgroundColor3 = Color3.fromRGB(200, 200, 200), ZIndex = 10006})
         local tl = c("TextLabel", {Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 0, 0), Text = label .. ": " .. def, Parent = cont, BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Enum.Font.Gotham, TextSize = 14, ZIndex = 10005})
@@ -262,7 +252,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     end
     
     function ui:TBtn(text, callback)
-        local btn = addElem("TextButton", {Text = text})
+        local btn = addElem("TextButton", {Text = text, OriginalColor = Color3.fromRGB(60, 60, 60)})
         local active = false
         
         local function upApp()
@@ -277,20 +267,6 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         
         upApp()
         return btn
-    end
-    
-    function ui:Img(url)
-        local imgCont = addElem("Frame", {Size = UDim2.new(1, 0, 0, 100), BackgroundTransparency = 1})
-        local img = c("ImageLabel", {
-            Size = UDim2.new(1, 0, 1, 0),
-            Position = UDim2.new(0, 0, 0, 0),
-            Image = url,
-            Parent = imgCont,
-            BackgroundTransparency = 1,
-            ZIndex = 10004
-        })
-        c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = img})
-        return imgCont
     end
     
     local activeSub = nil
@@ -341,53 +317,6 @@ function MiniUI:new(cusTitle)
 
     local ui = cUI(sg, false, nil, cusTitle)
     
-    local notificationQueue = {}
-    local currentNotification = nil
-    
-    local function showNextNotification()
-        if #notificationQueue > 0 and not currentNotification then
-            currentNotification = table.remove(notificationQueue, 1)
-            local notif = c("Frame", {
-                Size = UDim2.new(0, 200, 0, 50),
-                Position = UDim2.new(1, -220, 1, 20),
-                BackgroundColor3 = Color3.fromRGB(30, 30, 30),
-                BorderSizePixel = 0,
-                Parent = sg,
-                ZIndex = 10010
-            })
-            c("UICorner", {CornerRadius = UDim.new(0, 8), Parent = notif})
-            c("UIStroke", {Color = Color3.fromRGB(60, 60, 60), Thickness = 2, Parent = notif})
-            
-            local text = c("TextLabel", {
-                Size = UDim2.new(1, -20, 1, 0),
-                Position = UDim2.new(0, 10, 0, 0),
-                Text = currentNotification.message,
-                Parent = notif,
-                BackgroundTransparency = 1,
-                Font = Enum.Font.Gotham,
-                TextColor3 = Color3.fromRGB(255, 255, 255),
-                TextSize = 14,
-                TextWrapped = true,
-                ZIndex = 10011
-            })
-            
-            TS:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1, -220, 1, -70)}):Play()
-            wait(currentNotification.duration)
-            TS:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1, -220, 1, 20)}):Play()
-            wait(0.5)
-            notif:Destroy()
-            currentNotification = nil
-            showNextNotification()
-        end
-    end
-    
-    function ui:Notify(message, duration)
-        table.insert(notificationQueue, {message = message, duration = duration or 3})
-        if not currentNotification then
-            showNextNotification()
-        end
-    end
-    
     spawn(function()
         wait(0.3)
         local serverSub = ui:Sub("Universal Options")
@@ -406,7 +335,7 @@ function MiniUI:new(cusTitle)
                 sortOrder
             )
             local result = game:HttpGet(endpoint)
-            result = HttpService:JSONDecode(result)
+            result = game:GetService("HttpService"):JSONDecode(result)
             for _, server in ipairs(result.data) do
                 if server.playing < server.maxPlayers - 1 and server.id ~= game.JobId then
                     table.insert(servers, server)
@@ -418,7 +347,11 @@ function MiniUI:new(cusTitle)
                 end)
                 game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, servers[1].id)
             else
-                ui:Notify("No suitable servers found", 5)
+                game:GetService("StarterGui"):SetCore("SendNotification", {
+                    Title = "No Server",
+                    Text = "No suitable servers found",
+                    Duration = 5,
+                })
             end
         end
         
@@ -459,8 +392,6 @@ function MiniUI:new(cusTitle)
         serverSub:Btn("Follow/Unfollow", function() loadScript("Follow%20or%20UnFollow%20Users") end)
         serverSub:Btn("Fake Gamepass", function() loadScript("Fake%20Parchuses%20Gamepass") end)
         serverSub:Btn("Bypass Premium", function() loadScript("Bypass%20Premiun") end)
-        
-        serverSub:Img("https://www.roblox.com/headshot-thumbnail/image?userId=" .. game.Players.LocalPlayer.UserId .. "&width=420&height=420&format=png")
         
         game:GetService("NetworkClient").ChildRemoved:Connect(function()
             if #game.Players:GetPlayers() <= 1 then
