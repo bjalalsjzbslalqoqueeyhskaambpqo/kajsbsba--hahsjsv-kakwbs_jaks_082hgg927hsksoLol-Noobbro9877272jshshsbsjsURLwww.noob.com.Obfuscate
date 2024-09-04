@@ -12,7 +12,8 @@ end
 
 local function s(i, p)
     for k, v in pairs(p) do
-        if k ~= "Font" or (k == "Font" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox"))) then
+        if (k ~= "Font" or (k == "Font" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")))) and
+           (k ~= "TextColor3" or (k == "TextColor3" and (i:IsA("TextLabel") or i:IsA("TextButton") or i:IsA("TextBox")))) then
             i[k] = v
         end
     end
@@ -117,29 +118,27 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     end)
     
     local function addElem(eType, props)
-    local cont = c("Frame", {
-        Size = UDim2.new(1, 0, 0, props.CusHeight or 32),
-        BackgroundTransparency = 1,
-        Parent = sf
-    })
-    props.CusHeight = nil
-    local elem = c(eType, props)
-    elem.Size = UDim2.new(1, 0, 1, 0)
-    elem.Parent = cont
-    s(elem, {
-        BackgroundColor3 = Color3.fromRGB(50, 50, 50),
-        BorderSizePixel = 0,
-        Font = Enum.Font.Gotham,
-        TextSize = 14
-    })
-    if elem:IsA("TextLabel") or elem:IsA("TextButton") or elem:IsA("TextBox") then
-        elem.TextColor3 = Color3.fromRGB(255, 255, 255)
+        local cont = c("Frame", {
+            Size = UDim2.new(1, 0, 0, props.CusHeight or 32),
+            BackgroundTransparency = 1,
+            Parent = sf
+        })
+        props.CusHeight = nil
+        local elem = c(eType, props)
+        elem.Size = UDim2.new(1, 0, 1, 0)
+        elem.Parent = cont
+        s(elem, {
+            BackgroundColor3 = Color3.fromRGB(50, 50, 50),
+            BorderSizePixel = 0,
+            Font = Enum.Font.Gotham,
+            TextColor3 = Color3.fromRGB(255, 255, 255),
+            TextSize = 14
+        })
+        c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = elem})
+        c("UIStroke", {Color = Color3.fromRGB(80, 80, 80), Thickness = 1, Parent = elem})
+        upSize()
+        return elem
     end
-    c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = elem})
-    c("UIStroke", {Color = Color3.fromRGB(80, 80, 80), Thickness = 1, Parent = elem})
-    upSize()
-    return elem
-end
     
     function ui:Btn(text, callback)
         local btn = addElem("TextButton", {Text = text})
@@ -263,17 +262,6 @@ function MiniUI:new(cusTitle)
 
     local ui = cUI(sg, false, nil, cusTitle)
     
-    -- Ajuste automático de tamaño
-    local function adjustSize()
-        local viewportSize = workspace.CurrentCamera.ViewportSize
-        local scale = math.min(viewportSize.X / 1920, viewportSize.Y / 1080)
-        ui.frame.Size = UDim2.new(0, 250 * scale, 0, 300 * scale)
-        ui.frame.Position = UDim2.new(0.5, -125 * scale, 0.5, -150 * scale)
-    end
-    
-    adjustSize()
-    workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(adjustSize)
-    
     spawn(function()
         wait(0.3)
         local serverSub = ui:Sub("Options")
@@ -312,8 +300,8 @@ function MiniUI:new(cusTitle)
             end
         end
         
-        serverSub:Btn("Join + Players", function() joinServer("playing", false) end)
-        serverSub:Btn("Join - Players", function() joinServer("playing", true) end)
+        serverSub:Btn("Join +Players", function() joinServer("playing", false) end)
+        serverSub:Btn("Join -Players", function() joinServer("playing", true) end)
         serverSub:Btn("Join Best Ping", function() joinServer("ping", true) end)
         
         serverSub:TBtn("FPS Boost", function(isActive)
