@@ -20,7 +20,7 @@ local function notifyStars(mult)
 end
 notifyStars()
 notifyStars(4)
-
+ui:Notify("Use Button (Join Alone server(beta), ah sometimes you need to use it several times")
 ui:Btn("Stars", function()
     notifyStars()
 notifyStars(4)
