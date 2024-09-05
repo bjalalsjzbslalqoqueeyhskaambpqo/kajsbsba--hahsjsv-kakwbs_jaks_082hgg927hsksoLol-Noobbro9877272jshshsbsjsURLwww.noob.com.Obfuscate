@@ -1,21 +1,63 @@
-local UL = loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX/OneCreatorX/main/UIs/MyLibrery.lua"))()
+local MiniUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/go.lua"))()
 
-local gameName = ""
-if gameName == "" then
-    gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+local ui = MiniUI:new()
+
+
+spawn(function()
+if game.PlaceId == 14379445094 then
+
+local ye = false
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local frame = player.PlayerGui.UIRanking.Frame.FinishGamePlayerInfo.Frame.FinishGamePlayerInfoFirst
+
+local function findPlayerByDisplayName(displayName)
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p.DisplayName == displayName then
+            return p
+        end
+    end
+    return nil
 end
 
-local function cleanGameName(name)
-    name = name:gsub("%b[]", "")
-    name = name:match("^[^:]*")
-    return name:match("^%s*(.-)%s*$")
+local function onVisibilityChanged()
+    if frame.Visible then
+        local playerName = frame.Middle.PlayerName.Text
+        local foundPlayer = findPlayerByDisplayName(playerName)
+        
+        if foundPlayer then
+            
+            if foundPlayer.Character and foundPlayer.Character:FindFirstChild("HumanoidRootPart") and ye then
+                game.Players.LocalPlayer.Character:MoveTo(foundPlayer.Character.HumanoidRootPart.Position)
+
+wait(0.4)
+game.Players.LocalPlayer.CharacterHumanoid:MoveTo(Vector3.new(-2249, 174, 165))
+            else
+
+            end
+        else
+            
+        end
+    end
 end
 
-gameName = cleanGameName(gameName)
+frame:GetPropertyChangedSignal("Visible"):Connect(onVisibilityChanged)
+
+ui:TBtn("Auto 2do win", function()
+ye = not ye
+end)
+end
+end)
+
+
+
+
+spawn(function()
+if game.PlaceId == 9682240267 then
+
 
 local p = game.Players.LocalPlayer
-local sg = UL:CrSG("Default")
-local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
+
 
 local function extract_number(name)
     return tonumber(name:match("%d+"))
@@ -121,13 +163,13 @@ function trasure()
 
 end
 
-UL:AddTBtn(cfrm, "Auto Treasure", false, function()
+ui:TBtn("Auto Treasure", function()
  tre = not tre
 
 while tre do
 for _, t in pairs(workspace.TreasureEntity:GetChildren()) do
                 if tre then
-    game.Players.LocalPlayer.Character:MoveTo(t:GetModelCFrame().Position)
+    game.Players.LocalPlayer.Character.PrimaryPart.CFrame = t:GetModelCFrame() + Vector3.new(0,2,0)
     wait(0.5)
         processButtonIfVisible()
 wait(2.2)
@@ -152,7 +194,7 @@ end
 
 
 
-UL:AddTBtn(cfrm, "Auto All", false, function()
+ui:TBtn("Auto All", function()
     b = not b
 if b then
 mainLoop()
@@ -187,7 +229,7 @@ setreadonly(mt, true)
 
 local a = false
 
-UL:AddTBtn(cfrm, "Auto fast Order", false, function()
+ui:TBtn("Auto fast Order", function()
     a = not a
     if arg1_order == nil then
         local StarterGui = game:GetService("StarterGui")
@@ -234,14 +276,33 @@ syncPlayerOrderInfo.OnClientEvent:Connect(function(data, arg2)
     end
 end)
 
-UL:AddText(crFrm, "By Script: OneCreatorX ")
-UL:AddText(crFrm, "Create Script: 05/07/24 ")
-UL:AddText(crFrm, "Update Script: 10/07/--")
-UL:AddText(crFrm, "Script Version: 0.3")
-UL:AddBtn(crFrm, "Copy link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
-UL:AddBtn(crFrm, "Copy link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
+ui:Btn("Keroppi Obby", function()
 
-game:GetService('Players').LocalPlayer.Idled:Connect(function()
-    game:GetService('VirtualUser'):CaptureController()
-    game:GetService('VirtualUser'):ClickButton2(Vector2.new())
+local args = {
+    [1] = 14379445094,
+    [7] = "SpawnLocation",
+    [4] = 2
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("GameCommon"):WaitForChild("Messages"):WaitForChild("TeleportCommon"):FireServer(unpack(args))
+
 end)
+end
+end)
+
+
+
+
+wait(0.7)
+infoSub = ui:Sub("Info Script")
+infoSub:Txt("Version: 0.1")
+infoSub:Txt("Create: 05/07/24")
+infoSub:Txt("Update: 05/09/24")
+infoSub:Btn("Link YouTube", function()
+   setclipboard("https://youtube.com/@onecreatorx") 
+end)
+
+infoSub:Btn("Link Discord", function()
+  setclipboard("https://discord.com/invite/UNJpdJx7c4")  
+end)
+ 
