@@ -43,24 +43,6 @@ wait(0.1)
     end
 end)
 
-ui:TBtn("Auto Star Slow", function()
-a = not a
-while a do
-for _, e in workspace.ClaimableStars:GetChildren() do
-
-local args = {
-    [1] = e
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("ClaimStar"):InvokeServer(unpack(args))
-wait()
-end
-wait()
-end
-
-end)
-
-
 
 wait(0.7)
 infoSub = ui:Sub("Info Script")
