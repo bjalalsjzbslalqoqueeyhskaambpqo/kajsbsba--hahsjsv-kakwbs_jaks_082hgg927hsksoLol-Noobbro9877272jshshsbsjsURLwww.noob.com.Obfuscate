@@ -1,11 +1,33 @@
-local MiniUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/go.lua"))()
+local UL = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/MyLibrery.lua"))()
 
-local ui = MiniUI:new("Raise a Rainbacorn")
+local gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+local cleanGameName = function(name)
+    return name:gsub("%b[]", ""):match("^[^:]*"):match("^%s*(.-)%s*$")
+end
+gameName = cleanGameName(gameName)
 
-extra = ui:Sub("Extra")
-local a = false
-extra:TBtn("Collect Flowers", function()
-        a = b
+local p = game.Players.LocalPlayer
+local sg = UL:CrSG("Default")
+local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
+
+
+OB, OF = UL:AddOBtn(cfrm, "MiniGames")
+
+UL:AddTBtn(OF, "Auto Moños", a, function(b) 
+    a = b
+    while a do
+        wait(0.1)
+        for _, h in ipairs(workspace:GetChildren()) do
+            if h.Name == "Bowtie" then
+                fireproximityprompt(h["Meshes/bowV1.1_Cube"].ProximityPrompt)
+            end
+        end
+    end
+end)
+
+
+UL:AddTBtn(cfrm, "Collect Flowers", a, function(b) 
+    a = b
     while a do
         for _, h in ipairs(workspace.Activators:GetChildren()) do
             if h.Name == "Flower" and a then
@@ -18,12 +40,11 @@ wait(0.5)
     end
 end)
 
-
-local a = false
-extra:TBtn("Collect Magic Feathers", function()
-        a = b
+UL:AddTBtn(cfrm, "Collect Magic Feathers", a, function(b) 
+    a = b
     while a do
-for _, h in ipairs(workspace.Feathers:GetChildren()) do
+wait()
+        for _, h in ipairs(workspace.Feathers:GetChildren()) do
             if h.Name == "Feather" and h:FindFirstChild("Root") and a then
                 game.Players.LocalPlayer.Character.PrimaryPart.CFrame = h.Root.CFrame
 wait(0.5)
@@ -34,11 +55,12 @@ wait(0.5)
     end
 end)
 
-local a = false
-ui:TBtn("Auto Claim Gift", function()
-        a = b
+
+UL:AddTBtn(cfrm, "Auto Claim Gift", false, function(b) 
+    local a = false
+    a = not a
     while a do
-for i = 1, 9 do
+        for i = 1, 9 do
             local args = {
                 [1] = {
                     [1] = {
@@ -54,6 +76,7 @@ for i = 1, 9 do
         end
     end
 end)
+
 
 local players = game:GetService("Players")
 local localPlayer = players.LocalPlayer
@@ -225,7 +248,7 @@ local function processChatMessages()
         return
     end
 
-while true do
+    while true do
         wait(0.1)
         updateActivePets()
 
@@ -248,21 +271,43 @@ while true do
                                     if not lastActionTime or (currentTime - lastActionTime >= actionCooldown) then
                                         sendActionToServer(currentPetName, action)
                                         petActionTimes[currentPetName] = currentTime
-ui:Notify("Pet Interaction: Waiting for server response", 3)
+
+                                        local StarterGui = game:GetService("StarterGui")
+                                        StarterGui:SetCore("SendNotification", {
+                                            Title = "Pet Interaction: Success",
+                                            Text = "Waiting for server response...",
+                                            Duration = 3,
+                                        })
+
                                         wait(8)  
 
                                         local nextPet = findNextUnequippedActivePet()
 
                                         if nextPet then
                                             desequipPet(currentPetName)
-ui:Notify("Rotating Pet: Deequipping Current Pet", 5)
+
+                                            StarterGui:SetCore("SendNotification", {
+                                                Title = "Deequipping Current Pet",
+                                                Text = "Please wait...",
+                                                Duration = 5,
+                                            })
 
                                             wait(5) 
 
                                             equipPet(nextPet)
-ui:Notify("Rotating Pet: Equipping New", 5)
+
+                                            StarterGui:SetCore("SendNotification", {
+                                                Title = "Equipping New Pet",
+                                                Text = "Please wait...",
+                                                Duration = 5,
+                                            })
+
                                             else
-ui:Notify("No Pets Active: continue", 5)
+StarterGui:SetCore("SendNotification", {
+                                                Title = "No Pets Actives",
+                                                Text = "without changes",
+                                                Duration = 5,
+                                            })
                                         end
 
                                         break
@@ -279,6 +324,19 @@ end
 
 spawn(processChatMessages)
     end)
+
+UL:AddText(crFrm, "By Script: OneCreatorX ")
+UL:AddText(crFrm, "Create Script: 29/05/24 ")
+UL:AddText(crFrm, "Update Script: 07/08/24")
+UL:AddText(crFrm, "Script Version: 0.6")
+UL:AddBtn(crFrm, "Copy link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
+UL:AddBtn(crFrm, "Copy link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
+
+game:GetService('Players').LocalPlayer.Idled:Connect(function()
+    game:GetService('VirtualUser'):CaptureController()
+    game:GetService('VirtualUser'):ClickButton2(Vector2.new())
+end)
+
 spawn(function()
         while true do
             wait(0.3)
@@ -310,6 +368,7 @@ local userDirectoryName = playerName .. ":Debris"
 adjustAnimationsInObject(Workspace[userDirectoryName])
         end
     end)
+
 
 local Plrs = game:GetService("Players")
 local TS = game:GetService("TweenService")
@@ -449,18 +508,15 @@ local function mAA()
     isMoving = false
 end
 
-local a = false
-ui:TBtn("Auto Bush Raiwb", function()
-a = not a
-    while a do
+UL:AddTBtn(cfrm, "Auto Bush Raiwb", isActive, function(b) 
+    isActive = b
+    while isActive do
         mAA()
         wait(1)
     end
 end)
-
-local na = false
-ui:TBtn("Auto Egg Secret", function()
-na = not na
+UL:AddTBtn(cfrm, "Auto Egg Secret", false, function()
+        na = not na
         while na do
             local args = {
     [1] = {
@@ -477,28 +533,15 @@ game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(
         end
     end)
 
-
-extra:Btn("TP Secret Zone", function()
-game.Players.LocalPlayer.Character:MoveTo(Vector3.new(1356, 10, -3447))
+UL:AddBtn(cfrm, "TP Egg Zone Secret", function()
+       game.Players.LocalPlayer.Character:MoveTo(Vector3.new(1356, 10, -3447))
         game.Players.LocalPlayer.Character.PrimaryPart.Anchored = true
         wait(3)
         game.Players.LocalPlayer.Character.PrimaryPart.Anchored = false
     end)
-
-
-
-ui:Notify("Auto Tasks Pet: Default Active", 5)
-
-wait(0.7)
-infoSub = ui:Sub("Info Script")
-infoSub:Txt("Version: 0.8")
-infoSub:Txt("Create: 20/07/24")
-infoSub:Txt("Update: 07/09/24")
-infoSub:Btn("Link YouTube", function()
-   setclipboard("https://youtube.com/@onecreatorx") 
-end)
-
-infoSub:Btn("Link Discord", function()
-  setclipboard("https://discord.com/invite/UNJpdJx7c4")  
-end)
- 
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+                                                Title = "Auto Tasks Pet",
+                                                Text = "Automatic Active ON",
+                                                Duration = 5,
+                                            })
