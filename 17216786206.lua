@@ -21,6 +21,24 @@ wait()
 end  
 end)
 
+local a = false
+ui:TBtn("TP Collect", function()
+a = not a
+    while a do
+
+for _, y in workspace.Collectables.Star:GetChildren() do
+if y:FindFirstChild("Collectable") then
+game.Players.LocalPlayer.Character.PrimaryPart.CFrame = y.CFrame
+wait(0.4)
+end
+      end
+
+      wait()
+    end
+    wait()
+
+  end)
+
 
 
 wait(0.7)
