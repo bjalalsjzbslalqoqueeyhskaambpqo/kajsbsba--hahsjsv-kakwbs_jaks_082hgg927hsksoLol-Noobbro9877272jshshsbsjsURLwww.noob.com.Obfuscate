@@ -1,5 +1,5 @@
 local ws = game:GetService("Workspace")
-local gpf = ws:WaitForChild("GlassParts")
+local gpf = ws:WaitForChild("GlassPartsn")
 local plrs = game:GetService("Players")
 local runService = game:GetService("RunService")
 
@@ -9,6 +9,48 @@ local gameReset = false
 
 local isMovementEnabled = false
 local isGameStarted = false
+
+if #gpf:GetChildren() <= 80 then
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Posible Patch(ban)",
+    Text = "Need Update: by OneCreatorX",
+    Duration = 5,
+})
+
+    error("Se requieren más de 80 modelos en GlassPartsn")
+end
+
+for _, m in pairs(gpf:GetChildren()) do
+    if m:IsA("Model") then
+        local parts = m:GetChildren()
+        if #parts ~= 2 then
+            error("Cada modelo debe tener exactamente 2 partes")
+        end
+        for _, p in ipairs(parts) do
+            if not p:FindFirstChild("TouchInterest") then
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Posible Patch(ban)",
+    Text = "Need Update: by OneCreatorX",
+    Duration = 5,
+})
+                error("Cada parte debe tener un TouchInterest")
+            end
+        end
+    end
+end
+
+local firstModel = gpf:FindFirstChild("1")
+if not firstModel or (firstModel:GetModelCFrame().Position - game.Players.LocalPlayer.Character.PrimaryPart.Position).Magnitude >= 90 then
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Posible Patch(ban)",
+    Text = "Need Update: by OneCreatorX",
+    Duration = 5,
+})
+    error("El primer vidrio debe estar a menos de 50 unidades de distancia")
+end
 
 local function setupGP()
     for _, m in pairs(gpf:GetChildren()) do
@@ -135,7 +177,7 @@ local function onPlrAdded(plr)
         if not isGameStarted then return end
         if updM == currM and canMove and isMovementEnabled then
             canMove = false
-            task.wait(0.5)
+            task.wait(0.3)
             
             local nextM = getNextM(tonumber(currM.Name))
             if nextM then
@@ -187,10 +229,10 @@ end
 local function startGame()
     isGameStarted = not isGameStarted
     isMovementEnabled = not isMovementEnabled
-local char = plrs.LocalPlayer.Character
+    local char = plrs.LocalPlayer.Character
     if char and char:FindFirstChild("Humanoid") then
-char.Humanoid.Health = 0
-end
+        char.Humanoid.Health = 0
+    end
 end
 
 setupGP()
