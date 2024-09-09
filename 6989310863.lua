@@ -171,7 +171,7 @@ end
 
 local function tM()
     moving = not moving
-    b.Text = moving and "Auto Collect (TP OFF)" or "Auto Collect (TP ON)"
+    b.Text = moving and "Auto Collect (TP ON)" or "Auto Collect (TP OFF)"
     b.BackgroundColor3 = moving and Color3.new(1, 0.5, 0) or Color3.new(0, 0.5, 1)
     
     if moving then
