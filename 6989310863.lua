@@ -122,7 +122,7 @@ b.Size = UDim2.new(0.9, 0, 0, 30)
 b.Position = UDim2.new(0.05, 0, 0.5, 0)
 b.BackgroundColor3 = Color3.new(0, 0.5, 1)
 b.TextColor3 = Color3.new(1, 1, 1)
-b.Text = "Auto Collect (tp)"
+b.Text = "Auto Collect (TP OFF)"
 b.TextSize = 14
 b.Font = Enum.Font.SourceSans
 b.Parent = f
@@ -171,7 +171,7 @@ end
 
 local function tM()
     moving = not moving
-    b.Text = moving and "Stop Moving" or "Auto Move"
+    b.Text = moving and "Auto Collect (TP OFF)" or "Auto Collect (TP ON)"
     b.BackgroundColor3 = moving and Color3.new(1, 0.5, 0) or Color3.new(0, 0.5, 1)
     
     if moving then
