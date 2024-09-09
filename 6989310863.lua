@@ -122,9 +122,9 @@ b.Size = UDim2.new(0.9, 0, 0, 30)
 b.Position = UDim2.new(0.05, 0, 0.5, 0)
 b.BackgroundColor3 = Color3.new(0, 0.5, 1)
 b.TextColor3 = Color3.new(1, 1, 1)
-b.Text = "Auto Move"
+b.Text = "Auto Collect (tp)"
 b.TextSize = 14
-b.Font = Enum.Font.SourceSans
+b.Font = Enum.Font.sourceSans
 b.Parent = f
 
 local btnCorners = Instance.new("UICorner")
