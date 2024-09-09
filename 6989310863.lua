@@ -12,9 +12,8 @@ local function mv(m)
         h.CFrame = (m:IsA("BasePart") and m or m.PrimaryPart).CFrame * CFrame.new(0, 2, 0)
 spawn(function()
 pcall(function()
-wait(1)
 m.PrimaryPart.Transparency = 1
-wait(2)
+wait(15)
 m.PrimaryPart.Transparency = 0
 end)
 end)
@@ -47,7 +46,15 @@ end
 
 local function aM(s, a)
     aing = true
-    for i = 1, 15 do
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Auto Horse: Active",
+    Text = "by: OneCreatorX",
+    Duration = 10,
+})
+
+
+    for i = 1, 70 do
         mv(a[3])
         s:FireServer(unpack(a))
         task.wait(1)
@@ -173,17 +180,6 @@ local function tM()
                 local cl = gCC()
                 if cl then mv(cl) end
                 task.wait(1)
-pcall(function()
-local button = game.Players.LocalPlayer.PlayerGui:GetChildren()[10].Button
-local buttonn = game.Players.LocalPlayer.PlayerGui:GetChildren()[11].Button
-
-if not button.Prompt.Text == "Your Horse" then
-    detectAndFireButtonEvents(button)
-detectAndFireButtonEvents(button)
-elseif not button.Prompt.Text == "Your Horse" then
-    detectAndFireButtonEvents(buttonn)
-end
-end)
             end
         end)
     end
@@ -217,3 +213,4 @@ StarterGui:SetCore("SendNotification", {
     Text = "by: OneCreatorX",
     Duration = 10,
 })
+
