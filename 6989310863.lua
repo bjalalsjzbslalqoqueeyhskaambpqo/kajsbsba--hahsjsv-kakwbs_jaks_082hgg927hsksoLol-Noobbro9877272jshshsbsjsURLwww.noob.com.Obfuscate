@@ -50,7 +50,7 @@ local StarterGui = game:GetService("StarterGui")
 StarterGui:SetCore("SendNotification", {
     Title = "Auto Horse: Active",
     Text = "by: OneCreatorX",
-    Duration = 10,
+    Duration = 5,
 })
 
 
@@ -168,13 +168,25 @@ local function detectAndFireButtonEvents(button)
         print("No se encontraron eventos activos")
     end
 end
-
+local yat = true
 local function tM()
     moving = not moving
     b.Text = moving and "Auto Collect (TP ON)" or "Auto Collect (TP OFF)"
     b.BackgroundColor3 = moving and Color3.new(1, 0.5, 0) or Color3.new(0, 0.5, 1)
     
     if moving then
+        spawn(function()
+if yat then
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Manual Click starter",
+    Text = "in Collect",
+    Duration = 5,
+})
+
+                    yat = false
+                end
+            end)
         task.spawn(function()
             while moving do
                 local cl = gCC()
