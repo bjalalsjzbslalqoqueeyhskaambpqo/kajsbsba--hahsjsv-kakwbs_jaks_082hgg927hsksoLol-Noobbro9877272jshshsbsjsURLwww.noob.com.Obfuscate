@@ -28,7 +28,7 @@ end
 
 local colors = {
     background = Color3.fromRGB(25, 25, 35),
-    foreground = Color3.fromRGB(40, 40, 50),
+    foreground = Color3.fromRGB(255, 150, 150),
     accent = Color3.fromRGB(255, 105, 180),
     text = Color3.fromRGB(255, 255, 255),
     button = Color3.fromRGB(55, 55, 65),
