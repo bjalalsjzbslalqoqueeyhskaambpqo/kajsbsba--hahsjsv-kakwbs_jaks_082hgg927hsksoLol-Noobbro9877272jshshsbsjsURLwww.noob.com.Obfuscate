@@ -2,26 +2,6 @@ local MiniUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalal
 
 local ui = MiniUI:new()
 
-ui:Btn("X2 (Warn Ban, Test Acc Bot)", function()
-local id = 2
-
-for _, descendant in pairs(game:GetDescendants()) do
-    local success, errorOrResult = pcall(function()
-        if descendant:IsA("RemoteEvent") then
-            descendant:FireServer(id)
-        elseif descendant:IsA("BindableEvent") then
-            descendant:Fire(id)
-        elseif descendant:IsA("RemoteFunction") then
-            descendant:InvokeServer(id)
-        end
-    end)
-
-    if not success then
-        
-    end
-end
-
-end)
 
 ui:Txt("AFK Farm : ON")
 ui:Txt("Anti AFK - Reconnect :ON")
