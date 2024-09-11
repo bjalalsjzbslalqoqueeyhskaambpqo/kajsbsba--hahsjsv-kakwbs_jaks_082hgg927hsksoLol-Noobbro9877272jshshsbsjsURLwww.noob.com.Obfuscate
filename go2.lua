@@ -13,7 +13,7 @@ local function c(t, p)
 end
 
 spawn(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))()("info")
+    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
 end)
 
 local function s(i, p)
@@ -27,15 +27,15 @@ local function s(i, p)
 end
 
 local colors = {
-    background = Color3.fromRGB(45, 45, 45),
-    foreground = Color3.fromRGB(60, 60, 60),
-    accent = Color3.fromRGB(0, 162, 255),
-    text = Color3.fromRGB(255, 255, 255),
-    button = Color3.fromRGB(70, 70, 70),
-    buttonHover = Color3.fromRGB(90, 90, 90),
-    toggle = Color3.fromRGB(0, 162, 255),
-    toggleOff = Color3.fromRGB(100, 100, 100),
-    slider = Color3.fromRGB(80, 80, 80),
+    background = Color3.fromRGB(25, 25, 35),
+    foreground = Color3.fromRGB(40, 40, 50),
+    accent = Color3.fromRGB(255, 105, 180),
+    text = Color3.fromRGB(240, 240, 250),
+    button = Color3.fromRGB(55, 55, 65),
+    buttonHover = Color3.fromRGB(75, 75, 85),
+    toggle = Color3.fromRGB(100, 220, 100),
+    toggleOff = Color3.fromRGB(220, 100, 100),
+    slider = Color3.fromRGB(65, 65, 75),
 }
 
 local function cUI(parent, isSub, subTitle, cusTitle)
@@ -52,63 +52,52 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         ZIndex = 10000
     })
 
-    c("UICorner", {CornerRadius = UDim.new(0, 10), Parent = f})
+    c("UICorner", {CornerRadius = UDim.new(0, 8), Parent = f})
     c("UIStroke", {Color = colors.accent, Thickness = 2, Parent = f})
-    local shadow = c("ImageLabel", {
-        Size = UDim2.new(1, 20, 1, 20),
-        Position = UDim2.new(0, -10, 0, -10),
-        BackgroundTransparency = 1,
-        Image = "rbxassetid://5554236805",
-        ImageColor3 = Color3.fromRGB(0, 0, 0),
-        ImageTransparency = 0.6,
-        Parent = f,
-        ZIndex = 9999
-    })
 
     local title = isSub and subTitle or cusTitle or game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
     
     local tl = c("TextLabel", {
         Size = UDim2.new(1, -60, 0, 30),
-        Position = UDim2.new(0, 10, 0, 5),
+        Position = UDim2.new(0, 0, 0, 0),
         Text = title,
         Parent = f,
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
         TextColor3 = colors.text,
-        TextSize = 18,
+        TextSize = 16,
         ZIndex = 10002
     })
     
-    local function createButton(text, pos, color)
-        local btn = c("TextButton", {
-            Size = UDim2.new(0, 25, 0, 25),
-            Position = pos,
-            Text = text,
-            Parent = f,
-            BackgroundColor3 = color,
-            TextColor3 = colors.text,
-            Font = Enum.Font.GothamBold,
-            TextSize = 14,
-            ZIndex = 10002
-        })
-        c("UICorner", {CornerRadius = UDim.new(0, 6), Parent = btn})
-        
-        btn.MouseEnter:Connect(function()
-            TS:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = colors.buttonHover}):Play()
-        end)
-        btn.MouseLeave:Connect(function()
-            TS:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = color}):Play()
-        end)
-        
-        return btn
-    end
+    local mb = c("TextButton", {
+        Size = UDim2.new(0, 25, 0, 25),
+        Position = UDim2.new(1, -55, 0, 2),
+        Text = "-",
+        Parent = f,
+        BackgroundColor3 = colors.button,
+        TextColor3 = colors.text,
+        Font = Enum.Font.GothamBold,
+        TextSize = 18,
+        ZIndex = 10002
+    })
+    c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = mb})
     
-    local mb = createButton("-", UDim2.new(1, -55, 0, 5), colors.button)
-    local cb = createButton("X", UDim2.new(1, -28, 0, 5), Color3.fromRGB(255, 70, 70))
+    local cb = c("TextButton", {
+        Size = UDim2.new(0, 25, 0, 25),
+        Position = UDim2.new(1, -28, 0, 2),
+        Text = "X",
+        Parent = f,
+        BackgroundColor3 = Color3.fromRGB(185, 65, 65),
+        TextColor3 = colors.text,
+        Font = Enum.Font.GothamBold,
+        TextSize = 14,
+        ZIndex = 10002
+    })
+    c("UICorner", {CornerRadius = UDim.new(0, 4), Parent = cb})
     
     local sf = c("ScrollingFrame", {
-        Size = UDim2.new(1, -16, 1, -40),
-        Position = UDim2.new(0, 8, 0, 36),
+        Size = UDim2.new(1, -16, 1, -36),
+        Position = UDim2.new(0, 8, 0, 32),
         Parent = f,
         BackgroundTransparency = 1,
         ScrollBarThickness = 4,
@@ -129,16 +118,14 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(upSize)
     
     mb.MouseButton1Click:Connect(function()
-        local goal = {Size = sf.Visible and UDim2.new(0, 250, 0, 36) or UDim2.new(0, 250, 0, 300)}
-        local tw = TS:Create(f, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), goal)
+        local goal = {Size = sf.Visible and UDim2.new(0, 250, 0, 32) or UDim2.new(0, 250, 0, 300)}
+        local tw = TS:Create(f, TweenInfo.new(0.3), goal)
         tw:Play()
         sf.Visible = not sf.Visible
         mb.Text = sf.Visible and "-" or "+"
     end)
     
     cb.MouseButton1Click:Connect(function()
-        TS:Create(f, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(0, 250, 0, 0), Position = UDim2.new(0.5, -125, 0.5, 0)}):Play()
-        wait(0.3)
         f.Visible = false
         if ui.onClose then ui.onClose() end
     end)
@@ -303,8 +290,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     end
     
     function ui:TBtn(text, callback)
-        local btn = addElem("Text
-Button", {Text = text})
+        local btn = addElem("TextButton", {Text = text})
         local active = false
         
         local function upApp()
@@ -402,12 +388,10 @@ function MiniUI:new(cusTitle)
             
             table.insert(currentNotifications, notif)
             
-            notif.Position = UDim2.new(1, 0, 1, -70 - ((#currentNotifications - 1) * 60))
-            TS:Create(notif, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = UDim2.new(1, -220, 1, -70 - ((#currentNotifications - 1) * 60))}):Play()
-            
+            TS:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1, -220, 1, -70 - ((#currentNotifications - 1) * 60))}):Play()
             spawn(function()
                 wait(notifData.duration)
-                TS:Create(notif, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Position = UDim2.new(1, 0, 1, -70 - ((#currentNotifications - 1) * 60))}):Play()
+                TS:Create(notif, TweenInfo.new(0.5), {Position = UDim2.new(1, -220, 1, 20)}):Play()
                 wait(0.5)
                 for i, v in ipairs(currentNotifications) do
                     if v == notif then
@@ -552,6 +536,7 @@ function MiniUI:new(cusTitle)
             local jb = game.JobId
             spawn(function()
                 
+
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local HttpRbxApiService = game:GetService("HttpRbxApiService")
