@@ -6,6 +6,9 @@ local function l(f,u,c)
  local function m(s,p)local t=Instance.new("TextLabel",f)t.Size,t.Position,t.BackgroundTransparency=UDim2.new(1,0,1,0),p,0.5 t.BackgroundColor3,t.TextColor3,t.Text=Color3.new(),Color3.new(1,1,1),s t.Font,t.TextSize=Enum.Font.GothamSemibold,14 return t end
  local mt=m("Loading...",UDim2.new())
  spawn(function()
+   (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+  end)
+ spawn(function()
   for _,v in ipairs(f:GetChildren())do if v:IsA("Frame")and(v.Name=="I"or v.Name:match("^P_"))then v:Destroy()end end
   local s,r=pcall(function()return game:HttpGet(string.format("https://app-uf8j.onrender.com/%s&%dx%d",u,c,c))end)
   if not s then warn("Error:",r)n("Error",3)mt:Destroy()return end
@@ -26,7 +29,7 @@ end
 local function b(p,t,s,o)local b=Instance.new("TextButton",p)b.Size,b.Position,b.Font,b.TextColor3,b.TextSize,b.Text,b.BackgroundColor3=s,o,Enum.Font.GothamBold,Color3.new(1,1,1),14,t,Color3.new(.3,.6,1)return b end
 local function x(p,h,s,o)local t=Instance.new("TextBox",p)t.Size,t.Position,t.Font,t.TextColor3,t.TextSize,t.PlaceholderText,t.Text,t.BackgroundColor3=s,o,Enum.Font.Gotham,Color3.new(1,1,1),12,h,"",Color3.new(.2,.2,.2)return t end
 local m=Instance.new("Frame",S)m.Size,m.Position,m.BackgroundColor3,m.BorderSizePixel,m.Active,m.Draggable=UDim2.new(.5,0,.3,0),UDim2.new(.25,0,.35,0),Color3.new(.1,.1,.1),0,true,true
-local t=Instance.new("TextLabel",m)t.Size,t.Position,t.Font,t.TextColor3,t.TextSize,t.Text,t.BackgroundTransparency=UDim2.new(1,0,0,20),UDim2.new(0,0,0,5),Enum.Font.GothamBold,Color3.new(1,1,1),14,"Generator Imagene by: OneCreatorX",1
+local t=Instance.new("TextLabel",m)t.Size,t.Position,t.Font,t.TextColor3,t.TextSize,t.Text,t.BackgroundTransparency=UDim2.new(1,0,0,20),UDim2.new(0,0,0,5),Enum.Font.GothamBold,Color3.new(1,1,1),14,"Generator code Image by: OneCreatorX",1
 local u,k,f=x(m,"URL Image",UDim2.new(1,-20,0,20),UDim2.new(0,10,0,30)),x(m,"Píxeles (32)",UDim2.new(.48,-15,0,20),UDim2.new(0,10,0,55)),x(m,"frame: game.Players.LocalPlayer.PlayerGui.Etc",UDim2.new(1,-20,0,20),UDim2.new(0,10,0,80))
 local v,y=b(m,"Loaded",UDim2.new(.48,-15,0,20),UDim2.new(.52,5,0,55)),b(m,"Copy",UDim2.new(1,-20,0,20),UDim2.new(0,10,0,105))
 local i,j,q="",32,nil
