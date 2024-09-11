@@ -29,14 +29,14 @@ end)
 ui:TBtn(" Auto Stars", function()
 a = not a
 while a do
-wait(0.3)
+wait(0.1)
 for _, obj in ipairs(workspace.ClaimableStars:GetDescendants()) do
             if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") then
                 local plr = game.Players.LocalPlayer
                 firetouchinterest(plr.Character.HumanoidRootPart, obj, 0)
                 wait()
                 firetouchinterest(plr.Character.HumanoidRootPart, obj, 1)
-          wait(0.3)
+          wait(0.1)
             end
         end
 wait(0.1)
