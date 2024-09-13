@@ -130,12 +130,27 @@ end)
 ui:TBtn("Spawn Pushin", function()
         ya = not ya
         while ya do
-local args = {
-    [1] = 1000
-}
 
-game:GetService("ReplicatedStorage"):WaitForChild("PlushieSpawn"):WaitForChild("PlushieSpaner"):FireServer(unpack(args))
-            wait(2)
+local id = 1000
+
+for _, descendant in pairs(game:GetDescendants()) do
+    local success, errorOrResult = pcall(function()
+        if descendant:IsA("RemoteEvent")  and descendant.Name == "UpdateEXPEvent" then
+            descendant:FireServer(id)
+wait()
+
+        elseif descendant:IsA("BindableEvent") then
+            
+        elseif descendant:IsA("RemoteFunction") then
+            
+        end
+    end)
+
+    if not success then
+        warn("Error processing object:", descendant, errorOrResult)
+    end
+            end
+            wait(3)
         end
 end)
 
