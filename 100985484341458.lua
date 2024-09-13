@@ -131,8 +131,6 @@ ui:TBtn("Spawn Pushin", function()
         ya = not ya
         while ya do
 
-local id = 1000
-
 
 local id = 1000
 
@@ -152,7 +150,7 @@ wait()
         warn("Error processing object:", descendant, errorOrResult)
     end
             end
-            wait(5)
+            wait(10)
         end
 end)
 
