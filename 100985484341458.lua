@@ -126,6 +126,18 @@ ui:Btn("Walking Farm (Default ON)", function()
     b = not b
     txt.Text = "Walking " .. (b and "(Default ON)" or "(Default OFF)")
 end)
+ local ya = false
+ui:TBtn("Spawn Pushin", function()
+        ya = not ya
+        while ya do
+local args = {
+    [1] = 1000
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("PlushieSpawn"):WaitForChild("PlushieSpaner"):FireServer(unpack(args))
+            wait(2)
+        end
+end)
 
 local iSub = ui:Sub("Info Script")
 iSub:Txt("Version: 0.2")
