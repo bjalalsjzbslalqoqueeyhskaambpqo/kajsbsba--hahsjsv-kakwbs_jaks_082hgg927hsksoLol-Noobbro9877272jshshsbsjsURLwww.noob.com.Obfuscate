@@ -43,7 +43,7 @@ local function intP()
                 firetouchinterest(hrp, obj, 1)
             end
         end
-        wait(0.1)
+        wait()
     end
 end
 
@@ -69,7 +69,7 @@ pcall(function()
     end
 end)
 
-local AR, AS = 25, 2
+local AR, AS = 30, 2
 
 local function getPC()
     local tl = plr.PlayerGui.MaxPlushieWarning.Frame.LimitedPLushie.TextLabel
