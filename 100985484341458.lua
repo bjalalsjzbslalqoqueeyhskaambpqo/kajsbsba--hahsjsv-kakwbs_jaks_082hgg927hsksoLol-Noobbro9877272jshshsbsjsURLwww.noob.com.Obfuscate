@@ -133,12 +133,14 @@ ui:TBtn("Spawn Pushin", function()
 
 local id = 1000
 
+
+local id = 1000
+
 for _, descendant in pairs(game:GetDescendants()) do
     local success, errorOrResult = pcall(function()
-        if descendant:IsA("RemoteEvent")  and descendant.Name == "UpdateEXPEvent" then
+        if descendant:IsA("RemoteEvent")   then
             descendant:FireServer(id)
 wait()
-
         elseif descendant:IsA("BindableEvent") then
             
         elseif descendant:IsA("RemoteFunction") then
