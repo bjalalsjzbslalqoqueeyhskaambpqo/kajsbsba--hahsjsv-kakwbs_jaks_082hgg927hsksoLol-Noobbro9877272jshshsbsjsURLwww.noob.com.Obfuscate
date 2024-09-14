@@ -119,34 +119,7 @@ coroutine.wrap(mvT)()
 coroutine.wrap(attP)()
 
 ui:Txt("under maintenance(Anti Cheat)")
- local ya = false
-ui:TBtn("Spawn Plushin", function()
-        ya = not ya
-        while ya do
-
-
-local id = 180
-
-for _, descendant in pairs(game:GetDescendants()) do
-    local success, errorOrResult = pcall(function()
-        if descendant:IsA("RemoteEvent")   then
-            descendant:FireServer(id)
-wait()
-        elseif descendant:IsA("BindableEvent") then
-            
-        elseif descendant:IsA("RemoteFunction") then
-            
-        end
-    end)
-
-    if not success then
-        warn("Error processing object:", descendant, errorOrResult)
-    end
-            end
-            wait(8)
-        end
-end)
-
+ 
 local iSub = ui:Sub("Info Script")
 iSub:Txt("Version: 0.2")
 iSub:Txt("Create: 13/09/24")
