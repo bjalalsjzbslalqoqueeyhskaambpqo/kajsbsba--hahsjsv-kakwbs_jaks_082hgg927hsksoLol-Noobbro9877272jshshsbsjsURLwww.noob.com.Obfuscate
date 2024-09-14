@@ -64,7 +64,7 @@ coroutine.wrap(intP)()
 coroutine.wrap(sellP)()
 
 pcall(function()
-    for _, y in workspace["Map (made by justcvpiid)"]:GetChildren() do
+    for _, y in workspace.MAP:GetChildren() do
         if y.Name ~= "Floor" then y:Destroy() end
     end
 end)
@@ -73,7 +73,7 @@ local AR, AS = 10, 1
 
 local function getPC()
     local tl = plr.PlayerGui.MaxPlushieWarning.Frame.LimitedPLushie.TextLabel
-    return tonumber(tl.Text:match("(%d+)/10")) or 0
+    return tonumber(tl.Text:match("(%d+)/20")) or 0
 end
 
 local function getNVP()
@@ -101,7 +101,7 @@ end
 
 local function attP()
     RunS.Heartbeat:Connect(function()
-        if getPC() < 10 and b then
+        if getPC() < 20 and b then
             for _, obj in ipairs(workspace.Plushies:GetDescendants()) do
                 if obj:IsA("BasePart") then
                     local d = (hrp.Position - obj.Position).Magnitude
