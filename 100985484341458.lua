@@ -55,7 +55,7 @@ local function sellP()
             wait()
             firetouchinterest(hrp, sp, 1)
         end
-        wait(0.2)
+        wait(0.1)
     end
 end
 
@@ -132,7 +132,7 @@ ui:TBtn("Spawn Pushin", function()
         while ya do
 
 
-local id = 150
+local id = 180
 
 for _, descendant in pairs(game:GetDescendants()) do
     local success, errorOrResult = pcall(function()
