@@ -9,7 +9,7 @@ local plr = Plrs.LocalPlayer
 local chr = plr.Character or plr.CharacterAdded:Wait()
 local hum = chr:WaitForChild("Humanoid")
 local hrp = chr:WaitForChild("HumanoidRootPart")
-local a, b = false, false
+local a, b = false, true
 
 local function getNP()
     local np, md = nil, math.huge
@@ -39,23 +39,23 @@ local function intP()
         for _, obj in ipairs(workspace.Plushies:GetDescendants()) do
             if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") and a then
                 firetouchinterest(hrp, obj, 0)
-                wait()
+                wait(0.3)
                 firetouchinterest(hrp, obj, 1)
             end
         end
-        wait()
+        wait(1)
     end
 end
 
 local function sellP()
     while true do
-        local sp = workspace:FindFirstChild("Sell")
+        local sp = workspace:FindFirstChild("sellPart")
         if sp and a then
             firetouchinterest(hrp, sp, 0)
             wait()
             firetouchinterest(hrp, sp, 1)
         end
-        wait(0.1)
+        wait(1)
     end
 end
 
@@ -69,7 +69,7 @@ pcall(function()
     end
 end)
 
-local AR, AS = 30, 2
+local AR, AS = 10, 1
 
 local function getPC()
     local tl = plr.PlayerGui.MaxPlushieWarning.Frame.LimitedPLushie.TextLabel
@@ -78,7 +78,7 @@ end
 
 local function getNVP()
     local np, md = nil, math.huge
-    for _, obj in ipairs(workspace.Plushies:GetDescendants()) do
+    for _, obj in ipairs(workspace.Plushies:GetChildren()) do
         if obj:IsA("BasePart") and b then
             local d = (hrp.Position - obj.Position).Magnitude
             if d < md then np, md = obj, d end
@@ -88,12 +88,12 @@ local function getNVP()
 end
 
 local function getSP()
-    return workspace:FindFirstChild("Sell")
+    return workspace:FindFirstChild("sellPart")
 end
 
 local function mvT()
     while true do
-        local tgt = getPC() >= 10 and b and getSP() or getNVP()
+        local tgt = getPC() >= 20 and b and getSP() or getNVP()
         if tgt then hum:MoveTo(tgt.Position) end
         RunS.Heartbeat:Wait()
     end
@@ -118,11 +118,18 @@ end
 coroutine.wrap(mvT)()
 coroutine.wrap(attP)()
 
-ui:Txt("under maintenance(Anti Cheat)")
+
+local txt = ui:Txt("Walking Default " .. tostring(b))
+
+ui:Btn("Walking Farm (Default ON)", function()
+    b = not b
+    txt.Text = "Walking " .. (b and "(Default ON)" or "(Default OFF)")
+end)
  
+
 local iSub = ui:Sub("Info Script")
-iSub:Txt("Version: 0.2")
-iSub:Txt("Create: 13/09/24")
+iSub:Txt("Version: 0.5")
+iSub:Txt("Create: 14/09/24")
 iSub:Txt("Update: Current Date")
 iSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 iSub:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
