@@ -9,7 +9,7 @@ local plr = Plrs.LocalPlayer
 local chr = plr.Character or plr.CharacterAdded:Wait()
 local hum = chr:WaitForChild("Humanoid")
 local hrp = chr:WaitForChild("HumanoidRootPart")
-local a, b = false, true
+local a, b = false, false
 
 local function getNP()
     local np, md = nil, math.huge
@@ -118,14 +118,7 @@ end
 coroutine.wrap(mvT)()
 coroutine.wrap(attP)()
 
-ui:TBtn("Farm fast (maybe no support)", function() a = not a end)
-
-local txt = ui:Txt("Walking Default " .. tostring(b))
-
-ui:Btn("Walking Farm (Default ON)", function()
-    b = not b
-    txt.Text = "Walking " .. (b and "(Default ON)" or "(Default OFF)")
-end)
+ui:Txt("under maintenance(Anti Cheat)")
  local ya = false
 ui:TBtn("Spawn Plushin", function()
         ya = not ya
