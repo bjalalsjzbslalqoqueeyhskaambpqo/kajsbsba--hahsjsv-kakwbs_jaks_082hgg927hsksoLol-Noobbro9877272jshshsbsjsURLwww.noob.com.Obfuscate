@@ -127,7 +127,7 @@ ui:Btn("Walking Farm (Default ON)", function()
     txt.Text = "Walking " .. (b and "(Default ON)" or "(Default OFF)")
 end)
  local ya = false
-ui:TBtn("Spawn Pushin", function()
+ui:TBtn("Spawn Plushin", function()
         ya = not ya
         while ya do
 
