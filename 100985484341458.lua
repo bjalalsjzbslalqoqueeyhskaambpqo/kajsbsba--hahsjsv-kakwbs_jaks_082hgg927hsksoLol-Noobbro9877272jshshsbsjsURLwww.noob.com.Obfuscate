@@ -132,7 +132,7 @@ ui:TBtn("Spawn Pushin", function()
         while ya do
 
 
-local id = 500
+local id = 200
 
 for _, descendant in pairs(game:GetDescendants()) do
     local success, errorOrResult = pcall(function()
@@ -150,7 +150,7 @@ wait()
         warn("Error processing object:", descendant, errorOrResult)
     end
             end
-            wait(15)
+            wait(10)
         end
 end)
 
