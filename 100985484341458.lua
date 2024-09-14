@@ -150,7 +150,7 @@ wait()
         warn("Error processing object:", descendant, errorOrResult)
     end
             end
-            wait(10)
+            wait(30)
         end
 end)
 
