@@ -132,7 +132,7 @@ ui:TBtn("Spawn Pushin", function()
         while ya do
 
 
-local id = 1000
+local id = 500
 
 for _, descendant in pairs(game:GetDescendants()) do
     local success, errorOrResult = pcall(function()
