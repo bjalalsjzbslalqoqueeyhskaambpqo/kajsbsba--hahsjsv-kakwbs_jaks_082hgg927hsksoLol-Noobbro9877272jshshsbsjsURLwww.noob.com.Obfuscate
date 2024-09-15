@@ -127,9 +127,145 @@ ui:Btn("Walking Farm (Default ON)", function()
 end)
  
 
+local RS = game:GetService("RunService")
+local p = game:GetService("Players").LocalPlayer
+local c = p.Character or p.CharacterAdded:Wait()
+local h = c:WaitForChild("Humanoid")
+local r = c:WaitForChild("HumanoidRootPart")
+
+local MS = 70
+local CR = 20
+local IC = 1
+local AC = true
+
+local function gPC()
+    local t = p.PlayerGui.MaxPlushieWarning.Frame.LimitedPLushie.TextLabel
+    return tonumber(t.Text:match("(%d+)/20")) or 0
+end
+
+local function gNP()
+    local n, m = nil, math.huge
+    for _, o in ipairs(workspace.Plushies:GetChildren()) do
+        if o:IsA("BasePart") and o.Transparency < 1 then
+            local d = (r.Position - o.Position).Magnitude
+            if d < m then n, m = o, d end
+        end
+    end
+    return n
+end
+
+local function iWP(p)
+    pcall(function()
+        firetouchinterest(r, p, 0)
+        task.wait()
+        firetouchinterest(r, p, 1)
+    end)
+end
+
+local function cNP()
+    while AC do
+        for _, o in ipairs(workspace.Plushies:GetChildren()) do
+            if o:IsA("BasePart") and o.Transparency < 1 then
+                local d = (r.Position - o.Position).Magnitude
+                if d <= CR then
+                    if d <= IC then
+                        o.Transparency = 1
+                    end
+                    iWP(o)
+                end
+            end
+        end
+        task.wait(0.1)
+    end
+end
+
+local function mTSP()
+    local s = workspace:FindFirstChild("sellPart")
+    if s then
+        local d = (s.Position - r.Position)
+        while d.Magnitude > 1 do
+            local mv = d.Unit * MS
+            r.CFrame = r.CFrame + mv * RS.Heartbeat:Wait()
+            d = (s.Position - r.Position)
+            RS.Heartbeat:Wait()
+        end
+        iWP(s)
+    end
+end
+
+local function mTP(t)
+    local d = (t.Position - r.Position)
+    while d.Magnitude > 1 and AC and t.Transparency < 1 do
+        local mv = d.Unit * MS
+        r.CFrame = r.CFrame + mv * RS.Heartbeat:Wait()
+        d = (t.Position - r.Position)
+        if d.Magnitude <= IC then
+            t.Transparency = 1
+        end
+        RS.Heartbeat:Wait()
+    end
+end
+
+local function aC()
+    while AC do
+        if gPC() >= 20 then
+            mTSP()
+        else
+            local t = gNP()
+            if t then
+                mTP(t)
+            end
+        end
+        task.wait()
+    end
+end
+
+local function mO()
+    local function cC(o)
+        local iP, iR, iT = o.Position, o.Rotation, o.Transparency
+        task.wait(0.1)
+        local dP = (o.Position - iP).Magnitude
+        local dR = (o.Rotation - iR).Magnitude
+        local dT = o.Transparency - iT
+        return dP > 0.1 or dR > 0.1 or (dT > 0 and dT < 1)
+    end
+
+    while AC do
+        for _, o in ipairs(workspace.Plushies:GetChildren()) do
+            if o:IsA("BasePart") and o.Transparency < 1 then
+                if cC(o) then
+                    o:Destroy()
+                end
+            end
+        end
+        task.wait(0.2)
+    end
+end
+
+local function tAC()
+    AC = not AC
+    if AC then 
+        task.spawn(aC)
+        task.spawn(cNP)
+        task.spawn(mO)
+    end
+end
+
+local function uMS(v)
+    local n = tonumber(v)
+    if n and n > 0 then MS = n end
+end
+
+ui:TBtn("Fast Collect(Priv Server)", tAC)
+
+ui:TBox("Movement Speed", function(t)
+    uMS(t)
+end)
+
+tAC()
 local iSub = ui:Sub("Info Script")
-iSub:Txt("Version: 0.5")
-iSub:Txt("Create: 14/09/24")
-iSub:Txt("Update: Current Date")
+iSub:Txt("Version: 0.7")
+iSub:Txt("Create: 13/09/24")
+iSub:Txt("Update: 14/09/24")
 iSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 iSub:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
