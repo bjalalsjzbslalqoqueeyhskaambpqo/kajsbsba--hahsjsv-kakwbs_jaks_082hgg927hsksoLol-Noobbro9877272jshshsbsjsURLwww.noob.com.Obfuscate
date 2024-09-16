@@ -11,7 +11,7 @@ local function moverJugadorAAsientoCercano()
     if not raiz then return end
 
     local posicionJugador = raiz.Position
-    local distanciaMaxima = 100
+    local distanciaMaxima = 70
 
     for _, asiento in pairs(workspace:GetDescendants()) do
         if asiento:IsA("Seat") and 
@@ -30,6 +30,7 @@ end
 local a = false
 ui:TBtn("Auto Seat", function()
     a = not a
+        game.Players.LocalPlayer.Character:MoveTo(Vector.new("74, 31, 244")
     while a do
         moverJugadorAAsientoCercano()
         wait(0.5)
