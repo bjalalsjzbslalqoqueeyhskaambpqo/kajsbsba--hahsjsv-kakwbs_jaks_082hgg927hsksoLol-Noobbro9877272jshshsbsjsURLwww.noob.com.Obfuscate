@@ -30,7 +30,7 @@ end
 local a = false
 ui:TBtn("Auto Seat", function()
     a = not a
-        game.Players.LocalPlayer.Character:MoveTo(Vector.new("74, 31, 244")
+
     while a do
         moverJugadorAAsientoCercano()
         wait(0.5)
