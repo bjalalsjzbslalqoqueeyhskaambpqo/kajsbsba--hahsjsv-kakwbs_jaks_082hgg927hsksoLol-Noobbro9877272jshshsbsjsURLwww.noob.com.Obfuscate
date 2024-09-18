@@ -9,169 +9,142 @@ local chr = plr.Character or plr.CharacterAdded:Wait()
 local hum = chr:WaitForChild("Humanoid")
 local hrp = chr:WaitForChild("HumanoidRootPart")
 
-local AC = true
-local walkingEnabled = true
-local MS = 18
-local CR = 20
-local IC = 1
-local attractRadius = 9
-local bringEnabled = true
-local isSellingMode = false 
-game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = MS
+local AC, walk, MS, CR, IC, aR, fT, sell = true, true, 20, 20, 1, 9, false, false
 
-local function getPC()
+local function updateSpeed(speed)
+    MS = speed
+    hum.WalkSpeed = speed
+end
+
+updateSpeed(MS)
+
+local function gPC()
     local tl = plr.PlayerGui.Currncy.Frame.Plushies.Amount
     return tonumber(tl.Text:match("(%d+)/20")) or 0
 end
 
-local function getNP()
+local function gNP()
     local np, md = nil, math.huge
-    for _, obj in ipairs(workspace.PlushieFolder:GetDescendants()) do
-        if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") and AC then
-            local d = (hrp.Position - obj.Position).Magnitude
-            if d < md then np, md = obj, d end
+    for _, o in ipairs(workspace.PlushieFolder:GetDescendants()) do
+        if o:IsA("BasePart") and o:FindFirstChild("TouchInterest") and AC then
+            local d = (hrp.Position - o.Position).Magnitude
+            if d < md then np, md = o, d end
         end
     end
     return np
 end
 
-local function getSP()
+local function gSP()
     return workspace:FindFirstChild("sellPart")
 end
 
-local function interactWith(part)
-    if (hrp.Position - part.Position).Magnitude <= CR then
-        firetouchinterest(hrp, part, 0)
-        task.wait(0.1)
-        firetouchinterest(hrp, part, 1)
-    end
-end
-
-local function moveToInterpolated(target)
-    local startPos = hrp.Position
-    local targetPos = Vector3.new(target.Position.X, hrp.Position.Y, target.Position.Z)
-    local distance = (targetPos - startPos).Magnitude
-    local duration = distance / MS
-    local elapsedTime = 0
-
-    while elapsedTime < duration and AC do
-        local t = elapsedTime / duration
-        hrp.CFrame = CFrame.new(startPos:Lerp(targetPos, t))
-        elapsedTime = elapsedTime + RunS.Heartbeat:Wait()
-        if (hrp.Position - targetPos).Magnitude <= IC then
-            break
-        end
-    end
-end
-
-local function moveTo(target)
-    if walkingEnabled then
-        hum:MoveTo(target.Position)
-        hum.MoveToFinished:Wait()
-    else
-        moveToInterpolated(target)
-    end
-end
-
-local function autoCollect()
-    while AC do
-        if getPC() >= 20 then
-            isSellingMode = true
-            local sp = getSP()
-            if sp then 
-                moveTo(sp)
-                interactWith(sp)
-            end
-            isSellingMode = false 
-        else
-            local np = getNP()
-            if np then 
-                moveTo(np)
-                interactWith(np)
-            end
-        end
-        task.wait()
-    end
-end
-
-local function collectNearby()
-    while AC do
-        for _, obj in ipairs(workspace.PlushieFolder:GetDescendants()) do
-            if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") and AC and not isSellingMode then
-                interactWith(obj)
-            end
-        end
-        task.wait()
-    end
-end
-
-local function bringOrFireNearby()
-    while true do
-        for _, obj in ipairs(workspace.PlushieFolder:GetDescendants()) do
-            if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") and not isSellingMode then
-                local distance = (hrp.Position - obj.Position).Magnitude
-                if distance <= attractRadius then
-                    if bringEnabled then
-                        local direction = (hrp.Position - obj.Position).Unit
-                        obj.Position = obj.Position + direction * 2
-                    else
-                        firetouchinterest(hrp, obj, 0)
-                        task.wait()
-                        firetouchinterest(hrp, obj, 1)
-                    end
+local function iNearby()
+    for _, o in ipairs(workspace.PlushieFolder:GetDescendants()) do
+        if o:IsA("BasePart") and o:FindFirstChild("TouchInterest") then
+            local d = (hrp.Position - o.Position).Magnitude
+            if d <= aR then
+                if fT then
+                    firetouchinterest(hrp, o, 0)
+                    task.wait()
+                    firetouchinterest(hrp, o, 1)
+                else
+                    local dir = (hrp.Position - o.Position).Unit
+                    o.Position = o.Position + dir * 2
                 end
             end
         end
-        task.wait()
     end
 end
 
-local function toggleAutoCollect()
+local function mTI(t)
+    local sT = tick()
+    local sP = hrp.Position
+    local tP = Vector3.new(t.Position.X, hrp.Position.Y, t.Position.Z)
+    local totalD = (tP - sP).Magnitude
+    local timeToMove = totalD / MS
+
+    while AC and t and t.Parent do
+        local eT = tick() - sT
+        local progress = math.min(eT / timeToMove, 1)
+        hrp.CFrame = CFrame.new(sP:Lerp(tP, progress))
+        if progress >= 1 then break end
+        RunS.Heartbeat:Wait()
+    end
+end
+
+local function mTo(t)
+    local sT = tick()
+    while AC and t and t.Parent do
+        if walk then
+            hum:MoveTo(t.Position)
+            hum.MoveToFinished:Wait()
+            if (hrp.Position - t.Position).Magnitude <= IC then break end
+        else
+            mTI(t)
+        end
+        iNearby()
+        if tick() - sT > 1 then return false end
+        task.wait(0.1)
+    end
+    return true
+end
+
+local function aCol()
+    while AC do
+        if gPC() >= 20 then
+            sell = true
+            local sp = gSP()
+            if sp then 
+                if mTo(sp) then iNearby() end
+            end
+            sell = false
+        else
+            local np = gNP()
+            if np and not mTo(np) then continue end
+        end
+        iNearby()
+        task.wait(0.1)
+    end
+end
+
+local function tAC()
     AC = not AC
     if AC then 
         ui:Notify("Auto Collect Enabled")
-        task.spawn(autoCollect)
-        task.spawn(collectNearby)
+        task.spawn(aCol)
     else
         ui:Notify("Auto Collect Disabled")
     end
 end
 
-ui:TBtn("Auto Collect", toggleAutoCollect)
+ui:TBtn("Auto Collect", tAC)
 
 ui:Btn("Walking/TP", function()
-    walkingEnabled = not walkingEnabled
-    if walkingEnabled then
-        ui:Notify("Walking", 3)
-    else
-        ui:Notify("TP", 3)
-    end
+    walk = not walk
+    if walk then ui:Notify("Walking", 3)
+    else ui:Notify("TP", 3) end
 end)
 
 ui:TBox("Movement Speed(no use +70)", function(t)
     local n = tonumber(t)
     if n and n > 0 then 
-        MS = n
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = n
+        updateSpeed(n)
         ui:Notify("Movement Speed set to " .. n)
     end
 end)
 
-ui:Btn("Bring/Fire", function()
-    bringEnabled = not bringEnabled
-    if bringEnabled then
-        ui:Notify("Bring Enabled", 2)
-    else
-        ui:Notify("Fire Enabled", 2)
-    end
+ui:Btn("Aura Bring/Fire", function()
+    fT = not fT
+    if fT then ui:Notify("Bring", 2)
+    else ui:Notify("Fire", 2) end
 end)
 
-local infoSub = ui:Sub("Info Script")
-infoSub:Txt("Version: 1.4")
-infoSub:Txt("Create: 13/09/24")
-infoSub:Txt("Update: 18/09/24")
-infoSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
-infoSub:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
+local iSub = ui:Sub("Info Script")
+iSub:Txt("Version: 2.0")
+iSub:Txt("Create: 13/09/24")
+iSub:Txt("Update: 18/09/24")
+iSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
+iSub:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
 pcall(function()
     for _, y in workspace.MAP:GetChildren() do
@@ -179,5 +152,4 @@ pcall(function()
     end
 end)
 
-toggleAutoCollect()
-task.spawn(bringOrFireNearby)
+tAC()
