@@ -119,10 +119,16 @@ end
 
 ui:TBtn("Auto Collect", tAC)
 
-ui:Btn("Walking/TP", function()
+ui:Btn("Walking/TP(use priv server)", function()
     walk = not walk
     if walk then ui:Notify("Walking", 3)
-    else ui:Notify("TP", 3) end
+    else ui:Notify("TP(use priv server)", 3) end
+end)
+
+ui:Btn("Aura Bring/Fire", function()
+    fT = not fT
+    if fT then ui:Notify("Bring", 2)
+    else ui:Notify("Fire", 2) end
 end)
 
 ui:TBox("Movement Speed(no use +70)", function(t)
@@ -131,12 +137,6 @@ ui:TBox("Movement Speed(no use +70)", function(t)
         updateSpeed(n)
         ui:Notify("Movement Speed set to " .. n)
     end
-end)
-
-ui:Btn("Aura Bring/Fire", function()
-    fT = not fT
-    if fT then ui:Notify("Bring", 2)
-    else ui:Notify("Fire", 2) end
 end)
 
 local iSub = ui:Sub("Info Script")
