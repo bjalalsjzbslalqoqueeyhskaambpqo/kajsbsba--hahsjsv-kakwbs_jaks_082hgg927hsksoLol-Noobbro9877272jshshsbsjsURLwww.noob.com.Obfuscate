@@ -26,7 +26,7 @@ local chr = plr.Character or plr.CharacterAdded:Wait()
 local hum = chr:WaitForChild("Humanoid")
 local hrp = chr:WaitForChild("HumanoidRootPart")
 
-local AC, walk, MS, CR, IC, aR, fT, sell = true, true, 20, 20, 3, 9, false, false
+local AC, walk, MS, CR, IC, aR, fT, sell = true, true, 20, 20, 5, 9, false, false
 
 local function updateSpeed(speed)
     MS = speed
