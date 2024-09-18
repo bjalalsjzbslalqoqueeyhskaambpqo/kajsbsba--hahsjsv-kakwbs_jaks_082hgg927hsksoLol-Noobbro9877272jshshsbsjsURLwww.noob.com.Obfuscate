@@ -113,8 +113,9 @@ local function bringOrFireNearby()
                         obj.Position = obj.Position + direction * 2
                     else
                         firetouchinterest(hrp, obj, 0)
-                        task.wait(0.1)
+                        task.wait()
                         firetouchinterest(hrp, obj, 1)
+                    
                     end
                 end
             end
@@ -164,7 +165,7 @@ ui:Btn("Bring/Fire", function()
 end)
 
 local infoSub = ui:Sub("Info Script")
-infoSub:Txt("Version: 1.1")
+infoSub:Txt("Version: 1.3")
 infoSub:Txt("Create: 13/09/24")
 infoSub:Txt("Update: 18/09/24")
 infoSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
