@@ -179,11 +179,11 @@ ui:Btn("Walking/TP", function()
     else ui:Notify("TP", 3) end
 end)
 
-ui:TBox("Movement Speed(no use +70)", function(t)
+ui:Track("Movement Speed", 20, 20, 70, function(t)
     local n = tonumber(t)
     if n and n > 0 then 
         updateSpeed(n)
-        ui:Notify("Movement Speed set to " .. n)
+        
     end
 end)
 
