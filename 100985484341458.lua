@@ -16,6 +16,7 @@ local CR = 20
 local IC = 1
 local attractRadius = 9
 local bringEnabled = true
+local isSellingMode = false 
 game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = MS
 
 local function getPC()
@@ -75,11 +76,13 @@ end
 local function autoCollect()
     while AC do
         if getPC() >= 20 then
+            isSellingMode = true
             local sp = getSP()
             if sp then 
                 moveTo(sp)
                 interactWith(sp)
             end
+            isSellingMode = false 
         else
             local np = getNP()
             if np then 
@@ -94,7 +97,7 @@ end
 local function collectNearby()
     while AC do
         for _, obj in ipairs(workspace.PlushieFolder:GetDescendants()) do
-            if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") and AC then
+            if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") and AC and not isSellingMode then
                 interactWith(obj)
             end
         end
@@ -105,7 +108,7 @@ end
 local function bringOrFireNearby()
     while true do
         for _, obj in ipairs(workspace.PlushieFolder:GetDescendants()) do
-            if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") then
+            if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") and not isSellingMode then
                 local distance = (hrp.Position - obj.Position).Magnitude
                 if distance <= attractRadius then
                     if bringEnabled then
@@ -115,7 +118,6 @@ local function bringOrFireNearby()
                         firetouchinterest(hrp, obj, 0)
                         task.wait()
                         firetouchinterest(hrp, obj, 1)
-                    
                     end
                 end
             end
@@ -150,7 +152,7 @@ ui:TBox("Movement Speed(no use +70)", function(t)
     local n = tonumber(t)
     if n and n > 0 then 
         MS = n
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = n
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = n
         ui:Notify("Movement Speed set to " .. n)
     end
 end)
@@ -165,7 +167,7 @@ ui:Btn("Bring/Fire", function()
 end)
 
 local infoSub = ui:Sub("Info Script")
-infoSub:Txt("Version: 1.3")
+infoSub:Txt("Version: 1.4")
 infoSub:Txt("Create: 13/09/24")
 infoSub:Txt("Update: 18/09/24")
 infoSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
