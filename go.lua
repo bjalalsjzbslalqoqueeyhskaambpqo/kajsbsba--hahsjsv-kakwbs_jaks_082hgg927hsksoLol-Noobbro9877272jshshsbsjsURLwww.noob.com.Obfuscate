@@ -247,39 +247,55 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     end
     
     local drag = false
-    local function startDrag()
+    local touchId
+    local function startDrag(input)
         drag = true
+        if input.UserInputType == Enum.UserInputType.Touch then
+            touchId = input.UserInputState == Enum.UserInputState.Begin and input.UserInputType == Enum.UserInputType.Touch and input
+        end
         sb.BackgroundColor3 = colors.buttonHover
     end
     local function endDrag()
         drag = false
+        touchId = nil
         sb.BackgroundColor3 = colors.accent
     end
     
     sb.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            startDrag()
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            startDrag(input)
         end
     end)
     
     UIS.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or 
+           (input.UserInputType == Enum.UserInputType.Touch and touchId and input.UserInputState == Enum.UserInputState.End) then
             endDrag()
         end
     end)
     
     sl.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             local relX = (input.Position.X - sl.AbsolutePosition.X) / sl.AbsoluteSize.X
             update(min + (max - min) * relX)
+            startDrag(input)
         end
     end)
     
     game:GetService("RunService").RenderStepped:Connect(function()
         if drag then
-            local mousePos = UIS:GetMouseLocation()
-            local relX = (mousePos.X - sl.AbsolutePosition.X) / sl.AbsoluteSize.X
-            update(min + (max - min) * math.clamp(relX, 0, 1))
+            local position
+            if touchId then
+                local touchPositions = UIS:GetTouchPosition(touchId)
+                position = touchPositions and touchPositions or UIS:GetMouseLocation()
+            else
+                position = UIS:GetMouseLocation()
+            end
+            
+            if position then
+                local relX = (position.X - sl.AbsolutePosition.X) / sl.AbsoluteSize.X
+                update(min + (max - min) * math.clamp(relX, 0, 1))
+            end
         end
     end)
     
