@@ -287,7 +287,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     end)
     
     return cont
-    end
+end
     
     function ui:TBtn(text, callback)
         local btn = addElem("TextButton", {Text = text})
