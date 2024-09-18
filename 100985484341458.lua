@@ -182,7 +182,7 @@ ui:Btn("Walking/TP", function()
     else ui:Notify("TP", 3) end
 end)
 
-ui:Track("Movement Speed", 20, 20, 75, function(t)
+ui:Track("Movement Speed", 20, 20, 70, function(t)
     local n = tonumber(t)
     if n and n > 0 then 
         updateSpeed(n)
