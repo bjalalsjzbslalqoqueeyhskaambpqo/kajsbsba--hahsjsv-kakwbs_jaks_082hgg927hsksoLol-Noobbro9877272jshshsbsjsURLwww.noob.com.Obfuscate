@@ -251,7 +251,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     local function startDrag(input)
         drag = true
         if input.UserInputType == Enum.UserInputType.Touch then
-            touchId = input.UserInputState == Enum.UserInputState.Begin and input.UserInputType == Enum.UserInputType.Touch and input
+            touchId = input
         end
         sb.BackgroundColor3 = colors.buttonHover
     end
@@ -268,8 +268,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     end)
     
     UIS.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or 
-           (input.UserInputType == Enum.UserInputType.Touch and touchId and input.UserInputState == Enum.UserInputState.End) then
+        if input == touchId or input.UserInputType == Enum.UserInputType.MouseButton1 then
             endDrag()
         end
     end)
@@ -286,8 +285,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         if drag then
             local position
             if touchId then
-                local touchPositions = UIS:GetTouchPosition(touchId)
-                position = touchPositions and touchPositions or UIS:GetMouseLocation()
+                position = touchId.Position
             else
                 position = UIS:GetMouseLocation()
             end
