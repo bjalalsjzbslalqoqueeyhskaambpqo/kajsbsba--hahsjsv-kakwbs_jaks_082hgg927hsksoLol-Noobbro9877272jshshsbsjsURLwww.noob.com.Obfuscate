@@ -11,9 +11,11 @@ local hrp = chr:WaitForChild("HumanoidRootPart")
 
 local AC = true
 local walkingEnabled = true
-local MS = 70
+local MS = 50
 local CR = 20
 local IC = 1
+local attractRadius = 10
+local bringEnabled = true
 
 local function getPC()
     local tl = plr.PlayerGui.Currncy.Frame.Plushies.Amount
@@ -45,7 +47,7 @@ end
 
 local function moveToInterpolated(target)
     local startPos = hrp.Position
-    local targetPos = target.Position
+    local targetPos = Vector3.new(target.Position.X, hrp.Position.Y, target.Position.Z)
     local distance = (targetPos - startPos).Magnitude
     local duration = distance / MS
     local elapsedTime = 0
@@ -74,14 +76,18 @@ local function autoCollect()
         if getPC() >= 20 then
             local sp = getSP()
             if sp then 
-                
-                moveTo(sp)
-                interactWith(sp)
+                if not bringEnabled then
+                    moveTo(sp)
+                    interactWith(sp)
+                else
+                    firetouchinterest(hrp, sp, 0)
+                    task.wait(0.1)
+                    firetouchinterest(hrp, sp, 1)
+                end
             end
         else
             local np = getNP()
             if np then 
-                
                 moveTo(np)
                 interactWith(np)
             end
@@ -97,7 +103,28 @@ local function collectNearby()
                 interactWith(obj)
             end
         end
-        task.wait(1)
+        task.wait(0.2)
+    end
+end
+
+local function bringOrFireNearby()
+    while true do
+        for _, obj in ipairs(workspace.PlushieFolder:GetDescendants()) do
+            if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") then
+                local distance = (hrp.Position - obj.Position).Magnitude
+                if distance <= attractRadius then
+                    if bringEnabled then
+                        local direction = (hrp.Position - obj.Position).Unit
+                        obj.Position = obj.Position + direction * 2
+                    else
+                        firetouchinterest(hrp, obj, 0)
+                        task.wait(0.1)
+                        firetouchinterest(hrp, obj, 1)
+                    end
+                end
+            end
+        end
+        task.wait(0.1)
     end
 end
 
@@ -117,22 +144,32 @@ ui:TBtn("Auto Collect", toggleAutoCollect)
 ui:Btn("Walking/TP", function()
     walkingEnabled = not walkingEnabled
     if walkingEnabled then
-ui:Notify("Walking", 5)
-else
-ui:Notify("TP", 5)
-end
+        ui:Notify("Walking", 5)
+    else
+        ui:Notify("TP", 5)
+    end
 end)
 
 ui:TBox("Movement Speed(TP)", function(t)
     local n = tonumber(t)
     if n and n > 0 then 
         MS = n
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = n
         ui:Notify("Movement Speed set to " .. n)
     end
 end)
 
+ui:Btn("Bring/Fire", function()
+    bringEnabled = not bringEnabled
+    if bringEnabled then
+        ui:Notify("Bring Enabled", 2)
+    else
+        ui:Notify("Fire Enabled", 2)
+    end
+end)
+
 local infoSub = ui:Sub("Info Script")
-infoSub:Txt("Version: 0.9")
+infoSub:Txt("Version: 1.2")
 infoSub:Txt("Create: 13/09/24")
 infoSub:Txt("Update: 18/09/24")
 infoSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
@@ -145,3 +182,4 @@ pcall(function()
 end)
 
 toggleAutoCollect()
+task.spawn(bringOrFireNearby)
