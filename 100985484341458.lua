@@ -171,7 +171,7 @@ local function tAC()
     end
 end
 
-ui:TBtn("Auto Collect", tAC)
+ui:Btn("Auto Collect", tAC)
 
 ui:Btn("Walking/TP", function()
     walk = not walk
@@ -205,5 +205,5 @@ pcall(function()
         if y.Name ~= "Floor" then y:Destroy() end
     end
 end)
+task.spawn(aCol)
 
-tAC()
