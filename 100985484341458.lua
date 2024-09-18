@@ -11,11 +11,12 @@ local hrp = chr:WaitForChild("HumanoidRootPart")
 
 local AC = true
 local walkingEnabled = true
-local MS = 50
+local MS = 18
 local CR = 20
 local IC = 1
-local attractRadius = 10
+local attractRadius = 9
 local bringEnabled = true
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = MS
 
 local function getPC()
     local tl = plr.PlayerGui.Currncy.Frame.Plushies.Amount
@@ -76,14 +77,8 @@ local function autoCollect()
         if getPC() >= 20 then
             local sp = getSP()
             if sp then 
-                if not bringEnabled then
-                    moveTo(sp)
-                    interactWith(sp)
-                else
-                    firetouchinterest(hrp, sp, 0)
-                    task.wait(0.1)
-                    firetouchinterest(hrp, sp, 1)
-                end
+                moveTo(sp)
+                interactWith(sp)
             end
         else
             local np = getNP()
@@ -92,7 +87,7 @@ local function autoCollect()
                 interactWith(np)
             end
         end
-        task.wait(0.1)
+        task.wait()
     end
 end
 
@@ -103,7 +98,7 @@ local function collectNearby()
                 interactWith(obj)
             end
         end
-        task.wait(0.2)
+        task.wait()
     end
 end
 
@@ -124,7 +119,7 @@ local function bringOrFireNearby()
                 end
             end
         end
-        task.wait(0.1)
+        task.wait()
     end
 end
 
@@ -144,9 +139,9 @@ ui:TBtn("Auto Collect", toggleAutoCollect)
 ui:Btn("Walking/TP", function()
     walkingEnabled = not walkingEnabled
     if walkingEnabled then
-        ui:Notify("Walking", 5)
+        ui:Notify("Walking", 3)
     else
-        ui:Notify("TP", 5)
+        ui:Notify("TP", 3)
     end
 end)
 
@@ -154,7 +149,7 @@ ui:TBox("Movement Speed(no use +70)", function(t)
     local n = tonumber(t)
     if n and n > 0 then 
         MS = n
-game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = n
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = n
         ui:Notify("Movement Speed set to " .. n)
     end
 end)
@@ -169,7 +164,7 @@ ui:Btn("Bring/Fire", function()
 end)
 
 local infoSub = ui:Sub("Info Script")
-infoSub:Txt("Version: 1.2")
+infoSub:Txt("Version: 1.1")
 infoSub:Txt("Create: 13/09/24")
 infoSub:Txt("Update: 18/09/24")
 infoSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
