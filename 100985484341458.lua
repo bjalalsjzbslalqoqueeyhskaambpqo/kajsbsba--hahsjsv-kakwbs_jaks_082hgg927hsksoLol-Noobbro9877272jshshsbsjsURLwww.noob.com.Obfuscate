@@ -55,6 +55,8 @@ local function gSP()
     return workspace:FindFirstChild("sellPart")
 end
 
+workspace:FindFirstChild("sellPart").Position = workspace:FindFirstChild("sellPart").Position + Vector3.new(0,2,0)
+
 local function setInvisible(obj)
     task.spawn(function()
         pcall(function()
@@ -88,15 +90,16 @@ local function iNearby()
     end
     return interacted
 end
+local tat = hrp.Position.Y - 0.3
 
 local function mTI(t)
     local sT = tick()
     local sP = hrp.Position
-    local tP = Vector3.new(t.Position.X, hrp.Position.Y, t.Position.Z)
+    local tP = Vector3.new(t.Position.X, tat, t.Position.Z)
     local totalD = (tP - sP).Magnitude
     local timeToMove = totalD / MS
 
-    while AC and t and t.Parent do
+    while AC and t and t:FindFirstChild("TouchInterest") do
         local eT = tick() - sT
         local progress = math.min(eT / timeToMove, 1)
         hrp.CFrame = CFrame.new(sP:Lerp(tP, progress))
@@ -106,7 +109,7 @@ local function mTI(t)
     
     if sell then
         hum.Jump = true
-        task.wait(0.1)
+        task.wait(0.4)
     end
 end
 
@@ -179,7 +182,7 @@ ui:Btn("Walking/TP", function()
     else ui:Notify("TP", 3) end
 end)
 
-ui:Track("Movement Speed", 20, 20, 70, function(t)
+ui:Track("Movement Speed", 20, 20, 75, function(t)
     local n = tonumber(t)
     if n and n > 0 then 
         updateSpeed(n)
