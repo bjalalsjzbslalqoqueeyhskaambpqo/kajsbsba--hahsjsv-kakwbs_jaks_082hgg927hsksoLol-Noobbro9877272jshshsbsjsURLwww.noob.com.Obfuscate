@@ -123,7 +123,7 @@ ui:Notify("TP", 5)
 end
 end)
 
-ui:TBox("Movement Speed", function(t)
+ui:TBox("Movement Speed(TP)", function(t)
     local n = tonumber(t)
     if n and n > 0 then 
         MS = n
