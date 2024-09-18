@@ -1,8 +1,25 @@
+
 local MiniUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/go.lua"))()
 local ui = MiniUI:new()
 
 local Plrs = game:GetService("Players")
 local RunS = game:GetService("RunService")
+
+spawn(function()
+local mt = getrawmetatable(game)
+local old_index = mt.__index
+
+setreadonly(mt, false)
+
+mt.__index = function(instance, index)
+    if tostring(instance) == "Humanoid" and index == "WalkSpeed" then
+        return 16
+    end
+    return old_index(instance, index)
+end
+
+setreadonly(mt, true)
+end)
 
 local plr = Plrs.LocalPlayer
 local chr = plr.Character or plr.CharacterAdded:Wait()
@@ -25,8 +42,8 @@ end
 
 local function gNP()
     local np, md = nil, math.huge
-    for _, o in ipairs(workspace.PlushieFolder:GetDescendants()) do
-        if o:IsA("BasePart") and o:FindFirstChild("TouchInterest") and AC then
+    for _, o in ipairs(workspace.PlushieFolder:GetChildren()) do
+        if o:IsA("BasePart") and o:FindFirstChild("TouchInterest") and AC and o.Transparency == 0 then
             local d = (hrp.Position - o.Position).Magnitude
             if d < md then np, md = o, d end
         end
@@ -38,9 +55,22 @@ local function gSP()
     return workspace:FindFirstChild("sellPart")
 end
 
+local function setInvisible(obj)
+    task.spawn(function()
+        pcall(function()
+            obj.Transparency = 1
+            task.wait(5)
+            if obj and obj.Parent then
+                obj.Transparency = 0
+            end
+        end)
+    end)
+end
+
 local function iNearby()
-    for _, o in ipairs(workspace.PlushieFolder:GetDescendants()) do
-        if o:IsA("BasePart") and o:FindFirstChild("TouchInterest") then
+    local interacted = false
+    for _, o in ipairs(workspace.PlushieFolder:GetChildren()) do
+        if o:IsA("BasePart") and o:FindFirstChild("TouchInterest") and o.Transparency == 0 then
             local d = (hrp.Position - o.Position).Magnitude
             if d <= aR then
                 if fT then
@@ -51,9 +81,12 @@ local function iNearby()
                     local dir = (hrp.Position - o.Position).Unit
                     o.Position = o.Position + dir * 2
                 end
+                setInvisible(o)
+                interacted = true
             end
         end
     end
+    return interacted
 end
 
 local function mTI(t)
@@ -70,6 +103,11 @@ local function mTI(t)
         if progress >= 1 then break end
         RunS.Heartbeat:Wait()
     end
+    
+    if sell then
+        hum.Jump = true
+        task.wait(0.1)
+    end
 end
 
 local function mTo(t)
@@ -78,24 +116,41 @@ local function mTo(t)
         if walk then
             hum:MoveTo(t.Position)
             hum.MoveToFinished:Wait()
-            if (hrp.Position - t.Position).Magnitude <= IC then break end
+            if (hrp.Position - t.Position).Magnitude <= IC then
+                if sell then
+                    hum.Jump = true
+                    task.wait(0.1)
+                end
+                break
+            end
         else
             mTI(t)
+            break
         end
-        iNearby()
-        if tick() - sT > 1 then return false end
+        if iNearby() and not sell then break end
+        if tick() - sT > 5 then return false end
         task.wait(0.1)
     end
     return true
 end
 
+local lastCollectTime = 0
 local function aCol()
     while AC do
+        local currentTime = tick()
+        if currentTime - lastCollectTime < 0.2 then
+            task.wait(0.2 - (currentTime - lastCollectTime))
+        end
+        lastCollectTime = currentTime
+
         if gPC() >= 20 then
             sell = true
             local sp = gSP()
             if sp then 
-                if mTo(sp) then iNearby() end
+                if mTo(sp) then 
+                    iNearby()
+                    task.wait(0.2)
+                end
             end
             sell = false
         else
@@ -103,7 +158,6 @@ local function aCol()
             if np and not mTo(np) then continue end
         end
         iNearby()
-        task.wait(0.1)
     end
 end
 
@@ -119,16 +173,10 @@ end
 
 ui:TBtn("Auto Collect", tAC)
 
-ui:Btn("Walking/TP(use priv server)", function()
+ui:Btn("Walking/TP", function()
     walk = not walk
     if walk then ui:Notify("Walking", 3)
-    else ui:Notify("TP(use priv server)", 3) end
-end)
-
-ui:Btn("Aura Bring/Fire", function()
-    fT = not fT
-    if fT then ui:Notify("Bring", 2)
-    else ui:Notify("Fire", 2) end
+    else ui:Notify("TP", 3) end
 end)
 
 ui:TBox("Movement Speed(no use +70)", function(t)
@@ -139,8 +187,14 @@ ui:TBox("Movement Speed(no use +70)", function(t)
     end
 end)
 
+ui:Btn("Aura Bring/Fire", function()
+    fT = not fT
+    if fT then ui:Notify("Bring", 2)
+    else ui:Notify("Fire", 2) end
+end)
+
 local iSub = ui:Sub("Info Script")
-iSub:Txt("Version: 2.0")
+iSub:Txt("Version: 2.3")
 iSub:Txt("Create: 13/09/24")
 iSub:Txt("Update: 18/09/24")
 iSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
