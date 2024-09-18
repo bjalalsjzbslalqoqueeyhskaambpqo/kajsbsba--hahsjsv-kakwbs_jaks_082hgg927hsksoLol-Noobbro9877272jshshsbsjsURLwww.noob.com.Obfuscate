@@ -228,6 +228,7 @@ local function cUI(parent, isSub, subTitle, cusTitle)
         return tb
     end
 
+    
     function ui:Track(label, def, min, max, callback)
     local cont = addElem("Frame", {Size = UDim2.new(1, 0, 0, 50)})
     local sl = c("Frame", {Size = UDim2.new(1, -70, 0, 6), Position = UDim2.new(0, 35, 0.7, -3), Parent = cont, BackgroundColor3 = colors.slider, ZIndex = 10005})
@@ -256,19 +257,19 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     end
     
     sb.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
             startDrag()
         end
     end)
     
     UIS.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
             endDrag()
         end
     end)
     
     sl.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
             local relX = (input.Position.X - sl.AbsolutePosition.X) / sl.AbsoluteSize.X
             update(min + (max - min) * relX)
         end
@@ -277,17 +278,14 @@ local function cUI(parent, isSub, subTitle, cusTitle)
     game:GetService("RunService").RenderStepped:Connect(function()
         if drag then
             local mousePos = UIS:GetMouseLocation()
-            local touchPos = UIS:GetTouchPosition()
-            local pos = touchPos or mousePos
-            if pos then
-                local relX = (pos.X - sl.AbsolutePosition.X) / sl.AbsoluteSize.X
-                update(min + (max - min) * math.clamp(relX, 0, 1))
-            end
+            local relX = (mousePos.X - sl.AbsolutePosition.X) / sl.AbsoluteSize.X
+            update(min + (max - min) * math.clamp(relX, 0, 1))
         end
     end)
     
     return cont
 end
+    
     
     function ui:TBtn(text, callback)
         local btn = addElem("TextButton", {Text = text})
