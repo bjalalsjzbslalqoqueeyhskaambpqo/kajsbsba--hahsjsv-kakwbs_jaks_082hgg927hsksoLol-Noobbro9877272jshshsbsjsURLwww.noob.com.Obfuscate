@@ -111,7 +111,7 @@ local Player = Players.LocalPlayer
 local WS = game:GetService("Workspace")
 
 local b = true
-local speed = 50
+local speed = 40
 
 local function saveSpeed(speed)
     if not isfolder("SpeedData") then makefolder("SpeedData") end
@@ -218,7 +218,7 @@ ui:Btn("Store UGC", function()
     game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible = not game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible
 end)
 
-ui:Track("Speed Fly", 20, 20, 80, function(value)
+ui:Track("Speed Fly", 20, 20, 65, function(value)
     speed = tonumber(value) or speed
     saveSpeed(speed)
     
