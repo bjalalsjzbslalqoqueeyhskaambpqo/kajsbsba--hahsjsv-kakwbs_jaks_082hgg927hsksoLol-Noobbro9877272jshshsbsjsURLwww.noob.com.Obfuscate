@@ -213,12 +213,12 @@ local function toggleAutoHearts()
     b = not b
 end
 
-ui:Btn("Auto Collect (fly)", toggleAutoHearts)
+ui:Btn("Auto Collect", toggleAutoHearts)
 ui:Btn("Store UGC", function()
     game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible = not game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible
 end)
 
-ui:Track("Speed Fly", 20, 20, 65, function(value)
+ui:Track("Speed Fly", 45, 20, 65, function(value)
     speed = tonumber(value) or speed
     saveSpeed(speed)
     
