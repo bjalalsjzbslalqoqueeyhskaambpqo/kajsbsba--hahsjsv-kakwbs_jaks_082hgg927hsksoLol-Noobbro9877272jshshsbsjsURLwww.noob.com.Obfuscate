@@ -61,7 +61,7 @@ local function setInvisible(obj)
     task.spawn(function()
         pcall(function()
             obj.Transparency = 1
-            task.wait(5)
+            task.wait(2)
             if obj and obj.Parent then
                 obj.Transparency = 0
             end
@@ -131,7 +131,7 @@ local function mTo(t)
             break
         end
         if iNearby() and not sell then break end
-        if tick() - sT > 5 then return false end
+        if tick() - sT > 2 then return false end
         task.wait(0.1)
     end
     return true
