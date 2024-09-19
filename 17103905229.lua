@@ -1,349 +1,271 @@
 spawn(function()
-function eliminarObjeto(objeto)
-    for _, hijo in ipairs(objeto:GetDescendants()) do
-        if hijo:IsA("BasePart") then
-            hijo:Destroy()
+(loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+
+        end)
+
+spawn(function()
+    local cache = {}
+
+    local function getProperty(obj, prop)
+        if cache[obj] and cache[obj][prop] then
+            return cache[obj][prop]
+        end
+        return obj[prop]
+    end
+
+    local function mod(o)
+        if o:IsA("BasePart") then
+            cache[o] = {
+                CanCollide = o.CanCollide,
+                Transparency = o.Transparency,
+                Size = o.Size
+            }
+            o.CanCollide = false
+            o.Transparency = 1
+            o.Size = Vector3.new(0.1, 0.1, 0.1)
         end
     end
-    objeto:Destroy()
-end
 
-local terreno = workspace.Map.Terrain
-if terreno then
-    if terreno:FindFirstChild("Mountains") then
-        eliminarObjeto(terreno.Mountains)
+    local function prc(o)
+        for _,h in ipairs(o:GetDescendants()) do mod(h) end
+        mod(o)
     end
-    if terreno:FindFirstChild("Rocks") then
-        eliminarObjeto(terreno.Rocks)
+
+    local w = game:GetService("Workspace")
+    local m = w.Map
+    local t = m.Terrain
+
+    local function eC(p,c,s)
+        return math.abs(p.X-c.X)<=s.X/2 and math.abs(p.Y-c.Y)<=s.Y/2 and math.abs(p.Z-c.Z)<=s.Z/2
     end
-end
 
-function dentroDelCubo(punto, centro, tamano)
-    return math.abs(punto.X - centro.X) <= tamano.X/2 and
-           math.abs(punto.Y - centro.Y) <= tamano.Y/2 and
-           math.abs(punto.Z - centro.Z) <= tamano.Z/2
-end
+    local p = game.Players.LocalPlayer
+    local y = (p.Character or p.CharacterAdded:Wait()).HumanoidRootPart.Position.Y
 
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local alturaInicial = character.HumanoidRootPart.Position.Y
-
-local hearts = workspace.Map.Interactable.Hearts:GetChildren()
-for _, heart in ipairs(hearts) do
-    if heart:IsA("BasePart") then
-        local eliminar = false
-        if terreno.Mountains then
-            for _, mountain in ipairs(terreno.Mountains:GetChildren()) do
-                if mountain:IsA("BasePart") and dentroDelCubo(heart.Position, mountain.Position, mountain.Size) then
-                    eliminar = true
-                    break
+    for _,h in ipairs(m.Interactable.Hearts:GetChildren()) do
+        if h:IsA("BasePart") then
+            local e = false
+            for _,o in ipairs({t.Mountains, t.Rocks}) do
+                if o then
+                    for _,c in ipairs(o:GetChildren()) do
+                        if c:IsA("BasePart") and eC(h.Position,c.Position,getProperty(c, "Size")) then
+                            e = true
+                            break
+                        end
+                    end
                 end
+                if e then break end
             end
-        end
-        if not eliminar and terreno.Rocks then
-            for _, rock in ipairs(terreno.Rocks:GetChildren()) do
-                if rock:IsA("BasePart") and dentroDelCubo(heart.Position, rock.Position, rock.Size) then
-                    eliminar = true
-                    break
-                end
-            end
-        end
-        if not eliminar and heart.Position.Y >= alturaInicial and heart.Position.Y <= alturaInicial + 90 then
-            eliminar = true
-        end
-        if eliminar then
-            heart:Destroy()
+            if not e and h.Position.Y>=y and h.Position.Y<=y+90 then e = true end
+            if e then mod(h) end
         end
     end
-end
 
+    for _,o in ipairs({t.Mountains, t.Rocks, m.Decorations, w.nightLights, w.BillboardGui, m.Leaderboards, m.Interactable.MushroomHouses, m.Interactable.Other, w.Billboards}) do
+        if o then prc(o) end
+    end
+
+    for _,f in ipairs(m.Interactable:GetDescendants()) do
+        if f.Name == "GroupChest" or f.Name == "SpinWheel" then prc(f) end
+    end
+
+    local function modSpecific(parent)
+        for _,c in ipairs(parent:GetChildren()) do
+            if (c.ClassName == "Model" and c.Name == "Model") or 
+               (c.ClassName == "MeshPart" and c.Name == "MeshPart") or 
+               (c.ClassName == "Part" and c.Name == "Part") then
+                prc(c)
+            end
+            modSpecific(c)
+        end
+    end
+
+    modSpecific(w)
+
+    if m:FindFirstChild("ugcshop") then prc(m.ugcshop) end
+
+    for _,o in ipairs(t:GetChildren()) do
+        if not o:IsA("Model") then prc(o) end
+    end
+
+    game:GetService("RunService").Heartbeat:Connect(function()
+        for _,i in ipairs(m.Interactable:GetDescendants()) do
+            if i:IsA("BasePart") then i.CanCollide = false end
+        end
+    end)
+
+    for _,o in ipairs(w:GetChildren()) do
+        if o:IsA("BasePart") or (o:IsA("Model") and not game.Players:GetPlayerFromCharacter(o) and not o:IsA("Folder")) then
+            prc(o)
+        end
+    end
 end)
+
+
+local MiniUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/go.lua"))()
+
+local ui = MiniUI:new("Collect For UGC")
+
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local WS = game:GetService("Workspace")
+
+local b = true
+local speed = 50
+
+local function saveSpeed(speed)
+    if not isfolder("SpeedData") then makefolder("SpeedData") end
+    writefile("SpeedData/Speed.txt", tostring(speed))
+end
+
+local function loadSpeed()
+    if isfile("SpeedData/Speed.txt") then
+        return tonumber(readfile("SpeedData/Speed.txt")) or 40
+    else
+        saveSpeed(40)
+        return 40
+    end
+end
+
+speed = loadSpeed()
+
+local function collectHeart(heartPart)
+    local player = game.Players.LocalPlayer
+    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local PPos = player.Character.HumanoidRootPart.Position
+        local HPos = Vector3.new(heartPart.Position.X, PPos.Y, heartPart.Position.Z)
+        local dist = (HPos - PPos).magnitude
+        if dist < 1 then
+            heartPart.Transparency = 1
+            heartPart.Position = PPos
+            spawn(function()
+                pcall(function() wait(10) heartPart.Transparency = 0 end)
+            end)
+        end
+    end
+end
+
+local function moveToTarget(targetPosition)
+    local player = game.Players.LocalPlayer
+    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and b then
+        local PPos = player.Character.HumanoidRootPart.Position
+        local direction = (targetPosition - PPos).unit
+        player.Character.HumanoidRootPart.Velocity = direction * speed
+    end
+end
+
+local function findNearestClaimableObject()
+    local player = game.Players.LocalPlayer
+    if not player or not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return nil end
+    local PPos = player.Character.HumanoidRootPart.Position
+    local nearestClaimable = nil
+    local minDistance = math.huge
+    for _, f in ipairs(workspace.Map.Interactable.MushroomHouses:GetDescendants()) do
+        if f:IsA("TextLabel") and f.Text == "Claim" then
+            local claimableObject = f.Parent.Parent.Parent
+            local distance = (claimableObject.Position - PPos).Magnitude
+            if distance < minDistance then
+                minDistance = distance
+                nearestClaimable = claimableObject
+            end
+        end
+    end
+    return nearestClaimable
+end
+
+local function moveHearts()
+    local nearestClaimable = findNearestClaimableObject()
+    if nearestClaimable then
+        moveToTarget(nearestClaimable.Position)
+        collectHeart(nearestClaimable)
+    else
+        local player = game.Players.LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and b then
+            local PPos = player.Character.HumanoidRootPart.Position
+            local Hearts = WS.Map.Interactable:GetDescendants()
+            local minDist = math.huge
+            local closestHeart = nil
+            for _, H in ipairs(Hearts) do
+                if H:IsA("MeshPart") and H.Transparency ~= 1 then
+                    local HPos = Vector3.new(H.Position.X, PPos.Y, H.Position.Z)
+                    local dist = (HPos - PPos).magnitude
+                    if dist < 1 then
+                        collectHeart(H)
+                    elseif dist < minDist then
+                        minDist = dist
+                        closestHeart = H
+                    end
+                end
+            end
+            if closestHeart then
+                moveToTarget(closestHeart.Position)
+                collectHeart(closestHeart)
+            end
+        end
+    end
+end
+
+game:GetService("RunService").RenderStepped:Connect(function()
+    pcall(moveHearts)
+end)
+
+local function toggleAutoHearts()
+    b = not b
+end
+
+ui:Btn("Auto Collect (fly)", toggleAutoHearts)
+ui:Btn("Store UGC", function()
+    game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible = not game.Players.LocalPlayer.PlayerGui.Main.mainFrame.ugcShopFrame.Visible
+end)
+
+ui:Track("Speed Fly", 20, 20, 80, function(value)
+    speed = tonumber(value) or speed
+    saveSpeed(speed)
+    
+end)
+
+wait(0.7)
+infoSub = ui:Sub("Info Script")
+infoSub:Txt("Version: 25")
+infoSub:Txt("Create: 08//06/24")
+infoSub:Txt("Update: 19/09/24")
+infoSub:Btn("Link YouTube", function()
+   setclipboard("https://youtube.com/@onecreatorx") 
+end)
+
+infoSub:Btn("Link Discord", function()
+  setclipboard("https://discord.com/invite/UNJpdJx7c4")  
+end)
+
 
 pcall(function()
-        for _, f in ipairs(workspace.Map.Interactable:GetDescendants()) do
-            if f.Name == "GroupChest" or f.Name == "SpinWheel" then
-                f:Destroy()
-            end
-        end
+    local Players = game:GetService("Players")
+    local player = Players.LocalPlayer
 
-        workspace.Map.Decorations:Destroy()
-        workspace.nightLights:Destroy()
-        workspace.BillboardGui:Destroy()
-        workspace.Map.Leaderboards:Destroy()
-
-        local function destroySpecificObjects(parent)
-            for _, child in ipairs(parent:GetChildren()) do
-                if child.ClassName == "Model" and child.Name == "Model" then
-                    child:Destroy()
-                elseif child.ClassName == "MeshPart" and child.Name == "MeshPart" then
-                    child:Destroy()
-                elseif child.ClassName == "Part" and child.Name == "Part" then
-                    child:Destroy()
-                end
-                destroySpecificObjects(child)
-            end
-        end
-
-        for _, f in ipairs(workspace.Map.Interactable.MushroomHouses:GetDescendants()) do
-            if f:IsA("Folder") and f.Name == "Other" then
-                f:Destroy()
-            end
-        end
-workspace.Map.Interactable.Other:Destroy()
-Workspace.Billboards:Destroy()
-Workspace.BillboardGui:Destroy()
-workspace.nightLights:Destroy()
-        destroySpecificObjects(workspace)
+    local function scaleCharacter(scale)
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
         
-    end)
-spawn(function()
-        pcall(function()
-
-local function findObject(parent, name)
-    for _, child in ipairs(parent:GetChildren()) do
-        if child.Name:lower() == name:lower() then
-            return child
+        if not character or not humanoid then
+            return
         end
-    end
-    return nil
-end
-
-local map = workspace:FindFirstChild("Map")
-if not map then
-
-    return
-end
-
-local ugcshop = findObject(map, "ugcshop")
-if not ugcshop then
-    
-    return
-end
-
-local success, errmsg = pcall(function()
-    ugcshop:Destroy()
-end)
-
-if not success then
-    print("Error al destruir 'ugcshop': " .. errmsg)
-else
-    
-end
-    end)
-end)
-
-    local workspace = game:GetService("Workspace")
-    local mapTerrain = workspace:WaitForChild("Map"):WaitForChild("Terrain")
-
-    for _, obj in ipairs(mapTerrain:GetChildren()) do
-        if not obj:IsA("Model") then
-            obj:Destroy()
-        end
-    end
-
-
-
-P = game:GetService("PathfindingService")
-Pl = game:GetService("Players")
-R = game:GetService("RunService")
-L = Pl.LocalPlayer
-
-a = false
-s = 20
-ph = 0
-ht = 8
-pt = 8
-rt = 1
-
-ct = nil
-c = nil
-h = nil
-r = nil
-
-function uc()
-    c = L.Character
-    h = c and c:FindFirstChildOfClass("Humanoid")
-    r = c and c:FindFirstChild("HumanoidRootPart")
-end
-
-function gp(s, g)
-    p = P:CreatePath({AgentRadius = 5, AgentHeight = 5, AgentCanJump = true, Costs = {Water = 20, Grass = 5}})
-    p:ComputeAsync(s, g)
-    return p.Status == Enum.PathStatus.Success and p:GetWaypoints() or nil
-end
-
-function sp(wp)
-    simple = {wp[1]}
-    for i = 2, #wp - 1 do
-        if (wp[i].Position - simple[#simple].Position).Magnitude > pt then
-            table.insert(simple, wp[i])
-        end
-    end
-    table.insert(simple, wp[#wp])
-    return simple
-end
-
-function mt(t)
-    if not r or not h then return false end
-    wp = gp(r.Position, t)
-    if not wp then
-        h:MoveTo(t)
-        if (r.Position - t).Magnitude <= rt then return true end
-        if (r.Position - t).Magnitude <= rt * 2 and t.Y > r.Position.Y + 3 then
-            h.Jump = true
-        end
-        return false
-    end
-    for _, w in ipairs(sp(wp)) do
-        if not a or ct ~= t then return false end
-        h:MoveTo(w.Position)
-        if w.Action == Enum.PathWaypointAction.Jump then h.Jump = true end
-        if (r.Position - t).Magnitude <= rt then return true end
-        if t.Y > r.Position.Y + 3 and (r.Position - Vector3.new(t.X, r.Position.Y, t.Z)).Magnitude <= rt then
-            h.Jump = true
-        end
-    end
-    return (r.Position - t).Magnitude <= rt
-end
-
-function sph()
-    ph = r and r.Position.Y or 0
-end
-
-function aht()
-    for _, heart in ipairs(workspace.Map.Interactable.Hearts:GetChildren()) do
-        if heart:IsA("BasePart") then
-            heart.Transparency = math.abs(heart.Position.Y - ph) <= ht and 0 or 1
-        end
-    end
-end
-
-function gnh()
-    if not r then return nil end
-    nh, nd = nil, math.huge
-    for _, heart in ipairs(workspace.Map.Interactable.Hearts:GetChildren()) do
-        if heart:IsA("BasePart") and heart.Transparency == 0 then
-            d = (heart.Position - r.Position).Magnitude
-            if d < nd then
-                nh, nd = heart, d
+        
+        local newScale = Vector3.new(scale, scale, scale)
+        
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Size = part.Size * newScale
             end
         end
-    end
-    return nh
-end
-
-function gncm()
-    if not r then return nil end
-    nm, nd = nil, math.huge
-    for _, h in ipairs(workspace.Map.Interactable.MushroomHouses:GetChildren()) do
-        if h.Touch.interactablePlatform.BillboardGui.Frame.TextLabel.Text == "Claim" then
-            d = (h.Touch.interactablePlatform.Position - r.Position).Magnitude
-            if d < nd then
-                nm, nd = h, d
-            end
+        
+        local rootPart = character:FindFirstChild("HumanoidRootPart")
+        if rootPart then
+            rootPart.Position = rootPart.Position - Vector3.new(0, (1 - scale) * 3, 0)
         end
     end
-    return nm
-end
 
-function ci()
-    while a do
-        uc()
-        if not r or not h then
-            wait(1)
-            continue
-        end
-        m = gncm()
-        if m then
-            ct = m.Touch.interactablePlatform.Position
-            if mt(ct) then
-                firetouchinterest(r, m.Touch.interactablePlatform, 0)
-                firetouchinterest(r, m.Touch.interactablePlatform, 1)
-            end
-        else
-            heart = gnh()
-            if heart then
-                ct = heart.Position
-                if mt(ct) then
-                    heart:Destroy()
-                end
-            end
-        end
-        R.Heartbeat:Wait()
-    end
-end
-
-function tc()
-    a = not a
-    if a then
-        uc()
-        sph()
-        aht()
-        task.spawn(ci)
-    end
-end
-
-
-L.CharacterAdded:Connect(function(char)
-    wait(1)
-    uc()
-    sph()
-    aht()
-    if h then h.WalkSpeed = s end
+    scaleCharacter(0.4)
 end)
-
-workspace.Map.Interactable.Hearts.ChildAdded:Connect(function(child)
-    if child:IsA("BasePart") then
-        child.Transparency = math.abs(child.Position.Y - ph) <= ht and 0 or 1
-    end
-end)
-
-L.Idled:Connect(function()
-    game:GetService('VirtualUser'):CaptureController()
-    game:GetService('VirtualUser'):ClickButton2(Vector2.new())
-end)
-
-local UL = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/MyLibrery.lua"))()
-
-local gameName = ""
-if gameName == "" then
-    gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
-end
-
-local function cleanGameName(name)
-    name = name:gsub("%b[]", "")
-    name = name:match("^[^:]*")
-    return name:match("^%s*(.-)%s*$")
-end
-
-gameName = cleanGameName(gameName)
-
-local p = game.Players.LocalPlayer
-local sg = UL:CrSG("Default")
-local frm, cfrm, crFrm = UL:CrFrm(sg, gameName)
-
-
-UL:AddTBtn(cfrm, "Auto Walk Collect", false, tc)
-
-UL:AddTBox(cfrm, "Speed use: 20-25", function(v) 
- s = tonumber(v) or s
-    if h then h.WalkSpeed = s end
-end)
-
-
-UL:AddTBox(cfrm, "Height Tolerance: 3-10", function(ju) 
- ht = tonumber(ju) or ht
-    aht()
-end)
-
-UL:AddText(crFrm, "By Script: OneCreatorX ")
-UL:AddText(crFrm, "Create Script: 12/08/24 ")
-UL:AddText(crFrm, "Update Script: --/--/--")
-UL:AddText(crFrm, "Script Version: 0.1")
-UL:AddText(crFrm, "Safe %: 100")
-UL:AddBtn(crFrm, "Copy link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
-UL:AddBtn(crFrm, "Copy link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
-
 pcall(function()
     local NetworkClient = game:GetService("NetworkClient")
     local Players = game:GetService("Players")
@@ -367,7 +289,6 @@ pcall(function()
         end
     end)
 end)
-
 local StarterGui = game:GetService("StarterGui")
 StarterGui:SetCore("SendNotification", {
     Title = "Warn Speed ",
@@ -382,21 +303,7 @@ StarterGui:SetCore("SendNotification", {
 })
 
 
-spawn(function()
-        local mt = getrawmetatable(game)
-local old_index = mt.__index
-
-setreadonly(mt, false)
-
-mt.__index = function(instance, index)
-    if tostring(instance) == "Humanoid" and index == "WalkSpeed" then
-        return 16
-    end
-    return old_index(instance, index)
-end
-
-setreadonly(mt, true)
-    end)
-uc()
-sph()
-aht()
+game:GetService('Players').LocalPlayer.Idled:Connect(function()
+    game:GetService('VirtualUser'):CaptureController()
+    game:GetService('VirtualUser'):ClickButton2(Vector2.new())
+end)
