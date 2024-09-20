@@ -1,19 +1,25 @@
 local MiniUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/go.lua"))()
 local ui = MiniUI:new("Collect Plushies")
 
+spawn(function()
 local mt = getrawmetatable(game)
 setreadonly(mt, false)
 local old = mt.__namecall
 
 mt.__namecall = newcclosure(function(self, ...)
     local method = getnamecallmethod()
-    if method == "FireServer" and self == game.ReplicatedStorage.EasyAntiCheat then
+    if method == "FireServer" and 
+       typeof(self) == "Instance" and 
+       self:IsA("RemoteEvent") and 
+       self.Parent == game:GetService("ReplicatedStorage") and 
+       self.Name == "EasyAntiCheat" then
         return nil
     end
     return old(self, ...)
 end)
 
 setreadonly(mt, true)
+    end)
 
 spawn(function()
     local mt = getrawmetatable(game)
