@@ -33,16 +33,17 @@ setreadonly(mt, true)
     end)
 
 ui:Notify("Loading wait", 3)
-wait(0.3)
+wait(0.5)
 ui:Notify("Apply Bypass Anti-Cheat", 3)
 
 wait(3)
+
 ui:Notify("Ready- Apply Bypass", 3)
 local Plrs, RunS, PathfindingService = game:GetService("Players"), game:GetService("RunService"), game:GetService("PathfindingService")
 local plr, chr = Plrs.LocalPlayer, Plrs.LocalPlayer.Character or Plrs.LocalPlayer.CharacterAdded:Wait()
 local hum, hrp = chr:WaitForChild("Humanoid"), chr:WaitForChild("HumanoidRootPart")
 
-local AC, MS, IC, aR = true, 20, 5, 13
+local AC, MS, IC, aR = true, 16, 5, 13
 local intermediatePoint = Vector3.new(-919, 7, 129)
 
 local function uS(s) MS, hum.WalkSpeed = s, s end
@@ -157,7 +158,7 @@ local function tAC()
 end
 
 ui:Btn("Auto Collect", tAC)
-ui:Track("Movement Speed", 20, 20, 70, function(t) local n = tonumber(t) if n and n > 0 then uS(n) end end)
+ui:Track("Movement Speed", 20, 20, 80, function(t) local n = tonumber(t) if n and n > 0 then uS(n) end end)
 
 local iSub = ui:Sub("Info Script")
 iSub:Txt("Version: 3.3")
