@@ -173,7 +173,7 @@ local function toggleAutoSupply()
     end
 end
 
-ui:TBtn("Auto Supply", toggleAutoSupply)
+ui:TBtn("Auto Supplier(Proveedor)", toggleAutoSupply)
 
 task.wait(0.7)
 local infoSub = ui:Sub("Info Script")
