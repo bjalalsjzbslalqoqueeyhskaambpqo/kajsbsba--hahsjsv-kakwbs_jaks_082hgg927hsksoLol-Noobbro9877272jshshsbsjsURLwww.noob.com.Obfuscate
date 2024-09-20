@@ -1,174 +1,40 @@
-local MiniUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/go.lua"))()
-local ui = MiniUI:new("Collect Plushies")
-
-spawn(function()
-    local mt = getrawmetatable(game)
-    local old_index = mt.__index
-    setreadonly(mt, false)
-    mt.__index = function(instance, index)
-        if tostring(instance) == "Humanoid" then
-            if index == "WalkSpeed" then 
-                return 16 
-            elseif index == "WalkToPoint" then
-                return Vector3.new(0, 0, 0) 
-            end
-        end
-        return old_index(instance, index)
-    end
-    setreadonly(mt, true)
-end)
-spawn(function()
-local mt = getrawmetatable(game)
-setreadonly(mt, false)
-local old = mt.__namecall
-
-mt.__namecall = newcclosure(function(self, ...)
-    local method = getnamecallmethod()
-    if method == "FireServer" and 
-       typeof(self) == "Instance" and 
-       self:IsA("RemoteEvent") and 
-       self.Parent == game:GetService("ReplicatedStorage") and 
-       self.Name == "EasyAntiCheat" then
-        return nil
-    end
-    return old(self, ...)
-end)
-
-setreadonly(mt, true)
-    end)
-
-ui:Notify("Loading wait", 3)
+local a=loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/go.lua"))()
+local b=a:new("Collect Plushies")
+local c,d,e,f,g,h,i,j,k,l,m,n,o,p=game:GetService("Players"),game:GetService("RunService"),game:GetService("PathfindingService"),true,16,5,12,Vector3.new(-920,7,138),game:GetService("ReplicatedStorage")
+local q,r=c.LocalPlayer,c.LocalPlayer.Character or c.LocalPlayer.CharacterAdded:Wait()
+local s,t=r:WaitForChild("Humanoid"),r:WaitForChild("HumanoidRootPart")
+local u=clonefunction(getgenv)
+getrenv().getgenv=u
+local function v(w)g,s.WalkSpeed=w,w end
+v(g)
+local function x()return tonumber(q.PlayerGui.Currncy.Frame.Plushies.Amount.Text:match("(%d+)/20"))or 0 end
+local function y()local z,A=nil,math.huge for _,B in ipairs(workspace.PlushieFolder:GetChildren())do if B:IsA("BasePart")and B:FindFirstChild("TouchInterest")and f and B.Transparency==0 then local C=(t.Position-B.Position).Magnitude if C<A then z,A=B,C end end end return z end
+local function D()for _,B in pairs(workspace:GetChildren())do if B:IsA("BasePart")and B:FindFirstChild("sellPlushies")then return B end end end
+local function E(B)task.spawn(function()pcall(function()local F=B.Position B.Transparency=1 for G=1,15 do B.Position=r.PrimaryPart.Position task.wait(0.1)end task.wait(3)if B and B.Parent then B.Transparency=0 B.Position=F end end)end)end
+local function H()local I=false for _,B in ipairs(workspace.PlushieFolder:GetChildren())do if B:IsA("BasePart")and B:FindFirstChild("TouchInterest")and B.Transparency==0 then local C=(t.Position-B.Position).Magnitude if C<=i then B.Position=B.Position+(t.Position-B.Position).Unit*2 E(B)I=true end end end return I end
+local function J(K)return K:IsA("MeshPart")and(string.match(K.Name,"^Meshes/Enviroment")or string.match(K.Name,"^Meshes/Environment2"))end
+local function L(M,N)local O=typeof(M)=="Vector3"and M or M.Position if N then s:MoveTo(O)s.MoveToFinished:Wait()else s:MoveTo(O)s.MoveToFinished:Wait()end end
+local function P()L(j,false)local Q=D()if Q then L(Q,true)s.Jump=true task.wait(0.5)end L(j,false)end
+local R=0
+local function S()while f do local T=tick()if T-R<0.2 then task.wait(0.2-(T-R))end R=T local U=x()if U>=20 then P()else local V=y()if V then L(V,false)end end H()end end
+local function W()f=not f if f then b:Notify("Auto Collect Enabled")task.spawn(S)else b:Notify("Auto Collect Disabled")end end
+spawn(function()local X=getrawmetatable(game)local Y=X.__index setreadonly(X,false)X.__index=newcclosure(function(Z,_)if tostring(Z)=="Humanoid"then if _=="WalkSpeed"then return 16 elseif _=="WalkToPoint"then return Vector3.new(0,0,0)end end return Y(Z,_)end)setreadonly(X,true)end)
+spawn(function()local X=getrawmetatable(game)setreadonly(X,false)local a0=X.__namecall X.__namecall=newcclosure(function(self,...)local a1=getnamecallmethod()if a1=="FireServer"and typeof(self)=="Instance"and self:IsA("RemoteEvent")and self.Parent==k and self.Name=="EasyAntiCheat"then return nil end return a0(self,...)end)setreadonly(X,true)end)
+b:Notify("Loading wait",3)
 wait(0.5)
-ui:Notify("Applying Bypass Anti-Cheat", 3)
-
+b:Notify("Applying Bypass Anti-Cheat",3)
 wait(3)
-
-ui:Notify("Ready - Apply Bypass", 3)
-local Plrs, RunS, PathfindingService = game:GetService("Players"), game:GetService("RunService"), game:GetService("PathfindingService")
-local plr, chr = Plrs.LocalPlayer, Plrs.LocalPlayer.Character or Plrs.LocalPlayer.CharacterAdded:Wait()
-local hum, hrp = chr:WaitForChild("Humanoid"), chr:WaitForChild("HumanoidRootPart")
-
-local AC, MS, IC, aR = true, 16, 5, 12
-local intermediatePoint = Vector3.new(-920, 7, 138)
-
-local function uS(s) MS, hum.WalkSpeed = s, s end
-uS(MS)
-
-local function gPC() return tonumber(plr.PlayerGui.Currncy.Frame.Plushies.Amount.Text:match("(%d+)/20")) or 0 end
-
-local function gNP()
-    local np, md = nil, math.huge
-    for _, o in ipairs(workspace.PlushieFolder:GetChildren()) do
-        if o:IsA("BasePart") and o:FindFirstChild("TouchInterest") and AC and o.Transparency == 0 then
-            local d = (hrp.Position - o.Position).Magnitude
-            if d < md then np, md = o, d end
-        end
-    end
-    return np
-end
-
-local function gSP()
-    for _, o in pairs(workspace:GetChildren()) do
-        if o:IsA("BasePart") and o:FindFirstChild("sellPlushies") then return o end
-    end
-end
-
-local function sI(o)
-    task.spawn(function()
-        pcall(function()
-                    local yt = o.Position
-            o.Transparency = 1
-                    for i = 1, 15 do
-                    o.Position = chr.PrimaryPart.Position
-                        task.wait(0.1)
-                    end
-            task.wait(3)
-            if o and o.Parent then o.Transparency = 0 o.Position = yt end
-        end)
-    end)
-end
-
-local function iN()
-    local i = false
-    for _, o in ipairs(workspace.PlushieFolder:GetChildren()) do
-        if o:IsA("BasePart") and o:FindFirstChild("TouchInterest") and o.Transparency == 0 then
-            local d = (hrp.Position - o.Position).Magnitude
-            if d <= aR then
-                o.Position = o.Position + (hrp.Position - o.Position).Unit * 2
-                sI(o)
-                i = true
-            end
-        end
-    end
-    return i
-end
-
-local function isObstacle(obj)
-    return obj:IsA("MeshPart") and (string.match(obj.Name, "^Meshes/Enviroment") or string.match(obj.Name, "^Meshes/Environment2"))
-end
-
-local function mTo(target, usePathfinding)
-    local targetPosition = typeof(target) == "Vector3" and target or target.Position
-    if usePathfinding then
-        
-        hum:MoveTo(targetPosition)
-        hum.MoveToFinished:Wait()
-       
-    else
-        hum:MoveTo(targetPosition)
-        hum.MoveToFinished:Wait()
-    end
-end
-
-local function sellPlushies()
-    mTo(intermediatePoint, false)
-    local sp = gSP()
-    if sp then
-        mTo(sp, true)
-        hum.Jump = true
-        task.wait(0.5)
-    end
-    mTo(intermediatePoint, false)
-end
-
-local lCT = 0
-local function aC()
-    while AC do
-        local cT = tick()
-        if cT - lCT < 0.2 then task.wait(0.2 - (cT - lCT)) end
-        lCT = cT
-
-        local currentPlushies = gPC()
-        if currentPlushies >= 20 then
-            sellPlushies()
-        else
-            local np = gNP()
-            if np then
-                mTo(np, false)
-            end
-        end
-        iN()
-    end
-end
-
-local function tAC()
-    AC = not AC
-    if AC then 
-        ui:Notify("Auto Collect Enabled")
-        task.spawn(aC)
-    else
-        ui:Notify("Auto Collect Disabled")
-    end
-end
-
-ui:Btn("Auto Collect", tAC)
-ui:Track("Movement Speed", 16, 16, 80, function(t) local n = tonumber(t) if n and n > 0 then uS(n) end end)
-
-local iSub = ui:Sub("Info Script")
-iSub:Txt("Version: 3.3")
-iSub:Txt("Create: 13/09/24")
-iSub:Txt("Update: 20/09/24")
-iSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
-iSub:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
-
-task.spawn(aC)
+b:Notify("Ready - Apply Bypass",3)
+b:Notify("OP Version - Fast Collect",5)
+b:Btn("Auto Collect",W)
+b:Track("Movement Speed",16,16,80,function(a2)local n=tonumber(a2)if n and n>0 then v(n)end end)
+local a3=b:Sub("Info Script")
+a3:Txt("Version: 3.5")
+a3:Txt("Create: 13/09/24")
+a3:Txt("Update: 20/09/24")
+a3:Btn("Link YouTube",function()setclipboard("https://youtube.com/@onecreatorx")end)
+a3:Btn("Link Discord",function()setclipboard("https://discord.com/invite/UNJpdJx7c4")end)
+task.spawn(S)
+for a4,a5 in pairs(getgc(true))do if type(a5)=="table"and rawget(a5,"TouchInterest")then a5.TouchInterest=nil end end
+for ae,af in pairs(getconnections(game:GetService("Players").LocalPlayer.Idled))do if af.Function and not is_synapse_function(af.Function)then af:Disable()end end
+for ag,ah in pairs(getloadedmodules())do if ah.Name=="Anti"then ah.Disabled=true end end
