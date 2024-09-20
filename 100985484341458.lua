@@ -2,6 +2,17 @@ local MiniUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalal
 local ui = MiniUI:new("Collect Plushies")
 
 spawn(function()
+    local mt = getrawmetatable(game)
+    local old_index = mt.__index
+    setreadonly(mt, false)
+    mt.__index = function(instance, index)
+        if tostring(instance) == "Humanoid" and index == "WalkSpeed" then return 16 end
+        return old_index(instance, index)
+    end
+    setreadonly(mt, true)
+end)
+
+spawn(function()
 local mt = getrawmetatable(game)
 setreadonly(mt, false)
 local old = mt.__namecall
@@ -21,90 +32,17 @@ end)
 setreadonly(mt, true)
     end)
 
-spawn(function()
-    local mt = getrawmetatable(game)
-    local old_index = mt.__index
-    setreadonly(mt, false)
-    mt.__index = function(instance, index)
-        if tostring(instance) == "Humanoid" and index == "WalkSpeed" then return 16 end
-        return old_index(instance, index)
-    end
-    setreadonly(mt, true)
-end)
+ui:Notify("Loading wait", 3)
+ui:Notify("Apply Bypass Anti-Cheat", 3)
 
-local Plrs, RunS = game:GetService("Players"), game:GetService("RunService")
-
-
-local cache = {}
-local isScriptRunning = false
-
-local function cacheAndModify(obj)
-    if obj:IsA("MeshPart") and (string.match(obj.Name, "^Meshes/Enviroment") or string.match(obj.Name, "^Meshes/Environment2")) then
-        if not cache[obj] then
-            cache[obj] = {
-                CanCollide = obj.CanCollide,
-                Transparency = obj.Transparency
-            }
-        end
-        if isScriptRunning then
-            pcall(function()
-                obj.CanCollide = false
-                obj.Transparency = 1
-            end)
-        end
-    end
-end
-
-local function processDescendants(parent)
-    for _, descendant in ipairs(parent:GetDescendants()) do
-        cacheAndModify(descendant)
-    end
-end
-
-local function applyWorldChanges()
-    if isScriptRunning then return true end
-    
-    isScriptRunning = true
-    local w = game:GetService("Workspace")
-    processDescendants(w)
-    
-    local mt = getrawmetatable(game)
-    local old_index = mt.__index
-    local old_newindex = mt.__newindex
-    
-    setreadonly(mt, false)
-    
-    mt.__index = newcclosure(function(instance, index)
-        if cache[instance] and (index == "CanCollide" or index == "Transparency") then
-            return cache[instance][index]
-        end
-        return old_index(instance, index)
-    end)
-    
-    mt.__newindex = newcclosure(function(instance, index, value)
-        if cache[instance] and (index == "CanCollide" or index == "Transparency") then
-            cache[instance][index] = value
-            if isScriptRunning then
-                if index == "CanCollide" then
-                    instance.CanCollide = false
-                elseif index == "Transparency" then
-                    instance.Transparency = 1
-                end
-            end
-            return
-        end
-        return old_newindex(instance, index, value)
-    end)
-    
-    setreadonly(mt, true)
-    return true
-end
-
-
+wait(3)
+ui:Notify("Ready- Apply Bypass", 3)
+local Plrs, RunS, PathfindingService = game:GetService("Players"), game:GetService("RunService"), game:GetService("PathfindingService")
 local plr, chr = Plrs.LocalPlayer, Plrs.LocalPlayer.Character or Plrs.LocalPlayer.CharacterAdded:Wait()
 local hum, hrp = chr:WaitForChild("Humanoid"), chr:WaitForChild("HumanoidRootPart")
 
-local AC, walk, MS, CR, IC, aR, fT, sell = true, true, 20, 20, 5, 9, false, false
+local AC, MS, IC, aR = true, 20, 5, 13
+local intermediatePoint = Vector3.new(-919, 7, 129)
 
 local function uS(s) MS, hum.WalkSpeed = s, s end
 uS(MS)
@@ -144,13 +82,7 @@ local function iN()
         if o:IsA("BasePart") and o:FindFirstChild("TouchInterest") and o.Transparency == 0 then
             local d = (hrp.Position - o.Position).Magnitude
             if d <= aR then
-                if fT then
-                    firetouchinterest(hrp, o, 0)
-                    task.wait()
-                    firetouchinterest(hrp, o, 1)
-                else
-                    o.Position = o.Position + (hrp.Position - o.Position).Unit * 2
-                end
+                o.Position = o.Position + (hrp.Position - o.Position).Unit * 2
                 sI(o)
                 i = true
             end
@@ -159,42 +91,38 @@ local function iN()
     return i
 end
 
-local tat = hrp.Position.Y - 0.3
-
-local function mTI(t)
-    local sT, sP = tick(), hrp.Position
-    local tP = Vector3.new(t.Position.X, tat, t.Position.Z)
-    local tD, tM = (tP - sP).Magnitude, tD / MS
-
-    while AC and t and t:FindFirstChild("TouchInterest") do
-        local p = math.min((tick() - sT) / tM, 1)
-        hrp.CFrame = CFrame.new(sP:Lerp(tP, p))
-        if p >= 1 then break end
-        RunS.Heartbeat:Wait()
-    end
-    
-    if sell then hum.Jump = true task.wait(0.4) end
+local function isObstacle(obj)
+    return obj:IsA("MeshPart") and (string.match(obj.Name, "^Meshes/Enviroment") or string.match(obj.Name, "^Meshes/Environment2"))
 end
 
-local function mTo(t)
-    local sT = tick()
-    while AC and t and t.Parent do
-        if walk then
-            hum:MoveTo(t.Position)
-            hum.MoveToFinished:Wait()
-            if (hrp.Position - t.Position).Magnitude <= IC then
-                if sell then hum.Jump = true task.wait(0.1) end
-                break
+local function mTo(target, usePathfinding)
+    local targetPosition = typeof(target) == "Vector3" and target or target.Position
+    if usePathfinding then
+        local path = PathfindingService:CreatePath({AgentRadius = 2, AgentHeight = 5, AgentCanJump = true})
+        path:ComputeAsync(hrp.Position, targetPosition)
+        
+        if path.Status == Enum.PathStatus.Success then
+            for _, waypoint in ipairs(path:GetWaypoints()) do
+                hum:MoveTo(waypoint.Position)
+                hum.MoveToFinished:Wait()
+                if not AC then break end
             end
-        else
-            mTI(t)
-            break
         end
-        if iN() and not sell then break end
-        if tick() - sT > 2 then return false end
-        task.wait(0.1)
+    else
+        hum:MoveTo(targetPosition)
+        hum.MoveToFinished:Wait()
     end
-    return true
+end
+
+local function sellPlushies()
+    mTo(intermediatePoint, false)
+    local sp = gSP()
+    if sp then
+        mTo(sp, true)
+        hum.Jump = true
+        task.wait(0.5)
+    end
+    mTo(intermediatePoint, false)
 end
 
 local lCT = 0
@@ -204,17 +132,14 @@ local function aC()
         if cT - lCT < 0.2 then task.wait(0.2 - (cT - lCT)) end
         lCT = cT
 
-        if gPC() >= 20 then
-            sell = true
-            local sp = gSP()
-            if sp and mTo(sp) then 
-                iN()
-                task.wait(0.2)
-            end
-            sell = false
+        local currentPlushies = gPC()
+        if currentPlushies >= 20 then
+            sellPlushies()
         else
             local np = gNP()
-            if np and not mTo(np) then continue end
+            if np then
+                mTo(np, false)
+            end
         end
         iN()
     end
@@ -231,24 +156,13 @@ local function tAC()
 end
 
 ui:Btn("Auto Collect", tAC)
-
-ui:Btn("Walking/TP", function()
-    walk = not walk
-    ui:Notify(walk and "Walking" or "TP", 3)
-end)
-
-ui:Track("Movement Speed", 20, 20, 40, function(t)
-    local n = tonumber(t)
-    if n and n > 0 then uS(n) end
-end)
-
+ui:Track("Movement Speed", 20, 20, 70, function(t) local n = tonumber(t) if n and n > 0 then uS(n) end end)
 
 local iSub = ui:Sub("Info Script")
-iSub:Txt("Version: 2.4")
+iSub:Txt("Version: 3.3")
 iSub:Txt("Create: 13/09/24")
-iSub:Txt("Update: 20/09/24")
+iSub:Txt("Update: 25/09/24")
 iSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 iSub:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
-applyWorldChanges()
 task.spawn(aC)
