@@ -215,15 +215,11 @@ ui:Btn("Walking/TP", function()
     ui:Notify(walk and "Walking" or "TP", 3)
 end)
 
-ui:Track("Movement Speed", 20, 20, 70, function(t)
+ui:Track("Movement Speed", 20, 20, 40, function(t)
     local n = tonumber(t)
     if n and n > 0 then uS(n) end
 end)
 
-ui:Btn("Aura Bring/Fire", function()
-    fT = not fT
-    ui:Notify(fT and "Bring" or "Fire", 2)
-end)
 
 local iSub = ui:Sub("Info Script")
 iSub:Txt("Version: 2.4")
