@@ -161,7 +161,7 @@ ui:Track("Movement Speed", 20, 20, 70, function(t) local n = tonumber(t) if n an
 local iSub = ui:Sub("Info Script")
 iSub:Txt("Version: 3.3")
 iSub:Txt("Create: 13/09/24")
-iSub:Txt("Update: 25/09/24")
+iSub:Txt("Update: 20/09/24")
 iSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 iSub:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
