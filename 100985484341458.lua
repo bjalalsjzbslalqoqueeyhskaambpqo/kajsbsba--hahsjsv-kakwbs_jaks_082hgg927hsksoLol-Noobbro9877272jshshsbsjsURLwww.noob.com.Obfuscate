@@ -3,6 +3,23 @@ local ui = MiniUI:new("Collect Plushies")
 
 local Plrs, RunS = game:GetService("Players"), game:GetService("RunService")
 
+
+spawn(function()
+local mt = getrawmetatable(game)
+setreadonly(mt, false)
+local old = mt.__namecall
+
+mt.__namecall = newcclosure(function(self, ...)
+    local method = getnamecallmethod()
+    if method == "FireServer" and self == game.ReplicatedStorage.EasyAntiCheat then
+        return nil
+    end
+    return old(self, ...)
+end)
+
+setreadonly(mt, true)
+
+    end)
 local cache = {}
 local isScriptRunning = false
 
