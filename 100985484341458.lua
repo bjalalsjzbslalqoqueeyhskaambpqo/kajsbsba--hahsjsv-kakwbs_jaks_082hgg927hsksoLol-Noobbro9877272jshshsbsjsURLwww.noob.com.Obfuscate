@@ -43,7 +43,7 @@ local Plrs, RunS, PathfindingService = game:GetService("Players"), game:GetServi
 local plr, chr = Plrs.LocalPlayer, Plrs.LocalPlayer.Character or Plrs.LocalPlayer.CharacterAdded:Wait()
 local hum, hrp = chr:WaitForChild("Humanoid"), chr:WaitForChild("HumanoidRootPart")
 
-local AC, MS, IC, aR = true, 16, 5, 13
+local AC, MS, IC, aR = true, 16, 5, 8
 local intermediatePoint = Vector3.new(-920, 7, 138)
 
 local function uS(s) MS, hum.WalkSpeed = s, s end
@@ -71,9 +71,11 @@ end
 local function sI(o)
     task.spawn(function()
         pcall(function()
+                    local yt = o.Position
             o.Transparency = 1
-            task.wait(2)
-            if o and o.Parent then o.Transparency = 0 end
+                    o.Position = chr.PrimaryPart.Position
+            task.wait(3)
+            if o and o.Parent then o.Transparency = 0 o.Position = yt end
         end)
     end)
 end
