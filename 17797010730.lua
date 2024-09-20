@@ -1,29 +1,53 @@
-local MiniUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/go.lua"))()
+ local MiniUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/go.lua"))()
 
 local ui = MiniUI:new()
-local plr = game.Players.LocalPlayer
+
+local Plrs = game:GetService("Players")
+local Ws = game:GetService("Workspace")
+local plr = Plrs.LocalPlayer
 local currentSeat = nil
+local isRunning = false
 
-local function tp(pos)
-    plr.Character:MoveTo(pos)
+local function chkFile(p)
+    return Ws:FindFirstChild(tostring(p.UserId)) ~= nil
 end
 
-local function jump()
-    plr.Character.Humanoid.Jump = true
+local function mvJmp(p, t)
+    p.Character:SetPrimaryPartCFrame(t.CFrame + Vector3.new(0, 2, 0))
+    p.Character.Humanoid.Jump = true
 end
 
-ui:Btn("Rest", function() tp(Vector3.new(44, 5, 141)) end)
-
-local autoD = false
-local autoTxt = ui:Txt("Auto Delivery: false")
-
-local function chkNot()
-    for _, d in pairs(plr.PlayerGui.NotificationsGui:GetDescendants()) do
-        if d:IsA("TextLabel") and d.Name == "NotificationText" and d.Text == "Not enough energy to complete this action. Sit on the bench until the energy is restored!" then
-            return true
+local function mvBox(p)
+    local bxs = Ws.RuntimeTemp.SupplyBoxes:GetChildren()
+    if #bxs > 0 then
+        for _, bx in ipairs(bxs) do
+            bx:SetPrimaryPartCFrame(p.Character.PrimaryPart.CFrame)
+            bx.PrimaryPart.CanCollide = false
+            bx.PrimaryPart.Size *= 0.8
         end
+        return true
     end
     return false
+end
+
+local function actPrmt(p)
+    local prmts = Ws.Supply.GenerationPrompts:GetChildren()
+    if #prmts > 0 then
+        local rnd = prmts[math.random(#prmts)]
+        p.Character:SetPrimaryPartCFrame(rnd.PrimaryPart.CFrame + Vector3.new(0, 2, 0))
+        wait(1)
+        for i = 1, 5 do
+            fireproximityprompt(rnd.PrimaryPart.ProximityPrompt)
+            wait(0.1)
+        end
+        return true
+    end
+    return false
+end
+
+local function chkTrans(p)
+    local vtz = Ws.Supply.WarehouseSubmitZone.VisualTargetZone
+    return vtz.Transparency == 0.5 or Ws[tostring(p.UserId)].CargoZone.PrimaryPart.Transparency == 0.5
 end
 
 local function getE()
@@ -32,20 +56,8 @@ local function getE()
     return tonumber(cur), tonumber(max)
 end
 
-local function fireNearProx(radius)
-    local char = plr.Character
-    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-    
-    local hrp = char.HumanoidRootPart
-    for _, v in pairs(workspace:GetDescendants()) do
-        if v:IsA("ProximityPrompt") and (v.Parent.Position - hrp.Position).Magnitude <= radius then
-            fireproximityprompt(v)
-        end
-    end
-end
-
 local function findAvailableSeat()
-    for _, v in pairs(workspace:GetDescendants()) do
+    for _, v in pairs(Ws:GetDescendants()) do
         if v:IsA("Seat") and not v:FindFirstChild("SeatWeld") and not v:FindFirstChild("OccupiedFile") then
             return v
         end
@@ -72,94 +84,101 @@ local function moveSeatAway()
     end
 end
 
-local function delivery()
-    autoD = not autoD
-    autoTxt.Text = "Auto Delivery: " .. tostring(autoD)
-    
-    while autoD do
-        wait(0.1)
-        if chkNot() then
-            continue
-        end
-        
-        local curE, maxE = getE()
-        if curE < 9 then
-            jump()
+local function recoverEnergy()
+    if moveSeatToPlayer() then
+        wait(2)
+        repeat
             wait(1)
-            if moveSeatToPlayer() then
-                wait(2)
-                repeat
-                    wait(1)
-                    curE, maxE = getE()
-                until curE >= maxE
-                jump()
-                wait(2)
-                moveSeatAway()
-                wait(0.5)
-                tp(workspace.Delivery.TakeOrderZone.Part.Position)
-                
-                pcall(function()
-                wait(1)
-                        pModel = workspace:FindFirstChild(tostring(plr.UserId))
-                fireproximityprompt(pModel.Chassis.EnterPrompt)
-                    end)
-                wait(1)
-            else
-                print("No se pudo encontrar un asiento disponible")
-                wait(1)
-                continue
-            end
-        end
-        
-        local pModel = workspace:FindFirstChild(tostring(plr.UserId))
-        if not pModel then
-            plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame * CFrame.new(0, 2, 0)
-            wait(2)
-            plr.Character:MoveTo(workspace.Delivery.Vehicles:GetChildren()[1].PrimaryPart.Position)
-            wait(1)
-            fireproximityprompt(workspace.Delivery.Vehicles:GetChildren()[1].PrimaryPart.EnterPrompt)
-            wait(1)
-        end
-        
-        if pModel and pModel:IsA("Model") then
-            local found = false
-            for _, obj in ipairs(workspace.Delivery:GetDescendants()) do
-                if obj:IsA("BasePart") and obj:FindFirstChild("TouchInterest") then
-                    found = true
-                    pModel:SetPrimaryPartCFrame(CFrame.new(obj.Position))
-                    
-                    task.wait(1)
-                end
-            end
-            if not found then
-                local takeZone = workspace.Delivery.TakeOrderZone.Part.CFrame * CFrame.new(0, 2, 0)
-                local offset = takeZone.Position + Vector3.new(-7, 0, 10)
-                pModel:SetPrimaryPartCFrame(CFrame.new(offset))
-                wait(0.5)
-                jump()
-                wait(1)
-               plr.Character.HumanoidRootPart.CFrame = workspace.Delivery.TakeOrderZone.Part.CFrame * CFrame.new(0, 2, 0)
-                wait(1)
-                jump()
-fireNearProx(5)
-                
-                pcall(function()
-                wait(2)
-                fireproximityprompt(pModel.Chassis.EnterPrompt)
-                    end)
-                task.wait(1)
-            end
-        end
-        task.wait()
+            curE, maxE = getE()
+        until curE >= maxE or not isRunning
+        plr.Character.Humanoid.Jump = true
+        moveSeatAway()
     end
 end
 
-ui:TBtn("Auto Delivery", delivery)
+local function findVehicle()
+    local vehicles = Ws.RuntimeTemp.SupplyVehicles:GetChildren()
+    if #vehicles > 0 then
+        return vehicles[1].PrimaryPart
+    end
+    return nil
+end
+
+local function moveToVehicle()
+    local vehicle = findVehicle()
+    if vehicle then
+        plr.Character:SetPrimaryPartCFrame(vehicle.CFrame + Vector3.new(0, 5, 0))
+        wait(1)
+        fireproximityprompt(vehicle.EnterPrompt)
+        wait(1)
+        mvJmp(p, t)
+        return true
+    end
+    return false
+end
+
+local function checkAndUnseat()
+    if plr.Character.Humanoid.Sit then
+        plr.Character.Humanoid.Jump = true
+        wait(1)
+    end
+end
+
+local function autoSupply()
+    while isRunning do
+        local success, err = pcall(function()
+            local p = plr
+            if not chkFile(p) then
+                if not moveToVehicle() then
+                    wait(5)
+                    return
+                end
+            end
+
+            checkAndUnseat()
+
+            local curE, maxE = getE()
+            if curE < 6 then
+                recoverEnergy()
+                return
+            end
+
+            if chkTrans(p) then
+                mvJmp(p, Ws.Supply.WarehouseSubmitZone.VisualTargetZone)
+            else
+                if mvBox(p) then
+                    wait(1)
+                    if not chkTrans(p) then
+                        actPrmt(p)
+                    end
+                else
+                    actPrmt(p)
+                end
+            end
+        end)
+
+        if not success then
+            
+        end
+
+        wait(0.4)
+    end
+end
+
+
+local function toggleAutoSupply()
+    isRunning = not isRunning
+    if isRunning then
+        coroutine.wrap(autoSupply)()
+    end
+end
+
+ui:TBtn("Auto Supply", toggleAutoSupply)
 
 task.wait(0.7)
 local infoSub = ui:Sub("Info Script")
-infoSub:Txt("Version: 0.8")
+infoSub:Txt("Version: 0.9")
 infoSub:Txt("Create: 29/08/24")
-infoSub:Txt("Update: 29/08/24")
+infoSub:Txt("Update: 20/09/24")
 infoSub:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 infoSub:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
