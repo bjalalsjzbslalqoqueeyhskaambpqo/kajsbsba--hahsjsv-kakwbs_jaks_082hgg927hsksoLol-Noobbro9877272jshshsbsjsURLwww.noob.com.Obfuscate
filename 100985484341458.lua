@@ -33,6 +33,7 @@ setreadonly(mt, true)
     end)
 
 ui:Notify("Loading wait", 3)
+wait(0.3)
 ui:Notify("Apply Bypass Anti-Cheat", 3)
 
 wait(3)
