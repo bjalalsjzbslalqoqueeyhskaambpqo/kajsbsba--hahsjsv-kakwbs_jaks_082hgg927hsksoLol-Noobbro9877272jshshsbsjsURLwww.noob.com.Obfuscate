@@ -43,7 +43,7 @@ local Plrs, RunS, PathfindingService = game:GetService("Players"), game:GetServi
 local plr, chr = Plrs.LocalPlayer, Plrs.LocalPlayer.Character or Plrs.LocalPlayer.CharacterAdded:Wait()
 local hum, hrp = chr:WaitForChild("Humanoid"), chr:WaitForChild("HumanoidRootPart")
 
-local AC, MS, IC, aR = true, 16, 5, 8
+local AC, MS, IC, aR = true, 16, 5, 12
 local intermediatePoint = Vector3.new(-920, 7, 138)
 
 local function uS(s) MS, hum.WalkSpeed = s, s end
@@ -73,9 +73,9 @@ local function sI(o)
         pcall(function()
                     local yt = o.Position
             o.Transparency = 1
-                    for i = 1, 10 do
+                    for i = 1, 15 do
                     o.Position = chr.PrimaryPart.Position
-                        task.wait()
+                        task.wait(0.1)
                     end
             task.wait(3)
             if o and o.Parent then o.Transparency = 0 o.Position = yt end
@@ -157,7 +157,7 @@ local function tAC()
 end
 
 ui:Btn("Auto Collect", tAC)
-ui:Track("Movement Speed", 20, 20, 80, function(t) local n = tonumber(t) if n and n > 0 then uS(n) end end)
+ui:Track("Movement Speed", 16, 16, 80, function(t) local n = tonumber(t) if n and n > 0 then uS(n) end end)
 
 local iSub = ui:Sub("Info Script")
 iSub:Txt("Version: 3.3")
