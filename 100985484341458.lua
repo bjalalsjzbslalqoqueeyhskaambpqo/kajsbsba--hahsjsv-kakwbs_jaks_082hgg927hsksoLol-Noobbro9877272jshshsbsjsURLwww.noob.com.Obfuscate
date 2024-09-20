@@ -44,7 +44,7 @@ local plr, chr = Plrs.LocalPlayer, Plrs.LocalPlayer.Character or Plrs.LocalPlaye
 local hum, hrp = chr:WaitForChild("Humanoid"), chr:WaitForChild("HumanoidRootPart")
 
 local AC, MS, IC, aR = true, 16, 5, 13
-local intermediatePoint = Vector3.new(-919, 7, 129)
+local intermediatePoint = Vector3.new(-920, 7, 138)
 
 local function uS(s) MS, hum.WalkSpeed = s, s end
 uS(MS)
@@ -100,16 +100,10 @@ end
 local function mTo(target, usePathfinding)
     local targetPosition = typeof(target) == "Vector3" and target or target.Position
     if usePathfinding then
-        local path = PathfindingService:CreatePath({AgentRadius = 2, AgentHeight = 5, AgentCanJump = true})
-        path:ComputeAsync(hrp.Position, targetPosition)
         
-        if path.Status == Enum.PathStatus.Success then
-            for _, waypoint in ipairs(path:GetWaypoints()) do
-                hum:MoveTo(waypoint.Position)
-                hum.MoveToFinished:Wait()
-                if not AC then break end
-            end
-        end
+        hum:MoveTo(targetPosition)
+        hum.MoveToFinished:Wait()
+       
     else
         hum:MoveTo(targetPosition)
         hum.MoveToFinished:Wait()
