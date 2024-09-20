@@ -1,10 +1,6 @@
 local MiniUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/go.lua"))()
 local ui = MiniUI:new("Collect Plushies")
 
-local Plrs, RunS = game:GetService("Players"), game:GetService("RunService")
-
-
-spawn(function()
 local mt = getrawmetatable(game)
 setreadonly(mt, false)
 local old = mt.__namecall
@@ -19,7 +15,20 @@ end)
 
 setreadonly(mt, true)
 
-    end)
+spawn(function()
+    local mt = getrawmetatable(game)
+    local old_index = mt.__index
+    setreadonly(mt, false)
+    mt.__index = function(instance, index)
+        if tostring(instance) == "Humanoid" and index == "WalkSpeed" then return 16 end
+        return old_index(instance, index)
+    end
+    setreadonly(mt, true)
+end)
+
+local Plrs, RunS = game:GetService("Players"), game:GetService("RunService")
+
+
 local cache = {}
 local isScriptRunning = false
 
@@ -85,16 +94,6 @@ local function applyWorldChanges()
     return true
 end
 
-spawn(function()
-    local mt = getrawmetatable(game)
-    local old_index = mt.__index
-    setreadonly(mt, false)
-    mt.__index = function(instance, index)
-        if tostring(instance) == "Humanoid" and index == "WalkSpeed" then return 16 end
-        return old_index(instance, index)
-    end
-    setreadonly(mt, true)
-end)
 
 local plr, chr = Plrs.LocalPlayer, Plrs.LocalPlayer.Character or Plrs.LocalPlayer.CharacterAdded:Wait()
 local hum, hrp = chr:WaitForChild("Humanoid"), chr:WaitForChild("HumanoidRootPart")
