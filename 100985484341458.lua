@@ -73,7 +73,10 @@ local function sI(o)
         pcall(function()
                     local yt = o.Position
             o.Transparency = 1
+                    for i = 1, 10 do
                     o.Position = chr.PrimaryPart.Position
+                        task.wait()
+                    end
             task.wait(3)
             if o and o.Parent then o.Transparency = 0 o.Position = yt end
         end)
