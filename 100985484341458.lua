@@ -34,11 +34,11 @@ setreadonly(mt, true)
 
 ui:Notify("Loading wait", 3)
 wait(0.5)
-ui:Notify("Apply Bypass Anti-Cheat", 3)
+ui:Notify("Applying Bypass Anti-Cheat", 3)
 
 wait(3)
 
-ui:Notify("Ready- Apply Bypass", 3)
+ui:Notify("Ready - Apply Bypass", 3)
 local Plrs, RunS, PathfindingService = game:GetService("Players"), game:GetService("RunService"), game:GetService("PathfindingService")
 local plr, chr = Plrs.LocalPlayer, Plrs.LocalPlayer.Character or Plrs.LocalPlayer.CharacterAdded:Wait()
 local hum, hrp = chr:WaitForChild("Humanoid"), chr:WaitForChild("HumanoidRootPart")
