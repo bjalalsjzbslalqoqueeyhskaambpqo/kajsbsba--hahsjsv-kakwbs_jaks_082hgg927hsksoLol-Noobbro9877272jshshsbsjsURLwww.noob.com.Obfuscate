@@ -6,12 +6,17 @@ spawn(function()
     local old_index = mt.__index
     setreadonly(mt, false)
     mt.__index = function(instance, index)
-        if tostring(instance) == "Humanoid" and index == "WalkSpeed" then return 16 end
+        if tostring(instance) == "Humanoid" then
+            if index == "WalkSpeed" then 
+                return 16 
+            elseif index == "WalkToPoint" then
+                return Vector3.new(0, 0, 0) 
+            end
+        end
         return old_index(instance, index)
     end
     setreadonly(mt, true)
 end)
-
 spawn(function()
 local mt = getrawmetatable(game)
 setreadonly(mt, false)
