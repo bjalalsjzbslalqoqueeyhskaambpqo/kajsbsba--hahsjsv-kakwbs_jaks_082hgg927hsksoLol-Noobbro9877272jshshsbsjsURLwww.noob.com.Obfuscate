@@ -382,8 +382,9 @@ spawn(function()
         aaio(workspace[udn])
     end
 end)
-
+local b = false 
 ex:TBtn("Collect Flowers", function(b) 
+                b = not b
     while b do
         for _, h in ipairs(workspace.Activators:GetChildren()) do
             if h.Name == "Flower" and b then
@@ -396,7 +397,9 @@ ex:TBtn("Collect Flowers", function(b)
     end
 end)
 
+local b = false 
 ex:TBtn("Collect Magic Feathers", function(b) 
+        b = not b
     while b do
         for _, h in ipairs(workspace.Feathers:GetChildren()) do
             if h.Name == "Feather" and h:FindFirstChild("Root") and b then
@@ -409,7 +412,9 @@ ex:TBtn("Collect Magic Feathers", function(b)
     end
 end)
 
+local b = false 
 ui:TBtn("Auto Claim Gift", function(b) 
+                b = not b
     while b do
         for i = 1, 9 do
             local args = {
@@ -426,8 +431,9 @@ ui:TBtn("Auto Claim Gift", function(b)
         end
     end
 end)
-
+local b = false 
 ui:TBtn("Auto Bush Raiwb", function(b) 
+                b = not b
     isA = b
     while isA do
         mAA()
@@ -435,6 +441,7 @@ ui:TBtn("Auto Bush Raiwb", function(b)
     end
 end)
 
+local b = false 
 ui:TBtn("Auto Egg Secret", function(b)
     while b do
         local args = {
