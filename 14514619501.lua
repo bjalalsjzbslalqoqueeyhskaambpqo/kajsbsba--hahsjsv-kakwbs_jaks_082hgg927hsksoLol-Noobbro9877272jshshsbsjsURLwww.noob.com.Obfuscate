@@ -1,4 +1,4 @@
-local MUI = loadstring(game:HttpGet("ui.api-x.site"))()
+local MUI = loadstring(game:HttpGet("https://ui.api-x.site"))()
 
 local ui = MUI:new("Raise a Rainbacorn")
 local ex = ui:Sub("Extra")
