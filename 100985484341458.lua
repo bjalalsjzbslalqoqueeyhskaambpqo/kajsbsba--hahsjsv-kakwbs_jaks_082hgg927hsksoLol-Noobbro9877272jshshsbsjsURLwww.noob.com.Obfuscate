@@ -9,7 +9,7 @@ end
 
 local mapParent = findMapParent()
 
-local function ss()
+local function removeUnwantedObjects()
     if mapParent then
         for _, child in pairs(mapParent:GetChildren()) do
             if child.Name ~= "//Borealis_MapFloor" then
@@ -20,11 +20,12 @@ local function ss()
         
     end
 end
-ss()
+
+removeUnwantedObjects()
 
 local a=loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/go.lua"))()
 local b=a:new("Collect Plushies")
-local c,d,e,f,g,h,i,j,k,l,m,n,o,p=game:GetService("Players"),game:GetService("RunService"),game:GetService("PathfindingService"),true,16,5,3,Vector3.new(930, 23, 312),game:GetService("ReplicatedStorage")
+local c,d,e,f,g,h,i,j,k,l,m,n,o,p=game:GetService("Players"),game:GetService("RunService"),game:GetService("PathfindingService"),true,16,5,6,Vector3.new(930, 23, 312),game:GetService("ReplicatedStorage")
 local q,r=c.LocalPlayer,c.LocalPlayer.Character or c.LocalPlayer.CharacterAdded:Wait()
 local s,t=r:WaitForChild("Humanoid"),r:WaitForChild("HumanoidRootPart")
 local u=clonefunction(getgenv)
@@ -34,7 +35,7 @@ v(g)
 local function x()return tonumber(q.PlayerGui.Currncy.Frame.Plushies.Amount.Text:match("(%d+)/50"))or 0 end
 local function y()local z,A=nil,math.huge for _,B in ipairs(workspace.PlushieFolder:GetChildren())do if B:IsA("BasePart")and B:FindFirstChild("TouchInterest")and f and B.Transparency==0 then local C=(t.Position-B.Position).Magnitude if C<A then z,A=B,C end end end return z end
 local function D()for _,B in pairs(workspace:GetChildren())do if B:IsA("BasePart")and B:FindFirstChild("sell")then return B end end end
-local function E(B)task.spawn(function()pcall(function()local F=B.Position B.Transparency=1 for G=1,2 do B.Position=r.PrimaryPart.Position task.wait(0.1)end task.wait(8)if B and B.Parent then B.Transparency=0 B.Position=F end end)end)end
+local function E(B)task.spawn(function()pcall(function()local F=B.Position B.Transparency=1 for G=1,1 do B.Position=r.PrimaryPart.Position task.wait(0.1)end task.wait(8)if B and B.Parent then B.Transparency=0 B.Position=F end end)end)end
 local function H()local I=false for _,B in ipairs(workspace.PlushieFolder:GetChildren())do if B:IsA("BasePart")and B:FindFirstChild("TouchInterest")and B.Transparency==0 then local C=(t.Position-B.Position).Magnitude if C<=i then B.Position=B.Position+(t.Position-B.Position).Unit*2 E(B)I=true end end end return I end
 local function J(K)return K:IsA("MeshPart")and(string.match(K.Name,"^Meshes/Environment")or string.match(K.Name,"^Meshes/Environment2"))end
 local function L(M,N)local O=typeof(M)=="Vector3"and M or M.Position if N then s:MoveTo(O)s.MoveToFinished:Wait()else s:MoveTo(O)s.MoveToFinished:Wait()end end
@@ -51,7 +52,7 @@ wait(3)
 b:Notify("Ready - Apply Bypass",3)
 b:Notify("OP Version - Fast Collect",5)
 b:Btn("Auto Collect",W)
-b:Track("Movement Speed",16,16,80,function(a2)local n=tonumber(a2)if n and n>0 then v(n)end end)
+b:Track("Movement Speed",16,16,75,function(a2)local n=tonumber(a2)if n and n>0 then v(n)end end)
 local a3=b:Sub("Info Script")
 a3:Txt("Version: 3.7")
 a3:Txt("Create: 13/09/24")
