@@ -1,4 +1,4 @@
-local MUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/go.lua"))()
+local MUI = loadstring(game:HttpGet("ui.api-x.site"))()
 
 local ui = MUI:new("Raise a Rainbacorn")
 local ex = ui:Sub("Extra")
