@@ -122,25 +122,25 @@ local function mAA()
 end
 
 local function sItem(item)
-    local bf = item:FindFirstChild("Background")
-    if bf and bf:IsA("Frame") then
+    if item:IsA("ImageButton") and item.Visible then
         local sv = Instance.new("BoolValue")
         sv.Name = "IsActive"
         sv.Value = false
         sv.Parent = item
 
-        local tb = Instance.new("TextButton")
-        tb.Name = "StatusButton"
-        tb.Size = UDim2.new(1, 0, 0.2, 0)
-        tb.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-        tb.Text = "Auto [OFF]"
-        tb.TextColor3 = Color3.new(1, 1, 1)
-        tb.TextStrokeTransparency = 0.8
-        tb.Parent = bf
+       local tb = Instance.new("TextButton")
+tb.Name = "StatusButton"
+tb.Size = UDim2.new(0.3, 0, 0.2, 0)
+tb.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+tb.Text = "[OFF]"
+tb.TextColor3 = Color3.new(1, 1, 1)
+tb.TextStrokeTransparency = 0.8
+tb.Parent = item
+tb.Position = UDim2.new(0, 0, 0.3, 0)
 
         sv.Changed:Connect(function()
             tb.BackgroundColor3 = sv.Value and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
-            tb.Text = sv.Value and "Auto [ON]" or "Auto [OFF]"
+            tb.Text = sv.Value and "[ON]" or "[OFF]"
         end)
 
         tb.MouseButton1Click:Connect(function()
@@ -150,8 +150,8 @@ local function sItem(item)
 end
 
 local pg = lp:WaitForChild("PlayerGui")
-local ig = pg:WaitForChild("MainMenu"):WaitForChild("Root"):WaitForChild("Inventory"):WaitForChild("MainWindow")
-local iG = ig:WaitForChild("ItemGrid")
+local ig = pg:WaitForChild("MainMenu"):WaitForChild("Root"):WaitForChild("Inventory"):WaitForChild("View")
+local iG = ig:WaitForChild("Contents")
 
 for _, item in pairs(iG:GetChildren()) do
     sItem(item)
@@ -170,20 +170,21 @@ local pat = {}
 local ap = {}
 
 local function sas(pn, a)
-    dre:FireServer({
-        {
-            "PetInteractAction",
-            "'",
-            {
-                "\1",
-                {
-                    tostring(pn),
-                    a
+    local args = {
+        [1] = {
+            [1] = "PetInteractAction",
+            [2] = "'",
+            [3] = {
+                [1] = "\1",
+                [2] = {
+                    [1] = pn,
+                    [2] = a
                 }
             },
-            "\28"
+            [4] = "\28"
         }
-    })
+    }
+    dre:FireServer(unpack(args))
 end
 
 local function dp(pn)
@@ -220,16 +221,18 @@ end
 local function uap()
     ap = {}
     for _, item in pairs(iG:GetChildren()) do
-        local sv = item:FindFirstChild("IsActive")
-        if sv and sv.Value then
-            table.insert(ap, item.Name)
+        if item:IsA("ImageButton") and item.Visible then
+            local sv = item:FindFirstChild("IsActive")
+            if sv and sv.Value then
+                table.insert(ap, item.Name)
+            end
         end
     end
 end
 
 local function ipe(pn)
     local item = iG:FindFirstChild(pn)
-    return item and item.Background:FindFirstChild("Equipped") ~= nil
+    return item and item:FindFirstChild("Equipped") ~= nil
 end
 
 local function fnuap()
@@ -349,15 +352,16 @@ ui:TBtn("Auto Claim Gift", function(b)
     isAutoClaimGift = b
     while isAutoClaimGift do
         for i = 1, 9 do
-            dre:FireServer({
-                {
-                    {
-                        "\1",
-                        "BERRIES_" .. i .. "00"
+            local args = {
+                [1] = {
+                    [1] = {
+                        [1] = "\1",
+                        [2] = "BERRIES_" .. i .. "00"
                     },
-                    "9"
+                    [2] = "9"
                 }
-            })
+            }
+            dre:FireServer(unpack(args))
             wait(1)
         end
     end
@@ -375,15 +379,16 @@ local isAutoEgg = false
 ui:TBtn("Auto Egg Secret", function(b)
     isAutoEgg = b
     while isAutoEgg do
-        dre:FireServer({
-            {
-                {
-                    "\1",
-                    "66111113-6A42-49B3-8F1E-2C5C5B646B57"
+        local args = {
+            [1] = {
+                [1] = {
+                    [1] = "\1",
+                    [2] = "66111113-6A42-49B3-8F1E-2C5C5B646B57"
                 },
-                "G"
+                [2] = "G"
             }
-        })
+        }
+        dre:FireServer(unpack(args))
         wait(2)
     end
 end)
@@ -399,9 +404,9 @@ ui:Notify("Auto Tasks Pet: Default Active", 5)
 
 wait(0.7)
 local is = ui:Sub("Info Script")
-is:Txt("Version: 0.8")
+is:Txt("Version: 0.9")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 09/09/24")
+is:Txt("Update: 01/10/24")
 is:Btn("Link YouTube", function()
    setclipboard("https://youtube.com/@onecreatorx") 
 end)
