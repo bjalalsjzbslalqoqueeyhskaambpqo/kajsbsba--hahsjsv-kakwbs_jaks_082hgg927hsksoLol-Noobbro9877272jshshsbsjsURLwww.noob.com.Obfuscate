@@ -25,7 +25,7 @@ removeUnwantedObjects()
 
 local a=loadstring(game:HttpGet("https://ui.api-x.site"))()
 local b=a:new("Collect Plushies")
-local c,d,e,f,g,h,i,j,k,l,m,n,o,p=game:GetService("Players"),game:GetService("RunService"),game:GetService("PathfindingService"),true,16,5,6,Vector3.new(930, 23, 312),game:GetService("ReplicatedStorage")
+local c,d,e,f,g,h,i,j,k,l,m,n,o,p=game:GetService("Players"),game:GetService("RunService"),game:GetService("PathfindingService"),true,16,5,3,Vector3.new(930, 23, 312),game:GetService("ReplicatedStorage")
 local q,r=c.LocalPlayer,c.LocalPlayer.Character or c.LocalPlayer.CharacterAdded:Wait()
 local s,t=r:WaitForChild("Humanoid"),r:WaitForChild("HumanoidRootPart")
 local u=clonefunction(getgenv)
