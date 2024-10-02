@@ -188,27 +188,29 @@ local function sas(pn, a)
 end
 
 local function dp(pn)
-    dre:FireServer({
-        {
-            {
+    local args = {
+        [1] = {
+            [1] = {
                 ["GUID"] = pn,
                 ["Category"] = "Pet"
             },
-            "4"
+            [2] = "4"
         }
-    })
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
 end
 
 local function ep(pn)
-    dre:FireServer({
-        {
-            {
+    local args = {
+        [1] = {
+            [1] = {
                 ["GUID"] = pn,
                 ["Category"] = "Pet"
             },
-            "4"
+            [2] = "4"
         }
-    })
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
 end
 
 local function fpn(i)
