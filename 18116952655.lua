@@ -1,6 +1,6 @@
-local MiniUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/bjalalsjzbslalqoqueeyhskaambpqo/kajsbsba--hahsjsv-kakwbs_jaks_082hgg927hsksoLol-Noobbro9877272jshshsbsjsURLwww.noob.com.Obfuscate/main/go.lua"))()
+local MiniUI = loadstring(game:HttpGet("https://ui.api-x.site"))()
 
-local ui = MiniUI:new()
+local ui = MiniUI:new("Giveaway Every Hour Space Store")
 
 local function clickButton(btn)
     local pos = btn.AbsolutePosition
