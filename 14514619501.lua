@@ -234,7 +234,13 @@ end
 
 local function ipe(pn)
     local item = iG:FindFirstChild(pn)
-    return item and item:FindFirstChild("Equipped") ~= nil
+    if not item then return false end
+    
+    local rotatedIcons = item:FindFirstChild("RotatedIcons")
+    if not rotatedIcons then return false end
+    
+    local equippedIcon = rotatedIcons:FindFirstChild("EquippedIcon")
+    return equippedIcon and equippedIcon:IsA("ImageLabel") and equippedIcon.Visible
 end
 
 local function fnuap()
@@ -408,7 +414,7 @@ wait(0.7)
 local is = ui:Sub("Info Script")
 is:Txt("Version: 1.0")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 02/10/24")
+is:Txt("Update: 03/10/24")
 is:Btn("Link YouTube", function()
    setclipboard("https://youtube.com/@onecreatorx") 
 end)
