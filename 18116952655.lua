@@ -13,9 +13,9 @@ local function clickButton(btn)
 end
  
 
-
+local a = false
 ui:TBtn("Auto Click(Real)", function()
-    a = not q 
+    a = not a
 while a do
 clickButton(game.Players.LocalPlayer.PlayerGui.ScreenGui.GameRightControlFrame.TheClickerButtonRootFrame.TheClickerHitTextButton)
 wait()
@@ -28,7 +28,7 @@ wait(0.7)
 infoSub = ui:Sub("Info Script")
 infoSub:Txt("Version: 0.1")
 infoSub:Txt("Create: 20/08/24")
-infoSub:Txt("Update: -/-/-")
+infoSub:Txt("Update: 03/10/24")
 infoSub:Btn("Link YouTube", function()
    setclipboard("https://youtube.com/@onecreatorx") 
 end)
