@@ -366,7 +366,7 @@ ui:TBtn("Auto Claim Gift", function(b)
                         [1] = "\1",
                         [2] = "BERRIES_" .. i .. "00"
                     },
-                    [2] = "9"
+                    [2] = "="
                 }
             }
             dre:FireServer(unpack(args))
