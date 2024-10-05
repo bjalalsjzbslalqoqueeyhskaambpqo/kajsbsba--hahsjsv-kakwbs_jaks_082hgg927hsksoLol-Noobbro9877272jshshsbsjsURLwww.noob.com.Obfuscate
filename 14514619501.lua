@@ -194,7 +194,7 @@ local function dp(pn)
                 ["GUID"] = pn,
                 ["Category"] = "Pet"
             },
-            [2] = "4"
+            [2] = "8"
         }
     }
     game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
@@ -207,7 +207,7 @@ local function ep(pn)
                 ["GUID"] = pn,
                 ["Category"] = "Pet"
             },
-            [2] = "4"
+            [2] = "8"
         }
     }
     game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
@@ -393,7 +393,7 @@ ui:TBtn("Auto Egg Secret", function(b)
                     [1] = "\1",
                     [2] = "66111113-6A42-49B3-8F1E-2C5C5B646B57"
                 },
-                [2] = "G"
+                [2] = "K"
             }
         }
         dre:FireServer(unpack(args))
@@ -412,9 +412,9 @@ ui:Notify("Auto Tasks Pet: Default Active", 5)
 
 wait(0.7)
 local is = ui:Sub("Info Script")
-is:Txt("Version: 1.0")
+is:Txt("Version: 1.2")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 03/10/24")
+is:Txt("Update: 05/10/24")
 is:Btn("Link YouTube", function()
    setclipboard("https://youtube.com/@onecreatorx") 
 end)
