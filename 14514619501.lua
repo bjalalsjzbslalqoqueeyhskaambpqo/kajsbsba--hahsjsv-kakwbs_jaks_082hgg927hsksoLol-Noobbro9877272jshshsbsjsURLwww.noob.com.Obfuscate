@@ -122,7 +122,7 @@ local function mAA()
 end
 
 local function sItem(item)
-    if item:IsA("ImageButton") and item.Visible then
+    if item:IsA("ImageButton") and item:IsA("Frame") and item.Visible then
         local sv = Instance.new("BoolValue")
         sv.Name = "IsActive"
         sv.Value = false
@@ -224,8 +224,8 @@ end
 local function uap()
     ap = {}
     for _, item in pairs(iG:GetChildren()) do
-        if item:IsA("ImageButton") and item.Visible then
-            local sv = item:FindFirstChild("IsActive")
+        if item:IsA("Frame") or item:IsA("ImageLabel") and item.Visible then
+            local sv = item:GetChildren()[1]:FindFirstChild("IsActive")
             if sv and sv.Value then
                 table.insert(ap, item.Name)
             end
