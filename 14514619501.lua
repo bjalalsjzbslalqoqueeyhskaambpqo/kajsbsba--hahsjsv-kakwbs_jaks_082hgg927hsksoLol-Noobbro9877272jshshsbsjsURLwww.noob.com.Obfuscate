@@ -122,7 +122,7 @@ local function mAA()
 end
 
 local function sItem(item)
-    if item:IsA("ImageButton") and item:IsA("Frame") and item.Visible then
+    if item:IsA("ImageButton") or item:IsA("Frame") and item.Visible then
         local sv = Instance.new("BoolValue")
         sv.Name = "IsActive"
         sv.Value = false
