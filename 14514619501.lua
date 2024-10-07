@@ -154,7 +154,8 @@ local ig = pg:WaitForChild("MainMenu"):WaitForChild("Root"):WaitForChild("Invent
 local iG = ig:WaitForChild("Contents")
 
 for _, item in pairs(iG:GetChildren()) do
-    sItem(item)
+    
+    sItem(item:GetChildren()[1])
 end
 
 iG.ChildAdded:Connect(sItem)
@@ -414,7 +415,7 @@ wait(0.7)
 local is = ui:Sub("Info Script")
 is:Txt("Version: 1.2")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 05/10/24")
+is:Txt("Update: 07/10/24")
 is:Btn("Link YouTube", function()
    setclipboard("https://youtube.com/@onecreatorx") 
 end)
