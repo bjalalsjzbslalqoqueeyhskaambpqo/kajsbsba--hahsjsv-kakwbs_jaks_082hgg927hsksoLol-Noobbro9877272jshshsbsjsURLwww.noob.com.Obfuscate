@@ -174,7 +174,7 @@ local function sas(pn, a)
     local args = {
         [1] = {
             [1] = "PetInteractAction",
-            [2] = "+",
+            [2] = ",",
             [3] = {
                 [1] = "\1",
                 [2] = {
@@ -182,7 +182,7 @@ local function sas(pn, a)
                     [2] = a
                 }
             },
-            [4] = " "
+            [4] = "!"
         }
     }
     dre:FireServer(unpack(args))
