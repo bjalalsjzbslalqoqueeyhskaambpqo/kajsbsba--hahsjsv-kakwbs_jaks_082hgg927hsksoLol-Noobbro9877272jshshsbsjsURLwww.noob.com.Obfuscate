@@ -3,6 +3,7 @@ local ui = MUI:new()
 
 local ws = game:GetService("Workspace")
 local rs = game:GetService("ReplicatedStorage")
+local plrs = game:GetService("Players")
 
 local eM, nM, ev
 
@@ -25,7 +26,23 @@ local function isVB(b)
     return b and (b:IsA("BasePart") and b.Transparency < 1 or b:IsA("Model"))
 end
 
+local function eqTool()
+    local p = plrs.LocalPlayer
+    local c = p.Character
+    local bp = p:FindFirstChild("Backpack")
+    if c and bp then
+        local tool = c:FindFirstChildOfClass("Tool")
+        if not tool then
+            tool = bp:FindFirstChildOfClass("Tool")
+            if tool then
+                tool.Parent = c
+            end
+        end
+    end
+end
+
 local function mineB(b)
+    eqTool()
     local att = 0
     while isVB(b) and att < 50 do
         ev:FireServer(b)
@@ -76,7 +93,7 @@ ui:Track("Nether Miners", 0, 0, 70, function(v)
 end)
 
 local iSub = ui:Sub("Info Script")
-iSub:Txt("Version: 0.2")
+iSub:Txt("Version: 0.3")
 iSub:Txt("Create: 09/0/10/24")
 iSub:Txt("Update: 09/10/24")
 iSub:Btn("Link YouTube", function()
