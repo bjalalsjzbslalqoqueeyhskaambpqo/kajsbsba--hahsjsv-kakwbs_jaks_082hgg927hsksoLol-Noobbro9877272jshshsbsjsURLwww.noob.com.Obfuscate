@@ -23,7 +23,7 @@ end
 upRefs()
 
 local function isVB(b)
-    return b and (b:IsA("BasePart") and b.Transparency < 1 or b:IsA("Model"))
+    return b and b:IsA("BasePart") and b.Transparency < 1
 end
 
 local function eqTool()
@@ -41,39 +41,95 @@ local function eqTool()
     end
 end
 
-local function mineB(b)
-    eqTool()
-    local att = 0
-    while isVB(b) and att < 50 do
-        ev:FireServer(b)
-        att = att + 1
-        task.wait(0.05)
+local function moveToBlock(b)
+    local player = plrs.LocalPlayer
+    local character = player.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character.HumanoidRootPart.CFrame = b.CFrame * CFrame.new(0, 3, 0)
+    end
+end
+
+local function getNearbyBlocks(center, radius, m)
+    local nearbyBlocks = {}
+    for _, b in ipairs(m:GetChildren()) do
+        if isVB(b) and (b.Position - center.Position).Magnitude <= radius then
+            table.insert(nearbyBlocks, b)
+        end
+    end
+    return nearbyBlocks
+end
+
+local function getClosestBlock(center, m)
+    local closestBlock = nil
+    local minDistance = math.huge
+    for _, b in ipairs(m:GetChildren()) do
+        if isVB(b) then
+            local distance = (b.Position - center.Position).Magnitude
+            if distance < minDistance then
+                minDistance = distance
+                closestBlock = b
+            end
+        end
+    end
+    return closestBlock, minDistance
+end
+
+local activeBlocks = {}
+
+local function mineBlock(b)
+    if not activeBlocks[b] then
+        activeBlocks[b] = true
+        local attempts = 0
+        task.spawn(function()
+            while isVB(b) and attempts < 50 do
+                ev:FireServer(b)
+                attempts = attempts + 1
+                task.wait(0.05)
+            end
+            activeBlocks[b] = nil
+        end)
+    end
+end
+
+local function mineArea(m)
+    local player = plrs.LocalPlayer
+    local character = player.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+
+    local radius = 8
+    local closestBlock, distance = getClosestBlock(character.HumanoidRootPart, m)
+    
+    if closestBlock and distance > radius then
+        moveToBlock(closestBlock)
+    end
+
+    local nearbyBlocks = getNearbyBlocks(character.HumanoidRootPart, radius, m)
+    
+    for _, b in ipairs(nearbyBlocks) do
+        mineBlock(b)
     end
 end
 
 local eTh, nTh = {}, {}
+local isMining = {earth = false, nether = false}
 
 local function startM(mT)
     return task.spawn(function()
         while true do
             if not ev then upRefs() end
             local m = mT == "e" and eM or nM
-            if m and ev then
-                local bs = m:GetChildren()
-                if #bs > 0 then
-                    local b = bs[math.random(#bs)]
-                    if isVB(b) then
-                        mineB(b)
-                    end
-                end
+            if m and ev and isMining[mT == "e" and "earth" or "nether"] then
+                eqTool()
+                mineArea(m)
             end
-            task.wait(0.3)
+            task.wait(0.1)
         end
     end)
 end
 
-ui:Track("Earth Miners", 0, 0, 70, function(v)
+ui:Track("Earth Miners", 0, 0, 1, function(v)
     v = math.floor(v)
+    isMining.earth = v > 0
     while #eTh < v do
         table.insert(eTh, startM("e"))
     end
@@ -82,8 +138,9 @@ ui:Track("Earth Miners", 0, 0, 70, function(v)
     end
 end)
 
-ui:Track("Nether Miners", 0, 0, 70, function(v)
+ui:Track("Nether Miners", 0, 0, 1, function(v)
     v = math.floor(v)
+    isMining.nether = v > 0
     while #nTh < v do
         table.insert(nTh, startM("n"))
     end
@@ -93,8 +150,8 @@ ui:Track("Nether Miners", 0, 0, 70, function(v)
 end)
 
 local iSub = ui:Sub("Info Script")
-iSub:Txt("Version: 0.3")
-iSub:Txt("Create: 09/0/10/24")
+iSub:Txt("Version: 0.8")
+iSub:Txt("Create: 09/10/24")
 iSub:Txt("Update: 09/10/24")
 iSub:Btn("Link YouTube", function()
    setclipboard("https://youtube.com/@onecreatorx") 
