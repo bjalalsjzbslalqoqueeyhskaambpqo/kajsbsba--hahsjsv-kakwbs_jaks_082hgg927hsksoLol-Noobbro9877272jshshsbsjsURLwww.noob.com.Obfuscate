@@ -9,7 +9,6 @@ local rs = game:GetService("ReplicatedStorage")
 local lp = plrs.LocalPlayer
 local dre = rs:WaitForChild("dataRemoteEvent")
 
--- Remote event structure functions
 local function sas(pn, a)
     dre:FireServer({
         [1] = "PetInteractAction",
@@ -319,8 +318,9 @@ ex:TBtn("Collect Magic Feathers", function(b)
     end
 end)
 
+local isAutoClaimGift = false
 ui:TBtn("Auto Claim Gift", function(b) 
-    local isAutoClaimGift = b
+    isAutoClaimGift = not isAutoClaimGift
     while isAutoClaimGift do
         for i = 1, 9 do
             dre:FireServer({
@@ -335,16 +335,18 @@ ui:TBtn("Auto Claim Gift", function(b)
     end
 end)
 
+local isAutoBush = false
 ui:TBtn("Auto Bush Raiwb", function(b) 
-    isAutoBush = b
+    isAutoBush = not isAutoBush
     while isAutoBush do
         mAA()
         wait(1)
     end
 end)
 
+    local isAutoEgg = false
 ui:TBtn("Auto Egg Secret", function(b)
-    local isAutoEgg = b
+isAutoEgg = not isAutoEgg
     while isAutoEgg do
         local args = {
     [1] = {
