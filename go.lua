@@ -646,7 +646,6 @@ end)
         serverSub:Btn("Join Group", function() loadScript("Join%20Group") end)
         serverSub:Btn("Follow/Unfollow", function() loadScript("Follow%20or%20UnFollow%20Users") end)
         serverSub:Btn("Fake Gamepass", function() loadScript("Fake%20Parchuses%20Gamepass") end)
-        serverSub:Btn("Bypass Premium", function() loadScript("Bypass%20Premiun") end)
         
         game:GetService("NetworkClient").ChildRemoved:Connect(function()
             if #Players:GetPlayers() <= 1 then
