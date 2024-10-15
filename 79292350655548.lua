@@ -22,9 +22,16 @@ end)
 end
 
 
-ui:Btn("Perfume", function()
+ui:Btn("Perfumes", function()
 game.Players.LocalPlayer.Character:MoveTo(Vector3.new(-450, -79, -430))
+      wait(1)
+for _, r in workspace:GetDescendants() do
+         if r:IsA("ProximityPrompt") then
 
+fireproximityprompt(r)
+
+         end
+      end
 end)
 
 
