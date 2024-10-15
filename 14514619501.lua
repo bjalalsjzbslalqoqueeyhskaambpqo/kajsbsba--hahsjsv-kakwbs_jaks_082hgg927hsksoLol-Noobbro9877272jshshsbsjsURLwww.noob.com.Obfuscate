@@ -8,6 +8,7 @@ local uis = game:GetService("UserInputService")
 local rs = game:GetService("ReplicatedStorage")
 local lp = plrs.LocalPlayer
 local dre = rs:WaitForChild("dataRemoteEvent")
+local isAutoBush = false
 
 local function sas(pn, a)
     dre:FireServer({
@@ -335,7 +336,7 @@ ui:TBtn("Auto Claim Gift", function(b)
     end
 end)
 
-local isAutoBush = false
+
 ui:TBtn("Auto Bush Raiwb", function(b) 
     isAutoBush = not isAutoBush
     while isAutoBush do
