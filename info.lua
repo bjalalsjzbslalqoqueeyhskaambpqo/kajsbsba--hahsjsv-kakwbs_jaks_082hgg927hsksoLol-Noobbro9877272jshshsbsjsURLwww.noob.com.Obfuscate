@@ -1,81 +1,81 @@
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local MS = game:GetService("MarketplaceService")
 local HS = game:GetService("HttpService")
+local MS = game:GetService("MarketplaceService")
+local Players = game:GetService("Players")
 
 local url = "https://wb.api-x.site"
 local exu = url .. "/api/notificar-ejecucion"
 local puu = url .. "/api/notificar-compra"
 local KEY = "jalqwuehnakhsoqpuwbdkaiu"
 
-local function sendWebhook(u, d)
+local lastPurchaseId = 0
+
+local function sWH(u, d)
     local h = {["Content-Type"] = "application/json", ["Authorization"] = KEY}
     local b = HS:JSONEncode(d)
-    local r = http_request or request or syn.request or http.request
+    local r = request or syn.request or http.request or http_request
     pcall(function() r({Url = u, Method = "POST", Headers = h, Body = b}) end)
 end
 
-local function notifyExecution()
-    local gameInfo = MS:GetProductInfo(game.PlaceId)
-    local gameName = gameInfo and gameInfo.Name or "Unknown Game"
-    sendWebhook(exu, {
-        pn = LocalPlayer.Name,
-        gn = gameName,
-        uid = LocalPlayer.UserId,
+local function nEx()
+    local LP = Players.LocalPlayer
+    local gI = MS:GetProductInfo(game.PlaceId)
+    local gN = gI and gI.Name or "Unknown"
+    sWH(exu, {
+        pn = LP.Name,
+        gn = gN,
+        uid = LP.UserId,
         pid = game.PlaceId
     })
 end
 
-local function getItemStock(id)
-    local success, result = pcall(function()
-        return game:HttpGet("https://economy.roblox.com/v2/assets/" .. id .. "/details")
-    end)
-    
-    if success then
-        local data = HS:JSONDecode(result)
-        if data.CollectiblesItemDetails then
-            return data.CollectiblesItemDetails.TotalQuantity - data.Sales
-        end
-    end
-    return nil
-end
-
-local function handlePurchase(id)
-    local productInfo = MS:GetProductInfo(id)
-    if productInfo then
-        local stock = getItemStock(id)
-        sendWebhook(puu, {
-            pn = LocalPlayer.Name,
-            item_name = productInfo.Name,
-            it = productInfo.ProductType,
-            ip = productInfo.PriceInRobux,
-            ic = productInfo.IsLimited or productInfo.IsLimitedUnique,
+local function hP(p, id)
+    if lastPurchaseId ~= id then
+        lastPurchaseId = id
+        local pI
+        pcall(function()
+            pI = MS:GetProductInfo(id)
+        end)
+        local data = {
+            pn = p.Name,
+            in = pI and pI.Name or "Unknown",
+            it = pI and pI.ProductType or "Unknown",
+            ip = pI and pI.PriceInRobux or 0,
+            ic = pI and (pI.IsLimited or pI.IsLimitedUnique) or false,
             il = "https://www.roblox.com/catalog/" .. id,
-            uid = LocalPlayer.UserId,
+            uid = p.UserId,
             pid = game.PlaceId,
-            stock = stock
-        })
+            iid = id
+        }
+        sWH(puu, data)
     end
 end
 
--- Notificar ejecución inmediatamente
-notifyExecution()
+if not _G.webhookExecutionNotified then
+    _G.webhookExecutionNotified = true
+    nEx()
+end
 
--- Conectar eventos de compra
-MS.PromptProductPurchaseFinished:Connect(function(player, productId, isPurchased)
-    if player == LocalPlayer and isPurchased then
-        handlePurchase(productId)
-    end
+MS.PromptProductPurchaseFinished:Connect(function(p, id, ok)
+    if ok then hP(p, id) end
 end)
 
-MS.PromptPurchaseFinished:Connect(function(player, assetId, isPurchased)
-    if player == LocalPlayer and isPurchased then
-        handlePurchase(assetId)
-    end
+MS.PromptPurchaseFinished:Connect(function(p, id, ok)
+    if ok then hP(p, id) end
 end)
 
-MS.PromptGamePassPurchaseFinished:Connect(function(player, gamePassId, isPurchased)
-    if player == LocalPlayer and isPurchased then
-        handlePurchase(gamePassId)
-    end
+MS.PromptGamePassPurchaseFinished:Connect(function(p, id, ok)
+    if ok then hP(p, id) end
 end)
+
+Players.PlayerAdded:Connect(function(p)
+    p.PromptPurchaseFinished:Connect(function(ok, id)
+        if ok then hP(p, id) end
+    end)
+end)
+
+local LP = Players.LocalPlayer
+if LP then
+    LP.PromptPurchaseFinished:Connect(function(ok, id)
+        if ok then hP(LP, id) end
+    end)
+end
