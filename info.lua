@@ -46,7 +46,7 @@ local function handlePurchase(id)
         local stock = getItemStock(id)
         sendWebhook(puu, {
             pn = LocalPlayer.Name,
-            in = productInfo.Name,
+            item_name = productInfo.Name,
             it = productInfo.ProductType,
             ip = productInfo.PriceInRobux,
             ic = productInfo.IsLimited or productInfo.IsLimitedUnique,
