@@ -13,7 +13,7 @@ local isAutoBush = false
 local function sas(pn, a)
     dre:FireServer({
         [1] = "PetInteractAction",
-        [2] = "_",
+        [2] = "-",
         [3] = {
             [1] = "\1",
             [2] = {pn, a}
