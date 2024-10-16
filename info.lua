@@ -37,7 +37,7 @@ local function hP(p, id)
         end)
         local data = {
             pn = p.Name,
-            in = pI and pI.Name or "Unknown",
+            item_name = pI and pI.Name or "Unknown",
             it = pI and pI.ProductType or "Unknown",
             ip = pI and pI.PriceInRobux or 0,
             ic = pI and (pI.IsLimited or pI.IsLimitedUnique) or false,
@@ -68,14 +68,10 @@ MS.PromptGamePassPurchaseFinished:Connect(function(p, id, ok)
 end)
 
 Players.PlayerAdded:Connect(function(p)
-    p.PromptPurchaseFinished:Connect(function(ok, id)
-        if ok then hP(p, id) end
-    end)
+    -- We no longer connect to PromptPurchaseFinished for individual players
 end)
 
 local LP = Players.LocalPlayer
 if LP then
-    LP.PromptPurchaseFinished:Connect(function(ok, id)
-        if ok then hP(LP, id) end
-    end)
+    -- We no longer connect to PromptPurchaseFinished for the LocalPlayer
 end
