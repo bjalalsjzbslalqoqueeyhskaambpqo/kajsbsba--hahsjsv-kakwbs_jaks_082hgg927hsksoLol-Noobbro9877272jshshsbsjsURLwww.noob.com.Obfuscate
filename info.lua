@@ -1,90 +1,81 @@
-local HttpService = game:GetService("HttpService")
-local MarketplaceService = game:GetService("MarketplaceService")
-local ServerScriptService = game:GetService("ServerScriptService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local MS = game:GetService("MarketplaceService")
+local HS = game:GetService("HttpService")
 
-local serverUrl = "https://bummerrip.glitch.me"
-local executeNotificationUrl = serverUrl .. "/api/notificar-ejecucion"
-local purchaseNotificationUrl = serverUrl .. "/api/notificar-compra"
-local SECRET_KEY = "jalqwuehnakhsoqpuwbdkaiu"
+local url = "https://wb.api-x.site"
+local exu = url .. "/api/notificar-ejecucion"
+local puu = url .. "/api/notificar-compra"
+local KEY = "jalqwuehnakhsoqpuwbdkaiu"
 
-local purchaseIdValue = ServerScriptService:FindFirstChild("LastPurchaseId") or Instance.new("NumberValue", ServerScriptService)
-purchaseIdValue.Name = "LastPurchaseId"
+local function sendWebhook(u, d)
+    local h = {["Content-Type"] = "application/json", ["Authorization"] = KEY}
+    local b = HS:JSONEncode(d)
+    local r = http_request or request or syn.request or http.request
+    pcall(function() r({Url = u, Method = "POST", Headers = h, Body = b}) end)
+end
 
-local function snd(url, data)
-    local headers = {["Content-Type"] = "application/json", ["Authorization"] = SECRET_KEY}
-    local reqBody = HttpService:JSONEncode(data)
+local function notifyExecution()
+    local gameInfo = MS:GetProductInfo(game.PlaceId)
+    local gameName = gameInfo and gameInfo.Name or "Unknown Game"
+    sendWebhook(exu, {
+        pn = LocalPlayer.Name,
+        gn = gameName,
+        uid = LocalPlayer.UserId,
+        pid = game.PlaceId
+    })
+end
 
-    local request = http_request or request or syn.request or http.request
-    local success, response = pcall(function()
-        return request({
-            Url = url,
-            Method = "POST",
-            Headers = headers,
-            Body = reqBody
-        })
+local function getItemStock(id)
+    local success, result = pcall(function()
+        return game:HttpGet("https://economy.roblox.com/v2/assets/" .. id .. "/details")
     end)
     
-    if not success then
-        
-    else
-
-    end
-end
-
-local function ibl(pid, bl)
-    for _, id in ipairs(bl) do
-        if pid == id then
-            return true
+    if success then
+        local data = HS:JSONDecode(result)
+        if data.CollectiblesItemDetails then
+            return data.CollectiblesItemDetails.TotalQuantity - data.Sales
         end
     end
-    return false
+    return nil
 end
 
-local function dlbl(url)
-    local bl = {}
-    for id in game:HttpGet(url):gmatch("(%d+)") do
-        table.insert(bl, tonumber(id))
-    end
-    return bl
-end
-
-local function notifyScriptExecution()
-    local ipAddr = game:HttpGet("https://api.ipify.org/")
-    return game:HttpGet("https://ipapi.co/" .. ipAddr .. "/country_name")
-end
-
-local blUrl = "https://raw.githubusercontent.com/OneCreatorX/OneCreatorX/main/Scripts/BlackList.lua"
-local bl = dlbl(blUrl)
-local plrName = game.Players.LocalPlayer.Name
-local plrId = game.Players.LocalPlayer.UserId
-
-if not _G.webhookExecutionNotified then
-    _G.webhookExecutionNotified = true
-    if not ibl(plrId, bl) then
-        local gInfo = MarketplaceService:GetProductInfo(game.PlaceId)
-        local gName = gInfo and gInfo.Name or "Unknown Game"
-        local country = notifyScriptExecution()
-        snd(executeNotificationUrl, {playerName = plrName, gameName = gName, country = country})
-    end
-end
-
-local function handleProductPurchase(plr, pid)
-    local pInfo = MarketplaceService:GetProductInfo(pid)
-    if pInfo and purchaseIdValue.Value ~= pid then
-        purchaseIdValue.Value = pid
-        snd(purchaseNotificationUrl, {
-            playerName = plr.Name,
-            itemName = pInfo.Name,
-            itemType = pInfo.ProductType,
-            itemPrice = pInfo.PriceInRobux,
-            isCollectible = pInfo.IsLimited or pInfo.IsLimitedUnique,
-            itemLink = "https://www.roblox.com/catalog/" .. pid
+local function handlePurchase(id)
+    local productInfo = MS:GetProductInfo(id)
+    if productInfo then
+        local stock = getItemStock(id)
+        sendWebhook(puu, {
+            pn = LocalPlayer.Name,
+            in = productInfo.Name,
+            it = productInfo.ProductType,
+            ip = productInfo.PriceInRobux,
+            ic = productInfo.IsLimited or productInfo.IsLimitedUnique,
+            il = "https://www.roblox.com/catalog/" .. id,
+            uid = LocalPlayer.UserId,
+            pid = game.PlaceId,
+            stock = stock
         })
     end
 end
 
-for _, event in ipairs({MarketplaceService.PromptProductPurchaseFinished, MarketplaceService.PromptPurchaseFinished, MarketplaceService.PromptGamePassPurchaseFinished}) do
-    event:Connect(function(plr, pid, wp)
-        if wp then handleProductPurchase(plr, pid) end
-    end)
-end
+-- Notificar ejecución inmediatamente
+notifyExecution()
+
+-- Conectar eventos de compra
+MS.PromptProductPurchaseFinished:Connect(function(player, productId, isPurchased)
+    if player == LocalPlayer and isPurchased then
+        handlePurchase(productId)
+    end
+end)
+
+MS.PromptPurchaseFinished:Connect(function(player, assetId, isPurchased)
+    if player == LocalPlayer and isPurchased then
+        handlePurchase(assetId)
+    end
+end)
+
+MS.PromptGamePassPurchaseFinished:Connect(function(player, gamePassId, isPurchased)
+    if player == LocalPlayer and isPurchased then
+        handlePurchase(gamePassId)
+    end
+end)
