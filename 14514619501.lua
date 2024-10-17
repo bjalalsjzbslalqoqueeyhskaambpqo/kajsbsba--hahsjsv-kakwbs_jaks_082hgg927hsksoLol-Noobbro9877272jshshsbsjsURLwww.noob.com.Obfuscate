@@ -28,7 +28,7 @@ local function dp(pn)
             ["GUID"] = pn,
             ["Category"] = "Pet"
         },
-        [2] = "9"
+        [2] = ":"
     })
 end
 
@@ -38,7 +38,7 @@ local function ep(pn)
             ["GUID"] = pn,
             ["Category"] = "Pet"
         },
-        [2] = "9"
+        [2] = ":"
     })
 end
 
