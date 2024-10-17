@@ -18,7 +18,7 @@ local function sas(pn, a)
             [1] = "\1",
             [2] = {pn, a}
         },
-        [4] = ""
+        [4] = "\""
     })
 end
 
