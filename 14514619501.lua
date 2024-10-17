@@ -329,7 +329,7 @@ ui:TBtn("Auto Claim Gift", function(b)
                     [1] = "\1",
                     [2] = "BERRIES_" .. i .. "00"
                 },
-                [2] = ">"
+                [2] = "?"
             })
             wait(1)
         end
