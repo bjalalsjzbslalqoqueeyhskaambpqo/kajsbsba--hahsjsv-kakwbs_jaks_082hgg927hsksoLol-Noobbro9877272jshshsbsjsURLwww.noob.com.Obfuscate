@@ -13,12 +13,12 @@ local isAutoBush = false
 local function sas(pn, a)
     dre:FireServer({
         [1] = "PetInteractAction",
-        [2] = "-",
+        [2] = ".",
         [3] = {
             [1] = "\1",
             [2] = {pn, a}
         },
-        [4] = "\""
+        [4] = "#"
     })
 end
 
@@ -28,7 +28,7 @@ local function dp(pn)
             ["GUID"] = pn,
             ["Category"] = "Pet"
         },
-        [2] = ":"
+        [2] = ";"
     })
 end
 
@@ -38,7 +38,7 @@ local function ep(pn)
             ["GUID"] = pn,
             ["Category"] = "Pet"
         },
-        [2] = ":"
+        [2] = ";"
     })
 end
 
@@ -329,7 +329,7 @@ ui:TBtn("Auto Claim Gift", function(b)
                     [1] = "\1",
                     [2] = "BERRIES_" .. i .. "00"
                 },
-                [2] = "?"
+                [2] = "@"
             })
             wait(1)
         end
@@ -357,7 +357,7 @@ isAutoEgg = not isAutoEgg
                 ["PurchaserGUID"] = "66111113-6A42-49B3-8F1E-2C5C5B646B57"
             }
         },
-        [2] = "L"
+        [2] = "Ñ"
     }
 }
 
@@ -383,7 +383,7 @@ wait(0.7)
 local is = ui:Sub("Info Script")
 is:Txt("Version: 1.4")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 12/10/24")
+is:Txt("Update: 20/10/24")
 is:Btn("Link YouTube", function()
    setclipboard("https://youtube.com/@onecreatorx") 
 end)
