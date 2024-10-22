@@ -9,6 +9,7 @@ local rs = game:GetService("ReplicatedStorage")
 local lp = plrs.LocalPlayer
 local dre = rs:WaitForChild("dataRemoteEvent")
 local isAutoBush = false
+local isAutoHalloween = false
 
 local function sas(pn, a)
     dre:FireServer({
@@ -43,6 +44,7 @@ local function ep(pn)
 end
 
 local tn = {"Bush1", "Bush2", "Bush3", "Bush4"}
+local halloweenItems = {"Halloween-Bag", "Halloween-Small Bucket"}
 local sC, sM, sF = 20, 50, 100
 local isM, cT, isAutoBush = false, nil, false
 local vUI, pat, ap = {}, {}, {}
@@ -75,15 +77,40 @@ local function sClick()
     vim:SendMouseButtonEvent(vs.X / 2, vs.Y / 2, 0, false, game, 1)
 end
 
-local function mAA()
-    if not isAutoBush or isM then return end
+local function toggleCameraMode()
+    local cam = workspace.CurrentCamera
+    if cam.CameraType == Enum.CameraType.Custom then
+        cam.CameraType = Enum.CameraType.Follow
+    else
+        cam.CameraType = Enum.CameraType.Custom
+    end
+end
+
+local function setFirstPerson()
+    lp.CameraMode = Enum.CameraMode.LockFirstPerson
+end
+
+local function preventSitting(character)
+    local humanoid = character:WaitForChild("Humanoid")
+    humanoid.Seated:Connect(function(isSeated)
+        if isSeated and (isAutoBush or isAutoHalloween) then
+            humanoid.Sit = false
+        end
+    end)
+end
+
+local function mAA(targetNames)
+    if (not isAutoBush and not isAutoHalloween) or isM then return end
     local c = lp.Character
     if not c or not c:FindFirstChild("HumanoidRootPart") then return end
     local hrp = c.HumanoidRootPart
 
+    setFirstPerson()
+    preventSitting(c)
+
     local cT, cD = nil, math.huge
     for _, v in pairs(workspace:GetDescendants()) do
-        for _, n in ipairs(tn) do
+        for _, n in ipairs(targetNames) do
             if v:IsA("Model") and v.Name == n then
                 local d = (v:GetPrimaryPartCFrame().Position - hrp.Position).Magnitude
                 if d < cD then cT, cD = v, d end
@@ -148,6 +175,7 @@ local function mAA()
     
     tUI(false)
     isM = false
+    toggleCameraMode()
 end
 
 local function sItem(item)
@@ -336,39 +364,46 @@ ui:TBtn("Auto Claim Gift", function(b)
     end
 end)
 
-
 ui:TBtn("Auto Bush Raiwb", function(b) 
     isAutoBush = not isAutoBush
     while isAutoBush do
-        mAA()
+        mAA(tn)
         wait(1)
     end
 end)
 
-    local isAutoEgg = false
+local isAutoEgg = false
 ui:TBtn("Auto Egg Secret", function(b)
-isAutoEgg = not isAutoEgg
+    isAutoEgg = not isAutoEgg
     while isAutoEgg do
         local args = {
-    [1] = {
-        [1] = {
-            [1] = "\1",
-            [2] = {
-                ["PurchaserGUID"] = "66111113-6A42-49B3-8F1E-2C5C5B646B57"
+            [1] = {
+                [1] = {
+                    [1] = "\1",
+                    [2] = {
+                        ["PurchaserGUID"] = "66111113-6A42-49B3-8F1E-2C5C5B646B57"
+                    }
+                },
+                [2] = "Ñ"
             }
-        },
-        [2] = "Ñ"
-    }
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
         wait(2)
+    end
+end)
+
+ui:TBtn("Auto Halloween Items", function(b)
+    isAutoHalloween = not isAutoHalloween
+    while isAutoHalloween do
+        mAA(halloweenItems)
+        wait(1)
     end
 end)
 
 ex:Btn("TP Secret Zone", function()
     lp.Character:MoveTo(Vector3.new(1356, 10, -3447))
     lp.Character.PrimaryPart.Anchored = true
+    
     wait(3)
     lp.Character.PrimaryPart.Anchored = false
 end)
@@ -381,9 +416,9 @@ ui:Notify("Auto Tasks Pet: Default Active", 5)
 
 wait(0.7)
 local is = ui:Sub("Info Script")
-is:Txt("Version: 1.4")
+is:Txt("Version: 1.5")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 20/10/24")
+is:Txt("Update: 22/10/24")
 is:Btn("Link YouTube", function()
    setclipboard("https://youtube.com/@onecreatorx") 
 end)
@@ -396,3 +431,8 @@ lp.Idled:Connect(function()
     vim:CaptureController()
     vim:ClickButton2(Vector2.new())
 end)
+
+lp.CharacterAdded:Connect(preventSitting)
+if lp.Character then
+    preventSitting(lp.Character)
+end
