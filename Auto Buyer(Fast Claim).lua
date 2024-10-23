@@ -10,7 +10,6 @@ local CG = game:GetService("CoreGui")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
-local WEBHOOK_URL = "https://discord.com/api/webhooks/1260436599184035850/hYbFqqvP4xJCRDez4Ofj4TZLAqiW4ew5PY_Ms2sSWn-UMf_WUxar83mLTuMLBFwiTvG0"
 local MAIN_COLOR = Color3.fromRGB(52, 152, 219)
 local SEC_COLOR = Color3.fromRGB(41, 128, 185)
 local TEXT_COLOR = Color3.fromRGB(236, 240, 241)
@@ -159,41 +158,6 @@ local function addMsg(cf, msg, color)
     cf.CanvasPosition = Vector2.new(0, cf.CanvasSize.Y.Offset - cf.AbsoluteSize.Y)
 end
 
-local function sendNotif(itemInfo)
-    local itemId = itemInfo.AssetId
-    if notifiedItems[itemId] then return end
-
-    local embedColor = 65280  
-    local embedData = {
-        ["title"] = "New Item Purchased!",
-        ["description"] = string.format("Item: %s\nPrice: %d Robux\nAsset ID: %d", itemInfo.Name, itemInfo.Price, itemId),
-        ["color"] = embedColor,
-        ["url"] = string.format("https://www.roblox.com/catalog/%d", itemId)
-    }
-
-    local data = {
-        ["embeds"] = {embedData}
-    }
-
-    local success, response = pcall(function()
-        return HTTP:RequestAsync({
-            Url = WEBHOOK_URL,
-            Method = "POST",
-            Headers = {
-                ["Content-Type"] = "application/json"
-            },
-            Body = HTTP:JSONEncode(data)
-        })
-    end)
-
-    if success and response.Success then
-        notifiedItems[itemId] = true
-        print("Discord notification sent successfully")
-    else
-        warn("Failed to send Discord notification:", response)
-    end
-end
-
 local function PurchaseV1(info, price, idempotencyKey, purchaseAuthToken)
     return MPS:PerformPurchase(Enum.InfoType.Asset, info.ProductId, price,
         tostring(HTTP:GenerateGUID(false)), true,
@@ -221,6 +185,37 @@ local function PurchaseV3(assetId, price)
         return game:GetService("AssetService"):PurchaseAsset(assetId, price)
     end)
     return success and result
+end
+
+local function PurchaseV4(assetId, price)
+    local success, result = pcall(function()
+        return game:GetService("MarketplaceService"):PromptPurchase(player, assetId, false, Enum.CurrencyType.Robux)
+    end)
+    return success and result
+end
+
+local function PurchaseV5(assetId, price)
+    local success, result = pcall(function()
+        return game:GetService("MarketplaceService"):PromptProductPurchase(player, assetId)
+    end)
+    return success and result
+end
+
+local function attemptPurchase(info, price, idempotencyKey, purchaseAuthToken)
+    local success = false
+
+    if not useClickMethod then
+        success = PurchaseV3(info.AssetId, price) or
+                  PurchaseV4(info.AssetId, price) or
+                  PurchaseV5(info.AssetId, price) or
+                  pcall(function() return PurchaseV2(info, price) end) or
+                  pcall(function() return PurchaseV1(info, price, idempotencyKey, purchaseAuthToken) end)
+    else
+        handlePurchasePrompt()
+        success = true
+    end
+
+    return success
 end
 
 local function initAutoBuyer()
@@ -311,46 +306,23 @@ local function initAutoBuyer()
                             local info = MPS:GetProductInfo(assetId)
                             local price = info.PriceInRobux
                             if price <= maxPrice then
-                                local success = false
-
-                                if not useClickMethod then
-                                    success = PurchaseV3(assetId, price)
-
-                                    if not success then
-                                        success = pcall(function()
-                                            return PurchaseV2(info, price)
-                                        end)
-                                    end
-
-                                    if not success then
-                                        success = pcall(function()
-                                            return PurchaseV1(info, price, idempotencyKey, purchaseAuthToken)
-                                        end)
-                                    end
-                                else
-                                    handlePurchasePrompt()
-                                    success = true -- Assume success when using click method
-                                end
+                                local success = attemptPurchase(info, price, idempotencyKey, purchaseAuthToken)
 
                                 if success then
                                     addMsg(cf, "Successfully purchased: " .. info.Name .. " for " .. price .. " Robux", Color3.fromRGB(46, 204, 113))
-                                    sendNotif({
-                                        Name = info.Name,
-                                        Price = price,
-                                        AssetId = assetId
-                                    })
                                 else
                                     addMsg(cf, "Failed to purchase: " .. info.Name, Color3.fromRGB(231, 76, 60))
                                 end
                             else
                                 addMsg(cf, "Skipped purchase: " .. info.Name .. " (Price: " .. price .. " Robux)", Color3.fromRGB(241, 196, 15))
                                 if useClickMethod then
-                                    handlePurchasePrompt() -- Cancel the purchase
+                                    handlePurchasePrompt()
                                 end
                             end
                         end
                     )
                 end)
+                
                 hookmetamethod(game, "__index", old)
                 return old(a, b)
             end)
@@ -369,50 +341,50 @@ local function initAutoBuyer()
         AutoPurchase(not isAutoBuyActive)
     end)
 
-local RunService = game:GetService("RunService")
-local StarterGui = game:GetService("StarterGui")
+    local RunService = game:GetService("RunService")
+    local StarterGui = game:GetService("StarterGui")
 
-local notificationSent = {
-    buyButton = false,
-    cancelButton = false
-}
+    local notificationSent = {
+        buyButton = false,
+        cancelButton = false
+    }
 
-local function clickCancelButton(purchasePrompt)
-    local cancelButtonText = nil
-    local zeroTextButton = nil
+    local function clickCancelButton(purchasePrompt)
+        local cancelButtonText = nil
+        local zeroTextButton = nil
 
-    for _, descendant in ipairs(purchasePrompt:GetDescendants()) do
-        if descendant:IsA("TextLabel") and descendant.Name == "Text" then
-            local text = descendant.Text:lower()
-            if text == "cancelar" or text == "cancel" or text == "accept" or text == "aceptar" then
-                cancelButtonText = text
-            elseif text <= tostring(maxPrice) then
-                zeroTextButton = descendant
-            end
-        end
-    end
-
-    if zeroTextButton then
-        local buttonCenterX = zeroTextButton.AbsolutePosition.X + zeroTextButton.AbsoluteSize.X / 0.5
-        local buttonCenterY = zeroTextButton.AbsolutePosition.Y + zeroTextButton.AbsoluteSize.Y / 0.5
-        
-        game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, true, game, 1)
-        game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, false, game, 1)
-        addMsg(cf, "Toggle 'Click Button Buy", Color3.fromRGB(46, 204, 113))
-    elseif cancelButtonText then
         for _, descendant in ipairs(purchasePrompt:GetDescendants()) do
-            if descendant:IsA("TextLabel") and descendant.Name == "Text" and descendant.Text:lower() == cancelButtonText then
-                local buttonCenterX = descendant.AbsolutePosition.X + descendant.AbsoluteSize.X / 0.5
-                local buttonCenterY = descendant.AbsolutePosition.Y + descendant.AbsoluteSize.Y / 0.5
-                
-                game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, true, game, 1)
-                game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, false, game, 1)
-                addMsg(cf, "Click acept or cancel.", Color3.fromRGB(46, 204, 113))
-                break
+            if descendant:IsA("TextLabel") and descendant.Name == "Text" then
+                local text = descendant.Text:lower()
+                if text == "cancelar" or text == "cancel" or text == "accept" or text == "aceptar" then
+                    cancelButtonText = text
+                elseif text <= tostring(maxPrice) then
+                    zeroTextButton = descendant
+                end
+            end
+        end
+
+        if zeroTextButton then
+            local buttonCenterX = zeroTextButton.AbsolutePosition.X + zeroTextButton.AbsoluteSize.X / 0.5
+            local buttonCenterY = zeroTextButton.AbsolutePosition.Y + zeroTextButton.AbsoluteSize.Y / 0.5
+            
+            game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, true, game, 1)
+            game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, false, game, 1)
+            addMsg(cf, "Toggle 'Click Button Buy", Color3.fromRGB(46, 204, 113))
+        elseif cancelButtonText then
+            for _, descendant in ipairs(purchasePrompt:GetDescendants()) do
+                if descendant:IsA("TextLabel") and descendant.Name == "Text" and descendant.Text:lower() == cancelButtonText then
+                    local buttonCenterX = descendant.AbsolutePosition.X + descendant.AbsoluteSize.X / 0.52
+                    local buttonCenterY = descendant.AbsolutePosition.Y + descendant.AbsoluteSize.Y / 0.5
+                    
+                    game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, true, game, 1)
+                    game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, false, game, 1)
+                    addMsg(cf, "Click acept or cancel.", Color3.fromRGB(46, 204, 113))
+                    break
+                end
             end
         end
     end
-end
 
     cmb.MouseButton1Click:Connect(function()
         useClickMethod = not useClickMethod
@@ -439,25 +411,25 @@ end
     RS.Heartbeat:Connect(function()
         if useClickMethod then
             local coreGui = game:GetService("CoreGui")
-local purchasePrompt = coreGui:WaitForChild("PurchasePrompt")
+            local purchasePrompt = coreGui:WaitForChild("PurchasePrompt")
 
-    local buttonsFound = false
+            local buttonsFound = false
 
-    for _, descendant in ipairs(purchasePrompt:GetDescendants()) do
-        if descendant:IsA("TextLabel") and descendant.Name == "Text" then
-            buttonsFound = true
-            break
-        end
-    end
+            for _, descendant in ipairs(purchasePrompt:GetDescendants()) do
+                if descendant:IsA("TextLabel") and descendant.Name == "Text" then
+                    buttonsFound = true
+                    break
+                end
+            end
 
-    if not buttonsFound then
-        notificationSent = {
-            buyButton = false,
-            cancelButton = false
-        }
-    end
+            if not buttonsFound then
+                notificationSent = {
+                    buyButton = false,
+                    cancelButton = false
+                }
+            end
 
-    clickCancelButton(purchasePrompt)
+            clickCancelButton(purchasePrompt)
         end
     end)
 end
