@@ -340,11 +340,13 @@ spawn(function()
     end
 end)
 
+local cff = false
+
 ex:TBtn("Collect Flowers",function(b) 
-    local cf = b
-    while cf do
+    cff = not cff
+    while cff do
         for _,h in ipairs(workspace.Activators:GetChildren()) do
-            if h.Name == "Flower" and cf then
+            if h.Name == "Flower" and cff then
                 lp.Character.PrimaryPart.CFrame = h.Part.CFrame
                 wait(0.5)
                 fireproximityprompt(h.Part.ProximityPrompt)
@@ -354,8 +356,9 @@ ex:TBtn("Collect Flowers",function(b)
     end
 end)
 
+local cf = false
 ex:TBtn("Collect Magic Feathers",function(b) 
-    local cf = b
+    cf = not cf
     while cf do
         for _,h in ipairs(workspace.Feathers:GetChildren()) do
             if h.Name == "Feather" and h:FindFirstChild("Root") and cf then
@@ -395,6 +398,7 @@ ui:TBtn("Auto Egg Secret",function(b)
         wait(2)
     end
 end)
+
 
 ui:TBtn("Auto Halloween Items",function(b)
     ah = not ah
