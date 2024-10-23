@@ -1,201 +1,235 @@
 local MUI = loadstring(game:HttpGet("https://ui.api-x.site"))()
 local ui = MUI:new("Raise a Rainbacorn")
 local ex = ui:Sub("Extra")
-local plrs = game:GetService("Players")
+local p = game:GetService("Players")
 local ts = game:GetService("TweenService")
-local vim = game:GetService("VirtualInputManager")
-local uis = game:GetService("UserInputService")
+local vm = game:GetService("VirtualInputManager")
+local us = game:GetService("UserInputService")
 local rs = game:GetService("ReplicatedStorage")
-local lp = plrs.LocalPlayer
-local dre = rs:WaitForChild("dataRemoteEvent")
-local isAutoBush = false
-local isAutoHalloween = false
+local lp = p.LocalPlayer
+local dr = rs:WaitForChild("dataRemoteEvent")
+local ab, ah = false, false
 
-local function sas(pn, a)
-    dre:FireServer({
-        [1] = "PetInteractAction",
-        [2] = ".",
-        [3] = {
-            [1] = "\1",
-            [2] = {pn, a}
-        },
-        [4] = "#"
-    })
+local visibilityStates = {}
+local farmingActive = false
+local visibilityChangedConnections = {}
+
+local function r1(n, a)
+    dr:FireServer({[1]="PetInteractAction",[2]=".",[3]={[1]="\1",[2]={n,a}},[4]="#"})
 end
 
-local function dp(pn)
-    dre:FireServer({
-        [1] = {
-            ["GUID"] = pn,
-            ["Category"] = "Pet"
-        },
-        [2] = ";"
-    })
+local function r2(n)
+    dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]=";"})
 end
 
-local function ep(pn)
-    dre:FireServer({
-        [1] = {
-            ["GUID"] = pn,
-            ["Category"] = "Pet"
-        },
-        [2] = ";"
-    })
+local function r3()
+    dr:FireServer({[1]={{[1]="\1",[2]={["PurchaserGUID"]="66111113-6A42-49B3-8F1E-2C5C5B646B57"}},[2]="Ñ"}})
 end
 
-local tn = {"Bush1", "Bush2", "Bush3", "Bush4"}
-local halloweenItems = {"Halloween-Bag", "Halloween-Small Bucket"}
-local sC, sM, sF = 20, 50, 100
-local isM, cT, isAutoBush = false, nil, false
-local vUI, pat, ap = {}, {}, {}
-local act = {["hug"] = "Hugged", ["bath"] = "Bathed", ["hungry"] = "Fed"}
+local function r4(i)
+    dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="@"})
+end
+
+local tn = {"Bush1","Bush2","Bush3","Bush4"}
+local hi = {"Halloween-Bag","Halloween-Small Bucket", "Halloween-Large Bucket", "Halloween-Glass Container"}
+local ms = 100
+local im,ct = false,nil
+local vu,pt,ap = {},{},{}
+local at = {["hug"]="Hugged",["bath"]="Bathed",["hungry"]="Fed"}
 local ac = 15
 
-local function tUI(h)
-    for _, g in ipairs(lp.PlayerGui:GetChildren()) do
-        if g:IsA("ScreenGui") and g.Enabled then
-            vUI[g] = true
-            g.Enabled = not h
+local function handleVisibilityChange(instance)
+    if farmingActive then
+        if instance:IsA("ScreenGui") and instance.Enabled then
+            instance.Enabled = false
+        elseif instance:IsA("Frame") and instance.Visible then
+            instance.Visible = false
         end
     end
-    lp.PlayerGui:SetTopbarTransparency(h and 1 or 0)
 end
 
-local function fCam(t, c)
-    local cam = workspace.CurrentCamera
-    local tp = t:GetPrimaryPartCFrame().Position
-    local cp = c.HumanoidRootPart.Position
-    local o = (tp - cp).Unit * 5
-    cam.CFrame = CFrame.new(cp + o, tp)
-end
-
-local function sClick()
-    local cam = workspace.CurrentCamera
-    local vs = cam.ViewportSize
-    vim:SendMouseButtonEvent(vs.X / 2, vs.Y / 2, 0, true, game, 1)
-    wait(0.1)
-    vim:SendMouseButtonEvent(vs.X / 2, vs.Y / 2, 0, false, game, 1)
-end
-
-local function toggleCameraMode()
-    local cam = workspace.CurrentCamera
-    if cam.CameraType == Enum.CameraType.Custom then
-        cam.CameraType = Enum.CameraType.Follow
-    else
-        cam.CameraType = Enum.CameraType.Custom
+local function saveVisibilityState(instance)
+    if instance:IsA("ScreenGui") then
+        visibilityStates[instance] = instance.Enabled
+    elseif instance:IsA("Frame") then
+        visibilityStates[instance] = instance.Visible
     end
 end
 
-local function setFirstPerson()
+local function restoreVisibilityStates()
+    for instance, state in pairs(visibilityStates) do
+        if instance:IsA("ScreenGui") then
+            instance.Enabled = state
+        elseif instance:IsA("Frame") then
+            instance.Visible = state
+        end
+    end
+    visibilityStates = {}
+end
+
+local function setupVisibilityTracking(instance)
+    if instance:IsA("ScreenGui") then
+        if not visibilityChangedConnections[instance] then
+            visibilityChangedConnections[instance] = instance:GetPropertyChangedSignal("Enabled"):Connect(function()
+                handleVisibilityChange(instance)
+            end)
+        end
+    elseif instance:IsA("Frame") then
+        if not visibilityChangedConnections[instance] then
+            visibilityChangedConnections[instance] = instance:GetPropertyChangedSignal("Visible"):Connect(function()
+                handleVisibilityChange(instance)
+            end)
+        end
+    end
+end
+
+local function tu(h)
+    farmingActive = h
+    if h then
+        for _,g in ipairs(lp.PlayerGui:GetChildren()) do
+            if g:IsA("ScreenGui") then
+                saveVisibilityState(g)
+                setupVisibilityTracking(g)
+                g.Enabled = false
+            end
+            for _,f in ipairs(g:GetDescendants()) do
+                if f:IsA("Frame") then
+                    saveVisibilityState(f)
+                    setupVisibilityTracking(f)
+                    f.Visible = false
+                end
+            end
+        end
+        lp.PlayerGui:SetTopbarTransparency(1)
+    else
+        restoreVisibilityStates()
+        lp.PlayerGui:SetTopbarTransparency(0)
+    end
+end
+
+local function fc(t,c)
+    local cm = workspace.CurrentCamera
+    local tp = t:GetPrimaryPartCFrame().Position
+    local cp = c.HumanoidRootPart.Position
+    local d = (tp-cp).Unit
+    cm.CFrame = CFrame.new(cp + Vector3.new(0, 3, 0), cp + Vector3.new(0, -1, 0))
+end
+
+local function sc()
+    local cm = workspace.CurrentCamera
+    local vs = cm.ViewportSize
+    vm:SendMouseButtonEvent(vs.X/2,vs.Y/2,0,true,game,1)
+    wait(0.1)
+    vm:SendMouseButtonEvent(vs.X/2,vs.Y/2,0,false,game,1)
+end
+
+local function tc()
+    local cm = workspace.CurrentCamera
+    cm.CameraType = cm.CameraType == Enum.CameraType.Custom and Enum.CameraType.Follow or Enum.CameraType.Custom
+end
+
+local function sf()
     lp.CameraMode = Enum.CameraMode.LockFirstPerson
 end
 
-local function preventSitting(character)
-    local humanoid = character:WaitForChild("Humanoid")
-    humanoid.Seated:Connect(function(isSeated)
-        if isSeated and (isAutoBush or isAutoHalloween) then
-            humanoid.Sit = false
-        end
+local function ps(c)
+    local h = c:WaitForChild("Humanoid")
+    h.Seated:Connect(function(s)
+        if s and (ab or ah) then h.Sit = false end
     end)
 end
 
-local function mAA(targetNames)
-    if (not isAutoBush and not isAutoHalloween) or isM then return end
+local function ma(tn)
+    if (not ab and not ah) or im then return end
     local c = lp.Character
     if not c or not c:FindFirstChild("HumanoidRootPart") then return end
-    local hrp = c.HumanoidRootPart
+    local hr = c.HumanoidRootPart
 
-    setFirstPerson()
-    preventSitting(c)
+    sf()
+    ps(c)
 
-    local cT, cD = nil, math.huge
-    for _, v in pairs(workspace:GetDescendants()) do
-        for _, n in ipairs(targetNames) do
+    local ct,cd = nil,math.huge
+    for _,v in pairs(workspace:GetDescendants()) do
+        for _,n in ipairs(tn) do
             if v:IsA("Model") and v.Name == n then
-                local d = (v:GetPrimaryPartCFrame().Position - hrp.Position).Magnitude
-                if d < cD then cT, cD = v, d end
+                local d = (v:GetPrimaryPartCFrame().Position-hr.Position).Magnitude
+                if d < cd then ct,cd = v,d end
             end
         end
     end
     
-    if not cT or (cT == cT and cD < 3) then return end
+    if not ct or (ct == ct and cd < 3) then return end
     
-    isM = true
-    tUI(true)
+    im = true
+    tu(true)
 
-    local s = cD < 50 and sC or (cD < 200 and sM or sF)
-    local t = cD / s
+    local t = cd / ms
 
-    local tw = ts:Create(hrp, TweenInfo.new(t, Enum.EasingStyle.Linear), {CFrame = cT:GetPrimaryPartCFrame()})
+    local tw = ts:Create(hr,TweenInfo.new(t,Enum.EasingStyle.Linear),{CFrame=ct:GetPrimaryPartCFrame()})
     tw:Play()
     tw.Completed:Wait()
 
-    local cam = workspace.CurrentCamera
-    local oCS, oCT, oCF = cam.CameraSubject, cam.CameraType, cam.CFrame
-    cam.CameraType = Enum.CameraType.Scriptable
+    local cm = workspace.CurrentCamera
+    local os,ot,of = cm.CameraSubject,cm.CameraType,cm.CFrame
+    cm.CameraType = Enum.CameraType.Scriptable
 
-    for _, pt in pairs(c:GetDescendants()) do
-        if pt:IsA("BasePart") then
-            pt.CanCollide = false
-            pt.Transparency = 1
+    for _,p in pairs(c:GetDescendants()) do
+        if p:IsA("BasePart") then
+            p.CanCollide = false
+            p.Transparency = 1
         end
     end
 
-    local cD = false
-    local cCon = uis.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            cD = true
-        end
+    local cd = false
+    local cc = us.InputBegan:Connect(function(i)
+        if i.UserInputType == Enum.UserInputType.MouseButton1 then cd = true end
     end)
 
-    local at = 0
-    while not cD and at < 5 do
-        fCam(cT, c)
+    local at,st = 0,tick()
+    while not cd and at < 5 and (tick()-st) < 20 do
+        fc(ct,c)
         wait(0.5)
-        sClick()
+        sc()
         wait(0.5)
         at = at + 1
         
-        if not cD then
-            local o = Vector3.new(math.random(-1, 1), math.random(-1, 1), math.random(-1, 1)).Unit * 2
-            cam.CFrame = cam.CFrame * CFrame.new(o)
+        if not ct:IsDescendantOf(workspace) then break end
+    end
+
+    cc:Disconnect()
+
+    if ct:IsDescendantOf(workspace) and (tick()-st) >= 20 then ct:Destroy() end
+
+    for _,p in pairs(c:GetDescendants()) do
+        if p:IsA("BasePart") then
+            p.CanCollide = true
+            p.Transparency = 0
         end
     end
 
-    cCon:Disconnect()
-
-    for _, pt in pairs(c:GetDescendants()) do
-        if pt:IsA("BasePart") then
-            pt.CanCollide = true
-            pt.Transparency = 0
-        end
-    end
-
-    cam.CameraSubject, cam.CameraType, cam.CFrame = oCS, oCT, oCF
+    cm.CameraSubject,cm.CameraType,cm.CFrame = os,ot,of
     
-    tUI(false)
-    isM = false
-    toggleCameraMode()
+    tu(false)
+    im = false
+    tc()
 end
 
-local function sItem(item)
-    if (item:IsA("ImageButton") or item:IsA("Frame")) and item.Visible then
+local function si(i)
+    if (i:IsA("ImageButton") or i:IsA("Frame")) and i.Visible then
         local sv = Instance.new("BoolValue")
-        sv.Name, sv.Value, sv.Parent = "IsActive", false, item
+        sv.Name,sv.Value,sv.Parent = "IsActive",false,i
 
         local tb = Instance.new("TextButton")
-        tb.Name, tb.Size, tb.Position = "StatusButton", UDim2.new(0.3, 0, 0.2, 0), UDim2.new(0, 0, 0.3, 0)
-        tb.BackgroundColor3, tb.Text, tb.TextColor3 = Color3.fromRGB(255, 0, 0), "[OFF]", Color3.new(1, 1, 1)
-        tb.TextStrokeTransparency, tb.Parent = 0.8, item
+        tb.Name,tb.Size,tb.Position = "StatusButton",UDim2.new(0.3,0,0.2,0),UDim2.new(0,0,0.3,0)
+        tb.BackgroundColor3,tb.Text,tb.TextColor3 = Color3.fromRGB(255,0,0),"[OFF]",Color3.new(1,1,1)
+        tb.TextStrokeTransparency,tb.Parent = 0.8,i
 
         sv.Changed:Connect(function()
-            tb.BackgroundColor3 = sv.Value and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+            tb.BackgroundColor3 = sv.Value and Color3.fromRGB(0,255,0) or Color3.fromRGB(255,0,0)
             tb.Text = sv.Value and "[ON]" or "[OFF]"
         end)
 
-        tb.MouseButton1Click:Connect(function()
-            sv.Value = not sv.Value
-        end)
+        tb.MouseButton1Click:Connect(function() sv.Value = not sv.Value end)
     end
 end
 
@@ -203,88 +237,79 @@ local pg = lp:WaitForChild("PlayerGui")
 local ig = pg:WaitForChild("MainMenu"):WaitForChild("Root"):WaitForChild("Inventory"):WaitForChild("View")
 local iG = ig:WaitForChild("Contents")
 
-for _, item in pairs(iG:GetChildren()) do
-    sItem(item:GetChildren()[1])
-end
+for _,i in pairs(iG:GetChildren()) do si(i:GetChildren()[1]) end
+iG.ChildAdded:Connect(si)
 
-iG.ChildAdded:Connect(sItem)
-
-local function fpn(i)
-    while i and not i:IsA("Model") do
-        i = i.Parent
-    end
+local function fn(i)
+    while i and not i:IsA("Model") do i = i.Parent end
     return i and i:IsA("Model") and i.Name or "Unknown"
 end
 
-local function uap()
+local function ua()
     ap = {}
-    for _, item in pairs(iG:GetChildren()) do
-        if (item:IsA("Frame") or item:IsA("ImageLabel")) and item.Visible then
-            local sv = item:GetChildren()[1]:FindFirstChild("IsActive")
-            if sv and sv.Value then
-                table.insert(ap, item.Name)
-            end
+    for _,i in pairs(iG:GetChildren()) do
+        if (i:IsA("Frame") or i:IsA("ImageLabel")) and i.Visible then
+            local sv = i:GetChildren()[1]:FindFirstChild("IsActive")
+            if sv and sv.Value then table.insert(ap,i.Name) end
         end
     end
 end
 
-local function ipe(pn)
-    local item = iG:FindFirstChild(pn)
-    if not item then return false end
-    local rotatedIcons = item:FindFirstChild("RotatedIcons")
-    if not rotatedIcons then return false end
-    local equippedIcon = rotatedIcons:FindFirstChild("EquippedIcon")
-    return equippedIcon and equippedIcon:IsA("ImageLabel") and equippedIcon.Visible
+local function ip(n)
+    local i = iG:FindFirstChild(n)
+    if not i then return false end
+    local ri = i:FindFirstChild("RotatedIcons")
+    if not ri then return false end
+    local ei = ri:FindFirstChild("EquippedIcon")
+    return ei and ei:IsA("ImageLabel") and ei.Visible
 end
 
-local function fnuap()
-    for _, pn in ipairs(ap) do
-        if not ipe(pn) then
-            return pn
-        end
+local function fu()
+    for _,n in ipairs(ap) do
+        if not ip(n) then return n end
     end
 end
 
 spawn(function()
-    local udn = lp.Name .. ":Debris"
-    local ud = workspace:FindFirstChild(udn)
+    local un = lp.Name..":Debris"
+    local ud = workspace:FindFirstChild(un)
     if not ud then return end
 
     while true do
         wait(0.1)
-        uap()
+        ua()
 
-        for _, child in ipairs(ud:GetDescendants()) do
-            if child.Name == "ChatList" then
-                local cm = child:GetChildren()
+        for _,c in ipairs(ud:GetDescendants()) do
+            if c.Name == "ChatList" then
+                local cm = c:GetChildren()
                 if #cm >= 2 then
                     local sc = cm[2]
                     if sc:IsA("Frame") then
                         local tl = sc:FindFirstChildOfClass("TextLabel")
                         if tl then
                             local mt = tl.Text:lower()
-                            local cpn = fpn(sc)
+                            local cn = fn(sc)
 
-                            for key, action in pairs(act) do
-                                if mt:find(key) then
+                            for k,a in pairs(at) do
+                                if mt:find(k) then
                                     local ct = tick()
-                                    local lat = pat[cpn]
+                                    local lt = pt[cn]
 
-                                    if not lat or (ct - lat >= ac) then
-                                        sas(cpn, action)
-                                        pat[cpn] = ct
-                                        ui:Notify("Pet Interaction: Waiting for server response", 3)
+                                    if not lt or (ct-lt >= ac) then
+                                        r1(cn,a)
+                                        pt[cn] = ct
+                                        ui:Notify("Pet Interaction: Waiting for server response",3)
                                         wait(8)  
 
-                                        local np = fnuap()
+                                        local np = fu()
                                         if np then
-                                            dp(cpn)
-                                            ui:Notify("Rotating Pet: Deequipping Current Pet", 5)
+                                            r2(cn)
+                                            ui:Notify("Rotating Pet: Deequipping Current Pet",5)
                                             wait(5) 
-                                            ep(np)
-                                            ui:Notify("Rotating Pet: Equipping New", 5)
+                                            r2(np)
+                                            ui:Notify("Rotating Pet: Equipping New",5)
                                         else
-                                            ui:Notify("No Pets Active: continue", 5)
+                                            ui:Notify("No Pets Active: continue",5)
                                         end
                                         break
                                     end
@@ -301,29 +326,25 @@ end)
 spawn(function()
     while true do
         wait(0.3)
-        local function aasa(a)
-            for _, at in ipairs(a:GetPlayingAnimationTracks()) do
-                at:AdjustSpeed(100)
-            end
+        local function aa(a)
+            for _,t in ipairs(a:GetPlayingAnimationTracks()) do t:AdjustSpeed(100) end
         end
 
-        local function aaio(o)
+        local function ao(o)
             local a = o:FindFirstChildOfClass("Animator")
-            if a then aasa(a) end
-            for _, child in ipairs(o:GetChildren()) do
-                aaio(child)
-            end
+            if a then aa(a) end
+            for _,c in ipairs(o:GetChildren()) do ao(c) end
         end
 
-        aaio(workspace[lp.Name .. ":Debris"])
+        ao(workspace[lp.Name..":Debris"])
     end
 end)
 
-ex:TBtn("Collect Flowers", function(b) 
-    local isCollectingFlowers = b
-    while isCollectingFlowers do
-        for _, h in ipairs(workspace.Activators:GetChildren()) do
-            if h.Name == "Flower" and isCollectingFlowers then
+ex:TBtn("Collect Flowers",function(b) 
+    local cf = b
+    while cf do
+        for _,h in ipairs(workspace.Activators:GetChildren()) do
+            if h.Name == "Flower" and cf then
                 lp.Character.PrimaryPart.CFrame = h.Part.CFrame
                 wait(0.5)
                 fireproximityprompt(h.Part.ProximityPrompt)
@@ -333,11 +354,11 @@ ex:TBtn("Collect Flowers", function(b)
     end
 end)
 
-ex:TBtn("Collect Magic Feathers", function(b) 
-    local isCollectingFeathers = b
-    while isCollectingFeathers do
-        for _, h in ipairs(workspace.Feathers:GetChildren()) do
-            if h.Name == "Feather" and h:FindFirstChild("Root") and isCollectingFeathers then
+ex:TBtn("Collect Magic Feathers",function(b) 
+    local cf = b
+    while cf do
+        for _,h in ipairs(workspace.Feathers:GetChildren()) do
+            if h.Name == "Feather" and h:FindFirstChild("Root") and cf then
                 lp.Character.PrimaryPart.CFrame = h.Root.CFrame
                 wait(0.5)
                 fireproximityprompt(h.Root.ProximityPrompt)
@@ -347,92 +368,107 @@ ex:TBtn("Collect Magic Feathers", function(b)
     end
 end)
 
-local isAutoClaimGift = false
-ui:TBtn("Auto Claim Gift", function(b) 
-    isAutoClaimGift = not isAutoClaimGift
-    while isAutoClaimGift do
-        for i = 1, 9 do
-            dre:FireServer({
-                [1] = {
-                    [1] = "\1",
-                    [2] = "BERRIES_" .. i .. "00"
-                },
-                [2] = "@"
-            })
+local ag = false
+ui:TBtn("Auto Claim Gift",function(b) 
+    ag = not ag
+    while ag do
+        for i = 1,9 do
+            r4(i)
             wait(1)
         end
     end
 end)
 
-ui:TBtn("Auto Bush Raiwb", function(b) 
-    isAutoBush = not isAutoBush
-    while isAutoBush do
-        mAA(tn)
+ui:TBtn("Auto Bush Raiwb",function(b) 
+    ab = not ab
+    while ab do
+        ma(tn)
         wait(1)
     end
 end)
 
-local isAutoEgg = false
-ui:TBtn("Auto Egg Secret", function(b)
-    isAutoEgg = not isAutoEgg
-    while isAutoEgg do
-        local args = {
-            [1] = {
-                [1] = {
-                    [1] = "\1",
-                    [2] = {
-                        ["PurchaserGUID"] = "66111113-6A42-49B3-8F1E-2C5C5B646B57"
-                    }
-                },
-                [2] = "Ñ"
-            }
-        }
-        game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
+local ae = false
+ui:TBtn("Auto Egg Secret",function(b)
+    ae = not ae
+    while ae do
+        r3()
         wait(2)
     end
 end)
 
-ui:TBtn("Auto Halloween Items", function(b)
-    isAutoHalloween = not isAutoHalloween
-    while isAutoHalloween do
-        mAA(halloweenItems)
+ui:TBtn("Auto Halloween Items",function(b)
+    ah = not ah
+    while ah do
+        ma(hi)
         wait(1)
     end
 end)
 
-ex:Btn("TP Secret Zone", function()
-    lp.Character:MoveTo(Vector3.new(1356, 10, -3447))
+ex:Btn("TP Secret Zone",function()
+    lp.Character:MoveTo(Vector3.new(1356,10,-3447))
     lp.Character.PrimaryPart.Anchored = true
-    
     wait(3)
     lp.Character.PrimaryPart.Anchored = false
 end)
 
-ex:Btn("First Person", function()
-    lp.CameraMode = Enum.CameraMode.LockFirstPerson
-end)
+ex:Btn("First Person",function() sf() end)
 
-ui:Notify("Auto Tasks Pet: Default Active", 5)
+ui:Notify("Auto Tasks Pet: Default Active",5)
 
 wait(0.7)
 local is = ui:Sub("Info Script")
-is:Txt("Version: 1.5")
+is:Txt("Version: 1.6")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 22/10/24")
-is:Btn("Link YouTube", function()
-   setclipboard("https://youtube.com/@onecreatorx") 
-end)
-
-is:Btn("Link Discord", function()
-  setclipboard("https://discord.com/invite/UNJpdJx7c4")  
-end)
+is:Txt("Update: 23/10/24")
+is:Btn("Link YouTube",function() setclipboard("https://youtube.com/@onecreatorx") end)
+is:Btn("Link Discord",function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
 lp.Idled:Connect(function()
-    vim:CaptureController()
-    vim:ClickButton2(Vector2.new())
+    vm:CaptureController()
+    vm:ClickButton2(Vector2.new())
 end)
 
-lp.CharacterAdded:Connect(preventSitting)
-if lp.Character then
-    preventSitting(lp.Character)
+game:GetService("CoreGui").ChildAdded:Connect(function(child)
+    if farmingActive then
+        if child:IsA("ScreenGui") then
+            saveVisibilityState(child)
+            setupVisibilityTracking(child)
+            child.Enabled = false
+        end
+    end
+end)
+
+lp.PlayerGui.ChildAdded:Connect(function(child)
+    if farmingActive then
+        if child:IsA("ScreenGui") then
+            saveVisibilityState(child)
+            setupVisibilityTracking(child)
+            child.Enabled = false
+        end
+        child.DescendantAdded:Connect(function(desc)
+            if desc:IsA("Frame") and farmingActive then
+                saveVisibilityState(desc)
+                setupVisibilityTracking(desc)
+                desc.Visible = false
+            end
+        end)
+    end
+end)
+
+local function cleanupConnections()
+    for instance, connection in pairs(visibilityChangedConnections) do
+        if connection.Connected then
+            connection:Disconnect()
+        end
+    end
+    visibilityChangedConnections = {}
 end
+
+game:GetService("Players").PlayerRemoving:Connect(function(player)
+    if player == lp then
+        cleanupConnections()
+    end
+end)
+
+lp.CharacterAdded:Connect(ps)
+if lp.Character then ps(lp.Character) end
