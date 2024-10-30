@@ -15,19 +15,19 @@ local farmingActive = false
 local visibilityChangedConnections = {}
 
 local function r1(n, a)
-    dr:FireServer({[1]="PetInteractAction",[2]=".",[3]={[1]="\1",[2]={n,a}},[4]="#"})
+    dr:FireServer({[1]="PetInteractAction",[2]="0",[3]={[1]="\1",[2]={n,a}},[4]="%"})
 end
 
 local function r2(n)
-    dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]=";"})
+    dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="="})
 end
 
 local function r3()
-    dr:FireServer({[1]={{[1]="\1",[2]={["PurchaserGUID"]="66111113-6A42-49B3-8F1E-2C5C5B646B57"}},[2]="Ñ"}})
+    dr:FireServer({[1]={{[1]="\1",[2]={["PurchaserGUID"]="66111113-6A42-49B3-8F1E-2C5C5B646B57"}},[2]="P"}})
 end
 
 local function r4(i)
-    dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="@"})
+    dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="B"})
 end
 
 local tn = {"Bush1","Bush2","Bush3","Bush4"}
@@ -421,9 +421,9 @@ ui:Notify("Auto Tasks Pet: Default Active",5)
 
 wait(0.7)
 local is = ui:Sub("Info Script")
-is:Txt("Version: 1.6")
+is:Txt("Version: 1.7")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 23/10/24")
+is:Txt("Update: 30/10/24")
 is:Btn("Link YouTube",function() setclipboard("https://youtube.com/@onecreatorx") end)
 is:Btn("Link Discord",function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
