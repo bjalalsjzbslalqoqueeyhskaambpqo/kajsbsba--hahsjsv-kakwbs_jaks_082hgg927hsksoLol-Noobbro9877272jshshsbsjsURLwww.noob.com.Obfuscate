@@ -744,7 +744,7 @@ local function cCB(purchasePrompt)
 
     if zTB and claim then
         local bCX = zTB.AbsolutePosition.X + zTB.AbsoluteSize.X / 0.45
-        local bCY = zTB.AbsolutePosition.Y + zTB.AbsoluteSize.Y / 0.45
+        local bCY = zTB.AbsolutePosition.Y + zTB.AbsoluteSize.Y / 0.42
         
         game:GetService("VirtualInputManager"):SendMouseButtonEvent(bCX, bCY, 0, true, game, 1)
         game:GetService("VirtualInputManager"):SendMouseButtonEvent(bCX, bCY, 0, false, game, 1)
@@ -753,7 +753,7 @@ local function cCB(purchasePrompt)
         for _, descendant in ipairs(purchasePrompt:GetDescendants()) do
             if descendant:IsA("TextLabel") and descendant.Name == "Text" and descendant.Text:lower() == cBT then
                 local bCX = descendant.AbsolutePosition.X + descendant.AbsoluteSize.X / 0.45
-                local bCY = descendant.AbsolutePosition.Y + descendant.AbsoluteSize.Y / 0.45
+                local bCY = descendant.AbsolutePosition.Y + descendant.AbsoluteSize.Y / 0.42
                 
                 game:GetService("VirtualInputManager"):SendMouseButtonEvent(bCX, bCY, 0, true, game, 1)
                 game:GetService("VirtualInputManager"):SendMouseButtonEvent(bCX, bCY, 0, false, game, 1)
