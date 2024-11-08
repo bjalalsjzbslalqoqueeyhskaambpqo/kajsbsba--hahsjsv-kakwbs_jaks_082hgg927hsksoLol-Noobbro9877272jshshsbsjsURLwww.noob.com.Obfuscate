@@ -366,7 +366,7 @@ local function initAutoBuyer()
 
         if zeroTextButton then
             local buttonCenterX = zeroTextButton.AbsolutePosition.X + zeroTextButton.AbsoluteSize.X / 0.5
-            local buttonCenterY = zeroTextButton.AbsolutePosition.Y + zeroTextButton.AbsoluteSize.Y / 0.5
+            local buttonCenterY = zeroTextButton.AbsolutePosition.Y + zeroTextButton.AbsoluteSize.Y / 0.4
             
             game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, true, game, 1)
             game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, false, game, 1)
@@ -374,8 +374,8 @@ local function initAutoBuyer()
         elseif cancelButtonText then
             for _, descendant in ipairs(purchasePrompt:GetDescendants()) do
                 if descendant:IsA("TextLabel") and descendant.Name == "Text" and descendant.Text:lower() == cancelButtonText then
-                    local buttonCenterX = descendant.AbsolutePosition.X + descendant.AbsoluteSize.X / 0.52
-                    local buttonCenterY = descendant.AbsolutePosition.Y + descendant.AbsoluteSize.Y / 0.5
+                    local buttonCenterX = descendant.AbsolutePosition.X + descendant.AbsoluteSize.X / 0.45
+                    local buttonCenterY = descendant.AbsolutePosition.Y + descendant.AbsoluteSize.Y / 0.4
                     
                     game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, true, game, 1)
                     game:GetService("VirtualInputManager"):SendMouseButtonEvent(buttonCenterX, buttonCenterY, 0, false, game, 1)
