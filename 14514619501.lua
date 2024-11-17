@@ -15,11 +15,11 @@ local visibilityChangedConnections = {}
 
 -- Remote event functions
 local function r1(n, a)
-    dr:FireServer({[1]="PetInteractAction",[2]="0",[3]={[1]="\1",[2]={n,a}},[4]="%"})
+    dr:FireServer({[1]="PetInteractAction",[2]="3",[3]={[1]="\1",[2]={n,a}},[4]="("})
 end
 
 local function r2(n)
-    dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="="})
+    dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="@"})
 end
 
 local function r3()
@@ -27,7 +27,7 @@ local function r3()
 end
 
 local function r4(i)
-    dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="B"})
+    dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="E"})
 end
 
 local tn = {"Bush1","Bush2","Bush3","Bush4"}
@@ -419,9 +419,9 @@ ui:Notify("Auto Tasks Pet: Default Active", 5)
 -- Info Section
 wait(0.7)
 local is = ui:Sub("Info Script")
-is:Txt("Version: 1.8")
+is:Txt("Version: 1.9")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 09/11/23")
+is:Txt("Update: 17/11/23")
 is:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 is:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
