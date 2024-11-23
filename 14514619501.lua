@@ -368,7 +368,7 @@ local function ao(o)
 end)
 
 local cff = false
-ui:TBtn("Collect Flowers", function() 
+ex:TBtn("Collect Flowers", function() 
     cff = not cff
     while cff do
         for _, h in ipairs(workspace.Activators:GetChildren()) do
@@ -383,7 +383,7 @@ ui:TBtn("Collect Flowers", function()
 end)
 
 local cf = false
-ui:TBtn("Collect Magic Feathers", function() 
+ex:TBtn("Collect Magic Feathers", function() 
     cf = not cf
     while cf do
         for _, h in ipairs(workspace.Feathers:GetChildren()) do
@@ -426,7 +426,7 @@ ui:TBtn("Auto Egg Secret", function()
     end
 end)
 
-ui:Btn("TP Secret Zone", function()
+ex:Btn("TP Secret Zone egg", function()
     lp.Character:MoveTo(Vector3.new(1356, 10, -3447))
     lp.Character.PrimaryPart.Anchored = true
     wait(3)
@@ -503,4 +503,3 @@ end)
 
 lp.CharacterAdded:Connect(ps)
 if lp.Character then ps(lp.Character) end
-
