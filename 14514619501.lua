@@ -285,11 +285,11 @@ local function dafe(b)
         print("No se encontraron eventos activos")
     end
 end
-
+local teee = true
 local function hpi(cm, pn)
     if ck(cm, dk) then
         local sb = grsb()
-        if sb then
+        if sb and teee then
             local bi = sb == 3 and 4 or sb
             local bp = string.format("game.Players.LocalPlayer.PlayerGui.SideMenu.Root.BottomOptions.Hotbar[\"%d\"].Element", bi)
             local b = loadstring("return " .. bp)()
@@ -298,7 +298,9 @@ local function hpi(cm, pn)
                 dafe(b)
                 wait(1)
                 r1(pn, "Fed")
-                
+                local teee = false
+                task.wait(3)
+                local teee = true
             else
                 ui:Notify("No se pudo encontrar o activar el botón seleccionado", 3)
             end
