@@ -28,10 +28,10 @@ local at = {
 local ac, sb = 15, {false, false, false, false}
 local dk = {"drink", "thirst"}
 
-local function r1(n, a) dr:FireServer({[1]="PetInteractAction",[2]="3",[3]={[1]="\1",[2]={n,a}},[4]="("}) end
-local function r2(n) dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="@"}) end
-local function r3() dr:FireServer({[1]={{[1]="\1",[2]={["PurchaserGUID"]="66111113-6A42-49B3-8F1E-2C5C5B646B57"}},[2]="P"}}) end
-local function r4(i) dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="E"}) end
+local function r1(n, a) dr:FireServer({[1]="PetInteractAction",[2]="4",[3]={[1]="\1",[2]={n,a}},[4]=")"}) end
+local function r2(n) dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="A"}) end
+local function r3() dr:FireServer({[1]={{[1]="\1",[2]={["PurchaserGUID"]="66111113-6A42-49B3-8F1E-2C5C5B646B57"}},[2]="U"}}) end
+local function r4(i) dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="F"}) end
 
 local function hvc(i)
     if fa then
