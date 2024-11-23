@@ -476,7 +476,7 @@ end
 
 wait(0.7)
 local is = ui:Sub("Info Script")
-is:Txt("Version: 1.9")
+is:Txt("Version: 2.2")
 is:Txt("Create: 20/07/24")
 is:Txt("Update: 23/11/23")
 is:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
