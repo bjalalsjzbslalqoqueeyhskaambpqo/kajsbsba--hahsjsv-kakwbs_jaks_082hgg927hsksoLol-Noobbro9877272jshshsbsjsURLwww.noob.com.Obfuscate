@@ -28,10 +28,10 @@ local at = {
 local ac, sb = 15, {false, false, false, false}
 local dk = {"drink", "thirst"}
 
-local function r1(n, a) dr:FireServer({[1]="PetInteractAction",[2]="5",[3]={[1]="\1",[2]={n,a}},[4]="*"}) end
-local function r2(n) dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="B"}) end
+local function r1(n, a) dr:FireServer({[1]="PetInteractAction",[2]="4",[3]={[1]="\1",[2]={n,a}},[4]=")"}) end
+local function r2(n) dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="A"}) end
 local function r3() dr:FireServer({[1]={{[1]="\1",[2]={["PurchaserGUID"]="66111113-6A42-49B3-8F1E-2C5C5B646B57"}},[2]="U"}}) end
-local function r4(i) dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="V"}) end
+local function r4(i) dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="F"}) end
 
 local function hvc(i)
     if fa then
@@ -301,19 +301,6 @@ local function hpi(cm, pn)
                 local teee = false
                 task.wait(5)
                 local teee = true
-                ui:Notify("Pet Interaction: Waiting for server response", 3)
-                                        wait(8)  
-
-                                        local np = fu()
-                                        if np and np ~= cn then
-                                            r2(cn)
-                                            ui:Notify("Rotating Pet: Deequipping Current Pet", 5)
-                                            wait(5) 
-                                            r2(np)
-                                            ui:Notify("Rotating Pet: Equipping New", 5)
-                                        else
-                                            ui:Notify("No new pets to rotate, continuing", 5)
-                end
             else
                 ui:Notify("No se pudo encontrar o activar el botón seleccionado", 3)
             end
@@ -476,7 +463,7 @@ end
 
 wait(0.7)
 local is = ui:Sub("Info Script")
-is:Txt("Version: 2.2")
+is:Txt("Version: 1.9")
 is:Txt("Create: 20/07/24")
 is:Txt("Update: 23/11/23")
 is:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
