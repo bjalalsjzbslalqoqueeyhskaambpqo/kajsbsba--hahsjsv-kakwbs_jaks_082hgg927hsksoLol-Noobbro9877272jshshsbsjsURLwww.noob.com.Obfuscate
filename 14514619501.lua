@@ -1,3 +1,6 @@
+if _G.ScriptExecuted then return end
+_G.ScriptExecuted = true
+
 local MUI = loadstring(game:HttpGet("https://ui.api-x.site"))()
 local ui = MUI:new("Raise a Rainbacorn")
 local ex = ui:Sub("Extra")
@@ -19,13 +22,10 @@ local at = {
     ["hungry"] = "Fed",
     ["sad"] = "Hugged",
     ["dirty"] = "Bathed",
-    ["feed"] = "Fed",
-    ["fed"] = "Fed",
-    ["hunger"] = "Fed"
+    ["feed"] = "Fed"
 }
 local ac, sb = 15, {false, false, false, false}
-local dk = {"drink", "thirst"}
-local li = {}
+local dk = {"drink", "thirst", "hungry", "sad", "dirty", "feed"}
 
 local function r1(n, a) dr:FireServer({[1]="PetInteractAction",[2]="3",[3]={[1]="\1",[2]={n,a}},[4]="("}) end
 local function r2(n) dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="@"}) end
@@ -294,30 +294,12 @@ local function hpi(cm, pn)
             local b = loadstring("return " .. bp)()
             
             if b and b:IsA("GuiButton") then
-                local ct = tick()
-                if not li[pn] or (ct - li[pn] >= ac) then
-                    dafe(b)
-                    wait(1)
-                    r1(pn, at[cm:match("%w+")] or "Fed")
-                    li[pn] = ct
-                    ui:Notify("Interacción con mascota: " .. pn, 3)
-                    wait(8)
-                    
-                    local np = fu()
-                    if np and np ~= pn then
-                        r2(pn)
-                        ui:Notify("Rotando mascota: Desequipando mascota actual", 3)
-                        wait(5)
-                        r2(np)
-                        ui:Notify("Rotando mascota: Equipando nueva mascota", 3)
-                    else
-                        ui:Notify("No hay nuevas mascotas para rotar, continuando", 3)
-                    end
-                else
-                   
-                end
+                dafe(b)
+                wait(1)
+                r1(pn, "Fed")
+                ui:Notify("Pet fue alimentado debido a la detección de sed", 3)
             else
-                
+                ui:Notify("No se pudo encontrar o activar el botón seleccionado", 3)
             end
         else
             ui:Notify("No hay botones seleccionados para interactuar", 3)
@@ -344,7 +326,34 @@ spawn(function()
                         if tl then
                             local mt = tl.Text:lower()
                             local cn = fn(sc)
+
                             hpi(mt, cn)
+
+                            for k, a in pairs(at) do
+                                if mt:find(k) then
+                                    local ct = tick()
+                                    local lt = pt[cn]
+
+                                    if not lt or (ct - lt >= ac) then
+                                        r1(cn, a)
+                                        pt[cn] = ct
+                                        ui:Notify("Pet Interaction: Waiting for server response", 3)
+                                        wait(8)  
+
+                                        local np = fu()
+                                        if np and np ~= cn then
+                                            r2(cn)
+                                            ui:Notify("Rotating Pet: Deequipping Current Pet", 5)
+                                            wait(5) 
+                                            r2(np)
+                                            ui:Notify("Rotating Pet: Equipping New", 5)
+                                        else
+                                            ui:Notify("No new pets to rotate, continuing", 5)
+                                        end
+                                        break
+                                    end
+                                end
+                            end
                         end
                     end
                 end
@@ -359,7 +368,8 @@ spawn(function()
         local function aa(a)
             for _, t in ipairs(a:GetPlayingAnimationTracks()) do t:AdjustSpeed(100) end
         end
-local function ao(o)
+
+        local function ao(o)
             local a = o:FindFirstChildOfClass("Animator")
             if a then aa(a) end
             for _, c in ipairs(o:GetChildren()) do ao(c) end
@@ -428,7 +438,7 @@ ui:TBtn("Auto Egg Secret", function()
     end
 end)
 
-ex:Btn("TP Secret Zone egg", function()
+ex:Btn("TP Secret Zone Egg", function()
     lp.Character:MoveTo(Vector3.new(1356, 10, -3447))
     lp.Character.PrimaryPart.Anchored = true
     wait(3)
@@ -439,20 +449,20 @@ ex:Btn("First Person", function() sf() end)
 
 ui:Notify("Auto Tasks Pet: Default Active", 5)
 
-local bs = ui:Sub("Drinks Auto Use Pets")
+local bs = ui:Sub("Selección de Botones")
 for i = 1, 4 do
     local bi = i == 3 and 4 or i
-    bs:TBtn("Select Space " .. bi, function()
+    bs:TBtn("Seleccionar Botón " .. bi, function()
         sb[i] = not sb[i]
-        ui:Notify("Space " .. bi .. (sb[i] and " drink select " or " dessllc "), 3)
+        ui:Notify("Botón " .. bi .. (sb[i] and " seleccionado" or " deseleccionado"), 3)
     end)
 end
 
 wait(0.7)
 local is = ui:Sub("Info Script")
-is:Txt("Version: 2.1")
+is:Txt("Version: 1.9")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 23/11/23")
+is:Txt("Update: 17/11/23")
 is:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 is:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
