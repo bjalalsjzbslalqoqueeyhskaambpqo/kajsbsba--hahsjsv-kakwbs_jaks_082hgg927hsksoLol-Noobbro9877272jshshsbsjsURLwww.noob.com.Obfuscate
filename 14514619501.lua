@@ -23,7 +23,8 @@ local at = {
     ["sad"] = "Hugged",
     ["dirty"] = "Bathed",
     ["feed"] = "Fed",
-    ["stinky"] = "Bathed"
+    ["stinky"] = "Bathed",
+    ["eat"] = "Fed"
 }
 local ac, sb = 15, {false, false, false, false}
 local dk = {"drink", "thirst"}
@@ -299,13 +300,17 @@ local function hpi(cm, pn)
                 wait(1)
                 r1(pn, "Fed")
                 local teee = false
-                task.wait(5)
+                ui:Notify("Drink pet", 3)
+                task.wait(7)
                 local teee = true
             else
                 ui:Notify("No se pudo encontrar o activar el botón seleccionado", 3)
             end
         else
-            ui:Notify("No hay botones seleccionados para interactuar", 3)
+            ui:Notify("No hay ningún espacio de bebida seleccionado", 3)
+            local teee = false
+                task.wait(3)
+                local teee = true
         end
     end
 end
