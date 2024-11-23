@@ -22,10 +22,11 @@ local at = {
     ["hungry"] = "Fed",
     ["sad"] = "Hugged",
     ["dirty"] = "Bathed",
-    ["feed"] = "Fed"
+    ["feed"] = "Fed",
+    ["stinky"] = "Bathed"
 }
 local ac, sb = 15, {false, false, false, false}
-local dk = {"drink", "thirst", "hungry", "sad", "dirty", "feed"}
+local dk = {"drink", "thirst"}
 
 local function r1(n, a) dr:FireServer({[1]="PetInteractAction",[2]="3",[3]={[1]="\1",[2]={n,a}},[4]="("}) end
 local function r2(n) dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="@"}) end
@@ -297,7 +298,7 @@ local function hpi(cm, pn)
                 dafe(b)
                 wait(1)
                 r1(pn, "Fed")
-                ui:Notify("Pet fue alimentado debido a la detección de sed", 3)
+                
             else
                 ui:Notify("No se pudo encontrar o activar el botón seleccionado", 3)
             end
@@ -449,12 +450,12 @@ ex:Btn("First Person", function() sf() end)
 
 ui:Notify("Auto Tasks Pet: Default Active", 5)
 
-local bs = ui:Sub("Selección de Botones")
+local bs = ui:Sub("Select Space Auto Drikns")
 for i = 1, 4 do
     local bi = i == 3 and 4 or i
-    bs:TBtn("Seleccionar Botón " .. bi, function()
+    bs:TBtn("Select Space " .. bi, function()
         sb[i] = not sb[i]
-        ui:Notify("Botón " .. bi .. (sb[i] and " seleccionado" or " deseleccionado"), 3)
+        ui:Notify("Space " .. bi .. (sb[i] and " Select" or " DSelect"), 3)
     end)
 end
 
@@ -462,7 +463,7 @@ wait(0.7)
 local is = ui:Sub("Info Script")
 is:Txt("Version: 1.9")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 17/11/23")
+is:Txt("Update: 23/11/23")
 is:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 is:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
