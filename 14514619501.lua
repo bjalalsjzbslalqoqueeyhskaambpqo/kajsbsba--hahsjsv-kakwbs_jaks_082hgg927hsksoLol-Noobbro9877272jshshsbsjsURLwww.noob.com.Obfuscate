@@ -21,7 +21,7 @@ local at = {
     ["dirty"] = "Bathed",
     ["feed"] = "Fed",
     ["fed"] = "Fed",
-    ["hunger"] = "Fed"]
+    ["hunger"] = "Fed"
 }
 local ac, sb = 15, {false, false, false, false}
 local dk = {"drink", "thirst"}
