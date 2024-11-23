@@ -437,12 +437,12 @@ ui:Btn("First Person", function() sf() end)
 
 ui:Notify("Auto Tasks Pet: Default Active", 5)
 
-local bs = ui:Sub("Selección de Botones")
+local bs = ui:Sub("Drinks Selections")
 for i = 1, 4 do
     local bi = i == 3 and 4 or i
-    bs:TBtn("Seleccionar Botón " .. bi, function()
+    bs:TBtn("Select Space" .. bi, function()
         sb[i] = not sb[i]
-        ui:Notify("Botón " .. bi .. (sb[i] and " seleccionado" or " deseleccionado"), 3)
+        ui:Notify("Space " .. bi .. (sb[i] and " drink select" or " dessllc"), 3)
     end)
 end
 
