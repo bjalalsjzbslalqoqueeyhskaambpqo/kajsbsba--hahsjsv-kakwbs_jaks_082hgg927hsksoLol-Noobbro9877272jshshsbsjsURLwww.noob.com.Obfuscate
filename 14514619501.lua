@@ -9,105 +9,73 @@ local rs = game:GetService("ReplicatedStorage")
 local lp = p.LocalPlayer
 local dr = rs:WaitForChild("dataRemoteEvent")
 
-local visibilityStates = {}
-local farmingActive = false
-local visibilityChangedConnections = {}
-
--- Remote event functions
-local function r1(n, a)
-    dr:FireServer({[1]="PetInteractAction",[2]="3",[3]={[1]="\1",[2]={n,a}},[4]="("})
-end
-
-local function r2(n)
-    dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="@"})
-end
-
-local function r3()
-    dr:FireServer({[1]={{[1]="\1",[2]={["PurchaserGUID"]="66111113-6A42-49B3-8F1E-2C5C5B646B57"}},[2]="P"}})
-end
-
-local function r4(i)
-    dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="E"})
-end
-
+local vs, fa, vc = {}, false, {}
 local tn = {"Bush1","Bush2","Bush3","Bush4"}
-local ms = 100
-local im = false
+local ms, im = 100, false
 local vu, pt, ap = {}, {}, {}
-local at = {["hug"]="Hugged",["bath"]="Bathed",["hungry"]="Fed"}
-local ac = 15
+local at = {
+    ["hug"] = "Hugged",
+    ["bath"] = "Bathed",
+    ["hungry"] = "Fed",
+    ["sad"] = "Hugged",
+    ["dirty"] = "Bathed",
+    ["feed"] = "Fed"
+}
+local ac, sb = 15, {false, false, false, false}
+local dk = {"drink", "thirst"}
+local li = {}
 
--- Visibility management functions
-local function handleVisibilityChange(instance)
-    if farmingActive then
-        if instance:IsA("ScreenGui") and instance.Enabled then
-            instance.Enabled = false
-        elseif instance:IsA("Frame") and instance.Visible then
-            instance.Visible = false
-        end
+local function r1(n, a) dr:FireServer({[1]="PetInteractAction",[2]="3",[3]={[1]="\1",[2]={n,a}},[4]="("}) end
+local function r2(n) dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="@"}) end
+local function r3() dr:FireServer({[1]={{[1]="\1",[2]={["PurchaserGUID"]="66111113-6A42-49B3-8F1E-2C5C5B646B57"}},[2]="P"}}) end
+local function r4(i) dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="E"}) end
+
+local function hvc(i)
+    if fa then
+        if i:IsA("ScreenGui") and i.Enabled then i.Enabled = false
+        elseif i:IsA("Frame") and i.Visible then i.Visible = false end
     end
 end
 
-local function saveVisibilityState(instance)
-    if instance:IsA("ScreenGui") then
-        visibilityStates[instance] = instance.Enabled
-    elseif instance:IsA("Frame") then
-        visibilityStates[instance] = instance.Visible
-    end
+local function svs(i)
+    if i:IsA("ScreenGui") then vs[i] = i.Enabled
+    elseif i:IsA("Frame") then vs[i] = i.Visible end
 end
 
-local function restoreVisibilityStates()
-    for instance, state in pairs(visibilityStates) do
-        if instance:IsA("ScreenGui") then
-            instance.Enabled = state
-        elseif instance:IsA("Frame") then
-            instance.Visible = state
-        end
+local function rvs()
+    for i, s in pairs(vs) do
+        if i:IsA("ScreenGui") then i.Enabled = s
+        elseif i:IsA("Frame") then i.Visible = s end
     end
-    visibilityStates = {}
+    vs = {}
 end
 
-local function setupVisibilityTracking(instance)
-    if instance:IsA("ScreenGui") then
-        if not visibilityChangedConnections[instance] then
-            visibilityChangedConnections[instance] = instance:GetPropertyChangedSignal("Enabled"):Connect(function()
-                handleVisibilityChange(instance)
-            end)
-        end
-    elseif instance:IsA("Frame") then
-        if not visibilityChangedConnections[instance] then
-            visibilityChangedConnections[instance] = instance:GetPropertyChangedSignal("Visible"):Connect(function()
-                handleVisibilityChange(instance)
-            end)
-        end
+local function svt(i)
+    if not vc[i] then
+        vc[i] = i:GetPropertyChangedSignal(i:IsA("ScreenGui") and "Enabled" or "Visible"):Connect(function() hvc(i) end)
     end
 end
 
 local function tu(h)
-    farmingActive = h
+    fa = h
     if h then
         for _, g in ipairs(lp.PlayerGui:GetChildren()) do
             if g:IsA("ScreenGui") then
-                saveVisibilityState(g)
-                setupVisibilityTracking(g)
-                g.Enabled = false
+                svs(g); svt(g); g.Enabled = false
             end
             for _, f in ipairs(g:GetDescendants()) do
                 if f:IsA("Frame") then
-                    saveVisibilityState(f)
-                    setupVisibilityTracking(f)
-                    f.Visible = false
+                    svs(f); svt(f); f.Visible = false
                 end
             end
         end
         lp.PlayerGui:SetTopbarTransparency(1)
     else
-        restoreVisibilityStates()
+        rvs()
         lp.PlayerGui:SetTopbarTransparency(0)
     end
 end
 
--- Helper functions
 local function fc(t, c)
     local cm = workspace.CurrentCamera
     local tp = t:GetPrimaryPartCFrame().Position
@@ -129,18 +97,13 @@ local function tc()
     cm.CameraType = cm.CameraType == Enum.CameraType.Custom and Enum.CameraType.Follow or Enum.CameraType.Custom
 end
 
-local function sf()
-    lp.CameraMode = Enum.CameraMode.LockFirstPerson
-end
+local function sf() lp.CameraMode = Enum.CameraMode.LockFirstPerson end
 
 local function ps(c)
     local h = c:WaitForChild("Humanoid")
-    h.Seated:Connect(function(s)
-        if s then h.Sit = false end
-    end)
+    h.Seated:Connect(function(s) if s then h.Sit = false end end)
 end
 
--- Main functions
 local function ma(tn)
     if im then return end
     local c = lp.Character
@@ -216,7 +179,6 @@ local function ma(tn)
     tc()
 end
 
--- UI setup
 local function si(i)
     if (i:IsA("ImageButton") or i:IsA("Frame")) and i.Visible then
         local sv = Instance.new("BoolValue")
@@ -243,7 +205,6 @@ local iG = ig:WaitForChild("Contents")
 for _, i in pairs(iG:GetChildren()) do si(i:GetChildren()[1]) end
 iG.ChildAdded:Connect(si)
 
--- Pet interaction functions
 local function fn(i)
     while i and not i:IsA("Model") do i = i.Parent end
     return i and i:IsA("Model") and i.Name or "Unknown"
@@ -274,7 +235,94 @@ local function fu()
     end
 end
 
--- Main loops
+local function ck(m, k)
+    m = m:lower()
+    for _, kw in ipairs(k) do
+        if m:find(kw) then return true end
+    end
+    return false
+end
+
+local function grsb()
+    local ab = {}
+    for i, s in ipairs(sb) do
+        if s then table.insert(ab, i) end
+    end
+    if #ab > 0 then return ab[math.random(#ab)] end
+    return nil
+end
+
+local function dafe(b)
+    local ae = {}
+    local ce = {"Activated", "MouseButton1Click", "MouseButton1Down", "MouseButton1Up", "InputBegan", "InputEnded"}
+
+    for _, en in ipairs(ce) do
+        if typeof(b[en]) == "RBXScriptSignal" then
+            local cn = getconnections(b[en])
+            if #cn > 0 then table.insert(ae, {name = en, connections = cn}) end
+        end
+    end
+
+    for _, c in ipairs(b:GetChildren()) do
+        if c:IsA("BindableEvent") or c:IsA("CustomEvent") then
+            local cn = getconnections(c.Event)
+            if #cn > 0 then table.insert(ae, {name = c.Name, connections = cn}) end
+        end
+    end
+
+    if #ae > 0 then
+        for _, ei in ipairs(ae) do
+            for i, cn in ipairs(ei.connections) do
+                if cn.Function and cn.Enabled then
+                    pcall(function() cn:Fire() end)
+                end
+            end
+        end
+    else
+        print("No se encontraron eventos activos")
+    end
+end
+
+local function hpi(cm, pn)
+    if ck(cm, dk) then
+        local sb = grsb()
+        if sb then
+            local bi = sb == 3 and 4 or sb
+            local bp = string.format("game.Players.LocalPlayer.PlayerGui.SideMenu.Root.BottomOptions.Hotbar[\"%d\"].Element", bi)
+            local b = loadstring("return " .. bp)()
+            
+            if b and b:IsA("GuiButton") then
+                local ct = tick()
+                if not li[pn] or (ct - li[pn] >= ac) then
+                    dafe(b)
+                    wait(1)
+                    r1(pn, at[cm:match("%w+")] or "Fed")
+                    li[pn] = ct
+                    ui:Notify("Interacción con mascota: " .. pn, 3)
+                    wait(8)
+                    
+                    local np = fu()
+                    if np and np ~= pn then
+                        r2(pn)
+                        ui:Notify("Rotando mascota: Desequipando mascota actual", 3)
+                        wait(5)
+                        r2(np)
+                        ui:Notify("Rotando mascota: Equipando nueva mascota", 3)
+                    else
+                        ui:Notify("No hay nuevas mascotas para rotar, continuando", 3)
+                    end
+                else
+                   
+                end
+            else
+                
+            end
+        else
+            ui:Notify("No hay botones seleccionados para interactuar", 3)
+        end
+    end
+end
+
 spawn(function()
     local un = lp.Name..":Debris"
     local ud = workspace:FindFirstChild(un)
@@ -294,32 +342,7 @@ spawn(function()
                         if tl then
                             local mt = tl.Text:lower()
                             local cn = fn(sc)
-
-                            for k, a in pairs(at) do
-                                if mt:find(k) then
-                                    local ct = tick()
-                                    local lt = pt[cn]
-
-                                    if not lt or (ct - lt >= ac) then
-                                        r1(cn, a)
-                                        pt[cn] = ct
-                                        ui:Notify("Pet Interaction: Waiting for server response", 3)
-                                        wait(8)  
-
-                                        local np = fu()
-                                        if np then
-                                            r2(cn)
-                                            ui:Notify("Rotating Pet: Deequipping Current Pet", 5)
-                                            wait(5) 
-                                            r2(np)
-                                            ui:Notify("Rotating Pet: Equipping New", 5)
-                                        else
-                                            ui:Notify("No Pets Active: continue", 5)
-                                        end
-                                        break
-                                    end
-                                end
-                            end
+                            hpi(mt, cn)
                         end
                     end
                 end
@@ -334,8 +357,7 @@ spawn(function()
         local function aa(a)
             for _, t in ipairs(a:GetPlayingAnimationTracks()) do t:AdjustSpeed(100) end
         end
-
-        local function ao(o)
+local function ao(o)
             local a = o:FindFirstChildOfClass("Animator")
             if a then aa(a) end
             for _, c in ipairs(o:GetChildren()) do ao(c) end
@@ -345,9 +367,8 @@ spawn(function()
     end
 end)
 
--- UI Buttons
 local cff = false
-ex:TBtn("Collect Flowers", function() 
+ui:TBtn("Collect Flowers", function() 
     cff = not cff
     while cff do
         for _, h in ipairs(workspace.Activators:GetChildren()) do
@@ -362,7 +383,7 @@ ex:TBtn("Collect Flowers", function()
 end)
 
 local cf = false
-ex:TBtn("Collect Magic Feathers", function() 
+ui:TBtn("Collect Magic Feathers", function() 
     cf = not cf
     while cf do
         for _, h in ipairs(workspace.Feathers:GetChildren()) do
@@ -405,74 +426,81 @@ ui:TBtn("Auto Egg Secret", function()
     end
 end)
 
-ex:Btn("TP Secret Zone", function()
+ui:Btn("TP Secret Zone", function()
     lp.Character:MoveTo(Vector3.new(1356, 10, -3447))
     lp.Character.PrimaryPart.Anchored = true
     wait(3)
     lp.Character.PrimaryPart.Anchored = false
 end)
 
-ex:Btn("First Person", function() sf() end)
+ui:Btn("First Person", function() sf() end)
 
 ui:Notify("Auto Tasks Pet: Default Active", 5)
 
--- Info Section
+local bs = ui:Sub("Selección de Botones")
+for i = 1, 4 do
+    local bi = i == 3 and 4 or i
+    bs:TBtn("Seleccionar Botón " .. bi, function()
+        sb[i] = not sb[i]
+        ui:Notify("Botón " .. bi .. (sb[i] and " seleccionado" or " deseleccionado"), 3)
+    end)
+end
+
 wait(0.7)
 local is = ui:Sub("Info Script")
-is:Txt("Version: 1.9")
+is:Txt("Version: 2.1")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 17/11/23")
+is:Txt("Update: 23/11/23")
 is:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 is:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
--- Anti-AFK
 lp.Idled:Connect(function()
     vm:CaptureController()
     vm:ClickButton2(Vector2.new())
 end)
 
--- GUI Management
 game:GetService("CoreGui").ChildAdded:Connect(function(child)
-    if farmingActive then
+    if fa then
         if child:IsA("ScreenGui") then
-            saveVisibilityState(child)
-            setupVisibilityTracking(child)
+            svs(child)
+            svt(child)
             child.Enabled = false
         end
     end
 end)
 
 lp.PlayerGui.ChildAdded:Connect(function(child)
-    if farmingActive then
+    if fa then
         if child:IsA("ScreenGui") then
-            saveVisibilityState(child)
-            setupVisibilityTracking(child)
+            svs(child)
+            svt(child)
             child.Enabled = false
         end
         child.DescendantAdded:Connect(function(desc)
-            if desc:IsA("Frame") and farmingActive then
-                saveVisibilityState(desc)
-                setupVisibilityTracking(desc)
+            if desc:IsA("Frame") and fa then
+                svs(desc)
+                svt(desc)
                 desc.Visible = false
             end
         end)
     end
 end)
 
-local function cleanupConnections()
-    for instance, connection in pairs(visibilityChangedConnections) do
-        if connection.Connected then
-            connection:Disconnect()
+local function cc()
+    for i, c in pairs(vc) do
+        if c.Connected then
+            c:Disconnect()
         end
     end
-    visibilityChangedConnections = {}
+    vc = {}
 end
 
 game:GetService("Players").PlayerRemoving:Connect(function(player)
     if player == lp then
-        cleanupConnections()
+        cc()
     end
 end)
 
 lp.CharacterAdded:Connect(ps)
 if lp.Character then ps(lp.Character) end
+
