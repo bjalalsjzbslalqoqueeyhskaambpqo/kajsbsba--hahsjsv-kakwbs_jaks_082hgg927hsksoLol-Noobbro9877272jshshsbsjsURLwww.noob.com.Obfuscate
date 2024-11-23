@@ -19,7 +19,9 @@ local at = {
     ["hungry"] = "Fed",
     ["sad"] = "Hugged",
     ["dirty"] = "Bathed",
-    ["feed"] = "Fed"
+    ["feed"] = "Fed",
+    ["fed"] = "Fed",
+    ["hunger"] = "Fed"]
 }
 local ac, sb = 15, {false, false, false, false}
 local dk = {"drink", "thirst"}
@@ -433,16 +435,16 @@ ex:Btn("TP Secret Zone egg", function()
     lp.Character.PrimaryPart.Anchored = false
 end)
 
-ui:Btn("First Person", function() sf() end)
+ex:Btn("First Person", function() sf() end)
 
 ui:Notify("Auto Tasks Pet: Default Active", 5)
 
-local bs = ui:Sub("Drinks Selections")
+local bs = ui:Sub("Drinks Auto Use Pets")
 for i = 1, 4 do
     local bi = i == 3 and 4 or i
-    bs:TBtn("Select Space" .. bi, function()
+    bs:TBtn("Select Space " .. bi, function()
         sb[i] = not sb[i]
-        ui:Notify("Space " .. bi .. (sb[i] and " drink select" or " dessllc"), 3)
+        ui:Notify("Space " .. bi .. (sb[i] and " drink select " or " dessllc "), 3)
     end)
 end
 
