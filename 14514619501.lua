@@ -28,8 +28,8 @@ local at = {
 local ac, sb = 15, {false, false, false, false}
 local dk = {"drink", "thirst"}
 
-local function r1(n, a) dr:FireServer({[1]="PetInteractAction",[2]="4",[3]={[1]="\1",[2]={n,a}},[4]=")"}) end
-local function r2(n) dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="A"}) end
+local function r1(n, a) dr:FireServer({[1]="PetInteractAction",[2]="6",[3]={[1]="\1",[2]={n,a}},[4]="+"}) end
+local function r2(n) dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="C"}) end
 local function r3() dr:FireServer({[1]={{[1]="\1",[2]={["PurchaserGUID"]="66111113-6A42-49B3-8F1E-2C5C5B646B57"}},[2]="U"}}) end
 local function r4(i) dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="F"}) end
 
@@ -466,9 +466,9 @@ end
 
 wait(0.7)
 local is = ui:Sub("Info Script")
-is:Txt("Version: 1.9")
+is:Txt("Version: 2.0")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 23/11/23")
+is:Txt("Update: 04/12/23")
 is:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 is:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
