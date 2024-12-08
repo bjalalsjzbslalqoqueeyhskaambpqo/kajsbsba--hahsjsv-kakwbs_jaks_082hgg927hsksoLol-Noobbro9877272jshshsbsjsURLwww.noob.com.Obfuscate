@@ -28,7 +28,8 @@ local at = {
 local ac, sb = 15, {false, false, false, false}
 local dk = {"drink", "thirst"}
 
-local function r1(n, a) dr:FireServer({[1]="PetInteractAction",[2]="8",[3]={[1]="\1",[2]={n,a}},[4]="_"}) end
+
+local function r1(n, a) dr:FireServer({[1]="PetInteractAction",[2]="8",[3]={[1]="\1",[2]={n,a}},[4]="-"}) end
 local function r2(n) dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="E"}) end
 local function r3() dr:FireServer({[1]={{[1]="\1",[2]={["PurchaserGUID"]="66111113-6A42-49B3-8F1E-2C5C5B646B57"}},[2]="U"}}) end
 local function r4(i) dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="F"}) end
@@ -305,9 +306,9 @@ local function hpi(cm, pn)
                 ui:Notify("No se pudo encontrar o activar el botón seleccionado", 3)
             end
         else
-            ui:Notify("No hay botones seleccionados para interactuar", 3)
+            ui:Notify("U no select drink space", 3)
             local teee = false
-                task.wait(3)
+                task.wait(4)
                 local teee = true
         end
     end
@@ -464,11 +465,17 @@ for i = 1, 4 do
     end)
 end
 
+local yater = false 
+ui:TBtn("Attack x5", function()
+yater = not yater
+end)
+
+
 wait(0.7)
 local is = ui:Sub("Info Script")
-is:Txt("Version: 2.0")
+is:Txt("Version: 2.1")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 04/12/23")
+is:Txt("Update: 08/12/23")
 is:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 is:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
@@ -521,3 +528,59 @@ end)
 
 lp.CharacterAdded:Connect(ps)
 if lp.Character then ps(lp.Character) end
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local dataRemoteEvent = ReplicatedStorage:WaitForChild("dataRemoteEvent")
+
+local processingIds = {}
+
+local function sendIndividualId(id)
+    if not processingIds[id] then
+        processingIds[id] = true
+        for i = 1, 5 do
+            task.spawn(function()
+                local args = {
+                    [1] = {
+                        [1] = {
+                            [1] = id,
+                        },
+                        [2] = "5"
+                    }
+                }
+                dataRemoteEvent:FireServer(unpack(args))
+            end)
+        end
+        task.delay(2, function()
+            processingIds[id] = nil
+        end)
+    end
+end
+
+local function ya(self, method, ...)
+    local args = {...}
+    
+    if self == dataRemoteEvent and method == "FireServer" and type(args[1]) == "table" and type(args[1][1]) == "table" then
+        if args[1][2] == "+" then
+            local itemId = args[1][1][2][2]
+            if type(itemId) == "string" then
+                task.spawn(function()
+                    sendIndividualId(itemId)
+                end)
+            end
+        end
+    end
+end
+
+local oldNamecall
+oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+    local method = getnamecallmethod()
+    local args = {...}
+
+    if (method == "FireServer" or method == "InvokeServer") and self == dataRemoteEvent and yater then
+        task.spawn(function()
+            ya(self, method, unpack(args))
+        end)
+    end
+
+    return oldNamecall(self, ...)
+end))
