@@ -466,7 +466,7 @@ for i = 1, 4 do
 end
 
 local yater = false 
-ui:TBtn("Attack x5", function()
+ui:TBtn("Attack x5 (beta)", function()
 yater = not yater
 end)
 
@@ -550,7 +550,7 @@ local function sendIndividualId(id)
                 dataRemoteEvent:FireServer(unpack(args))
             end)
         end
-        task.delay(2, function()
+        task.delay(2), function()
             processingIds[id] = nil
         end)
     end
