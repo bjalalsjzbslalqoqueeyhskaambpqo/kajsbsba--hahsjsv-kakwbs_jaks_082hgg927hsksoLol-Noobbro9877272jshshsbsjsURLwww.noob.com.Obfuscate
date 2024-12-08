@@ -32,7 +32,7 @@ local dk = {"drink", "thirst"}
 local function r1(n, a) dr:FireServer({[1]="PetInteractAction",[2]="8",[3]={[1]="\1",[2]={n,a}},[4]="-"}) end
 local function r2(n) dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="E"}) end
 local function r3() dr:FireServer({[1]={{[1]="\1",[2]={["PurchaserGUID"]="66111113-6A42-49B3-8F1E-2C5C5B646B57"}},[2]="U"}}) end
-local function r4(i) dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="F"}) end
+local function r4(i) dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="J"}) end
 
 local function hvc(i)
     if fa then
