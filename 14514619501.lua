@@ -306,9 +306,9 @@ local function hpi(cm, pn)
                 ui:Notify("No se pudo encontrar o activar el botón seleccionado", 3)
             end
         else
-            ui:Notify("U no select drink space", 3)
+            ui:Notify("No hay botones seleccionados para interactuar", 3)
             local teee = false
-                task.wait(4)
+                task.wait(3)
                 local teee = true
         end
     end
@@ -466,7 +466,7 @@ for i = 1, 4 do
 end
 
 local yater = false 
-ui:TBtn("Attack x5 (beta)", function()
+ui:TBtn("Attack x5", function()
 yater = not yater
 end)
 
