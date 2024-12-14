@@ -489,13 +489,27 @@ for _, te in ipairs(workspace[lp.Name .. ":Debris"]:GetChildren()) do
         end
 end)
 
+local bty = ui:Sub("Teleport Zones")
 
+spawn(function()
+        for _, ra in bty:GetChildren() do
+bty:Btn(ra.Name, function()
+                    
+lp.Character:MoveTo(ra.Position)
+                    wait(0.5)
+                    lp.Character.PrimaryPart.Anchored = true
+                    wait(2)
+                    lp.Character.PrimaryPart.Anchored = false
+                    
+                end)
+        end
+    end)
 
 wait(0.7)
 local is = ui:Sub("Info Script")
-is:Txt("Version: 2.1")
+is:Txt("Version: 2.2")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 08/12/23")
+is:Txt("Update: 14/12/23")
 is:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 is:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
