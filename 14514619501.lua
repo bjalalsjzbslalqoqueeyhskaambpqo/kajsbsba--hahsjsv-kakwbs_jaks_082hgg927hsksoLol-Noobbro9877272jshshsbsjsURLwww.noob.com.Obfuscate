@@ -480,7 +480,7 @@ local lp = game.Players.LocalPlayer
 for _, te in ipairs(workspace[lp.Name .. ":Debris"]:GetChildren()) do
     if te:IsA("Model") and not string.find(te.Name, "_Accessories") then
         if te:FindFirstChild("RootPart") then
-            lp.Character.Humanoid:WalkToPoint(te.RootPart.Position)
+            lp.Character.Humanoid.WalkToPoint = te.RootPart.Position
         end
     end
             end
