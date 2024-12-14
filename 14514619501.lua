@@ -471,6 +471,26 @@ yater = not yater
 end)
 
 
+local yaterr = false 
+ui:TBtn("Infinity loop (beta)", function()
+yaterr = not yaterr
+        while yaterr do
+local lp = game.Players.LocalPlayer
+
+for _, te in ipairs(workspace[lp.Name .. ":Debris"]:GetChildren()) do
+    if te:IsA("Model") and not string.find(te.Name, "_Accessories") then
+        if te:FindFirstChild("RootPart") then
+            lp.Character:MoveTo(te.RootPart.Position)
+        end
+    end
+            end
+            wait(2)
+
+        end
+end)
+
+
+
 wait(0.7)
 local is = ui:Sub("Info Script")
 is:Txt("Version: 2.1")
