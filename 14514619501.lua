@@ -472,7 +472,8 @@ end)
 
 
 local yaterr = false 
-ui:TBtn("Infinity loop (beta)", function()
+ui:TBtn("Auto Collect Farm(beta)", function()
+       ui:Notify("Beta Function, may cause non-farm", 5)
 yaterr = not yaterr
         while yaterr do
 local lp = game.Players.LocalPlayer
@@ -484,7 +485,7 @@ for _, te in ipairs(workspace[lp.Name .. ":Debris"]:GetChildren()) do
         end
     end
             end
-            wait(1)
+            wait(0.5)
 
         end
 end)
