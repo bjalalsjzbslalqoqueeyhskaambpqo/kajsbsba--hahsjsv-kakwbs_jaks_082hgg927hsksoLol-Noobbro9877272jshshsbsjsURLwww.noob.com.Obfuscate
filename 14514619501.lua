@@ -492,7 +492,7 @@ end)
 local bty = ui:Sub("Teleport Zones")
 
 spawn(function()
-        for _, ra in bty:GetChildren() do
+        for _, ra in workspace.TeleportZones:GetChildren() do
 bty:Btn(ra.Name, function()
                     
 lp.Character:MoveTo(ra.Position)
