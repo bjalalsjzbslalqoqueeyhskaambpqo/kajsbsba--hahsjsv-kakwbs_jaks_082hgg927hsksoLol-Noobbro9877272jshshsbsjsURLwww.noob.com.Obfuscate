@@ -506,11 +506,33 @@ lp.Character:MoveTo(ra.Position)
         end
     end)
 
-wait(0.7)
+ui:TBtn("All Farm Cookie", function()
+        rea = not rea 
+        while rea do
+            for i = 3, 20 do
+
+local args = {
+    [1] = {
+        [1] = {
+            [1] = i,
+            [2] = false,
+            [3] = true
+        },
+        [2] = "2"
+    }
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
+            end
+            task.wait()
+        end
+    end)
+
+task.wait(0.7)
 local is = ui:Sub("Info Script")
-is:Txt("Version: 2.2")
+is:Txt("Version: 2.3")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 14/12/23")
+is:Txt("Update: 17/12/23")
 is:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 is:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
