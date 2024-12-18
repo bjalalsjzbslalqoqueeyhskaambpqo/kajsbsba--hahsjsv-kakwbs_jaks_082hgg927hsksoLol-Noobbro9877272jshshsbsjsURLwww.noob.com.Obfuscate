@@ -1,102 +1,93 @@
-local MiniUI = loadstring(game:HttpGet("https://ui.api-x.site"))()
-
-local ui = MiniUI:new()
-
-local w = false
-ui:TBtn("Auto Bubbles", function()
-    w = not w
-end)
-
-ui:Notify("Auto Quests - Claim Default Active", 10)
-local player = game.Players.LocalPlayer
-local questsFrame = player.PlayerGui.MainGui.Quests.ScrollingFrame
-local activeTasks = {}
-
-local function claimReward(taskNumber)
-    local args = {[1] = tonumber(taskNumber)}
-    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("ClaimQuestReward"):FireServer(unpack(args))
+local u=loadstring(game:HttpGet("https://ui.api-x.site"))()
+local m=u:new()
+local w=false
+m:TBtn("Auto Bubbles",function()w=not w end)
+m:Notify("Auto Quests - Claim Default Active",10)
+local p=game.Players.LocalPlayer
+local q=p.PlayerGui.MainGui.Quests.ScrollingFrame
+local at={}
+local function cr(n)
+    local a={[1]=tonumber(n)}
+    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("ClaimQuestReward"):FireServer(unpack(a))
 end
-
-local function executeTask(taskFrame)
-    if activeTasks[taskFrame.Name] then return end
-    activeTasks[taskFrame.Name] = true
-    local descriptionLabel = taskFrame:FindFirstChild("DescriptionLabel")
-    local claimButton = taskFrame:FindFirstChild("ClaimButton")
-    if not descriptionLabel or not claimButton or not claimButton:FindFirstChild("TextLabel") then return end
-    local descriptionText = descriptionLabel.Text
-    local claimText = claimButton.TextLabel
-    local taskNumber = taskFrame.Name
-
-    -- Verificar si el texto es "Claim"
-    local function checkClaim()
-        if claimText.Text == "Claim" then
-            claimReward(taskNumber)
-            activeTasks[taskFrame.Name] = nil
+local function et(f)
+    if at[f.Name]then return end
+    at[f.Name]=true
+    local d=f:FindFirstChild("DescriptionLabel")
+    local c=f:FindFirstChild("ClaimButton")
+    if not d or not c or not c:FindFirstChild("TextLabel")then return end
+    local dt=d.Text
+    local ct=c.TextLabel
+    local n=f.Name
+    local function cc()
+        if ct.Text=="Claim"then
+            cr(n)
+            at[f.Name]=nil
         end
     end
-
-    -- Verificar cada vez que el texto cambie
-    claimText:GetPropertyChangedSignal("Text"):Connect(function()
-        checkClaim()
-    end)
-
-    -- Ejecutar tareas según la descripción
-    if descriptionText:find("Click") then
-        while activeTasks[taskFrame.Name] do
+    ct:GetPropertyChangedSignal("Text"):Connect(function()cc()end)
+    if dt:find("Click")then
+        while at[f.Name]do
             game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("PlayerClicked"):FireServer()
             wait()
         end
-    elseif descriptionText:find("Jump") then
-        while activeTasks[taskFrame.Name] do
-            game.Players.LocalPlayer.Character.Humanoid.Jump = true
+    elseif dt:find("Jump")then
+        while at[f.Name]do
+            game.Players.LocalPlayer.Character.Humanoid.Jump=true
             task.wait(0.2)
-            game.Players.LocalPlayer.Character.Humanoid.Jump = false
+            game.Players.LocalPlayer.Character.Humanoid.Jump=false
         end
-    elseif descriptionText:find("Run") then
-        local humanoid = game.Players.LocalPlayer.Character:WaitForChild("Humanoid")
-        local radius = 50 -- Mayor radio para posiciones más lejanas
-        local center = humanoid.Parent.PrimaryPart.Position
-        local angle = 0
-        local heartBeat = game:GetService("RunService").Heartbeat
-
-        -- Movimiento circular utilizando Move()
-        while activeTasks[taskFrame.Name] do
-            angle = angle + math.rad(45) -- Incremento del ángulo
-            local x = center.X + math.cos(angle) * radius
-            local z = center.Z + math.sin(angle) * radius
-            local targetPosition = Vector3.new(x, center.Y, z)
-            local direction = (targetPosition - humanoid.Parent.PrimaryPart.Position).Unit
-
-            -- Activar movimiento
-            humanoid:Move(direction, true)
-
-            -- Esperar un ciclo de Heartbeat para hacerlo más fluido
-            heartBeat:Wait()
+    elseif dt:find("Complete the easy obby")then
+        while at[f.Name]do
+            local a=workspace.Obby.Model.Finish.Position
+            wait(1)
+            workspace.Obby.Model.Finish.Position=game.Players.LocalPlayer.Character.PrimaryPart.Position
+            wait(1)
+            workspace.Obby.Model.Finish.Position=a
         end
-    elseif descriptionText:find("Stand still") then
-        while activeTasks[taskFrame.Name] do
-            checkClaim() -- Verificar si el texto ha cambiado a "Claim"
+    elseif dt:find("Run")then
+        local h=game.Players.LocalPlayer.Character:WaitForChild("Humanoid")
+        local r=50
+        local c=h.Parent.PrimaryPart.Position
+        local a=0
+        local hb=game:GetService("RunService").Heartbeat
+        while at[f.Name]do
+            a=a+math.rad(45)
+            local x=c.X+math.cos(a)*r
+            local z=c.Z+math.sin(a)*r
+            local t=Vector3.new(x,c.Y,z)
+            local d=(t-h.Parent.PrimaryPart.Position).Unit
+            h:Move(d,true)
+            hb:Wait()
+        end
+    elseif dt:find("Stand still")then
+        while at[f.Name]do
+            cc()
             wait(1)
         end
     end
 end
-
-local function analyzeFrames()
-    for _, frame in ipairs(questsFrame:GetChildren()) do
-        if frame:IsA("Frame") and tonumber(frame.Name) then
-            executeTask(frame)
+local function af()
+    for _,f in ipairs(q:GetChildren())do
+        if f:IsA("Frame")and tonumber(f.Name)then
+            et(f)
         end
     end
 end
-
-questsFrame.ChildAdded:Connect(function(child)
-    if child:IsA("Frame") and tonumber(child.Name) then
-        executeTask(child)
+q.ChildAdded:Connect(function(c)
+    if c:IsA("Frame")and tonumber(c.Name)then
+        et(c)
     end
 end)
-
-spawn(function()
-    analyzeFrames()
+spawn(function()af()end)
+local b=game.Players.LocalPlayer.PlayerGui:WaitForChild("Bubbles")
+b.ChildAdded:Connect(function(c)
+    if c:IsA("TextButton")and w then
+        local be=c:FindFirstChildOfClass("BindableEvent")
+        if be then
+            be:Fire()
+        end
+    end
 end)
 
 wait(0.7)
