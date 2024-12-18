@@ -608,7 +608,7 @@ local function ya(self, method, ...)
     local args = {...}
     
     if self == dataRemoteEvent and method == "FireServer" and type(args[1]) == "table" and type(args[1][1]) == "table" then
-        if args[1][2] == "-" then
+        if args[1][2] == "," then
             local itemId = args[1][1][2][2]
             if type(itemId) == "string" then
                 task.spawn(function()
