@@ -30,6 +30,37 @@ local dk = {"drink", "thirst"}
 
 local btyy = ui:Sub("Limit Event Cookie")
 
+btyy:Btn("Tp Egg Cookie", function()
+lp.Character:MoveTo(Vector3.new(224, 5, -677))
+                    wait(0.5)
+                    lp.Character.PrimaryPart.Anchored = true
+                    wait(2)
+                    lp.Character.PrimaryPart.Anchored = false
+
+    end)
+btyy:TBtn("All Farm Cookie", function()
+        rea = not rea 
+        while rea do
+            for i = 3, 20 do
+
+local args = {
+    [1] = {
+        [1] = {
+            [1] = i,
+            [2] = false,
+            [3] = true
+        },
+        [2] = "2"
+    }
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
+            end
+            task.wait()
+        end
+    end)
+
+
 local function r1(n, a) dr:FireServer({[1]="PetInteractAction",[2]="8",[3]={[1]="\1",[2]={n,a}},[4]="-"}) end
 local function r2(n) dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="E"}) end
 local function r3() dr:FireServer({[1]={{[1]="\1",[2]={["PurchaserGUID"]="66111113-6A42-49B3-8F1E-2C5C5B646B57"}},[2]="U"}}) end
@@ -504,37 +535,6 @@ lp.Character:MoveTo(ra.Position)
                     lp.Character.PrimaryPart.Anchored = false
                     
                 end)
-        end
-    end)
-local btyy = ui:Sub("Limit Event Cookie")
-
-btyy:Btn("Tp Egg Cookie", function()
-lp.Character:MoveTo(Vector3.new(224, 5, -677))
-                    wait(0.5)
-                    lp.Character.PrimaryPart.Anchored = true
-                    wait(2)
-                    lp.Character.PrimaryPart.Anchored = false
-
-    end)
-btyy:TBtn("All Farm Cookie", function()
-        rea = not rea 
-        while rea do
-            for i = 3, 20 do
-
-local args = {
-    [1] = {
-        [1] = {
-            [1] = i,
-            [2] = false,
-            [3] = true
-        },
-        [2] = "2"
-    }
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
-            end
-            task.wait()
         end
     end)
 
