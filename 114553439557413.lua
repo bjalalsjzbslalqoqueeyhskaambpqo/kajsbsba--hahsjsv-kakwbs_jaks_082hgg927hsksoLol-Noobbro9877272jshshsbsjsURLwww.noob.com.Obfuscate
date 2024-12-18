@@ -7,27 +7,67 @@ ui:TBtn("Auto Bubbles", function()
     w = not w
 end)
 
-local ww = false
-ui:TBtn("Auto Jump", function()
-    ww = not ww
-while ww do
+ui:Notify("Auto Quests Default Active")
+local player = game.Players.LocalPlayer
+local questsFrame = player.PlayerGui.MainGui.Quests.ScrollingFrame
+local activeTasks = {}
 
-game.Players.LocalPlayer.Character.Humanoid.Jump = true
-task.wait(0.2)
-game.Players.LocalPlayer.Character.Humanoid.Jump = false
+local function claimReward(taskNumber)
+    local args = {[1] = tonumber(taskNumber)}
+    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("ClaimQuestReward"):FireServer(unpack(args))
 end
+
+local function executeTask(taskFrame)
+    if activeTasks[taskFrame.Name] then return end
+    activeTasks[taskFrame.Name] = true
+    local descriptionLabel = taskFrame:FindFirstChild("DescriptionLabel")
+    local claimButton = taskFrame:FindFirstChild("ClaimButton")
+    if not descriptionLabel or not claimButton or not claimButton:FindFirstChild("TextLabel") then return end
+    local descriptionText = descriptionLabel.Text
+    local claimText = claimButton.TextLabel
+    local taskNumber = taskFrame.Name
+    if claimText.Text == "Claim" then
+        claimReward(taskNumber)
+        activeTasks[taskFrame.Name] = nil
+        return
+    end
+    claimText:GetPropertyChangedSignal("Text"):Connect(function()
+        if claimText.Text == "Claim" then
+            claimReward(taskNumber)
+            activeTasks[taskFrame.Name] = nil
+        end
+    end)
+    if descriptionText:find("Click") then
+        while activeTasks[taskFrame.Name] do
+            game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("PlayerClicked"):FireServer()
+            wait()
+        end
+    elseif descriptionText:find("Jump") then
+        while activeTasks[taskFrame.Name] do
+            game.Players.LocalPlayer.Character.Humanoid.Jump = true
+            task.wait(0.2)
+            game.Players.LocalPlayer.Character.Humanoid.Jump = false
+        end
+    end
+end
+
+local function analyzeFrames()
+    for _, frame in ipairs(questsFrame:GetChildren()) do
+        if frame:IsA("Frame") and tonumber(frame.Name) then
+            executeTask(frame)
+        end
+    end
+end
+
+questsFrame.ChildAdded:Connect(function(child)
+    if child:IsA("Frame") and tonumber(child.Name) then
+        executeTask(child)
+    end
 end)
 
-local wo = false
-ui:TBtn("Auto Click", function()
-    wo = not wo
-while wo do
-
-game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("PlayerClicked"):FireServer()
-wait()
-end
-end)
-
+spawn(function()
+analyzeFrames()
+    end)
 
 
 
