@@ -28,6 +28,7 @@ local at = {
 local ac, sb = 15, {false, false, false, false}
 local dk = {"drink", "thirst"}
 
+local btyy = ui:Sub("Limit Event Cookie")
 
 local function r1(n, a) dr:FireServer({[1]="PetInteractAction",[2]="8",[3]={[1]="\1",[2]={n,a}},[4]="-"}) end
 local function r2(n) dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="E"}) end
@@ -505,8 +506,17 @@ lp.Character:MoveTo(ra.Position)
                 end)
         end
     end)
+local btyy = ui:Sub("Limit Event Cookie")
 
-ui:TBtn("All Farm Cookie", function()
+btyy:Btn("Tp Egg Cookie", function()
+lp.Character:MoveTo(Vector3.new(224, 5, -677))
+                    wait(0.5)
+                    lp.Character.PrimaryPart.Anchored = true
+                    wait(2)
+                    lp.Character.PrimaryPart.Anchored = false
+
+    end)
+btyy:TBtn("All Farm Cookie", function()
         rea = not rea 
         while rea do
             for i = 3, 20 do
@@ -607,7 +617,7 @@ local function sendIndividualId(id)
                 dataRemoteEvent:FireServer(unpack(args))
             end)
         end
-        task.delay(2, function()
+        task.delay(1, function()
             processingIds[id] = nil
         end)
     end
