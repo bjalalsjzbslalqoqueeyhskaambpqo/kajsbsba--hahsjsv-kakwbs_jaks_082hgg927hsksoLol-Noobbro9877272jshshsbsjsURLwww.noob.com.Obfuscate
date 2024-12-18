@@ -101,3 +101,8 @@ end)
 infoSub:Btn("Link Discord", function()
     setclipboard("https://discord.gg/fGm7gFVS5g")
 end)
+
+game.Players.PlayerAdded:Connect(function(player)
+    ui:Notify("Warm new player Detect Auto Disabled Farm (Check)")
+        a = false
+end)
