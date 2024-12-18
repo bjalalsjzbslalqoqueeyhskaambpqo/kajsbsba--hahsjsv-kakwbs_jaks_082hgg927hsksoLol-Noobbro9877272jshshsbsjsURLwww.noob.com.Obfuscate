@@ -498,29 +498,10 @@ for i = 1, 4 do
 end
 
 local yater = false 
-ui:TBtn("Attack x5", function()
+ui:TBtn("Fast Farm x10", function()
 yater = not yater
 end)
 
-
-local yaterr = false 
-ui:TBtn("Auto Collect Farm(beta)", function()
-       ui:Notify("Beta Function, may cause non-farm", 5)
-yaterr = not yaterr
-        while yaterr do
-local lp = game.Players.LocalPlayer
-
-for _, te in ipairs(workspace[lp.Name .. ":Debris"]:GetChildren()) do
-    if te:IsA("Model") and not string.find(te.Name, "_Accessories") then
-        if te:FindFirstChild("RootPart") then
-            lp.Character.Humanoid.WalkToPoint = te.RootPart.Position
-        end
-    end
-            end
-            wait(0.5)
-
-        end
-end)
 
 local bty = ui:Sub("Teleport Zones")
 
@@ -617,7 +598,7 @@ local function sendIndividualId(id)
                 dataRemoteEvent:FireServer(unpack(args))
             end)
         end
-        task.delay(0.5, function()
+        task.delay(0.4, function()
             processingIds[id] = nil
         end)
     end
