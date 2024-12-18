@@ -617,7 +617,7 @@ local function sendIndividualId(id)
                 dataRemoteEvent:FireServer(unpack(args))
             end)
         end
-        task.delay(1, function()
+        task.delay(0.5, function()
             processingIds[id] = nil
         end)
     end
