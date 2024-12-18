@@ -604,7 +604,7 @@ local processingIds = {}
 local function sendIndividualId(id)
     if not processingIds[id] then
         processingIds[id] = true
-        for i = 1, 5 do
+        for i = 1, 10 do
             task.spawn(function()
                 local args = {
                     [1] = {
