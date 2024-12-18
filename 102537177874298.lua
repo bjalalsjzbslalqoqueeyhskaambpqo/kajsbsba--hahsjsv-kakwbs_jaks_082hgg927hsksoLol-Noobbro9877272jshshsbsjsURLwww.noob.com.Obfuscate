@@ -103,6 +103,6 @@ infoSub:Btn("Link Discord", function()
 end)
 
 game.Players.PlayerAdded:Connect(function(player)
-    ui:Notify("Warm new player Detect Auto Disabled Farm (Check)")
+    ui:Notify("Warm new player Detect Auto Disabled Farm (Check)", 20)
         a = false
 end)
