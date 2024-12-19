@@ -25,6 +25,13 @@ local args = {     [1] = "CoconaCoconutHunt",     [2] = 1 }  game:GetService("Re
 end)
 
 
+ui:Btn("Tp Tokyo", function()
+game.Players.LocalPlayer.Character.MoveTo(Vector3.new(26, 4, 2753))
+        game.Players.LocalPlayer.Character.PrimaryPart.Anchored = true 
+        wait(2)
+        game.Players.LocalPlayer.Character.PrimaryPart.Anchored = false
+    end)
+
 
 wait(0.7)
 infoSub = ui:Sub("Info Script")
