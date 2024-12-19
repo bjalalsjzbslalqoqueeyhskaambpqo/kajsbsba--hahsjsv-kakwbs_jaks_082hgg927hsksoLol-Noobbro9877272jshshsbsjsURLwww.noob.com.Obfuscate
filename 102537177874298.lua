@@ -43,18 +43,28 @@ ui:TBtn("Auto Farm", function()
     while a do
         pcall(function()
             spawn(function()
-                for _, t in workspace:GetDescendants() do
-                    if t.Name == "HitBox" then
-                        local args = {
-                            [1] = t.Parent.HumanoidRootPart,
-                            [2] = "CuriousSnowball",
-                            [3] = Vector3.new(-212.24420166015625, 277.5438232421875, 477.3211975097656),
-                            [4] = 1000
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("ClientEvents"):WaitForChild("SnowballHit"):FireServer(unpack(args))
-                        task.wait()
-                    end
-                end
+                local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+for _, t in workspace:GetDescendants() do
+    if t.Name == "HitBox" then
+        local targetHumanoidRootPart = t.Parent:FindFirstChild("HumanoidRootPart")
+        if targetHumanoidRootPart then
+            local distance = (targetHumanoidRootPart.Position - humanoidRootPart.Position).Magnitude
+            if distance <= 70 then
+                local args = {
+                    [1] = targetHumanoidRootPart,
+                    [2] = "CuriousSnowball",
+                    [3] = targetHumanoidRootPart.Position,
+                    [4] = 100
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("ClientEvents"):WaitForChild("SnowballHit"):FireServer(unpack(args))
+                task.wait()
+            end
+        end
+    end
+                            end
             end)
 
             spawn(function()
