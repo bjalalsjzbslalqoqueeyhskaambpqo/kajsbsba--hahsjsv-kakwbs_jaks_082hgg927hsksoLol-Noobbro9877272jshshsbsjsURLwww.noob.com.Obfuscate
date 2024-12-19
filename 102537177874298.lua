@@ -43,10 +43,10 @@ ui:TBtn("Auto Farm", function()
     while a do
         pcall(function()
             spawn(function()
-                for _, t in workspace.EventNPCs:GetDescendants() do
-                    if t.Name == "HumanoidRootPart" then
+                for _, t in workspace:GetDescendants() do
+                    if t.Name == "HitBox" then
                         local args = {
-                            [1] = t,
+                            [1] = t.Parent.HumanoidRootPart,
                             [2] = "CuriousSnowball",
                             [3] = Vector3.new(-212.24420166015625, 277.5438232421875, 477.3211975097656),
                             [4] = 1000
@@ -91,9 +91,9 @@ end)
 
 wait(0.7)
 local infoSub = ui:Sub("Info Script")
-infoSub:Txt("Version: 0.1")
+infoSub:Txt("Version: 0.2")
 infoSub:Txt("Create: 18/12/24")
-infoSub:Txt("Update: -/-/-")
+infoSub:Txt("Update: 18/12/24")
 infoSub:Btn("Link YouTube", function()
     setclipboard("https://youtube.com/@onecreatorx")
 end)
