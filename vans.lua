@@ -21,12 +21,19 @@ local args = {
 game:GetService("ReplicatedStorage"):WaitForChild("DeliverHunt_collectedInstanceFunction"):InvokeServer(unpack(args))
 
 wait(1)
-local args = {     [1] = "CoconaCoconutHunt",     [2] = 1 }  game:GetService("ReplicatedStorage"):WaitForChild("DeliverHunt_collectedInstanceFunction"):InvokeServer(unpack(args))
-end)
+
+        local args = {     [1] = "CoconaCoconutHunt",     [2] = 1 }  game:GetService("ReplicatedStorage"):WaitForChild("DeliverHunt_collectedInstanceFunction"):InvokeServer(unpack(args))
+local args = {
+    [1] = "CoconaCoconutHunt"
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("DeliverHuntReward_GetReward"):InvokeServer(unpack(args))
+        
+    end)
 
 
 ui:Btn("Tp Tokyo", function()
-game.Players.LocalPlayer.Character.PrimaryPart.Position = Vector3.new(26, 4, 2753)
+game.Players.LocalPlayer.Character.MoveTo(Vector3.new(26, 4, 2753))
         game.Players.LocalPlayer.Character.PrimaryPart.Anchored = true 
         wait(2)
         game.Players.LocalPlayer.Character.PrimaryPart.Anchored = false
