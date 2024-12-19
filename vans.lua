@@ -26,7 +26,7 @@ end)
 
 
 ui:Btn("Tp Tokyo", function()
-game.Players.LocalPlayer.Character.MoveTo(Vector3.new(26, 4, 2753))
+game.Players.LocalPlayer.Character.PrimaryPart.Position = Vector3.new(26, 4, 2753)
         game.Players.LocalPlayer.Character.PrimaryPart.Anchored = true 
         wait(2)
         game.Players.LocalPlayer.Character.PrimaryPart.Anchored = false
