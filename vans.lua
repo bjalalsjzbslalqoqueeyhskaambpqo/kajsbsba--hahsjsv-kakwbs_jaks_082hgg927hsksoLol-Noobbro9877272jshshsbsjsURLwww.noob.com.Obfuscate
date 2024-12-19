@@ -8,7 +8,7 @@ for _, obj in ipairs(workspace:GetDescendants()) do
     if obj:IsA("BasePart") and obj.Name == "Coconut_Outside" then
 
 local plr = game.Players.LocalPlayer
- obj.Position = plr.Character.HumanoidRootPart
+ obj.Position = plr.Character.HumanoidRootPart.Position
         wait()
 
 end end
