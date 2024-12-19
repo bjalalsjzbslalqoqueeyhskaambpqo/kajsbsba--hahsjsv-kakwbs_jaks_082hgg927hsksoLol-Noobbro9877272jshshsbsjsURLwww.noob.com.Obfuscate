@@ -3,7 +3,7 @@ local MiniUI = loadstring(game:HttpGet("https://ui.api-x.site"))()
 local ui = MiniUI:new()
 
 ui:Btn("Instant UGC", function()
-    ui:Notify("So Wait")
+    
 for _, obj in ipairs(workspace:GetDescendants()) do
     if obj:IsA("BasePart") and obj.Name == "Coconut_Outside" then
 
