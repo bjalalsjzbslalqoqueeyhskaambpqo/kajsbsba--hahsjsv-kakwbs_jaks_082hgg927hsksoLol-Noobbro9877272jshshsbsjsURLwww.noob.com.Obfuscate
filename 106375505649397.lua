@@ -121,9 +121,16 @@ part.Transparency = 1
 part.Parent = workspace
 
 ui:Btn("AFK Zone", function()
-p.Character.PrimaryPart.Position = Vector3.new(1028, 16, 76)
+p.Character:MoveTo(Vector3.new(1028, 16, 76))
 
     end)
+
+ui:Btn("New Game(Solo)", function()
+    local TeleportService = game:GetService("TeleportService")
+    local player = game.Players.LocalPlayer
+    TeleportService:Teleport(game.PlaceId, player)
+end)
+
 
 wait(0.7)
 infoSub = ui:Sub("Info Script")
