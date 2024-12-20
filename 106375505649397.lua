@@ -115,13 +115,13 @@ if ch.Name == "Coin" then
 
 local part = Instance.new("Part")
 part.Size = Vector3.new(5, 1, 5)
-part.Position = Vector3.new(1028, 14, 76)
+part.Position = Vector3.new(1028, 16, 76)
 part.Anchored = true
 part.Transparency = 1
 part.Parent = workspace
 
 ui:Btn("AFK Zone", function()
-p.Character:MoveTo(Vector3.new(1028, 16, 76))
+p.Character:MoveTo(Vector3.new(1028, 18, 76))
 
     end)
 
