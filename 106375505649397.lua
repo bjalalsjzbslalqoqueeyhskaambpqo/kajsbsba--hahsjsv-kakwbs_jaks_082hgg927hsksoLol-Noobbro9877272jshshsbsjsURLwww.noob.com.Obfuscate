@@ -113,6 +113,18 @@ if ch.Name == "Coin" then
         end
     end)
 
+local part = Instance.new("Part")
+part.Size = Vector3.new(5, 1, 5)
+part.Position = Vector3.new(1028, 14, 76)
+part.Anchored = true
+part.Transparency = 1
+part.Parent = workspace
+
+ui:Btn("AFK Zone", function()
+p.Character.PrimaryPart.Position = Vector3.new(1028, 16, 76)
+
+    end)
+
 wait(0.7)
 infoSub = ui:Sub("Info Script")
 infoSub:Txt("Version: 0.1")
