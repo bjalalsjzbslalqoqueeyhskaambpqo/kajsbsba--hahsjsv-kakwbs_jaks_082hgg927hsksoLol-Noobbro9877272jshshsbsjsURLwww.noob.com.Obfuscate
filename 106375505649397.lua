@@ -101,6 +101,17 @@ run.Heartbeat:Connect(function()
     if y then pa() end
 end)
 
+
+workspace.World.Temporary.ChildAdded:Connect(function(ch)
+  
+        ch:WaitForChild("plus").Position = p.Character.PrimaryPart.Position
+end)
+
+workspace.ChildAdded:Connect(function(ch)
+if ch.Name == "Coin" then
+            ch.Position = p.Character.PrimaryPart.Position
+    end)
+
 wait(0.7)
 infoSub = ui:Sub("Info Script")
 infoSub:Txt("Version: 0.1")
