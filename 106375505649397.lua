@@ -110,6 +110,7 @@ end)
 workspace.ChildAdded:Connect(function(ch)
 if ch.Name == "Coin" then
             ch.Position = p.Character.PrimaryPart.Position
+        end
     end)
 
 wait(0.7)
