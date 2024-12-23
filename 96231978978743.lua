@@ -8,13 +8,23 @@ game.ReplicatedStorage.RemoteEvents.SkipPhase:FireServer()
 end)
 
 
-ui:Btn("Tp Game", function()
+ui:Btn("Tp Mini Games", function()
 local TeleportService = game:GetService("TeleportService")
 local placeId = 109506266479870
 local player = game.Players.LocalPlayer
 TeleportService:Teleport(placeId, player)
 
 end)
+
+
+ui:Btn("Tp Main Game", function()
+local TeleportService = game:GetService("TeleportService")
+local placeId = 96231978978743
+local player = game.Players.LocalPlayer
+TeleportService:Teleport(placeId, player)
+
+end)
+
 
 wait(0.7)
 infoSub = ui:Sub("Info Script")
