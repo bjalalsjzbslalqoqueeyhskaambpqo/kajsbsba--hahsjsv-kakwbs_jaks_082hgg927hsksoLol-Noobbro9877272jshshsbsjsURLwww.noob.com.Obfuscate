@@ -22,7 +22,7 @@ local rCount = 0
 local function uUI(cd, cAt, uAt)
     local cD, cT = fDT(cAt)
     local uD, uT = fDT(uAt)
-
+game.Players.LocalPlayer.PlayerGui.main.Mid.CodeRedeemer.Code.Holder.TextBox.Text = cd
     c.Text = "Code: " .. cd
     cr.Text = "Created: " .. cD .. " at " .. cT
     up.Text = "Updated: " .. uD .. " at " .. uT
@@ -71,6 +71,6 @@ u:TBtn("Auto Redeem", function()
     aR = not aR
     while aR do
         rCode()
-        task.wait(5)
+        task.wait(2)
     end
 end)
