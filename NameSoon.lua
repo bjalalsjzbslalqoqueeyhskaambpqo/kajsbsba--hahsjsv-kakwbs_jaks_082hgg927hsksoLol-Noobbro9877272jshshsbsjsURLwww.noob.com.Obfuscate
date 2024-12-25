@@ -157,7 +157,7 @@ end
 bF.ChildAdded:Connect(oB)
 
 ui:TBtn("Auto Aim", function()
-terr = not terr
+t = not t
 end)
 
 
