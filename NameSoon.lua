@@ -117,7 +117,7 @@ local playersFolder = Workspace.Painting.Players
 
 local function findNextTarget()
     for _, playerFolder in pairs(playersFolder:GetChildren()) do
-        if playerFolder.Name == game.Players.LocalPlayer.Name then
+        if playerFolder.Name == tostring(game.Players.LocalPlayer.Name) then
             for _, descendant in pairs(playerFolder:GetDescendants()) do
                 if descendant:IsA("Model") and descendant.Name == "Painter1" and descendant.PrimaryPart then
                     if not descendant:FindFirstChild("HasBeenHit") then
