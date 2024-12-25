@@ -109,19 +109,28 @@ end
 end
 end)
 
+local t = false
+local bF = Workspace.Painting.Bullets
+local pF = Workspace.Painting.Players
 
-local terr = false
-
-local bulletsFolder = Workspace.Painting.Bullets
-local playersFolder = Workspace.Painting.Players
-
-local function findNextTarget()
-    for _, playerFolder in pairs(playersFolder:GetChildren()) do
-        if playerFolder.Name == game.Players.LocalPlayer.Name then
-            for _, descendant in pairs(playerFolder:GetDescendants()) do
-                if descendant:IsA("Model") and descendant.Name == "Painter1" and descendant.PrimaryPart then
-                    if not descendant:FindFirstChild("HasBeenHit") then
-                        return descendant
+local function fT()
+    for _, p in pairs(pF:GetChildren()) do
+        if p.Name == game.Players.LocalPlayer.Name then
+            for _, d in pairs(p:GetDescendants()) do
+                if d:IsA("Model") and d:FindFirstChild("VFX_Bubble") then
+                    local vfx = d.VFX_Bubble
+                    if vfx and vfx.PrimaryPart then
+                        local part = vfx.PrimaryPart:FindFirstChild("Bubble_Intside")
+                        if part then
+                            
+                            if part.Transparency == 0 then
+                                
+                                return nil
+                            elseif part.Transparency == 0.75 then
+                                
+                                return d
+                            end
+                        end
                     end
                 end
             end
@@ -130,29 +139,22 @@ local function findNextTarget()
     return nil
 end
 
-local function markAsHit(target)
-    local marker = Instance.new("BoolValue")
-    marker.Name = "HasBeenHit"
-    marker.Parent = target
-end
-
-local function moveBulletToTargets(bullet)
-    if bullet:IsA("Model") and bullet.PrimaryPart then
-        local target = findNextTarget()
-        if target then
-            bullet:SetPrimaryPartCFrame(target.PrimaryPart.CFrame)
-            markAsHit(target)
+local function mB(b)
+    if b:IsA("Model") and b.PrimaryPart then
+        local t = fT()
+        if t then
+            b:SetPrimaryPartCFrame(t.PrimaryPart.CFrame)
         end
     end
 end
 
-local function onBulletAdded(bullet)
-if terr then
-    moveBulletToTargets(bullet)
-end
+local function oB(b)
+    if t then
+        mB(b)
+    end
 end
 
-bulletsFolder.ChildAdded:Connect(onBulletAdded)
+bF.ChildAdded:Connect(oB)
 
 ui:TBtn("Auto Aim", function()
 terr = not terr
@@ -161,10 +163,6 @@ end)
 
 
 ui:Btn("Instant All Codes", function()
-
-
-
-
 
 for _, er in game.Players.LocalPlayer.PromoCodeData:GetChildren() do
 local args = {
