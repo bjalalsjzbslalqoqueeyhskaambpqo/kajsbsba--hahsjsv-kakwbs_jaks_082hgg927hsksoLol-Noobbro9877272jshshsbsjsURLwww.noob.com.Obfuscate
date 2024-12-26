@@ -23,7 +23,10 @@ local function gB()
     local n = m:FindFirstChild("NewNodeSystem")
     if not n then return end
     for _, v in ipairs(n.Nodes:GetChildren()) do
-        if v:FindFirstChild("UnlockNodeBtn") then return v.UnlockNodeBtn end
+        if v:FindFirstChild("UnlockNodeBtn") then
+            
+            return v.UnlockNodeBtn
+        end
     end
 end
 
@@ -42,18 +45,47 @@ local function gF()
     return c and c:FindFirstChild("RightFoot") and c.RightFoot.Size.Y / 2 or 3
 end
 
-local r, l = false, nil
-local cT, mI = nil, false
+local r = false
+local yt = false
 
 local function mT(t)
     local c = game.Players.LocalPlayer.Character
     if not c or not c.PrimaryPart then return end
-    c.PrimaryPart.CFrame = CFrame.new(t)
+    
+    local sidePosition = t + Vector3.new(5, 0, 0)
+    c.PrimaryPart.CFrame = CFrame.new(sidePosition)
     task.wait(0.5)
+    
+    local humanoid = c:FindFirstChild("Humanoid")
+    if humanoid then
+        humanoid:MoveTo(t)
+        local moveFinished = false
+        local connection
+        connection = humanoid.MoveToFinished:Connect(function()
+            moveFinished = true
+            if connection then
+                connection:Disconnect()
+            end
+        end)
+        
+        local startTime = tick()
+        while not moveFinished and tick() - startTime < 2 do
+            task.wait()
+        end
+        
+        if not moveFinished then
+            c.PrimaryPart.CFrame = CFrame.new(t)
+        end
+    end
+    
+    task.wait(0.5)
+    c.PrimaryPart.CFrame = CFrame.new(t - Vector3.new(0, 1, 0))
+c.PrimaryPart.CFrame = CFrame.new(t - Vector3.new(0, 1, 0))
+c.PrimaryPart.CFrame = CFrame.new(t - Vector3.new(0, 0.2, 0))
+
 end
 
 local function cC()
-    while true do
     local p = workspace:FindFirstChild("PassiveIncome")
     if not p then return end
     local h = p:FindFirstChild("HitBox", true)
@@ -62,23 +94,58 @@ local function cC()
     if not c or not c.PrimaryPart then return end
     local o = h.CFrame
     h.CFrame = c.PrimaryPart.CFrame
-    task.wait(1)
+    task.wait(0.1)
     h.CFrame = o
-    task.wait(1)
+end
+
+local function click(btn)
+    local pos = btn.AbsolutePosition
+    local size = btn.AbsoluteSize
+    local centerX = pos.X + size.X / 1
+    local centerY = pos.Y + size.Y / 1
+    game:GetService("VirtualInputManager"):SendMouseButtonEvent(centerX, centerY, 0, true, game, 0)
+    task.wait()
+    game:GetService("VirtualInputManager"):SendMouseButtonEvent(centerX, centerY, 0, false, game, 1)
+end
+
+local function startMinigame()
+    local e = game:GetService("ReplicatedStorage"):FindFirstChild("Painting", true)
+    if e then
+        e = e:FindFirstChild("Events", true)
+        if e then
+            e = e:FindFirstChild("StartPaintingEvent")
+            if e then e:FireServer(game:GetService("Players").LocalPlayer) end
+        end
     end
 end
 
-spawn(function()
-cC()
-    end)
+local paintingTouchGUI = game.Players.LocalPlayer.PlayerGui.Painting.ReticleGui
+local shootButton = game.Players.LocalPlayer.PlayerGui.Painting.PaintingTouchGUI.Buttons.ShootButton
+local shooting = false
 
-local function startMoneyLoop()
+local function startShooting()
+    shooting = true
+    while shooting do
+        click(shootButton)
+        task.wait()
+    end
 end
 
+local function stopShooting()
+    shooting = false
+end
+
+paintingTouchGUI:GetPropertyChangedSignal("Enabled"):Connect(function()
+    if paintingTouchGUI.Enabled then
+        startShooting()
+    else
+        stopShooting()
+    end
+end)
+
+
 local function aU()
-    if l then return end
-    l = R.Heartbeat:Connect(function()
-        if not r then l:Disconnect() l = nil return end
+    while r do
         local b = gB()
         if b then
             local c = game.Players.LocalPlayer.Character
@@ -98,22 +165,23 @@ local function aU()
                     end
                     
                     task.wait(1)
+                else
+                    task.wait(0.2)
                 end
-                
-                task.wait(0.5)
             end
         end
-    end)
+        
+        if not r then break end
+        cC()
+        task.wait(0.2)
+    end
 end
 
 local function t()
     r = not r
     if r then 
-        startMoneyLoop()
-        aU() 
-    else 
-        if l then l:Disconnect() l = nil end
-        if moneyLoop then moneyLoop:Disconnect() moneyLoop = nil end
+        spawn(aU)
+    else
         local c = game.Players.LocalPlayer.Character
         if c and c.PrimaryPart then
             c.PrimaryPart.Anchored = false
@@ -124,6 +192,36 @@ end
 
 u:TBtn("Auto Tycoon", function()
     local s = t()
+end)
+
+local yt, mC = false
+
+u:TBtn("Auto Start Minigame", function()
+    yt = not yt
+    if yt then
+        local function sM()
+            local e = game:GetService("ReplicatedStorage"):FindFirstChild("Painting", true)
+            if e then
+                e = e:FindFirstChild("Events", true)
+                if e then
+                    e = e:FindFirstChild("StartPaintingEvent")
+                    if e then e:FireServer(game:GetService("Players").LocalPlayer) end
+                end
+            end
+        end
+        sM()
+        local g = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("GUI_MainGame")
+        local r = g.RewardPopup.Container
+        mC = r:GetPropertyChangedSignal("Visible"):Connect(function()
+            if yt and r.Visible then
+                task.wait(1)
+                sM()
+                r.Visible = false
+            end
+        end)
+    else
+        if mC then mC:Disconnect() mC = nil end
+    end
 end)
 
 local tr = false
@@ -163,58 +261,6 @@ u:TBtn("Auto Session Rewards", function()
             end
         end
         task.wait()
-    end
-end)
-
-local function click(btn)
-    local pos = btn.AbsolutePosition
-    local size = btn.AbsoluteSize
-    local centerX = pos.X + size.X / 1
-    local centerY = pos.Y + size.Y / 1
-    game:GetService("VirtualInputManager"):SendMouseButtonEvent(centerX, centerY, 0, true, game, 0)
-    task.wait()
-    game:GetService("VirtualInputManager"):SendMouseButtonEvent(centerX, centerY, 0, false, game, 1)
-end
-
-local yt, mC = false
-
-local function attack()
-    if yt then
-        while yt do
-            click(game.Players.LocalPlayer.PlayerGui.Painting.PaintingTouchGUI.Buttons.ShootButton)
-            task.wait()
-        end
-    end
-end
-
-u:TBtn("Auto Start Minigame", function()
-    yt = not yt
-    if yt then
-        spawn(function()
-            attack()
-        end)
-        local function sM()
-            local e = game:GetService("ReplicatedStorage"):FindFirstChild("Painting", true)
-            if e then
-                e = e:FindFirstChild("Events", true)
-                if e then
-                    e = e:FindFirstChild("StartPaintingEvent")
-                    if e then e:FireServer(game:GetService("Players").LocalPlayer) end
-                end
-            end
-        end
-        sM()
-        local g = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("GUI_MainGame")
-        local r = g.RewardPopup.Container
-        mC = r:GetPropertyChangedSignal("Visible"):Connect(function()
-            if yt and r.Visible then
-                task.wait(1)
-                sM()
-                r.Visible = false
-            end
-        end)
-    else
-        if mC then mC:Disconnect() mC = nil end
     end
 end)
 
@@ -265,7 +311,7 @@ end)
 
 task.wait(0.7)
 local i = u:Sub("Info Script")
-i:Txt("Version: 0.4")
+i:Txt("Version: 1.0")
 i:Txt("Create: 25/12/24")
 i:Txt("Update: 26/12/24")
 i:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
