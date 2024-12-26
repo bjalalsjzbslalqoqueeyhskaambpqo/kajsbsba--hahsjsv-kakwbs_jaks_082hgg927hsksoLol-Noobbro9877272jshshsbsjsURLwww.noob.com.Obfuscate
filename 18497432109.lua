@@ -54,7 +54,7 @@ local function mT(btn)
     local t = btn.Position + Vector3.new(0, gF(), 0)
     local sidePosition = t + Vector3.new(5, 0, 0)
     c.PrimaryPart.CFrame = CFrame.new(sidePosition)
-    task.wait(0.3)
+    task.wait(1)
     
     local humanoid = c:FindFirstChild("Humanoid")
     if humanoid then
