@@ -24,7 +24,6 @@ local function gB()
     if not n then return end
     for _, v in ipairs(n.Nodes:GetChildren()) do
         if v:FindFirstChild("UnlockNodeBtn") then
-            
             return v.UnlockNodeBtn
         end
     end
@@ -48,13 +47,14 @@ end
 local r = false
 local yt = false
 
-local function mT(t)
+local function mT(btn)
     local c = game.Players.LocalPlayer.Character
-    if not c or not c.PrimaryPart then return end
+    if not c or not c.PrimaryPart or not btn then return end
     
+    local t = btn.Position + Vector3.new(0, gF(), 0)
     local sidePosition = t + Vector3.new(5, 0, 0)
     c.PrimaryPart.CFrame = CFrame.new(sidePosition)
-    task.wait(0.5)
+    task.wait(0.3)
     
     local humanoid = c:FindFirstChild("Humanoid")
     if humanoid then
@@ -78,11 +78,19 @@ local function mT(t)
         end
     end
     
-    task.wait(0.5)
-    c.PrimaryPart.CFrame = CFrame.new(t - Vector3.new(0, 1, 0))
-c.PrimaryPart.CFrame = CFrame.new(t - Vector3.new(0, 1, 0))
-c.PrimaryPart.CFrame = CFrame.new(t - Vector3.new(0, 0.2, 0))
-
+    task.wait(0.3)
+    
+    local originalPosition = btn.Position
+    local playerPosition = c.PrimaryPart.Position
+    local direction = (playerPosition - originalPosition).Unit
+    local distance = (playerPosition - originalPosition).Magnitude
+    local steps = 1
+    for i = 1, steps do
+        btn.CFrame = CFrame.new(originalPosition + direction * (distance / steps * i))
+        task.wait(0.05)
+    end
+    task.wait(0.2)
+    btn.CFrame = CFrame.new(originalPosition)
 end
 
 local function cC()
@@ -143,17 +151,14 @@ paintingTouchGUI:GetPropertyChangedSignal("Enabled"):Connect(function()
     end
 end)
 
-
 local function aU()
     while r do
         local b = gB()
         if b then
             local c = game.Players.LocalPlayer.Character
             if c and c.PrimaryPart then
-                local t = b.TriggerArea.Position + Vector3.new(0, gF() + 2, 0)
-                
                 if gM() >= gP() then
-                    mT(t)
+                    mT(b)
                     
                     local e = game:GetService("ReplicatedStorage"):FindFirstChild("MainFeatures", true)
                     if e then
@@ -164,15 +169,18 @@ local function aU()
                         end
                     end
                     
-                    task.wait(1)
+                    task.wait(0.5)
                 else
-                    task.wait(0.2)
+                    startMinigame()
+                    task.wait(5)
                 end
             end
         end
         
         if not r then break end
+spawn(function()
         cC()
+end)
         task.wait(0.2)
     end
 end
@@ -311,7 +319,7 @@ end)
 
 task.wait(0.7)
 local i = u:Sub("Info Script")
-i:Txt("Version: 1.0")
+i:Txt("Version: 1.1")
 i:Txt("Create: 25/12/24")
 i:Txt("Update: 26/12/24")
 i:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
