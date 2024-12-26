@@ -51,7 +51,7 @@ local function mT(btn)
     local c = game.Players.LocalPlayer.Character
     if not c or not c.PrimaryPart or not btn then return end
     
-    local t = btn.Position + Vector3.new(0, gF(), 0)
+    local t = btn.Position + Vector3.new(0, gF() + 2, 0)
     local sidePosition = t + Vector3.new(5, 0, 0)
     c.PrimaryPart.CFrame = CFrame.new(sidePosition)
     task.wait(1)
