@@ -172,7 +172,7 @@ local function aU()
                     task.wait(0.5)
                 else
                     startMinigame()
-                    task.wait(5)
+                    task.wait(10)
                     local g = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("GUI_MainGame")
         local r = g.RewardPopup.Container
                     r.Visible = false
