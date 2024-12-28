@@ -19,7 +19,7 @@ spawn(function()
 
 
 
-for i = 1, 20 do
+for i = 1, 10 do
 local args = {
     [1] = {
         [1] = {
@@ -36,6 +36,7 @@ game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(
 
             task.wait()
         end
+                task.wait()
     end)
 
 local vs, fa, vc = {}, false, {}
