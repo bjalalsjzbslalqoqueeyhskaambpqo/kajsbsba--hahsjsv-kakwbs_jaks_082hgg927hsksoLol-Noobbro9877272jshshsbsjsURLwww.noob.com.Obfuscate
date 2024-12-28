@@ -12,6 +12,32 @@ local rs = game:GetService("ReplicatedStorage")
 local lp = p.LocalPlayer
 local dr = rs:WaitForChild("dataRemoteEvent")
 
+spawn(function()
+
+        while true do
+            
+
+
+
+for i = 1, 20 do
+local args = {
+    [1] = {
+        [1] = {
+            [1] = i,
+            [2] = true,
+            [3] = false
+        },
+        [2] = "3"
+    }
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
+            end
+
+            task.wait()
+        end
+    end)
+
 local vs, fa, vc = {}, false, {}
 local tn = {"Bush1","Bush2","Bush3","Bush4"}
 local ms, im = 100, false
