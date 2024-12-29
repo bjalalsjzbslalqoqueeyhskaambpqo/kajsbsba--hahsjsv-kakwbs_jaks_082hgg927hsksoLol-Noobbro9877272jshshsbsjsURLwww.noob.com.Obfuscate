@@ -151,6 +151,7 @@ paintingTouchGUI:GetPropertyChangedSignal("Enabled"):Connect(function()
     end
 end)
 
+local tuy = false
 local function aU()
     while r do
         local b = gB()
@@ -171,11 +172,13 @@ local function aU()
                     
                     task.wait(0.5)
                 else
+                    if tuy then
                     startMinigame()
                     task.wait(10)
                     local g = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("GUI_MainGame")
         local r = g.RewardPopup.Container
                     r.Visible = false
+                    end
                 end
             end
         end
@@ -204,6 +207,10 @@ end
 u:TBtn("Auto Tycoon", function()
     local s = t()
 end)
+u:TBtn("Tycoon + MiniGame", function()
+    tuy = not tuy
+end)
+
 
 local yt, mC = false
 
