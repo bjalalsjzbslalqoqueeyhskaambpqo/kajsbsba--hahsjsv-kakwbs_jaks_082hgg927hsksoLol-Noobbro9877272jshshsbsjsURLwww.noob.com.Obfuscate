@@ -55,41 +55,8 @@ local at = {
 local ac, sb = 15, {false, false, false, false}
 local dk = {"drink", "thirst"}
 
-local btyy = ui:Sub("Limit Event Cookie")
-
-btyy:Btn("Tp Egg Cookie", function()
-lp.Character:MoveTo(Vector3.new(224, 5, -677))
-                    wait(0.5)
-                    lp.Character.PrimaryPart.Anchored = true
-                    wait(2)
-                    lp.Character.PrimaryPart.Anchored = false
-
-    end)
-btyy:TBtn("All Farm Cookie", function()
-        rea = not rea 
-        while rea do
-            for i = 3, 20 do
-
-local args = {
-    [1] = {
-        [1] = {
-            [1] = i,
-            [2] = false,
-            [3] = true
-        },
-        [2] = "3"
-    }
-}
-
-game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
-            end
-            task.wait()
-        end
-    end)
-
-
-local function r1(n, a) dr:FireServer({[1]="PetInteractAction",[2]="9",[3]={[1]="\1",[2]={n,a}},[4]="."}) end
-local function r2(n) dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="F"}) end
+local function r1(n, a) dr:FireServer({[1]="PetInteractAction",[2]="8",[3]={[1]="\1",[2]={n,a}},[4]="-"}) end
+local function r2(n) dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="|"}) end
 local function r3() dr:FireServer({[1]={{[1]="\1",[2]={["PurchaserGUID"]="66111113-6A42-49B3-8F1E-2C5C5B646B57"}},[2]="U"}}) end
 local function r4(i) dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="K"}) end
 
@@ -548,9 +515,9 @@ lp.Character:MoveTo(ra.Position)
 
 task.wait(0.7)
 local is = ui:Sub("Info Script")
-is:Txt("Version: 2.3")
+is:Txt("Version: 2.5")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 18/12/23")
+is:Txt("Update: 20/01/25")
 is:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 is:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
@@ -619,7 +586,7 @@ local function sendIndividualId(id)
                         [1] = {
                             [1] = id,
                         },
-                        [2] = "6"
+                        [2] = "5"
                     }
                 }
                 dataRemoteEvent:FireServer(unpack(args))
@@ -635,7 +602,7 @@ local function ya(self, method, ...)
     local args = {...}
     
     if self == dataRemoteEvent and method == "FireServer" and type(args[1]) == "table" and type(args[1][1]) == "table" then
-        if args[1][2] == "," then
+        if args[1][2] == "+" then
             local itemId = args[1][1][2][2]
             if type(itemId) == "string" then
                 task.spawn(function()
