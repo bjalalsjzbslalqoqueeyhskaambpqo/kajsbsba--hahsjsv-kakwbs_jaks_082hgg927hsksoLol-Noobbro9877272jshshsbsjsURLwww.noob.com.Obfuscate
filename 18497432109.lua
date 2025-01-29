@@ -29,6 +29,8 @@ local function gB()
     end
 end
 
+local lastMinigameStart = 0
+
 local function gP()
     local b = gB()
     return b and b:FindFirstChild("BillboardGui") and c(b.BillboardGui.ImageLabel.TextLabel.Text) or 0
@@ -215,11 +217,17 @@ local function aU()
                     task.wait(0.5)
                 else
                     if tuy then
-                    startMinigame()
-                    task.wait(15)
-                    local g = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("GUI_MainGame")
-        local r = g.RewardPopup.Container
-                    r.Visible = false
+                        if (tick() - lastMinigameStart) >= 15 then  -- Verificar cooldown
+                            lastMinigameStart = tick()  -- Actualizar timestamp
+                            startMinigame()
+                            
+                            spawn(function()  -- Ocultar popup después de 15 seg
+                                task.wait(15)
+                                local g = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("GUI_MainGame")
+                                local r = g.RewardPopup.Container
+                                r.Visible = false
+                            end)
+                        end
                     end
                 end
             end
