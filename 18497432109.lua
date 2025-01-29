@@ -45,36 +45,45 @@ local function gF()
 end
 
 local r = false
-local yt = false
+local tuy = false
 
 local function mT(btn)
     local c = game.Players.LocalPlayer.Character
     if not c or not c.PrimaryPart or not btn then return end
     
+    local distancia = (c.PrimaryPart.Position - btn.Position).Magnitude
     local t = btn.Position + Vector3.new(0, gF() + 3, 0)
-    local sidePosition = t + Vector3.new(5, 0, 0)
-    c.PrimaryPart.CFrame = CFrame.new(sidePosition)
-    task.wait(1)
     
-    local humanoid = c:FindFirstChild("Humanoid")
-    if humanoid then
-        humanoid:MoveTo(t)
-        local moveFinished = false
-        local connection
-        connection = humanoid.MoveToFinished:Connect(function()
-            moveFinished = true
-            if connection then
-                connection:Disconnect()
-            end
-        end)
-        
-        local startTime = tick()
-        while not moveFinished and tick() - startTime < 2 do
-            task.wait()
+    if distancia < 20 then
+        local humanoid = c:FindFirstChild("Humanoid")
+        if humanoid then
+            humanoid:MoveTo(t)
+            local startTime = tick()
+            repeat task.wait() until (c.PrimaryPart.Position - t).Magnitude < 2 or tick() - startTime > 2
         end
+    else
+        local sidePosition = t + Vector3.new(5, 0, 0)
+        c.PrimaryPart.CFrame = CFrame.new(sidePosition)
+        task.wait(1)
         
-        if not moveFinished then
-            c.PrimaryPart.CFrame = CFrame.new(t)
+        local humanoid = c:FindFirstChild("Humanoid")
+        if humanoid then
+            humanoid:MoveTo(t)
+            local moveFinished = false
+            local connection
+            connection = humanoid.MoveToFinished:Connect(function()
+                moveFinished = true
+                if connection then connection:Disconnect() end
+            end)
+            
+            local startTime = tick()
+            while not moveFinished and tick() - startTime < 2 do
+                task.wait()
+            end
+            
+            if not moveFinished then
+                c.PrimaryPart.CFrame = CFrame.new(t)
+            end
         end
     end
     
@@ -131,11 +140,45 @@ local paintingTouchGUI = game.Players.LocalPlayer.PlayerGui.Painting.ReticleGui
 local shootButton = game.Players.LocalPlayer.PlayerGui.Painting.PaintingTouchGUI.Buttons.ShootButton
 local shooting = false
 
+local targetCache = {}
+local lastCheck = 0
+
+local function updateTargetCache()
+    if tick() - lastCheck < 0.5 then return end
+    targetCache = {}
+    
+    local p = workspace:FindFirstChild("Painting")
+    if not p then return end
+    p = p:FindFirstChild("Players")
+    if not p then return end
+    
+    for _, v in pairs(p:GetChildren()) do
+        if v.Name == game.Players.LocalPlayer.Name then
+            for _, d in pairs(v:GetDescendants()) do
+                if d:IsA("Model") and d:FindFirstChild("VFX_Bubble") then
+                    local bubble = d.VFX_Bubble.PrimaryPart:FindFirstChild("Bubble_Intside")
+                    if bubble and bubble.Transparency == 0.75 then
+                        table.insert(targetCache, d)
+                    end
+                end
+            end
+        end
+    end
+    lastCheck = tick()
+end
+
+local function fT()
+    updateTargetCache()
+    return #targetCache > 0
+end
+
 local function startShooting()
     shooting = true
     while shooting do
-        click(shootButton)
-        task.wait()
+        if fT() then
+            click(shootButton)
+        end
+        task.wait(0.05)
     end
 end
 
@@ -151,7 +194,6 @@ paintingTouchGUI:GetPropertyChangedSignal("Enabled"):Connect(function()
     end
 end)
 
-local tuy = false
 local function aU()
     while r do
         local b = gB()
@@ -174,7 +216,7 @@ local function aU()
                 else
                     if tuy then
                     startMinigame()
-                    task.wait(10)
+                    task.wait(15)
                     local g = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("GUI_MainGame")
         local r = g.RewardPopup.Container
                     r.Visible = false
@@ -184,9 +226,9 @@ local function aU()
         end
         
         if not r then break end
-spawn(function()
-        cC()
-end)
+        spawn(function()
+            cC()
+        end)
         task.wait(0.2)
     end
 end
@@ -210,7 +252,6 @@ end)
 u:TBtn("Tycoon + MiniGame", function()
     tuy = not tuy
 end)
-
 
 local yt, mC = false
 
@@ -282,32 +323,15 @@ u:TBtn("Auto Session Rewards", function()
     end
 end)
 
-local a = true
-local function fT()
-    local p = workspace:FindFirstChild("Painting")
-    if not p then return end
-    p = p:FindFirstChild("Players")
-    if not p then return end
-    for _, v in pairs(p:GetChildren()) do
-        if v.Name == game.Players.LocalPlayer.Name then
-            for _, d in pairs(v:GetDescendants()) do
-                if d:IsA("Model") and d:FindFirstChild("VFX_Bubble") then
-                    local p = d.VFX_Bubble.PrimaryPart and d.VFX_Bubble.PrimaryPart:FindFirstChild("Bubble_Intside")
-                    if p and p.Transparency == 0.75 then return d end
-                end
-            end
-        end
-    end
-end
-
 local b = workspace:FindFirstChild("Painting")
 if b then
     b = b:FindFirstChild("Bullets")
     if b then
         b.ChildAdded:Connect(function(v)
             if v:IsA("Model") and v.PrimaryPart then
-                local t = fT()
-                if t then v:SetPrimaryPartCFrame(t.PrimaryPart.CFrame) end
+                if #targetCache > 0 then
+                    v:SetPrimaryPartCFrame(targetCache[1].PrimaryPart.CFrame)
+                end
             end
         end)
     end
@@ -329,9 +353,8 @@ end)
 
 task.wait(0.7)
 local i = u:Sub("Info Script")
-i:Txt("Version: 1.1")
+i:Txt("Version: 1.2")
 i:Txt("Create: 25/12/24")
-i:Txt("Update: 26/12/24")
+i:Txt("Update: 29/01/25")
 i:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 i:Btn("Link Discord", function() setclipboard("https://discord.gg/fGm7gFVS5g") end)
-
