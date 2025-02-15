@@ -3,6 +3,7 @@ _G.ScriptExecuted = true
 
 local MUI = loadstring(game:HttpGet("https://ui.api-x.site"))()
 local ui = MUI:new("Raise a Rainbacorn")
+local eyy = ui:Sub("New Event")
 local ex = ui:Sub("Extra")
 local p = game:GetService("Players")
 local ts = game:GetService("TweenService")
@@ -16,9 +17,6 @@ spawn(function()
 
         while true do
             
-
-
-
 for i = 1, 10 do
 local args = {
     [1] = {
@@ -27,7 +25,7 @@ local args = {
             [2] = true,
             [3] = false
         },
-        [2] = "3"
+        [2] = "2"
     }
 }
 
@@ -38,6 +36,31 @@ game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(
         end
                 task.wait()
     end)
+
+eyy:TBtn("So farm Event", function()
+
+tere = not tere
+                while tere do
+
+task.wait()
+                                for i = 1, 10 do
+local args = {
+    [1] = {
+        [1] = {
+            [1] = i,
+            [2] = false,
+            [3] = true
+        },
+        [2] = "2"
+    }
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("dataRemoteEvent"):FireServer(unpack(args))
+
+                                end
+                        end
+
+        end)
 
 local vs, fa, vc = {}, false, {}
 local tn = {"Bush1","Bush2","Bush3","Bush4"}
@@ -56,9 +79,9 @@ local ac, sb = 15, {false, false, false, false}
 local dk = {"drink", "thirst"}
 
 local function r1(n, a) dr:FireServer({[1]="PetInteractAction",[2]="8",[3]={[1]="\1",[2]={n,a}},[4]="-"}) end
-local function r2(n) dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="|"}) end
+local function r2(n) dr:FireServer({[1]={["GUID"]=n,["Category"]="Pet"},[2]="I"}) end
 local function r3() dr:FireServer({[1]={{[1]="\1",[2]={["PurchaserGUID"]="66111113-6A42-49B3-8F1E-2C5C5B646B57"}},[2]="U"}}) end
-local function r4(i) dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="K"}) end
+local function r4(i) dr:FireServer({[1]={[1]="\1",[2]="BERRIES_"..i.."00"},[2]="N"}) end
 
 local function hvc(i)
     if fa then
@@ -515,9 +538,9 @@ lp.Character:MoveTo(ra.Position)
 
 task.wait(0.7)
 local is = ui:Sub("Info Script")
-is:Txt("Version: 2.5")
+is:Txt("Version: 2.6")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 20/01/25")
+is:Txt("Update: 15/02/25")
 is:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 is:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
