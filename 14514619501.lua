@@ -485,15 +485,6 @@ ui:TBtn("Auto Bush Raiwb", function()
     end
 end)
 
-local ae = false
-ui:TBtn("Auto Egg Secret", function()
-    ae = not ae
-    while ae do
-        r3()
-        wait(2)
-    end
-end)
-
 ex:Btn("TP Secret Zone Egg", function()
     lp.Character:MoveTo(Vector3.new(1356, 10, -3447))
     lp.Character.PrimaryPart.Anchored = true
