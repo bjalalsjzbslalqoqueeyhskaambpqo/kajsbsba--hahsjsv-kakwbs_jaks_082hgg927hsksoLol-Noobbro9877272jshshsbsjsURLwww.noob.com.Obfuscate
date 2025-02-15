@@ -3,7 +3,7 @@ _G.ScriptExecuted = true
 
 local MUI = loadstring(game:HttpGet("https://ui.api-x.site"))()
 local ui = MUI:new("Raise a Rainbacorn")
-local eyy = ui:Sub("New Event")
+local eyy = ui:Sub("Velentine Event(new)")
 local ex = ui:Sub("Extra")
 local p = game:GetService("Players")
 local ts = game:GetService("TweenService")
