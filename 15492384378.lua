@@ -10,7 +10,7 @@ local player = Players.LocalPlayer
 local gameUI = player.PlayerGui:WaitForChild("GameUI")
 local mobileCtrl = player.PlayerGui:WaitForChild("MobileControls")
 
-local retry = gameUI.Bin.GameOver.Retry
+local retry = gameUI.Bin.GameOver.RetryDiscount.Decline
 local left = mobileCtrl.Move.Left
 local right = mobileCtrl.Move.Right
 local drop = player.PlayerGui.GameUI.Bin.Button
@@ -62,9 +62,9 @@ task.spawn(dropLoop)
 
 wait(0.7)
 infoSub = ui:Sub("Info Script")
-infoSub:Txt("Version: 0.1")
+infoSub:Txt("Version: 0.2")
 infoSub:Txt("Create: 16/09/24")
-infoSub:Txt("Update: -/-/-")
+infoSub:Txt("Update: 17/02/25")
 infoSub:Btn("Link YouTube", function()
    setclipboard("https://youtube.com/@onecreatorx") 
 end)
@@ -72,4 +72,4 @@ end)
 infoSub:Btn("Link Discord", function()
   setclipboard("https://discord.com/invite/UNJpdJx7c4")  
 end)
- 
+
