@@ -14,54 +14,32 @@ spawn(function()
     (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
 end)
 
+
+
 local function dist(a, b)
 	return (a - b).Magnitude
 end
 
-local function gsc()
-	local t = {}
+local function processSpecialClothes()
 	for _, c in ipairs(dr:GetChildren()) do
-		if c:FindFirstChild("SpecialTag") then
-			table.insert(t, c)
-		end
-	end
-	table.sort(t, function(a, b)
-		return dist(a.Position, pl.Character.HumanoidRootPart.Position) < dist(b.Position, pl.Character.HumanoidRootPart.Position)
-	end)
-	return t
-end
-
-local function ssc(lst)
-	for _, c in ipairs(lst) do
-		if c:IsDescendantOf(dr) then
-			game:GetService("ReplicatedStorage").Events.GrabClothing:FireServer(c)
+		if c:FindFirstChild("SpecialTag") and c.Parent then
+			Events.GrabClothing:FireServer(c)
 			task.wait(0.1)
 		end
 	end
 end
 
-local function gnc()
-	local t = {}
+local function processNormalClothes()
 	for _, c in ipairs(dr:GetChildren()) do
-		table.insert(t, c)
-	end
-	table.sort(t, function(a, b)
-		return dist(a.Position, pl.Character.HumanoidRootPart.Position) < dist(b.Position, pl.Character.HumanoidRootPart.Position)
-	end)
-	return t
-end
-
-local function snc(lst)
-	for _, c in ipairs(lst) do
-		if c:IsDescendantOf(dr) then
-			game:GetService("ReplicatedStorage").Events.GrabClothing:FireServer(c)
+		if c.Parent then
+			Events.GrabClothing:FireServer(c)
 			task.wait(0.05)
 		end
 	end
 end
 
 local function isReady(w)
-	local tLabel = w:FindFirstChild("Parts") and w.Parts.Screen.SurfaceGui.Frame.TextLabel
+	local tLabel = w:FindFirstChild("Parts") and w.Parts:FindFirstChild("Screen") and w.Parts.Screen:FindFirstChild("SurfaceGui") and w.Parts.Screen.SurfaceGui:FindFirstChild("Frame") and w.Parts.Screen.SurfaceGui.Frame:FindFirstChild("TextLabel")
 	if tLabel then
 		local t = tLabel.Text
 		if t:match("%d+/%d+") then
@@ -77,7 +55,7 @@ local function processWM()
 		for _, w in ipairs(wms) do
 			if isReady(w) then
 				capacityFound = true
-				game:GetService("ReplicatedStorage").Events.LoadWashingMachine:FireServer(w)
+				Events.LoadWashingMachine:FireServer(w)
 				task.wait(0.1)
 				break
 			end
@@ -89,10 +67,10 @@ local function processWM()
 		wmCapAvail = false
 		if wms then
 			for _, w in ipairs(wms) do
-				local tLabel = w:FindFirstChild("Parts") and w.Parts.Screen.SurfaceGui.Frame.TextLabel
+				local tLabel = w:FindFirstChild("Parts") and w.Parts:FindFirstChild("Screen") and w.Parts.Screen:FindFirstChild("SurfaceGui") and w.Parts.Screen.SurfaceGui:FindFirstChild("Frame") and w.Parts.Screen.SurfaceGui.Frame:FindFirstChild("TextLabel")
 				if tLabel and tLabel.Text == "DONE" then
-					game:GetService("ReplicatedStorage").Events.UnloadWashingMachine:FireServer(w)
-					game:GetService("ReplicatedStorage").Events.DropClothesInChute:FireServer()
+					Events.UnloadWashingMachine:FireServer(w)
+					Events.DropClothesInChute:FireServer()
 					task.wait(0.1)
 					break
 				end
@@ -133,7 +111,8 @@ toggleBtn.Parent = sg
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "Main"
 mainFrame.Size = UDim2.new(0, 240, 0, 220)
-mainFrame.Position = UDim2.new(0.5, -120, 0.5, -110)
+local finalPos = UDim2.new(0.5, -120, 0.5, -110)
+mainFrame.Position = finalPos
 mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 mainFrame.BackgroundTransparency = 0.1
 mainFrame.Visible = false
@@ -143,11 +122,9 @@ mfCorner.Parent = mainFrame
 local mfStroke = Instance.new("UIStroke")
 mfStroke.Color = Color3.fromRGB(80, 80, 80)
 mfStroke.Parent = mainFrame
-
 local blur = Instance.new("BlurEffect")
 blur.Size = 8
 blur.Parent = mainFrame
-
 local title = Instance.new("TextLabel")
 title.Name = "Header"
 title.Text = "LAUNDRY SIMULATOR"
@@ -157,7 +134,6 @@ title.TextColor3 = Color3.fromRGB(200, 200, 200)
 title.TextSize = 16
 title.BackgroundTransparency = 1
 title.Parent = mainFrame
-
 local credits = Instance.new("TextLabel", mainFrame)
 credits.Text = CREDITS_TEXT
 credits.Size = UDim2.new(1, -10, 0, 20)
@@ -193,11 +169,11 @@ local function createButton(nom, ypos)
 	highlight.Parent = btn
 	btn.MouseEnter:Connect(function()
 		highlight.Visible = true
-		ts:Create(btn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(60, 60, 60)}):Play()
+		TweenService:Create(btn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(60, 60, 60)}):Play()
 	end)
 	btn.MouseLeave:Connect(function()
 		highlight.Visible = false
-		ts:Create(btn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}):Play()
+		TweenService:Create(btn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}):Play()
 	end)
 	return btn
 end
@@ -205,29 +181,25 @@ end
 local btnSpec = createButton("Special", 40)
 btnSpec.Text = "SPECIAL CLOTHES  [OFF]"
 btnSpec.Parent = mainFrame
-
 local btnNear = createButton("Normal", 95)
 btnNear.Text = "ALL CLOTHES  [OFF]"
 btnNear.Parent = mainFrame
-
 local btnPlot = createButton("Washing", 150)
 btnPlot.Text = "START PROCESSOR"
 btnPlot.Parent = mainFrame
 
 local uiVisible = false
-local finalSize = UDim2.new(0, 240, 0, 220)
-local finalPos = UDim2.new(0.5, -120, 0.5, -110)
 toggleBtn.MouseButton1Click:Connect(function()
 	if not uiVisible then
 		uiVisible = true
 		mainFrame.Size = UDim2.new(0, 0, 0, 0)
 		mainFrame.Position = toggleBtn.Position
 		mainFrame.Visible = true
-		ts:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = finalSize, Position = finalPos}):Play()
+		TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 240, 0, 220), Position = finalPos}):Play()
 		toggleBtn.Text = "◀"
 	else
 		uiVisible = false
-		local tw = ts:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0), Position = toggleBtn.Position})
+		local tw = TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0), Position = toggleBtn.Position})
 		tw:Play()
 		tw.Completed:Connect(function()
 			mainFrame.Visible = false
@@ -237,8 +209,16 @@ toggleBtn.MouseButton1Click:Connect(function()
 end)
 
 local function updateButton(btn, state)
-	btn.Text = btn.Name == "Special" and ("SPECIAL CLOTHES  [" .. (state and "ON" or "OFF") .. "]") or btn.Name == "Normal" and ("ALL CLOTHES  [" .. (state and "ON" or "OFF") .. "]") or ("PROCESSOR  [" .. (state and "ACTIVE" or "IDLE") .. "]")
-	ts:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = state and Color3.fromRGB(70, 120, 200) or Color3.fromRGB(50, 50, 50)}):Play()
+	local txt = ""
+	if btn.Name == "Special" then
+		txt = "SPECIAL CLOTHES  [" .. (state and "ON" or "OFF") .. "]"
+	elseif btn.Name == "Normal" then
+		txt = "ALL CLOTHES  [" .. (state and "ON" or "OFF") .. "]"
+	else
+		txt = "PROCESSOR  [" .. (state and "ACTIVE" or "IDLE") .. "]"
+	end
+	btn.Text = txt
+	TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = state and Color3.fromRGB(70, 120, 200) or Color3.fromRGB(50, 50, 50)}):Play()
 end
 
 local function toggleSp()
@@ -263,8 +243,8 @@ btnSpec.MouseButton1Click:Connect(toggleSp)
 btnNear.MouseButton1Click:Connect(toggleNr)
 btnPlot.MouseButton1Click:Connect(toggleWM)
 
-mainFrame.Parent = sg
 sg.Parent = pl:WaitForChild("PlayerGui")
+mainFrame.Parent = sg
 
 if plt.Value then
 	local Plot = plt.Value.Name
@@ -282,13 +262,12 @@ dr.ChildRemoved:Connect(function()
 end)
 
 pl.CharacterAdded:Connect(function(character)
-	if sp then ssc(gsc()) end
-	if nr then snc(gnc()) end
+	if sp then processSpecialClothes() end
+	if nr then processNormalClothes() end
 end)
-
 if pl.Character then
-	if sp then ssc(gsc()) end
-	if nr then snc(gnc()) end
+	if sp then processSpecialClothes() end
+	if nr then processNormalClothes() end
 end
 
 local pathfindingService = game:GetService("PathfindingService")
@@ -349,25 +328,18 @@ end
 
 spawn(function()
 	while true do
-		if wmCapAvail then
-			if sp then ssc(gsc()) end
-			if nr then snc(gnc()) end
-			task.wait(0.2)
-		else
-			task.wait(1)
-		end
-	end
-end)
-
-spawn(function()
-	while true do
 		local bp = pl:WaitForChild("PlayerGui"):WaitForChild("Info"):WaitForChild("Frame"):WaitForChild("Backpack")
 		if bp.ImageColor3 == Color3.fromRGB(127,204,212) then
-			game:GetService("ReplicatedStorage").Events.DropClothesInChute:FireServer()
-task.wait(0.5)
-
+			Events.DropClothesInChute:FireServer()
+			task.wait(0.5)
+		else
+			if #dr:GetChildren() > 0 then
+				if sp then processSpecialClothes() end
+				if nr then processNormalClothes() end
+				task.wait(0.2)
+			else
+				task.wait(1)
+			end
 		end
-		task.wait(0.5)
 	end
 end)
-
