@@ -266,35 +266,60 @@ if pl.Character then
 	if sp then processSpecialClothes() end
 	if nr then processNormalClothes() end
 end
+local pathfindingService = game:GetService("PathfindingService")
 
-local function moveToTarget(plr, targetPos)
-	local char = plr.Character
-	if not char then return end
-	local hum = char:FindFirstChildOfClass("Humanoid")
-	local hrp = char:FindFirstChild("HumanoidRootPart")
-	if not hum or not hrp then return end
-	local path = PP:CreatePath({AgentRadius = 2, AgentHeight = 5, AgentCanJump = true, AgentJumpHeight = hum.JumpHeight or 7})
-	path:ComputeAsync(hrp.Position, targetPos)
-	if path.Status == Enum.PathStatus.Success then
-		local wps = path:GetWaypoints()
-		for _, wp in ipairs(wps) do
-			hum:MoveTo(wp.Position)
-			hum.MoveToFinished:Wait()
-		end
-		task.wait(2)
-		RS:WaitForChild("Events"):WaitForChild("SpinTheWheel"):InvokeServer()
-		task.wait(10)
-	end
+local function moveToTarget(player, targetPos)
+    local character = player.Character
+    if not character then return end
+
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    local hrp = character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or not hrp then return end
+
+    local startPos = hrp.Position
+
+    local path = pathfindingService:CreatePath({
+        AgentRadius = 2,
+        AgentHeight = 5,
+        AgentCanJump = true,
+        AgentJumpHeight = humanoid.JumpHeight or 7
+    })
+
+    path:ComputeAsync(startPos, targetPos)
+
+    if path.Status == Enum.PathStatus.Success then
+        local waypoints = path:GetWaypoints()
+        for _, waypoint in ipairs(waypoints) do
+            humanoid:MoveTo(waypoint.Position)
+            humanoid.MoveToFinished:Wait()
+        end
+task.wait(2)
+game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("SpinTheWheel"):InvokeServer()
+
+
+        task.wait(20)
+
+        path:ComputeAsync(hrp.Position, startPos)
+        if path.Status == Enum.PathStatus.Success then
+            waypoints = path:GetWaypoints()
+            for _, waypoint in ipairs(waypoints) do
+                humanoid:MoveTo(waypoint.Position)
+                humanoid.MoveToFinished:Wait()
+            end
+        end
+    end
 end
 
-local gui = pl:FindFirstChild("PlayerGui")
-local notifFrame = gui and gui:FindFirstChild("SpecialNotification") and gui.SpecialNotification:FindFirstChild("BottomFrame")
-if notifFrame then
-	notifFrame:GetPropertyChangedSignal("Visible"):Connect(function()
-		if notifFrame.Visible then
-			moveToTarget(pl, Vector3.new(58, 7, -22))
-		end
-	end)
+local player = game.Players.LocalPlayer
+local gui = player:FindFirstChild("PlayerGui")
+local notificationFrame = gui and gui:FindFirstChild("SpecialNotification") and gui.SpecialNotification:FindFirstChild("BottomFrame")
+
+if notificationFrame then
+    notificationFrame:GetPropertyChangedSignal("Visible"):Connect(function()
+        if notificationFrame.Visible then
+            moveToTarget(player, Vector3.new(58, 7, -22))
+        end
+    end)
 end
 
 spawn(function()
