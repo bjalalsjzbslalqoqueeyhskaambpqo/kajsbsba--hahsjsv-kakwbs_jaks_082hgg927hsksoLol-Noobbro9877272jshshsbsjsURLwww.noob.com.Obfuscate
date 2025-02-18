@@ -1,20 +1,17 @@
+local RS = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+local PP = game:GetService("PathfindingService")
+local Players = game:GetService("Players")
+local pl = Players.LocalPlayer
 local dr = workspace.Debris.Clothing
-local pl = game.Players.LocalPlayer
+local plt = pl.NonSaveVars.OwnsPlot
+local Events = RS:WaitForChild("Events")
 local sp = false
 local nr = false
-local plt = pl.NonSaveVars.OwnsPlot
-local wms
-local ts = game:GetService("TweenService")
 local runWM = false
 local wmCapAvail = false
-local CREDITS_TEXT = "v2 | 18/02/25 | By OneCreatorX"
-
-
-spawn(function()
-    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
-end)
-
-
+local wms = nil
+local CREDITS_TEXT = "v2.1.4 | 15/06/24 | By OneCreatorX"
 
 local function dist(a, b)
 	return (a - b).Magnitude
@@ -270,60 +267,34 @@ if pl.Character then
 	if nr then processNormalClothes() end
 end
 
-local pathfindingService = game:GetService("PathfindingService")
-
-local function moveToTarget(player, targetPos)
-    local character = player.Character
-    if not character then return end
-
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    local hrp = character:FindFirstChild("HumanoidRootPart")
-    if not humanoid or not hrp then return end
-
-    local startPos = hrp.Position
-
-    local path = pathfindingService:CreatePath({
-        AgentRadius = 2,
-        AgentHeight = 5,
-        AgentCanJump = true,
-        AgentJumpHeight = humanoid.JumpHeight or 7
-    })
-
-    path:ComputeAsync(startPos, targetPos)
-
-    if path.Status == Enum.PathStatus.Success then
-        local waypoints = path:GetWaypoints()
-        for _, waypoint in ipairs(waypoints) do
-            humanoid:MoveTo(waypoint.Position)
-            humanoid.MoveToFinished:Wait()
-        end
-task.wait(2)
-game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("SpinTheWheel"):InvokeServer()
-
-
-        task.wait(9)
-
-        path:ComputeAsync(hrp.Position, startPos)
-        if path.Status == Enum.PathStatus.Success then
-            waypoints = path:GetWaypoints()
-            for _, waypoint in ipairs(waypoints) do
-                humanoid:MoveTo(waypoint.Position)
-                humanoid.MoveToFinished:Wait()
-            end
-        end
-    end
+local function moveToTarget(plr, targetPos)
+	local char = plr.Character
+	if not char then return end
+	local hum = char:FindFirstChildOfClass("Humanoid")
+	local hrp = char:FindFirstChild("HumanoidRootPart")
+	if not hum or not hrp then return end
+	local path = PP:CreatePath({AgentRadius = 2, AgentHeight = 5, AgentCanJump = true, AgentJumpHeight = hum.JumpHeight or 7})
+	path:ComputeAsync(hrp.Position, targetPos)
+	if path.Status == Enum.PathStatus.Success then
+		local wps = path:GetWaypoints()
+		for _, wp in ipairs(wps) do
+			hum:MoveTo(wp.Position)
+			hum.MoveToFinished:Wait()
+		end
+		task.wait(2)
+		RS:WaitForChild("Events"):WaitForChild("SpinTheWheel"):InvokeServer()
+		task.wait(10)
+	end
 end
 
-local player = game.Players.LocalPlayer
-local gui = player:FindFirstChild("PlayerGui")
-local notificationFrame = gui and gui:FindFirstChild("SpecialNotification") and gui.SpecialNotification:FindFirstChild("BottomFrame")
-
-if notificationFrame then
-    notificationFrame:GetPropertyChangedSignal("Visible"):Connect(function()
-        if notificationFrame.Visible then
-            moveToTarget(player, Vector3.new(58, 7, -22))
-        end
-    end)
+local gui = pl:FindFirstChild("PlayerGui")
+local notifFrame = gui and gui:FindFirstChild("SpecialNotification") and gui.SpecialNotification:FindFirstChild("BottomFrame")
+if notifFrame then
+	notifFrame:GetPropertyChangedSignal("Visible"):Connect(function()
+		if notifFrame.Visible then
+			moveToTarget(pl, Vector3.new(58, 7, -22))
+		end
+	end)
 end
 
 spawn(function()
