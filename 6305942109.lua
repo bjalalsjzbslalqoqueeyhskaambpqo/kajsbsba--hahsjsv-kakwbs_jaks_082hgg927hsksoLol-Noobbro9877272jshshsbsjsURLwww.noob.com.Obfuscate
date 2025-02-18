@@ -11,7 +11,7 @@ local nr = false
 local runWM = false
 local wmCapAvail = false
 local wms = nil
-local CREDITS_TEXT = "v2.1.4 | 15/06/24 | By OneCreatorX"
+local CREDITS_TEXT = "v2.1.4 | 18/02/25 | By OneCreatorX"
 
 local function dist(a, b)
 	return (a - b).Magnitude
