@@ -9,6 +9,11 @@ local runWM = false
 local wmCapAvail = false
 local CREDITS_TEXT = "v2 | 18/02/25 | By OneCreatorX"
 
+
+spawn(function()
+    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+end)
+
 local function dist(a, b)
 	return (a - b).Magnitude
 end
@@ -353,3 +358,16 @@ spawn(function()
 		end
 	end
 end)
+
+spawn(function()
+	while true do
+		local bp = pl:WaitForChild("PlayerGui"):WaitForChild("Info"):WaitForChild("Frame"):WaitForChild("Backpack")
+		if bp.ImageColor3 == Color3.fromRGB(127,204,212) then
+			game:GetService("ReplicatedStorage").Events.DropClothesInChute:FireServer()
+task.wait(0.5)
+
+		end
+		task.wait(0.5)
+	end
+end)
+
