@@ -11,6 +11,7 @@ local Stats = Instance.new("Frame")
 local F = Instance.new("TextLabel")
 local D = Instance.new("TextLabel")
 local T = Instance.new("TextLabel")
+local TimeLabel = Instance.new("TextLabel")
 local Auto = Instance.new("TextButton")
 local Crd = Instance.new("TextLabel")
 local Nots = Instance.new("Frame")
@@ -32,8 +33,8 @@ Tog.ZIndex = 2
 Main.Name = "Main"
 Main.Parent = Gui
 Main.BackgroundColor3 = Color3.fromRGB(10,10,10)
-Main.Position = UDim2.new(0.01,30,0.5,-80)
-Main.Size = UDim2.new(0,200,0,160)
+Main.Position = UDim2.new(0.01,30,0.5,-95)
+Main.Size = UDim2.new(0,200,0,190)
 Main.AnchorPoint = Vector2.new(0,0.5)
 Main.ClipsDescendants = true
 
@@ -61,7 +62,7 @@ F.Name = "F"
 F.Parent = Stats
 F.Size = UDim2.new(1,0,0,30)
 F.Font = Enum.Font.GothamMedium
-F.Text = "🐟 0"
+F.Text = "🐟 0 (+0)"
 F.TextColor3 = Color3.fromRGB(100,200,255)
 F.TextSize = 14
 F.BackgroundTransparency = 1
@@ -72,7 +73,7 @@ D.Parent = Stats
 D.Position = UDim2.new(0,0,0,35)
 D.Size = UDim2.new(1,0,0,30)
 D.Font = Enum.Font.GothamMedium
-D.Text = "💎 0"
+D.Text = "💎 0 (+0)"
 D.BackgroundTransparency = 1
 D.TextColor3 = Color3.fromRGB(255,215,50)
 D.TextSize = 14
@@ -84,10 +85,21 @@ T.Position = UDim2.new(0,0,0,70)
 T.Size = UDim2.new(1,0,0,30)
 T.BackgroundTransparency = 1
 T.Font = Enum.Font.GothamMedium
-T.Text = "🗑️ 0"
+T.Text = "🗑️ 0 (+0)"
 T.TextColor3 = Color3.fromRGB(170,170,170)
 T.TextSize = 14
 T.TextXAlignment = Enum.TextXAlignment.Left
+
+TimeLabel.Name = "Time"
+TimeLabel.Parent = Stats
+TimeLabel.Position = UDim2.new(0,0,0,105)
+TimeLabel.Size = UDim2.new(1,0,0,30)
+TimeLabel.BackgroundTransparency = 1
+TimeLabel.Font = Enum.Font.GothamMedium
+TimeLabel.Text = "⏱️ 00:00:00"
+TimeLabel.TextColor3 = Color3.fromRGB(200,200,200)
+TimeLabel.TextSize = 14
+TimeLabel.TextXAlignment = Enum.TextXAlignment.Left
 
 Auto.Name = "Auto"
 Auto.Parent = Main
@@ -119,6 +131,8 @@ Nots.Size = UDim2.new(0,200,0,160)
 local Ac = false
 local Vsbl = true
 local L = {F=0,D=0,T=0}
+local startTime = os.time()
+local InitialData = nil
 
 local function Noty(txt,col)
     local n = Instance.new("Frame")
@@ -173,12 +187,10 @@ local function Act()
     end
 end
 
-
 local function Actii()
     local t = Eqp()
     if t then
         t:Activate()
-        
     end
 end
 
@@ -186,7 +198,6 @@ Ws.ChildRemoved:Connect(function(c)
     if c.Name:find("fishing") and Ac then
         task.wait(1)
         Actii()
-        
     end
 end)
 
@@ -216,18 +227,16 @@ Auto.MouseButton1Click:Connect(function()
     end
 end)
 
-
 spawn(function()
     (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
 end)
 
 game.Players.LocalPlayer.Idled:Connect(function()
-            local VU = game:GetService("VirtualUser")
-            VU:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-            wait(1)
-            VU:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-        end)
-    
+    local VU = game:GetService("VirtualUser")
+    VU:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    wait(1)
+    VU:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+end)
 
 task.spawn(function()
     while task.wait(1) do
@@ -236,9 +245,27 @@ task.spawn(function()
         end)
         
         if ok and dat.fishingItems then
-            F.Text = "🐟 "..dat.fishingItems.Fish
-            D.Text = "💎 "..dat.fishingItems.Diamond
-            T.Text = "🗑️ "..dat.fishingItems.Trash
+            if not InitialData then
+                InitialData = {
+                    F = dat.fishingItems.Fish,
+                    D = dat.fishingItems.Diamond,
+                    T = dat.fishingItems.Trash
+                }
+            end
+            
+            local elapsed = os.time() - startTime
+            local hours = math.floor(elapsed / 3600)
+            local minutes = math.floor((elapsed % 3600) / 60)
+            local seconds = elapsed % 60
+            TimeLabel.Text = string.format("⏱️ %02d:%02d:%02d", hours, minutes, seconds)
+            
+            local currentF = dat.fishingItems.Fish
+            local currentD = dat.fishingItems.Diamond
+            local currentT = dat.fishingItems.Trash
+            
+            F.Text = string.format("🐟 %d (+%d)", currentF, currentF - InitialData.F)
+            D.Text = string.format("💎 %d (+%d)", currentD, currentD - InitialData.D)
+            T.Text = string.format("🗑️ %d (+%d)", currentT, currentT - InitialData.T)
             
             if dat.fishingItems.Fish > L.F then
                 Noty("+1 🐟 PESCADO",Color3.fromRGB(100,200,255))
@@ -254,9 +281,9 @@ task.spawn(function()
             end
             
             L = {
-                F = dat.fishingItems.Fish,
-                D = dat.fishingItems.Diamond,
-                T = dat.fishingItems.Trash
+                F = currentF,
+                D = currentD,
+                T = currentT
             }
         end
     end
