@@ -227,7 +227,7 @@ game.Players.LocalPlayer.Idled:Connect(function()
             wait(1)
             VU:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
         end)
-    end)
+    
 
 task.spawn(function()
     while task.wait(1) do
