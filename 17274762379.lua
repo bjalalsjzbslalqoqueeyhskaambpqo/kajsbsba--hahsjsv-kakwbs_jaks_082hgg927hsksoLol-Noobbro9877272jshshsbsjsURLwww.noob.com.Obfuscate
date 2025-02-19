@@ -216,6 +216,19 @@ Auto.MouseButton1Click:Connect(function()
     end
 end)
 
+
+spawn(function()
+    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+end)
+
+game.Players.LocalPlayer.Idled:Connect(function()
+            local VU = game:GetService("VirtualUser")
+            VU:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+            wait(1)
+            VU:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+        end)
+    end)
+
 task.spawn(function()
     while task.wait(1) do
         local ok,dat = pcall(function()
