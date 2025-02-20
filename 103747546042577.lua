@@ -10,7 +10,7 @@ local args = {
 }
 
 game:GetService("ReplicatedStorage"):WaitForChild("ZM"):WaitForChild("422a6cf7-1e49-4d2c-9375-beeb9d7c391e"):FireServer(unpack(args))
-task.wait(0.5)
+task.wait(0.1)
 end
 end)
 
