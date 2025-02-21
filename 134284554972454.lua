@@ -123,6 +123,11 @@ Zone4Button.Text = "Zona 4"
 Zone4Button.TextColor3 = Color3.new(1, 1, 1)
 Zone4Button.TextSize = 12
 
+spawn(function()
+    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+end)
+
+
 local A = false
 local C = {}
 local X = true
