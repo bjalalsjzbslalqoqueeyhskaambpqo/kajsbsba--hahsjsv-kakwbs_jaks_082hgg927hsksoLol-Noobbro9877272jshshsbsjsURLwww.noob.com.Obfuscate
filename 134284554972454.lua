@@ -9,247 +9,277 @@ G.Parent = P.PlayerGui
 local T = Instance.new("TextButton")
 T.Name = "T"
 T.Parent = G
-T.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
-T.Position = UDim2.new(0.01, 0, 0.5, -15)
-T.Size = UDim2.new(0, 30, 0, 30)
+T.BackgroundColor3 = Color3.new(0.1,0.1,0.1)
+T.Position = UDim2.new(0.01,0,0.5,-15)
+T.Size = UDim2.new(0,30,0,30)
 T.Font = Enum.Font.Code
 T.Text = "▶"
-T.TextColor3 = Color3.new(1, 1, 1)
+T.TextColor3 = Color3.new(1,1,1)
 T.ZIndex = 2
 
 local F = Instance.new("Frame")
 F.Name = "F"
 F.Parent = G
-F.BackgroundColor3 = Color3.new(0.15, 0.15, 0.15)
-F.Position = UDim2.new(0.01, 35, 0.5, -50)
-F.Size = UDim2.new(0, 200, 0, 200)
+F.BackgroundColor3 = Color3.new(0.15,0.15,0.15)
+F.Position = UDim2.new(0.01,35,0.5,-50)
+F.Size = UDim2.new(0,200,0,215)
 F.ClipsDescendants = true
 
-local Title = Instance.new("TextLabel")
-Title.Name = "Title"
-Title.Parent = F
-Title.BackgroundTransparency = 1
-Title.Position = UDim2.new(0, 0, 0, 0)
-Title.Size = UDim2.new(1, 0, 0, 20)
-Title.Font = Enum.Font.Code
-Title.Text = "Grid Controller"
-Title.TextColor3 = Color3.new(1, 1, 1)
-Title.TextSize = 14
+local ttl = Instance.new("TextLabel")
+ttl.Name = "ttl"
+ttl.Parent = F
+ttl.BackgroundTransparency = 1
+ttl.Position = UDim2.new(0,0,0,0)
+ttl.Size = UDim2.new(1,0,0,20)
+ttl.Font = Enum.Font.Code
+ttl.Text = "farm by OneCreatorX"
+ttl.TextColor3 = Color3.new(1,1,1)
+ttl.TextSize = 14
 
 local B = Instance.new("TextButton")
 B.Name = "B"
 B.Parent = F
-B.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
-B.Position = UDim2.new(0.1, 0, 0, 25)
-B.Size = UDim2.new(0.8, 0, 0, 25)
+B.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+B.Position = UDim2.new(0.1,0,0,25)
+B.Size = UDim2.new(0.8,0,0,25)
 B.Font = Enum.Font.Code
 B.Text = "OFF"
-B.TextColor3 = Color3.new(1, 0.3, 0.3)
+B.TextColor3 = Color3.new(1,0.3,0.3)
 B.TextSize = 12
 
 local I = Instance.new("TextBox")
 I.Name = "I"
 I.Parent = F
-I.BackgroundColor3 = Color3.new(0.25, 0.25, 0.25)
-I.Position = UDim2.new(0.1, 0, 0, 55)
-I.Size = UDim2.new(0.8, 0, 0, 20)
+I.BackgroundColor3 = Color3.new(0.25,0.25,0.25)
+I.Position = UDim2.new(0.1,0,0,55)
+I.Size = UDim2.new(0.8,0,0,20)
 I.Font = Enum.Font.Code
 I.PlaceholderText = "Velocidad"
 I.Text = "25"
-I.TextColor3 = Color3.new(1, 1, 1)
+I.TextColor3 = Color3.new(1,1,1)
 I.TextSize = 12
 
 local S = Instance.new("TextLabel")
 S.Name = "S"
 S.Parent = F
 S.BackgroundTransparency = 1
-S.Position = UDim2.new(0, 5, 0, 80)
-S.Size = UDim2.new(1, -10, 0, 20)
+S.Position = UDim2.new(0,5,0,80)
+S.Size = UDim2.new(1,-10,0,20)
 S.Font = Enum.Font.Code
 S.Text = "INACTIVO"
-S.TextColor3 = Color3.new(0.6, 0.6, 0.6)
+S.TextColor3 = Color3.new(0.6,0.6,0.6)
 S.TextSize = 11
 S.TextXAlignment = Enum.TextXAlignment.Left
 
-local TeleportToggle = Instance.new("TextButton")
-TeleportToggle.Name = "TeleportToggle"
-TeleportToggle.Parent = F
-TeleportToggle.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
-TeleportToggle.Position = UDim2.new(0.1, 0, 0, 110)
-TeleportToggle.Size = UDim2.new(0.8, 0, 0, 25)
-TeleportToggle.Font = Enum.Font.Code
-TeleportToggle.Text = "Teletransportar"
-TeleportToggle.TextColor3 = Color3.new(1, 1, 1)
-TeleportToggle.TextSize = 12
+local tt = Instance.new("TextButton")
+tt.Name = "tt"
+tt.Parent = F
+tt.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+tt.Position = UDim2.new(0.1,0,0,110)
+tt.Size = UDim2.new(0.8,0,0,25)
+tt.Font = Enum.Font.Code
+tt.Text = "Teletransportar"
+tt.TextColor3 = Color3.new(1,1,1)
+tt.TextSize = 12
 
-local TeleportFrame = Instance.new("Frame")
-TeleportFrame.Name = "TeleportFrame"
-TeleportFrame.Parent = F
-TeleportFrame.BackgroundColor3 = Color3.new(0.15, 0.15, 0.15)
-TeleportFrame.Position = UDim2.new(0.1, 0, 0, 140)
-TeleportFrame.Size = UDim2.new(0.8, 0, 0, 60)
-TeleportFrame.Visible = false
+local tf = Instance.new("Frame")
+tf.Name = "tf"
+tf.Parent = F
+tf.BackgroundColor3 = Color3.new(0.15,0.15,0.15)
+tf.Position = UDim2.new(0.1,0,0,140)
+tf.Size = UDim2.new(0.8,0,0,60)
+tf.Visible = false
 
-local Zone2Button = Instance.new("TextButton")
-Zone2Button.Name = "Zone2Button"
-Zone2Button.Parent = TeleportFrame
-Zone2Button.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
-Zone2Button.Position = UDim2.new(0, 0, 0, 0)
-Zone2Button.Size = UDim2.new(1, 0, 0, 20)
-Zone2Button.Font = Enum.Font.Code
-Zone2Button.Text = "Zona 2"
-Zone2Button.TextColor3 = Color3.new(1, 1, 1)
-Zone2Button.TextSize = 12
+local z2 = Instance.new("TextButton")
+z2.Name = "z2"
+z2.Parent = tf
+z2.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+z2.Position = UDim2.new(0,0,0,0)
+z2.Size = UDim2.new(1,0,0,20)
+z2.Font = Enum.Font.Code
+z2.Text = "Zona 2"
+z2.TextColor3 = Color3.new(1,1,1)
+z2.TextSize = 12
 
-local Zone3Button = Instance.new("TextButton")
-Zone3Button.Name = "Zone3Button"
-Zone3Button.Parent = TeleportFrame
-Zone3Button.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
-Zone3Button.Position = UDim2.new(0, 0, 0, 22)
-Zone3Button.Size = UDim2.new(1, 0, 0, 20)
-Zone3Button.Font = Enum.Font.Code
-Zone3Button.Text = "Zona 3"
-Zone3Button.TextColor3 = Color3.new(1, 1, 1)
-Zone3Button.TextSize = 12
+local z3 = Instance.new("TextButton")
+z3.Name = "z3"
+z3.Parent = tf
+z3.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+z3.Position = UDim2.new(0,0,0,20)
+z3.Size = UDim2.new(1,0,0,20)
+z3.Font = Enum.Font.Code
+z3.Text = "Zona 3"
+z3.TextColor3 = Color3.new(1,1,1)
+z3.TextSize = 12
 
-local Zone4Button = Instance.new("TextButton")
-Zone4Button.Name = "Zone4Button"
-Zone4Button.Parent = TeleportFrame
-Zone4Button.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
-Zone4Button.Position = UDim2.new(0, 0, 0, 44)
-Zone4Button.Size = UDim2.new(1, 0, 0, 20)
-Zone4Button.Font = Enum.Font.Code
-Zone4Button.Text = "Zona 4"
-Zone4Button.TextColor3 = Color3.new(1, 1, 1)
-Zone4Button.TextSize = 12
+local z4 = Instance.new("TextButton")
+z4.Name = "z4"
+z4.Parent = tf
+z4.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+z4.Position = UDim2.new(0,0,0,40)
+z4.Size = UDim2.new(1,0,0,20)
+z4.Font = Enum.Font.Code
+z4.Text = "Zona 4"
+z4.TextColor3 = Color3.new(1,1,1)
+z4.TextSize = 12
 
-spawn(function()
-    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
-end)
+local at = Instance.new("TextButton")
+at.Name = "at"
+at.Parent = F
+at.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+at.Position = UDim2.new(0.1,0,0,130)
+at.Size = UDim2.new(0.8,0,0,25)
+at.Font = Enum.Font.Code
+at.Text = "Auto Get UGC"
+at.TextColor3 = Color3.new(1,1,1)
+at.TextSize = 12
 
+local af = Instance.new("Frame")
+af.Name = "af"
+af.Parent = F
+af.BackgroundColor3 = Color3.new(0.15,0.15,0.15)
+af.Position = UDim2.new(0.1,0,0,140)
+af.Size = UDim2.new(0.8,0,0,80)
+af.Visible = false
+
+local o1 = Instance.new("TextButton")
+o1.Name = "o1"
+o1.Parent = af
+o1.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+o1.Position = UDim2.new(0,0,0,0)
+o1.Size = UDim2.new(1,0,0,20)
+o1.Font = Enum.Font.Code
+o1.Text = "UGC 1"
+o1.TextColor3 = Color3.new(1,1,1)
+o1.TextSize = 12
+
+local o2 = Instance.new("TextButton")
+o2.Name = "o2"
+o2.Parent = af
+o2.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+o2.Position = UDim2.new(0,0,0,20)
+o2.Size = UDim2.new(1,0,0,20)
+o2.Font = Enum.Font.Code
+o2.Text = "UGC 2"
+o2.TextColor3 = Color3.new(1,1,1)
+o2.TextSize = 12
+
+local o3 = Instance.new("TextButton")
+o3.Name = "o3"
+o3.Parent = af
+o3.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+o3.Position = UDim2.new(0,0,0,40)
+o3.Size = UDim2.new(1,0,0,20)
+o3.Font = Enum.Font.Code
+o3.Text = "UGC 3"
+o3.TextColor3 = Color3.new(1,1,1)
+o3.TextSize = 12
+
+local o4 = Instance.new("TextButton")
+o4.Name = "o4"
+o4.Parent = af
+o4.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+o4.Position = UDim2.new(0,0,0,60)
+o4.Size = UDim2.new(1,0,0,20)
+o4.Font = Enum.Font.Code
+o4.Text = "UGC 4"
+o4.TextColor3 = Color3.new(1,1,1)
+o4.TextSize = 12
 
 local A = false
 local C = {}
 local X = true
 local H = 25
-local SelectedGrid = nil
-local zone2Position = Vector3.new(157, 4, 1)
-local zone3Position = Vector3.new(34, 4, -14)
-local zone4Position = Vector3.new(-177, 4, 131)
+local sg = nil
+local z2p = Vector3.new(157,4,1)
+local z3p = Vector3.new(34,4,-14)
+local z4p = Vector3.new(-177,4,131)
+local au = false
+local ao = nil
 
-local function ResetGridCache(grid)
-	for _, part in pairs(grid:GetDescendants()) do
-		if part:IsA("BasePart") then
-			C[part] = nil
-		end
+local function rg(g)
+	for _, p in pairs(g:GetDescendants()) do
+		if p:IsA("BasePart") then C[p] = nil end
 	end
 end
 
-local function U()
-	local N = os.time()
-	for K, V in pairs(C) do
-		if N - V > 8 then
-			C[K] = nil
-		end
-	end
+local function up()
+	local n = os.time()
+	for k,v in pairs(C) do if n - v > 8 then C[k] = nil end end
 end
 
-local function D()
-	local Q = P.Character
-	local HRP = Q and Q:FindFirstChild("HumanoidRootPart")
-	if not HRP then return end
-	local bestDistance = math.huge
-	local bestPart = nil
-	if SelectedGrid then
-		for _, part in pairs(SelectedGrid:GetDescendants()) do
-			if part:IsA("BasePart") and not C[part] then
-				local dist = (part.Position - HRP.Position).Magnitude
-				if dist < bestDistance then
-					bestDistance = dist
-					bestPart = part
+local function fd()
+	local ch = P.Character
+	local hr = ch and ch:FindFirstChild("HumanoidRootPart")
+	if not hr then return end
+	local bd = math.huge
+	local bp = nil
+	if sg then
+		for _, p in pairs(sg:GetDescendants()) do
+			if p:IsA("BasePart") and not C[p] then
+				local d = (p.Position - hr.Position).Magnitude
+				if d < bd then bd = d bp = p end
+			end
+		end
+		if not bp then
+			rg(sg)
+			for _, p in pairs(sg:GetDescendants()) do
+				if p:IsA("BasePart") then
+					local d = (p.Position - hr.Position).Magnitude
+					if d < bd then bd = d bp = p end
 				end
 			end
 		end
-		if not bestPart then
-			ResetGridCache(SelectedGrid)
-			for _, part in pairs(SelectedGrid:GetDescendants()) do
-				if part:IsA("BasePart") then
-					local dist = (part.Position - HRP.Position).Magnitude
-					if dist < bestDistance then
-						bestDistance = dist
-						bestPart = part
-					end
-				end
-			end
-		end
-		return bestPart, bestDistance
+		return bp, bd
 	else
-		local bestGrid = nil
-		for _, grid in pairs(workspace:GetChildren()) do
-			if grid.Name == "Grid" then
-				for _, part in pairs(grid:GetDescendants()) do
-					if part:IsA("BasePart") and not C[part] then
-						local dist = (part.Position - HRP.Position).Magnitude
-						if dist < bestDistance then
-							bestDistance = dist
-							bestPart = part
-							bestGrid = grid
-						end
+		local bg = nil
+		for _, g in pairs(workspace:GetChildren()) do
+			if g.Name == "Grid" then
+				for _, p in pairs(g:GetDescendants()) do
+					if p:IsA("BasePart") and not C[p] then
+						local d = (p.Position - hr.Position).Magnitude
+						if d < bd then bd = d bp = p bg = g end
 					end
 				end
 			end
 		end
-		if bestGrid then
-			SelectedGrid = bestGrid
-			print("Nueva zona detectada")
-		end
-		return bestPart, bestDistance
+		if bg then sg = bg print("NZ") end
+		return bp, bd
 	end
 end
 
-local function J(part)
-	if not part then return end
-	for _, a in pairs(part.Parent:GetChildren()) do
+local function ft(p)
+	if not p then return end
+	for _, a in pairs(p.Parent:GetChildren()) do
 		if a:IsA("BasePart") then
-			pcall(function()
-				firetouchinterest(P.Character.PrimaryPart, a, 0)
-				firetouchinterest(P.Character.PrimaryPart, a, 1)
-			end)
+			pcall(function() firetouchinterest(P.Character.PrimaryPart, a, 0) firetouchinterest(P.Character.PrimaryPart, a, 1) end)
 		end
 	end
 end
 
-local function MoveLoop()
+local function ml()
 	while A do
 		H = tonumber(I.Text) or 25
-		local Q = P.Character
-		local humanoid = Q and Q:FindFirstChild("Humanoid")
-		local targetPart, dist = D()
-		if humanoid and targetPart then
-			humanoid.WalkSpeed = H
-			humanoid:MoveTo(targetPart.Position)
-			if dist <= 10 then
-				C[targetPart] = os.time()
-				J(targetPart)
-			end
+		local ch = P.Character
+		local hu = ch and ch:FindFirstChild("Humanoid")
+		local tp, d = fd()
+		if hu and tp then
+			hu.WalkSpeed = H
+			hu:MoveTo(tp.Position)
+			if d <= 10 then C[tp] = os.time() ft(tp) end
 		end
 		R.Heartbeat:Wait()
 	end
 end
 
-local function TouchLoop()
+local function tl()
 	while A do
-		local Q = P.Character
-		local HRP = Q and Q:FindFirstChild("HumanoidRootPart")
-		if HRP and SelectedGrid then
-			for _, part in pairs(SelectedGrid:GetDescendants()) do
-				if part:IsA("BasePart") then
-					if (part.Position - HRP.Position).Magnitude < 15 then
-						pcall(function()
-							firetouchinterest(HRP, part, 0)
-							firetouchinterest(HRP, part, 1)
-						end)
-					end
+		local ch = P.Character
+		local hr = ch and ch:FindFirstChild("HumanoidRootPart")
+		if hr and sg then
+			for _, p in pairs(sg:GetDescendants()) do
+				if p:IsA("BasePart") and (p.Position - hr.Position).Magnitude < 15 then
+					pcall(function() firetouchinterest(hr, p, 0) firetouchinterest(hr, p, 1) end)
 				end
 			end
 		end
@@ -257,13 +287,19 @@ local function TouchLoop()
 	end
 end
 
-local function TeleportTo(pos)
-	local character = P.Character
-	if character then
-		local HRP = character:FindFirstChild("HumanoidRootPart")
-		if HRP then
-			HRP.CFrame = CFrame.new(pos)
-		end
+local function tp(pos)
+	local ch = P.Character
+	if ch then
+		local hr = ch:FindFirstChild("HumanoidRootPart")
+		if hr then hr.CFrame = CFrame.new(pos) end
+	end
+end
+
+local function auL()
+	while au do
+		local args = { [1] = tostring(ao) }
+		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CutsceneCheck"):InvokeServer(unpack(args))
+		R.Heartbeat:Wait()
 	end
 end
 
@@ -273,33 +309,78 @@ T.MouseButton1Click:Connect(function()
 	T.Text = X and "◀" or "▶"
 end)
 
-TeleportToggle.MouseButton1Click:Connect(function()
-	TeleportFrame.Visible = not TeleportFrame.Visible
+tt.MouseButton1Click:Connect(function()
+	tf.Visible = not tf.Visible
 end)
 
-Zone2Button.MouseButton1Click:Connect(function()
-	TeleportTo(zone2Position)
+z2.MouseButton1Click:Connect(function() tp(z2p) end)
+z3.MouseButton1Click:Connect(function() tp(z3p) end)
+z4.MouseButton1Click:Connect(function() tp(z4p) end)
+
+at.MouseButton1Click:Connect(function() af.Visible = not af.Visible end)
+
+o1.MouseButton1Click:Connect(function()
+	if au and ao == 1 then
+		au = false; ao = nil; o1.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+	else
+		ao = 1; au = true
+		o1.BackgroundColor3 = Color3.new(0.3,1,0.3)
+		o2.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+		o3.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+		o4.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+		coroutine.wrap(auL)()
+	end
 end)
 
-Zone3Button.MouseButton1Click:Connect(function()
-	TeleportTo(zone3Position)
+o2.MouseButton1Click:Connect(function()
+	if au and ao == 2 then
+		au = false; ao = nil; o2.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+	else
+		ao = 2; au = true
+		o1.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+		o2.BackgroundColor3 = Color3.new(0.3,1,0.3)
+		o3.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+		o4.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+		coroutine.wrap(auL)()
+	end
 end)
 
-Zone4Button.MouseButton1Click:Connect(function()
-	TeleportTo(zone4Position)
+o3.MouseButton1Click:Connect(function()
+	if au and ao == 3 then
+		au = false; ao = nil; o3.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+	else
+		ao = 3; au = true
+		o1.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+		o2.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+		o3.BackgroundColor3 = Color3.new(0.3,1,0.3)
+		o4.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+		coroutine.wrap(auL)()
+	end
+end)
+
+o4.MouseButton1Click:Connect(function()
+	if au and ao == 4 then
+		au = false; ao = nil; o4.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+	else
+		ao = 4; au = true
+		o1.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+		o2.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+		o3.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+		o4.BackgroundColor3 = Color3.new(0.3,1,0.3)
+		coroutine.wrap(auL)()
+	end
 end)
 
 B.MouseButton1Click:Connect(function()
 	A = not A
 	B.Text = A and "ON" or "OFF"
-	B.TextColor3 = A and Color3.new(0.3, 1, 0.3) or Color3.new(1, 0.3, 0.3)
+	B.TextColor3 = A and Color3.new(0.3,1,0.3) or Color3.new(1,0.3,0.3)
 	S.Text = A and "ACTIVO" or "INACTIVO"
 	if A then
-		SelectedGrid = nil
-		C = {}
-		coroutine.wrap(MoveLoop)()
-		coroutine.wrap(TouchLoop)()
-		coroutine.wrap(U)()
+		sg = nil; C = {}
+		coroutine.wrap(ml)()
+		coroutine.wrap(tl)()
+		coroutine.wrap(up)()
 	end
 end)
 
