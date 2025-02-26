@@ -1,290 +1,242 @@
-local Plr = game:GetService("Players").LocalPlayer
-local Ws = game:GetService("Workspace")
-local Ts = game:GetService("TweenService")
+local P = game:GetService("Players").LocalPlayer
+local R = game:GetService("RunService")
+local T = game:GetService("TweenService")
 
-local Gui = Instance.new("ScreenGui")
-local Tog = Instance.new("TextButton")
-local Main = Instance.new("Frame")
-local Hdr = Instance.new("Frame")
-local Ttl = Instance.new("TextLabel")
-local Stats = Instance.new("Frame")
-local F = Instance.new("TextLabel")
-local D = Instance.new("TextLabel")
-local T = Instance.new("TextLabel")
-local TimeLabel = Instance.new("TextLabel")
-local Auto = Instance.new("TextButton")
-local Crd = Instance.new("TextLabel")
-local Nots = Instance.new("Frame")
+local G = Instance.new("ScreenGui")
+G.Name = "CoreMonitor"
+G.ResetOnSpawn = false
+G.Parent = game:GetService("CoreGui")
 
-Gui.Name = "FishUI"
-Gui.Parent = Plr.PlayerGui
-Gui.ResetOnSpawn = false
+local function C(n,p)
+    local i = Instance.new(n)
+    for k,v in pairs(p) do i[k] = v end
+    return i
+end
 
-Tog.Name = "Tog"
-Tog.Parent = Gui
-Tog.BackgroundColor3 = Color3.fromRGB(30,30,35)
-Tog.Position = UDim2.new(0.01,0,0.5,-20)
-Tog.Size = UDim2.new(0,30,0,30)
-Tog.Font = Enum.Font.GothamBold
-Tog.Text = "▶"
-Tog.TextColor3 = Color3.fromRGB(200,200,200)
-Tog.ZIndex = 2
+local B = C("TextButton",{
+    Name = "Toggle",
+    Parent = G,
+    BackgroundColor3 = Color3.fromRGB(30,30,35),
+    Position = UDim2.new(0.01,0,0.5,-20),
+    Size = UDim2.new(0,30,0,30),
+    Font = Enum.Font.GothamBold,
+    Text = "▶",
+    TextColor3 = Color3.fromRGB(200,200,200),
+    ZIndex = 2
+})
 
-Main.Name = "Main"
-Main.Parent = Gui
-Main.BackgroundColor3 = Color3.fromRGB(10,10,10)
-Main.Position = UDim2.new(0.01,30,0.5,-95)
-Main.Size = UDim2.new(0,200,0,190)
-Main.AnchorPoint = Vector2.new(0,0.5)
-Main.ClipsDescendants = true
+local M = C("Frame",{
+    Name = "Main",
+    Parent = G,
+    BackgroundColor3 = Color3.fromRGB(10,10,10),
+    Position = UDim2.new(0.01,30,0.5,-95),
+    Size = UDim2.new(0,200,0,190),
+    AnchorPoint = Vector2.new(0,0.5),
+    ClipsDescendants = true
+})
 
-Hdr.Name = "Hdr"
-Hdr.Parent = Main
-Hdr.BackgroundColor3 = Color3.fromRGB(20,20,25)
-Hdr.Size = UDim2.new(1,0,0,30)
+local H = C("Frame",{
+    Name = "Header",
+    Parent = M,
+    BackgroundColor3 = Color3.fromRGB(20,20,25),
+    Size = UDim2.new(1,0,0,30)
+})
 
-Ttl.Name = "Ttl"
-Ttl.Parent = Hdr
-Ttl.BackgroundTransparency = 1
-Ttl.Size = UDim2.new(1,-30,1,0)
-Ttl.Font = Enum.Font.GothamBold
-Ttl.Text = " MushYO by OneCreatorX"
-Ttl.TextColor3 = Color3.fromRGB(200,200,220)
-Ttl.TextSize = 14
+C("TextLabel",{
+    Parent = H,
+    BackgroundTransparency = 1,
+    Size = UDim2.new(1,-30,1,0),
+    Font = Enum.Font.GothamBold,
+    Text = " System Monitor v3 OneCreatorX",
+    TextColor3 = Color3.fromRGB(200,200,220),
+    TextSize = 14
+})
 
-Stats.Name = "Stats"
-Stats.Parent = Main
-Stats.BackgroundTransparency = 1
-Stats.Position = UDim2.new(0,10,0,35)
-Stats.Size = UDim2.new(1,-20,1,-55)
+local S = C("Frame",{
+    Name = "Stats",
+    Parent = M,
+    BackgroundTransparency = 1,
+    Position = UDim2.new(0,10,0,35),
+    Size = UDim2.new(1,-20,1,-55)
+})
 
-F.Name = "F"
-F.Parent = Stats
-F.Size = UDim2.new(1,0,0,30)
-F.Font = Enum.Font.GothamMedium
-F.Text = "🐟 0 (+0)"
-F.TextColor3 = Color3.fromRGB(100,200,255)
-F.TextSize = 14
-F.BackgroundTransparency = 1
-F.TextXAlignment = Enum.TextXAlignment.Left
+local L = {}
+for i,n in pairs({"F","D","T"}) do
+    L[n] = C("TextLabel",{
+        Parent = S,
+        Size = UDim2.new(1,0,0,30),
+        Position = UDim2.new(0,0,0,(i-1)*35),
+        Font = Enum.Font.GothamMedium,
+        Text = " Loading...",
+        TextColor3 = Color3.fromRGB(200,200,200),
+        TextSize = 14,
+        BackgroundTransparency = 1,
+        TextXAlignment = Enum.TextXAlignment.Left
+    })
+end
 
-D.Name = "D"
-D.Parent = Stats
-D.Position = UDim2.new(0,0,0,35)
-D.Size = UDim2.new(1,0,0,30)
-D.Font = Enum.Font.GothamMedium
-D.Text = "💎 0 (+0)"
-D.BackgroundTransparency = 1
-D.TextColor3 = Color3.fromRGB(255,215,50)
-D.TextSize = 14
-D.TextXAlignment = Enum.TextXAlignment.Left
+local Tm = C("TextLabel",{
+    Name = "Time",
+    Parent = S,
+    Position = UDim2.new(0,0,0,105),
+    Size = UDim2.new(1,0,0,30),
+    BackgroundTransparency = 1,
+    Font = Enum.Font.GothamMedium,
+    Text = "⏱️ 00:00:00",
+    TextColor3 = Color3.fromRGB(200,200,200),
+    TextSize = 14,
+    TextXAlignment = Enum.TextXAlignment.Left
+})
 
-T.Name = "T"
-T.Parent = Stats
-T.Position = UDim2.new(0,0,0,70)
-T.Size = UDim2.new(1,0,0,30)
-T.BackgroundTransparency = 1
-T.Font = Enum.Font.GothamMedium
-T.Text = "🗑️ 0 (+0)"
-T.TextColor3 = Color3.fromRGB(170,170,170)
-T.TextSize = 14
-T.TextXAlignment = Enum.TextXAlignment.Left
+local A = C("TextButton",{
+    Name = "AutoBtn",
+    Parent = M,
+    BackgroundColor3 = Color3.fromRGB(30,30,35),
+    Position = UDim2.new(0.5,-40,1,-30),
+    Size = UDim2.new(0,80,0,25),
+    Font = Enum.Font.GothamBold,
+    Text = "AUTO: OFF",
+    TextColor3 = Color3.fromRGB(200,50,50),
+    TextSize = 12
+})
 
-TimeLabel.Name = "Time"
-TimeLabel.Parent = Stats
-TimeLabel.Position = UDim2.new(0,0,0,105)
-TimeLabel.Size = UDim2.new(1,0,0,30)
-TimeLabel.BackgroundTransparency = 1
-TimeLabel.Font = Enum.Font.GothamMedium
-TimeLabel.Text = "⏱️ 00:00:00"
-TimeLabel.TextColor3 = Color3.fromRGB(200,200,200)
-TimeLabel.TextSize = 14
-TimeLabel.TextXAlignment = Enum.TextXAlignment.Left
+local V = true
+local E = false
+local Dt = {F=0,D=0,T=0}
+local St = os.time()
 
-Auto.Name = "Auto"
-Auto.Parent = Main
-Auto.BackgroundColor3 = Color3.fromRGB(30,30,35)
-Auto.Position = UDim2.new(0.5,-40,1,-30)
-Auto.Size = UDim2.new(0,80,0,25)
-Auto.Font = Enum.Font.GothamBold
-Auto.Text = "AUTO: OFF"
-Auto.TextColor3 = Color3.fromRGB(200,50,50)
-Auto.TextSize = 12
-
-Crd.Name = "Crd"
-Crd.Parent = Main
-Crd.BackgroundTransparency = 1
-Crd.Position = UDim2.new(0,5,1,-20)
-Crd.Size = UDim2.new(1,-10,0,15)
-Crd.Font = Enum.Font.Gotham
-Crd.Text = " v1 • 19/02/24"
-Crd.TextColor3 = Color3.fromRGB(150,150,150)
-Crd.TextSize = 10
-Crd.TextXAlignment = Enum.TextXAlignment.Left
-
-Nots.Name = "Nots"
-Nots.Parent = Gui
-Nots.BackgroundTransparency = 1
-Nots.Position = UDim2.new(0.01,240,0.5,-80)
-Nots.Size = UDim2.new(0,200,0,160)
-
-local Ac = false
-local Vsbl = true
-local L = {F=0,D=0,T=0}
-local startTime = os.time()
-local InitialData = nil
-
-local function Noty(txt,col)
-    local n = Instance.new("Frame")
-    n.BackgroundColor3 = Color3.fromRGB(20,20,25)
-    n.Size = UDim2.new(1,0,0,30)
-    n.Position = UDim2.new(0,0,0,#Nots:GetChildren()*35)
+local function N(t,c)
+    local F = C("Frame",{
+        Parent = M,
+        BackgroundColor3 = Color3.fromRGB(20,20,25),
+        Size = UDim2.new(1,-10,0,30),
+        Position = UDim2.new(0,5,0,5)
+    })
     
-    local lbl = Instance.new("TextLabel")
-    lbl.Text = " "..txt
-    lbl.TextColor3 = col
-    lbl.BackgroundTransparency = 1
-    lbl.Size = UDim2.new(1,-10,1,0)
-    lbl.Position = UDim2.new(0,5,0,0)
-    lbl.Font = Enum.Font.GothamMedium
-    lbl.TextSize = 13
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
-    lbl.Parent = n
+    C("TextLabel",{
+        Parent = F,
+        Text = " "..t,
+        TextColor3 = c,
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1,0,1,0),
+        Font = Enum.Font.GothamMedium,
+        TextSize = 13,
+        TextXAlignment = Enum.TextXAlignment.Left
+    })
     
-    n.Parent = Nots
-    Ts:Create(n,TweenInfo.new(0.3),{Position = UDim2.new(0,0,0,#Nots:GetChildren()*35 - 35)}):Play()
+    T:Create(F,TweenInfo.new(0.5),{Position = UDim2.new(0,5,0,-40)}):Play()
     task.delay(4,function()
-        Ts:Create(n,TweenInfo.new(0.5),{BackgroundTransparency=1}):Play()
+        T:Create(F,TweenInfo.new(0.5),{BackgroundTransparency=1}):Play()
         task.wait(0.5)
-        n:Destroy()
+        F:Destroy()
     end)
 end
 
-local function Eqp()
-    local c = Plr.Character
-    if not c then return end
+local function Q()
+    local C = P.Character
+    if not C then return end
     
-    local t = c:FindFirstChildOfClass("Tool")
-    if t then return t end
-    
-    local b = Plr.Backpack
-    if b then
-        t = b:FindFirstChildOfClass("Tool")
-        if t then
-            t.Parent = c
+    local T = C:FindFirstChildOfClass("Tool") or P.Backpack:FindFirstChildOfClass("Tool")
+    if T then
+        T.Parent = C
+        task.wait(0.5)
+        return T
+    end
+end
+
+local function X()
+    local T = Q()
+    if T then
+        for _=1,2 do
+            T:Activate()
             task.wait(0.2)
-            return t
         end
     end
 end
 
-local function Act()
-    local t = Eqp()
-    if t then
-        t:Activate()
-        task.wait(0.1)
-        t:Activate()
-    end
-end
-
-local function Actii()
-    local t = Eqp()
-    if t then
-        t:Activate()
-    end
-end
-
-Ws.ChildRemoved:Connect(function(c)
-    if c.Name:find("fishing") and Ac then
-        task.wait(1)
-        Actii()
+game:GetService("Workspace").ChildRemoved:Connect(function(c)
+    if c.Name:find("fishing") and E then
+        task.wait(1.5)
+        X()
     end
 end)
 
-Tog.MouseButton1Click:Connect(function()
-    Vsbl = not Vsbl
-    Main.Visible = Vsbl
-    Tog.Text = Vsbl and "◀" or "▶"
+B.MouseButton1Click:Connect(function()
+    V = not V
+    M.Visible = V
+    B.Text = V and "◀" or "▶"
 end)
 
-Auto.MouseButton1Click:Connect(function()
-    Ac = not Ac
-    Auto.Text = "AUTO: "..(Ac and "ON" or "OFF")
-    Auto.TextColor3 = Ac and Color3.fromRGB(50,200,50) or Color3.fromRGB(200,50,50)
+local Y = false
+A.MouseButton1Click:Connect(function()
+    E = not E
+    A.Text = "AUTO: "..(E and "ON" or "OFF")
+    A.TextColor3 = E and Color3.fromRGB(50,200,50) or Color3.fromRGB(200,50,50)
     
-    if Ac then
-        task.spawn(function()
-            while Ac do
-                local t = Eqp()
-                if t then
+    if E then
+        local function Z()
+            if E and not Y then
+                Y = true
+                local T = Q()
+                if T then
                     pcall(function()
-                        t.RemoteEvent:FireServer({whatToDo="Fish"})
+                        T.RemoteEvent:FireServer({whatToDo="Fish"})
                     end)
                 end
-                task.wait(0.1)
+                task.wait(5)
+                Y = false
+                Z()
             end
-        end)
+        end
+        Z()
     end
 end)
 
-spawn(function()
-    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
-end)
-
-game.Players.LocalPlayer.Idled:Connect(function()
-    local VU = game:GetService("VirtualUser")
-    VU:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-    wait(1)
-    VU:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-end)
-
-task.spawn(function()
-    while task.wait(1) do
-        local ok,dat = pcall(function()
+local function _()
+    local Initial = nil
+    while task.wait(5) do
+        local s,e = pcall(function()
             return game:GetService("ReplicatedStorage").Remotes.RemoteFunctions.GetData:InvokeServer()
         end)
         
-        if ok and dat.fishingItems then
-            if not InitialData then
-                InitialData = {
-                    F = dat.fishingItems.Fish,
-                    D = dat.fishingItems.Diamond,
-                    T = dat.fishingItems.Trash
+        if s and e.fishingItems then
+            if not Initial then
+                Initial = {
+                    F = e.fishingItems.Fish,
+                    D = e.fishingItems.Diamond,
+                    T = e.fishingItems.Trash
                 }
             end
             
-            local elapsed = os.time() - startTime
-            local hours = math.floor(elapsed / 3600)
-            local minutes = math.floor((elapsed % 3600) / 60)
-            local seconds = elapsed % 60
-            TimeLabel.Text = string.format("⏱️ %02d:%02d:%02d", hours, minutes, seconds)
+            local t = os.time()-St
+            Tm.Text = string.format("⏱️ %02d:%02d:%02d",math.floor(t/3600),math.floor(t%3600/60),t%60)
             
-            local currentF = dat.fishingItems.Fish
-            local currentD = dat.fishingItems.Diamond
-            local currentT = dat.fishingItems.Trash
+            local F,D,T = e.fishingItems.Fish,e.fishingItems.Diamond,e.fishingItems.Trash
+            L.F.Text = string.format("🐟 %d (+%d)",F,F-Initial.F)
+            L.D.Text = string.format("💎 %d (+%d)",D,D-Initial.D)
+            L.T.Text = string.format("🗑️ %d (+%d)",T,T-Initial.T)
             
-            F.Text = string.format("🐟 %d (+%d)", currentF, currentF - InitialData.F)
-            D.Text = string.format("💎 %d (+%d)", currentD, currentD - InitialData.D)
-            T.Text = string.format("🗑️ %d (+%d)", currentT, currentT - InitialData.T)
+            if F > Dt.F then N("+1 Fish",Color3.fromRGB(100,200,255)) X() end
+            if D > Dt.D then N("+1 Gem",Color3.fromRGB(255,215,0)) X() end
+            if T > Dt.T then N("+1 Trash",Color3.fromRGB(170,170,170)) X() end
             
-            if dat.fishingItems.Fish > L.F then
-                Noty("+1 🐟 PESCADO",Color3.fromRGB(100,200,255))
-                Act()
-            end
-            if dat.fishingItems.Diamond > L.D then
-                Noty("+1 💎 DIAMANTE",Color3.fromRGB(255,215,0))
-                Act()
-            end
-            if dat.fishingItems.Trash > L.T then
-                Noty("+1 🗑️ BASURA",Color3.fromRGB(170,170,170))
-                Act()
-            end
-            
-            L = {
-                F = currentF,
-                D = currentD,
-                T = currentT
-            }
+            Dt = {F=F,D=D,T=T}
         end
     end
+end
+
+task.spawn(_)
+task.spawn(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))("secure")
+end)
+
+P.Idled:Connect(function()
+    game:GetService("VirtualUser"):CaptureController()
+    game:GetService("VirtualUser"):ClickButton2(Vector2.new())
+end)
+
+R.Heartbeat:Connect(function()
+    pcall(function()
+        game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
+    end)
 end)
