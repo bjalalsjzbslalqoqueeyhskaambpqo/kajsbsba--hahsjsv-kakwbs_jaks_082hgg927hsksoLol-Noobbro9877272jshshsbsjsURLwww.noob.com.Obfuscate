@@ -13,6 +13,10 @@ local function C(n,p)
     return i
 end
 
+spawn(function()
+    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+end)
+
 local B = C("TextButton",{
     Name = "Toggle",
     Parent = G,
