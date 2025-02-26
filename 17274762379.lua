@@ -47,7 +47,7 @@ C("TextLabel",{
     BackgroundTransparency = 1,
     Size = UDim2.new(1,-30,1,0),
     Font = Enum.Font.GothamBold,
-    Text = " System Monitor v3 OneCreatorX",
+    Text = " System Monitor - OneCreatorX",
     TextColor3 = Color3.fromRGB(200,200,220),
     TextSize = 14
 })
