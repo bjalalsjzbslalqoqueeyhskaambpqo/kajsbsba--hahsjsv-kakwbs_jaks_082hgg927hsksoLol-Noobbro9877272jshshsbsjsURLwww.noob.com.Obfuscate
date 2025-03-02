@@ -51,7 +51,7 @@ C("TextLabel",{
     BackgroundTransparency = 1,
     Size = UDim2.new(1,-30,1,0),
     Font = Enum.Font.GothamBold,
-    Text = " System Monitor - OneCreatorX",
+    Text = " Monitor V3 - OneCreatorX",
     TextColor3 = Color3.fromRGB(200,200,220),
     TextSize = 14
 })
@@ -109,6 +109,21 @@ local E = false
 local Dt = {F=0,D=0,T=0}
 local St = os.time()
 
+local ToolsUtility = game:GetService("ReplicatedStorage"):WaitForChild("ToolsUtility")
+local targetRemote
+for _,child in pairs(ToolsUtility:GetChildren()) do
+    if child:IsA("RemoteEvent") and child.Name ~= "MainEvent" then
+        targetRemote = child
+        break
+    end
+end
+
+local args = {
+    [1] = {
+        ["partyAction"] = "f"
+    }
+}
+
 local function N(t,c)
     local F = C("Frame",{
         Parent = M,
@@ -136,35 +151,6 @@ local function N(t,c)
     end)
 end
 
-local function Q()
-    local C = P.Character
-    if not C then return end
-    
-    local T = C:FindFirstChildOfClass("Tool") or P.Backpack:FindFirstChildOfClass("Tool")
-    if T then
-        T.Parent = C
-        task.wait(0.5)
-        return T
-    end
-end
-
-local function X()
-    local T = Q()
-    if T then
-        for _=1,2 do
-            T:Activate()
-            task.wait(0.2)
-        end
-    end
-end
-
-game:GetService("Workspace").ChildRemoved:Connect(function(c)
-    if c.Name:find("fishing") and E then
-        task.wait(1.5)
-        X()
-    end
-end)
-
 B.MouseButton1Click:Connect(function()
     V = not V
     M.Visible = V
@@ -179,15 +165,12 @@ A.MouseButton1Click:Connect(function()
     
     if E then
         local function Z()
-            if E and not Y then
+            if E and not Y and targetRemote then
                 Y = true
-                local T = Q()
-                if T then
-                    pcall(function()
-                        T.RemoteEvent:FireServer({whatToDo="Fish"})
-                    end)
-                end
-                task.wait(5)
+                pcall(function()
+                    targetRemote:FireServer(unpack(args))
+                end)
+                task.wait(1)
                 Y = false
                 Z()
             end
@@ -198,7 +181,7 @@ end)
 
 local function _()
     local Initial = nil
-    while task.wait(5) do
+    while task.wait(1) do
         local s,e = pcall(function()
             return game:GetService("ReplicatedStorage").Remotes.RemoteFunctions.GetData:InvokeServer()
         end)
@@ -220,9 +203,9 @@ local function _()
             L.D.Text = string.format("💎 %d (+%d)",D,D-Initial.D)
             L.T.Text = string.format("🗑️ %d (+%d)",T,T-Initial.T)
             
-            if F > Dt.F then N("+1 Fish",Color3.fromRGB(100,200,255)) X() end
-            if D > Dt.D then N("+1 Gem",Color3.fromRGB(255,215,0)) X() end
-            if T > Dt.T then N("+1 Trash",Color3.fromRGB(170,170,170)) X() end
+            if F > Dt.F then N("+1 Fish",Color3.fromRGB(100,200,255)) end
+            if D > Dt.D then N("+1 Gem",Color3.fromRGB(255,215,0)) end
+            if T > Dt.T then N("+1 Trash",Color3.fromRGB(170,170,170)) end
             
             Dt = {F=F,D=D,T=T}
         end
