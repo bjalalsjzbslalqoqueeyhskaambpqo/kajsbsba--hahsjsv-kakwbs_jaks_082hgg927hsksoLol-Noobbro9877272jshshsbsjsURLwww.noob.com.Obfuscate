@@ -51,7 +51,7 @@ C("TextLabel",{
     BackgroundTransparency = 1,
     Size = UDim2.new(1,-30,1,0),
     Font = Enum.Font.GothamBold,
-    Text = " Monitor V3 - OneCreatorX",
+    Text = "  Monitor V3 - OneCreatorX",
     TextColor3 = Color3.fromRGB(200,200,220),
     TextSize = 14
 })
@@ -108,6 +108,7 @@ local V = true
 local E = false
 local Dt = {F=0,D=0,T=0}
 local St = os.time()
+local buoyName = tostring(P.UserId)..".buoy"
 
 local ToolsUtility = game:GetService("ReplicatedStorage"):WaitForChild("ToolsUtility")
 local targetRemote
@@ -123,6 +124,60 @@ local args = {
         ["partyAction"] = "f"
     }
 }
+
+local function Q()
+    local C = P.Character
+    if not C then return end
+    local T = C:FindFirstChildOfClass("Tool") or P.Backpack:FindFirstChildOfClass("Tool")
+    if T then
+        T.Parent = C
+        task.wait(0.5)
+        return T
+    end
+end
+
+local function VerifyBuoy()
+    task.wait(2)
+    if not workspace.Temp:FindFirstChild(buoyName) then
+        local T = Q()
+        if T then
+            T:Activate()
+            task.wait(0.2)
+        end
+    end
+end
+
+local function X()
+    local T = Q()
+    if T then
+        for _=1,2 do
+            T:Activate()
+            task.wait(0.2)
+        end
+        VerifyBuoy()
+    end
+end
+
+local function ActivateOnce()
+    local T = Q()
+    if T then
+        T:Activate()
+        task.wait(0.2)
+        VerifyBuoy()
+    end
+end
+
+game:GetService("Workspace").ChildRemoved:Connect(function(c)
+    if c.Name:find("fishing") and E then
+        task.wait(1.5)
+        ActivateOnce()
+        if targetRemote then
+            pcall(function()
+                targetRemote:FireServer(unpack(args))
+            end)
+        end
+    end
+end)
 
 local function N(t,c)
     local F = C("Frame",{
@@ -167,6 +222,7 @@ A.MouseButton1Click:Connect(function()
         local function Z()
             if E and not Y and targetRemote then
                 Y = true
+               
                 pcall(function()
                     targetRemote:FireServer(unpack(args))
                 end)
@@ -203,9 +259,18 @@ local function _()
             L.D.Text = string.format("💎 %d (+%d)",D,D-Initial.D)
             L.T.Text = string.format("🗑️ %d (+%d)",T,T-Initial.T)
             
-            if F > Dt.F then N("+1 Fish",Color3.fromRGB(100,200,255)) end
-            if D > Dt.D then N("+1 Gem",Color3.fromRGB(255,215,0)) end
-            if T > Dt.T then N("+1 Trash",Color3.fromRGB(170,170,170)) end
+            if F > Dt.F then 
+                N("+1 Fish",Color3.fromRGB(100,200,255))
+                X()
+            end
+            if D > Dt.D then 
+                N("+1 Gem",Color3.fromRGB(255,215,0))
+                X()
+            end
+            if T > Dt.T then 
+                N("+1 Trash",Color3.fromRGB(170,170,170))
+                X()
+            end
             
             Dt = {F=F,D=D,T=T}
         end
@@ -213,9 +278,6 @@ local function _()
 end
 
 task.spawn(_)
-task.spawn(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))("secure")
-end)
 
 P.Idled:Connect(function()
     game:GetService("VirtualUser"):CaptureController()
