@@ -51,7 +51,7 @@ C("TextLabel",{
     BackgroundTransparency = 1,
     Size = UDim2.new(1,-30,1,0),
     Font = Enum.Font.GothamBold,
-    Text = "  Monitor V3 - OneCreatorX",
+    Text = "  Monitor V3.1 - OneCreatorX",
     TextColor3 = Color3.fromRGB(200,200,220),
     TextSize = 14
 })
@@ -137,7 +137,7 @@ local function Q()
 end
 
 local function VerifyBuoy()
-    task.wait(2)
+    task.wait(4)
     if not workspace.Temp:FindFirstChild(buoyName) then
         local T = Q()
         if T then
@@ -152,7 +152,7 @@ local function X()
     if T then
         for _=1,2 do
             T:Activate()
-            task.wait(0.2)
+            task.wait(0.5)
         end
         VerifyBuoy()
     end
