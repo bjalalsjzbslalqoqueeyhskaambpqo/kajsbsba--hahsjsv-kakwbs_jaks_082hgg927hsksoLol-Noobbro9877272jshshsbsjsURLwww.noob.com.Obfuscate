@@ -226,7 +226,7 @@ A.MouseButton1Click:Connect(function()
                 pcall(function()
                     targetRemote:FireServer(unpack(args))
                 end)
-                task.wait(1)
+                task.wait(5)
                 Y = false
                 Z()
             end
