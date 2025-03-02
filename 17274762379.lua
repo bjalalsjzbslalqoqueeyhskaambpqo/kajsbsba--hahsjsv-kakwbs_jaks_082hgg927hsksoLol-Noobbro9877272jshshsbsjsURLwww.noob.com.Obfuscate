@@ -1,290 +1,264 @@
-local P = game:GetService("Players").LocalPlayer
-local R = game:GetService("RunService")
-local T = game:GetService("TweenService")
+local _G = getgenv()
+local Player = game:GetService("Players").LocalPlayer
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 
-local G = Instance.new("ScreenGui")
-G.Name = "CoreMonitor"
-G.ResetOnSpawn = false
-G.Parent = game:GetService("CoreGui")
+local CoreGUI = game:GetService("CoreGui")
+local Interface = Instance.new("ScreenGui")
+Interface.Name = "CoreMonitor"
+Interface.ResetOnSpawn = false
+Interface.Parent = CoreGUI
 
-local function C(n,p)
-    local i = Instance.new(n)
-    for k,v in pairs(p) do i[k] = v end
-    return i
+local function CreateElement(elementType, properties)
+    local newElement = Instance.new(elementType)
+    for prop, value in pairs(properties) do
+        newElement[prop] = value
+    end
+    return newElement
 end
 
 spawn(function()
-    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))("info")
 end)
 
-local B = C("TextButton",{
+local ToggleButton = CreateElement("TextButton", {
     Name = "Toggle",
-    Parent = G,
-    BackgroundColor3 = Color3.fromRGB(30,30,35),
-    Position = UDim2.new(0.01,0,0.5,-20),
-    Size = UDim2.new(0,30,0,30),
+    Parent = Interface,
+    BackgroundColor3 = Color3.fromRGB(30, 30, 35),
+    Position = UDim2.new(0.01, 0, 0.5, -20),
+    Size = UDim2.new(0, 30, 0, 30),
     Font = Enum.Font.GothamBold,
     Text = "▶",
-    TextColor3 = Color3.fromRGB(200,200,200),
+    TextColor3 = Color3.fromRGB(200, 200, 200),
     ZIndex = 2
 })
 
-local M = C("Frame",{
+local MainPanel = CreateElement("Frame", {
     Name = "Main",
-    Parent = G,
-    BackgroundColor3 = Color3.fromRGB(10,10,10),
-    Position = UDim2.new(0.01,30,0.5,-95),
-    Size = UDim2.new(0,200,0,190),
-    AnchorPoint = Vector2.new(0,0.5),
+    Parent = Interface,
+    BackgroundColor3 = Color3.fromRGB(10, 10, 10),
+    Position = UDim2.new(0.01, 30, 0.5, -95),
+    Size = UDim2.new(0, 200, 0, 190),
+    AnchorPoint = Vector2.new(0, 0.5),
     ClipsDescendants = true
 })
 
-local H = C("Frame",{
+local Header = CreateElement("Frame", {
     Name = "Header",
-    Parent = M,
-    BackgroundColor3 = Color3.fromRGB(20,20,25),
-    Size = UDim2.new(1,0,0,30)
+    Parent = MainPanel,
+    BackgroundColor3 = Color3.fromRGB(20, 20, 25),
+    Size = UDim2.new(1, 0, 0, 30)
 })
 
-C("TextLabel",{
-    Parent = H,
+CreateElement("TextLabel", {
+    Parent = Header,
     BackgroundTransparency = 1,
-    Size = UDim2.new(1,-30,1,0),
+    Size = UDim2.new(1, -30, 1, 0),
     Font = Enum.Font.GothamBold,
-    Text = "  Monitor V3.1 - OneCreatorX",
-    TextColor3 = Color3.fromRGB(200,200,220),
+    Text = "  Monitor V3.2 - OneCreatorX",
+    TextColor3 = Color3.fromRGB(200, 200, 220),
     TextSize = 14
 })
 
-local S = C("Frame",{
+local StatsPanel = CreateElement("Frame", {
     Name = "Stats",
-    Parent = M,
+    Parent = MainPanel,
     BackgroundTransparency = 1,
-    Position = UDim2.new(0,10,0,35),
-    Size = UDim2.new(1,-20,1,-55)
+    Position = UDim2.new(0, 10, 0, 35),
+    Size = UDim2.new(1, -20, 1, -55)
 })
 
-local L = {}
-for i,n in pairs({"F","D","T"}) do
-    L[n] = C("TextLabel",{
-        Parent = S,
-        Size = UDim2.new(1,0,0,30),
-        Position = UDim2.new(0,0,0,(i-1)*35),
+local StatLabels = {}
+for index, name in pairs({"F","D","T"}) do
+    StatLabels[name] = CreateElement("TextLabel", {
+        Parent = StatsPanel,
+        Size = UDim2.new(1, 0, 0, 30),
+        Position = UDim2.new(0, 0, 0, (index-1)*35),
         Font = Enum.Font.GothamMedium,
         Text = " Loading...",
-        TextColor3 = Color3.fromRGB(200,200,200),
+        TextColor3 = Color3.fromRGB(200, 200, 200),
         TextSize = 14,
         BackgroundTransparency = 1,
         TextXAlignment = Enum.TextXAlignment.Left
     })
 end
 
-local Tm = C("TextLabel",{
+local TimeLabel = CreateElement("TextLabel", {
     Name = "Time",
-    Parent = S,
-    Position = UDim2.new(0,0,0,105),
-    Size = UDim2.new(1,0,0,30),
+    Parent = StatsPanel,
+    Position = UDim2.new(0, 0, 0, 105),
+    Size = UDim2.new(1, 0, 0, 30),
     BackgroundTransparency = 1,
     Font = Enum.Font.GothamMedium,
     Text = "⏱️ 00:00:00",
-    TextColor3 = Color3.fromRGB(200,200,200),
+    TextColor3 = Color3.fromRGB(200, 200, 200),
     TextSize = 14,
     TextXAlignment = Enum.TextXAlignment.Left
 })
 
-local A = C("TextButton",{
+local AutoButton = CreateElement("TextButton", {
     Name = "AutoBtn",
-    Parent = M,
-    BackgroundColor3 = Color3.fromRGB(30,30,35),
-    Position = UDim2.new(0.5,-40,1,-30),
-    Size = UDim2.new(0,80,0,25),
+    Parent = MainPanel,
+    BackgroundColor3 = Color3.fromRGB(30, 30, 35),
+    Position = UDim2.new(0.5, -40, 1, -30),
+    Size = UDim2.new(0, 80, 0, 25),
     Font = Enum.Font.GothamBold,
     Text = "AUTO: OFF",
-    TextColor3 = Color3.fromRGB(200,50,50),
+    TextColor3 = Color3.fromRGB(200, 50, 50),
     TextSize = 12
 })
 
-local V = true
-local E = false
-local Dt = {F=0,D=0,T=0}
-local St = os.time()
-local buoyName = tostring(P.UserId)..".buoy"
+local PanelVisible = true
+local AutoEnabled = false
+local FishingData = {F = 0, D = 0, T = 0}
+local StartTime = os.time()
+local BuoyIdentifier = Player.UserId..".buoy"
 
-local ToolsUtility = game:GetService("ReplicatedStorage"):WaitForChild("ToolsUtility")
-local targetRemote
-for _,child in pairs(ToolsUtility:GetChildren()) do
+local ToolUtility = game:GetService("ReplicatedStorage"):WaitForChild("ToolsUtility")
+local FishingRemote
+for _, child in pairs(ToolUtility:GetChildren()) do
     if child:IsA("RemoteEvent") and child.Name ~= "MainEvent" then
-        targetRemote = child
+        FishingRemote = child
         break
     end
 end
 
-local args = {
+local FishingArguments = {
     [1] = {
         ["partyAction"] = "f"
     }
 }
 
-local function Q()
-    local C = P.Character
-    if not C then return end
-    local T = C:FindFirstChildOfClass("Tool") or P.Backpack:FindFirstChildOfClass("Tool")
-    if T then
-        T.Parent = C
+local function GetFishingTool()
+    local character = Player.Character
+    if not character then return end
+    local tool = character:FindFirstChildOfClass("Tool") or Player.Backpack:FindFirstChildOfClass("Tool")
+    if tool then
+        tool.Parent = character
         task.wait(0.5)
-        return T
+        return tool
     end
 end
 
-local function VerifyBuoy()
+local function CheckBuoyStatus()
     task.wait(4)
-    if not workspace.Temp:FindFirstChild(buoyName) then
-        local T = Q()
-        if T then
-            T:Activate()
+    if not workspace.Temp:FindFirstChild(BuoyIdentifier) then
+        local tool = GetFishingTool()
+        if tool then
+            tool:Activate()
             task.wait(0.2)
         end
     end
 end
 
-local function X()
-    local T = Q()
-    if T then
-        for _=1,2 do
-            T:Activate()
+local function CastFishingLine()
+    local tool = GetFishingTool()
+    if tool then
+        for _ = 1, 2 do
+            tool:Activate()
             task.wait(0.5)
         end
-        VerifyBuoy()
+        CheckBuoyStatus()
     end
 end
 
-local function ActivateOnce()
-    local T = Q()
-    if T then
-        T:Activate()
+local function SingleActivation()
+    local tool = GetFishingTool()
+    if tool then
+        tool:Activate()
         task.wait(0.2)
-        VerifyBuoy()
+        CheckBuoyStatus()
     end
 end
 
-game:GetService("Workspace").ChildRemoved:Connect(function(c)
-    if c.Name:find("fishing") and E then
+workspace.ChildRemoved:Connect(function(child)
+    if child.Name:find("fishing") then
         task.wait(1.5)
-        ActivateOnce()
-        if targetRemote then
-            pcall(function()
-                targetRemote:FireServer(unpack(args))
-            end)
-        end
+        SingleActivation()
     end
 end)
 
-local function N(t,c)
-    local F = C("Frame",{
-        Parent = M,
-        BackgroundColor3 = Color3.fromRGB(20,20,25),
-        Size = UDim2.new(1,-10,0,30),
-        Position = UDim2.new(0,5,0,5)
-    })
-    
-    C("TextLabel",{
-        Parent = F,
-        Text = " "..t,
-        TextColor3 = c,
-        BackgroundTransparency = 1,
-        Size = UDim2.new(1,0,1,0),
-        Font = Enum.Font.GothamMedium,
-        TextSize = 13,
-        TextXAlignment = Enum.TextXAlignment.Left
-    })
-    
-    T:Create(F,TweenInfo.new(0.5),{Position = UDim2.new(0,5,0,-40)}):Play()
-    task.delay(4,function()
-        T:Create(F,TweenInfo.new(0.5),{BackgroundTransparency=1}):Play()
-        task.wait(0.5)
-        F:Destroy()
-    end)
-end
-
-B.MouseButton1Click:Connect(function()
-    V = not V
-    M.Visible = V
-    B.Text = V and "◀" or "▶"
+ToggleButton.MouseButton1Click:Connect(function()
+    PanelVisible = not PanelVisible
+    MainPanel.Visible = PanelVisible
+    ToggleButton.Text = PanelVisible and "◀" or "▶"
 end)
 
-local Y = false
-A.MouseButton1Click:Connect(function()
-    E = not E
-    A.Text = "AUTO: "..(E and "ON" or "OFF")
-    A.TextColor3 = E and Color3.fromRGB(50,200,50) or Color3.fromRGB(200,50,50)
+local IsSending = false
+AutoButton.MouseButton1Click:Connect(function()
+    AutoEnabled = not AutoEnabled
+    AutoButton.Text = "AUTO: " .. (AutoEnabled and "ON" or "OFF")
+    AutoButton.TextColor3 = AutoEnabled and Color3.fromRGB(50, 200, 50) or Color3.fromRGB(200, 50, 50)
     
-    if E then
-        local function Z()
-            if E and not Y and targetRemote then
-                Y = true
-               
+    if AutoEnabled then
+        local function AutoCast()
+            while AutoEnabled and FishingRemote do
+                IsSending = true
                 pcall(function()
-                    targetRemote:FireServer(unpack(args))
+                    FishingRemote:FireServer(unpack(FishingArguments))
                 end)
-                task.wait(5)
-                Y = false
-                Z()
+                task.wait(10)
+                IsSending = false
             end
         end
-        Z()
+        AutoCast()
     end
 end)
 
-local function _()
-    local Initial = nil
+local function UpdateStats()
+    local initialData
     while task.wait(1) do
-        local s,e = pcall(function()
+        local success, result = pcall(function()
             return game:GetService("ReplicatedStorage").Remotes.RemoteFunctions.GetData:InvokeServer()
         end)
         
-        if s and e.fishingItems then
-            if not Initial then
-                Initial = {
-                    F = e.fishingItems.Fish,
-                    D = e.fishingItems.Diamond,
-                    T = e.fishingItems.Trash
+        if success and result.fishingItems then
+            if not initialData then
+                initialData = {
+                    F = result.fishingItems.Fish,
+                    D = result.fishingItems.Diamond,
+                    T = result.fishingItems.Trash
                 }
             end
             
-            local t = os.time()-St
-            Tm.Text = string.format("⏱️ %02d:%02d:%02d",math.floor(t/3600),math.floor(t%3600/60),t%60)
+            local elapsed = os.time() - StartTime
+            TimeLabel.Text = string.format("⏱️ %02d:%02d:%02d", math.floor(elapsed/3600), math.floor(elapsed%3600/60), elapsed%60)
             
-            local F,D,T = e.fishingItems.Fish,e.fishingItems.Diamond,e.fishingItems.Trash
-            L.F.Text = string.format("🐟 %d (+%d)",F,F-Initial.F)
-            L.D.Text = string.format("💎 %d (+%d)",D,D-Initial.D)
-            L.T.Text = string.format("🗑️ %d (+%d)",T,T-Initial.T)
+            local currentFish = result.fishingItems.Fish
+            local currentDiamonds = result.fishingItems.Diamond
+            local currentTrash = result.fishingItems.Trash
             
-            if F > Dt.F then 
-                N("+1 Fish",Color3.fromRGB(100,200,255))
-                X()
+            StatLabels.F.Text = string.format("🐟 %d (+%d)", currentFish, currentFish - initialData.F)
+            StatLabels.D.Text = string.format("💎 %d (+%d)", currentDiamonds, currentDiamonds - initialData.D)
+            StatLabels.T.Text = string.format("🗑️ %d (+%d)", currentTrash, currentTrash - initialData.T)
+            
+            if currentFish > FishingData.F then 
+                CastFishingLine()
             end
-            if D > Dt.D then 
-                N("+1 Gem",Color3.fromRGB(255,215,0))
-                X()
+            if currentDiamonds > FishingData.D then 
+                CastFishingLine()
             end
-            if T > Dt.T then 
-                N("+1 Trash",Color3.fromRGB(170,170,170))
-                X()
+            if currentTrash > FishingData.T then 
+                CastFishingLine()
             end
             
-            Dt = {F=F,D=D,T=T}
+            FishingData = {
+                F = currentFish,
+                D = currentDiamonds,
+                T = currentTrash
+            }
         end
     end
 end
 
-task.spawn(_)
+task.spawn(UpdateStats)
 
-P.Idled:Connect(function()
+Player.Idled:Connect(function()
     game:GetService("VirtualUser"):CaptureController()
     game:GetService("VirtualUser"):ClickButton2(Vector2.new())
 end)
 
-R.Heartbeat:Connect(function()
+RunService.Heartbeat:Connect(function()
     pcall(function()
         game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
     end)
