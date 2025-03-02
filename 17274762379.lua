@@ -91,6 +91,18 @@ local TimeLabel = CreateElement("TextLabel", {
     TextXAlignment = Enum.TextXAlignment.Left
 })
 
+local ModeDesc = CreateElement("TextLabel", {
+    Parent = MainPanel,
+    BackgroundTransparency = 1,
+    Position = UDim2.new(0, 10, 0, 230),
+    Size = UDim2.new(1, -20, 0, 40),
+    Font = Enum.Font.GothamMedium,
+    Text = "Select a fishing mode",
+    TextColor3 = Color3.fromRGB(180, 180, 180),
+    TextSize = 12,
+    TextWrapped = true,
+    TextXAlignment = Enum.TextXAlignment.Left
+})
 
 local ModoSeleccionado = "Impreciso"
 local PanelVisible = true
@@ -209,29 +221,42 @@ local function DesactivarBotones()
     FastButton.TextColor3 = Color3.fromRGB(200, 200, 200)
 end
 
+local modeDescriptions = {
+    Impreciso = "SAFE MODE: Slow n fail. Requires water.",
+    Normal = "STANDARD: Balanced. Requires water.",
+    Fast = "FAST: High speed, lower security. No water needed."
+}
+
+local function UpdateModeDescription()
+    ModeDesc.Text = modeDescriptions[ModoSeleccionado]
+end
+
 ImprecisoButton.MouseButton1Click:Connect(function()
     ModoSeleccionado = "Impreciso"
     DesactivarBotones()
     ImprecisoButton.TextColor3 = Color3.fromRGB(50, 200, 50)
+    UpdateModeDescription()
 end)
 NormalButton.MouseButton1Click:Connect(function()
     ModoSeleccionado = "Normal"
     DesactivarBotones()
     NormalButton.TextColor3 = Color3.fromRGB(50, 200, 50)
+    UpdateModeDescription()
 end)
 FastButton.MouseButton1Click:Connect(function()
     ModoSeleccionado = "Fast"
     DesactivarBotones()
     FastButton.TextColor3 = Color3.fromRGB(50, 200, 50)
-AutoEnabled = not AutoEnabled
-spawn(function()
-            while AutoEnabled do
-                pcall(function()
-                    FishingRemote:FireServer(unpack(FishingArguments))
-                end)
-                task.wait(5)
-            end
-        end)
+    UpdateModeDescription()
+    AutoEnabled = not AutoEnabled
+    spawn(function()
+        while AutoEnabled do
+            pcall(function()
+                FishingRemote:FireServer(unpack(FishingArguments))
+            end)
+            task.wait(3)
+        end
+    end)
 end)
 
 local X, Y = 500, 500
@@ -249,11 +274,9 @@ game.Workspace.ChildAdded:Connect(function(child)
             end)
         elseif ModoSeleccionado == "Normal" then
             FishingRemote:FireServer(unpack(FishingArguments))
-            end
         end
-    
+    end
 end)
-
 
 local function UpdateStats()
     local initialData
