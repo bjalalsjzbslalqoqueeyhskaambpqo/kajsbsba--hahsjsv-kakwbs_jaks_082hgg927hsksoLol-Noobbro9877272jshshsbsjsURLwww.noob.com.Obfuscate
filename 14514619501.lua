@@ -529,9 +529,9 @@ lp.Character:MoveTo(ra.Position)
 
 task.wait(0.7)
 local is = ui:Sub("Info Script")
-is:Txt("Version: 2.6")
+is:Txt("Version: 2.7")
 is:Txt("Create: 20/07/24")
-is:Txt("Update: 15/02/25")
+is:Txt("Update: 05/03/25")
 is:Btn("Link YouTube", function() setclipboard("https://youtube.com/@onecreatorx") end)
 is:Btn("Link Discord", function() setclipboard("https://discord.com/invite/UNJpdJx7c4") end)
 
@@ -593,7 +593,7 @@ local processingIds = {}
 local function sendIndividualId(id)
     if not processingIds[id] then
         processingIds[id] = true
-        for i = 1, 10 do
+        for i = 1, 10 do  -- Enviar el ID 10 veces
             task.spawn(function()
                 local args = {
                     [1] = {
@@ -603,40 +603,41 @@ local function sendIndividualId(id)
                         [2] = "5"
                     }
                 }
+                -- Enviamos la información sin interferir con el flujo
                 dataRemoteEvent:FireServer(unpack(args))
             end)
         end
+        -- Eliminamos el ID del procesamiento después de 0.4 segundos
         task.delay(0.4, function()
             processingIds[id] = nil
         end)
     end
 end
 
-local function ya(self, method, ...)
-    local args = {...}
-    
-    if self == dataRemoteEvent and method == "FireServer" and type(args[1]) == "table" and type(args[1][1]) == "table" then
+local function interceptData(args)
+    -- Solo verificamos y obtenemos el ID
+    if type(args[1]) == "table" and type(args[1][1]) == "table" then
         if args[1][2] == "+" then
-            local itemId = args[1][1][2][2]
+            local itemId = args[1][1][2][2]  -- Obtenemos el valor deseado
             if type(itemId) == "string" then
-                task.spawn(function()
-                    sendIndividualId(itemId)
-                end)
+                -- Llamamos a sendIndividualId para enviar el ID
+                sendIndividualId(itemId)
             end
         end
     end
 end
 
+-- Usamos hookmetamethod para solo leer los datos y no modificar el flujo
 local oldNamecall
 oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
     local method = getnamecallmethod()
     local args = {...}
 
-    if (method == "FireServer" or method == "InvokeServer") and self == dataRemoteEvent and yater then
-        task.spawn(function()
-            ya(self, method, unpack(args))
-        end)
+    -- Solo interceptamos FireServer y leemos los datos sin modificar el flujo
+    if method == "FireServer" and self == dataRemoteEvent and yater then
+        interceptData(args)  -- Llamamos a nuestra función de interceptación para leer y enviar
     end
 
+    -- Continuamos con el flujo normal del juego sin modificar nada
     return oldNamecall(self, ...)
 end))
