@@ -120,9 +120,13 @@ for _, child in pairs(ToolUtility:GetChildren()) do
     end
 end
 
+
 local FishingArguments = {
-    [1] = {["partyAction"] = "f"}
+    [1] = {
+        ["partyAction"] = "f"
+    }
 }
+
 
 local function GetFishingTool()
     local character = Player.Character
@@ -252,7 +256,13 @@ FastButton.MouseButton1Click:Connect(function()
     spawn(function()
         while AutoEnabled do
             pcall(function()
-                FishingRemote:FireServer(unpack(FishingArguments))
+                            local args = {
+    [1] = {
+        ["partyAction"] = "f"
+    }
+}
+
+                FishingRemote:FireServer(unpack(args))
             end)
             task.wait(3)
         end
