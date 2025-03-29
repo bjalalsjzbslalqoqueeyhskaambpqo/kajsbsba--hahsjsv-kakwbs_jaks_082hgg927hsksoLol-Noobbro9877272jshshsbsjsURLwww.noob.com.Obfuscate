@@ -1019,7 +1019,7 @@ local lp = game.Players.LocalPlayer
 
 game:GetService("Workspace").Temp.DescendantRemoving:Connect(function(instance)
     if instance.Name == lp.UserId .. ".buoy" then
-        task.wait(2)
+        task.wait(5)
         local tool = lp.Character and lp.Character:FindFirstChild("Fishing Rod")
         if tool and not game:GetService("Workspace").Temp:FindFirstChild(lp.UserId .. ".buoy") then
             tool:Activate()
