@@ -1,3 +1,53 @@
+local expectedVersion = 123
+local currentVersion = game.PlaceVersion
+
+if currentVersion ~= expectedVersion then
+    local playerGui = game.Players.LocalPlayer:FindFirstChildOfClass("PlayerGui")
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Parent = playerGui
+
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0.5, 0, 0.25, 0)
+    frame.Position = UDim2.new(0.25, 0, 0.35, 0)
+    frame.BackgroundColor3 = Color3.fromRGB(200, 30, 30)
+    frame.BackgroundTransparency = 0.2
+    frame.BorderSizePixel = 0
+    frame.Parent = screenGui
+
+    local uiCorner = Instance.new("UICorner")
+    uiCorner.CornerRadius = UDim.new(0.1, 0)
+    uiCorner.Parent = frame
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, -10, 1, -10)
+    textLabel.Position = UDim2.new(0, 5, 0, 5)
+    textLabel.Text = "⚠️ Warning: Newer game version detected!\n\n" ..
+                     "Script Version: " .. expectedVersion .. "\n" ..
+                     "Current Version: " .. currentVersion .. "\n\n" ..
+                     "Contact Dev: OneCreatorX on YouTube or Discord!"
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textLabel.TextScaled = true
+    textLabel.Font = Enum.Font.GothamBold
+    textLabel.BackgroundTransparency = 1
+    textLabel.Parent = frame
+
+    local uiStroke = Instance.new("UIStroke")
+    uiStroke.Thickness = 2
+    uiStroke.Color = Color3.fromRGB(255, 255, 255)
+    uiStroke.Parent = frame
+
+    task.wait(10)
+
+    for i = 0, 1, 0.1 do
+        frame.BackgroundTransparency = i
+        textLabel.TextTransparency = i
+        task.wait(0.1)
+    end
+
+    screenGui:Destroy()
+end
+
+
 if game.CoreGui:FindFirstChild("AF") then
     return
 end
