@@ -1034,3 +1034,19 @@ task.spawn(function()
         task.wait(1)
     end
 end)
+game:GetService("NetworkClient").ChildRemoved:Connect(function()
+            if #Players:GetPlayers() <= 1 then
+                Players.LocalPlayer:Kick("\nAuto Reconnect...")
+                wait()
+                game:GetService("TeleportService"):Teleport(game.PlaceId, Players.LocalPlayer)
+            else
+                game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
+            end
+        end)
+        
+        Players.LocalPlayer.Idled:Connect(function()
+            local VU = game:GetService("VirtualUser")
+            VU:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+            wait(1)
+            VU:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+        end)
