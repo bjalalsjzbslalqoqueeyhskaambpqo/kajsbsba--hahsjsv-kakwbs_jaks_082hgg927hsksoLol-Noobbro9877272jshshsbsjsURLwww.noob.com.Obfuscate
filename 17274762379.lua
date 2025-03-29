@@ -1044,7 +1044,7 @@ game:GetService("NetworkClient").ChildRemoved:Connect(function()
             end
         end)
         
-        Players.LocalPlayer.Idled:Connect(function()
+        game.Players.LocalPlayer.Idled:Connect(function()
             local VU = game:GetService("VirtualUser")
             VU:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
             wait(1)
