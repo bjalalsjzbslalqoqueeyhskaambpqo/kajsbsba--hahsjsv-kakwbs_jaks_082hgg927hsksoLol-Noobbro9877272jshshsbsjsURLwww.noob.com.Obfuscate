@@ -1,4 +1,4 @@
-local expectedVersion = 123
+local expectedVersion = 6103
 local currentVersion = game.PlaceVersion
 
 if currentVersion ~= expectedVersion then
