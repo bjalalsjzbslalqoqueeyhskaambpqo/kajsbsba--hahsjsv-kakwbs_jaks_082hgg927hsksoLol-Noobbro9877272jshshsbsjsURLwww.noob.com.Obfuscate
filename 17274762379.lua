@@ -731,7 +731,7 @@ local function msd(sf, sl, kn, vl, min, max, vf, cb)
            input.UserInputType == Enum.UserInputType.Touch then
             isDragging = false
         end
-    end)
+    end) 
     
     sf.TouchTap:Connect(function(touchPositions)
         if #touchPositions > 0 then
