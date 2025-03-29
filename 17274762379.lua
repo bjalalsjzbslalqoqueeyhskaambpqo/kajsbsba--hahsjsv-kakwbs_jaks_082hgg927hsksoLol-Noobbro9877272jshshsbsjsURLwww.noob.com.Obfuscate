@@ -1,3 +1,7 @@
+if game.CoreGui:FindFirstChild("AF") then
+    return
+end
+
 local ps = game:GetService("Players")
 local rs = game:GetService("ReplicatedStorage")
 local ts = game:GetService("TweenService")
@@ -144,7 +148,7 @@ fi.Parent = sg1
 
 local fcl = Instance.new("TextLabel")
 fcl.Name = "fcl"
-fcl.Size = UDim2.new(0.3, -25, 0, 20)
+fcl.Size = UDim2.new(0.3, -30, 0, 20)
 fcl.Position = UDim2.new(0, 25, 0, 0)
 fcl.BackgroundTransparency = 1
 fcl.TextColor3 = Color3.fromRGB(220, 220, 255)
@@ -179,7 +183,7 @@ ti.Parent = sg1
 
 local tcl = Instance.new("TextLabel")
 tcl.Name = "tcl"
-tcl.Size = UDim2.new(0.3, -25, 0, 20)
+tcl.Size = UDim2.new(0.3, -30, 0, 20)
 tcl.Position = UDim2.new(0.33, 25, 0, 0)
 tcl.BackgroundTransparency = 1
 tcl.TextColor3 = Color3.fromRGB(220, 220, 255)
@@ -214,7 +218,7 @@ di.Parent = sg1
 
 local dcl = Instance.new("TextLabel")
 dcl.Name = "dcl"
-dcl.Size = UDim2.new(0.34, -25, 0, 20)
+dcl.Size = UDim2.new(0.34, -30, 0, 20)
 dcl.Position = UDim2.new(0.66, 25, 0, 0)
 dcl.BackgroundTransparency = 1
 dcl.TextColor3 = Color3.fromRGB(220, 220, 255)
@@ -249,7 +253,7 @@ ci.Parent = sg1
 
 local tcl2 = Instance.new("TextLabel")
 tcl2.Name = "tcl2"
-tcl2.Size = UDim2.new(0.3, -25, 0, 20)
+tcl2.Size = UDim2.new(0.3, -30, 0, 20)
 tcl2.Position = UDim2.new(0, 25, 0, 30)
 tcl2.BackgroundTransparency = 1
 tcl2.TextColor3 = Color3.fromRGB(220, 220, 255)
@@ -295,7 +299,7 @@ ri.Parent = sg1
 
 local fpl = Instance.new("TextLabel")
 fpl.Name = "fpl"
-fpl.Size = UDim2.new(0.5, -25, 0, 20)
+fpl.Size = UDim2.new(0.5, -30, 0, 20)
 fpl.Position = UDim2.new(0, 25, 0, 60)
 fpl.BackgroundTransparency = 1
 fpl.TextColor3 = Color3.fromRGB(220, 220, 255)
@@ -318,7 +322,7 @@ nci.Parent = sg1
 
 local ncl = Instance.new("TextLabel")
 ncl.Name = "ncl"
-ncl.Size = UDim2.new(0.5, -25, 0, 20)
+ncl.Size = UDim2.new(0.5, -30, 0, 20)
 ncl.Position = UDim2.new(0.5, 25, 0, 60)
 ncl.BackgroundTransparency = 1
 ncl.TextColor3 = Color3.fromRGB(255, 200, 100)
@@ -361,9 +365,10 @@ sl.TextSize = 16
 sl.Font = Enum.Font.GothamBold
 sl.TextXAlignment = Enum.TextXAlignment.Left
 sl.Text = "Active - Fishing..."
+sl.TextScaled = true
+sl.TextWrapped = true
 sl.Parent = sp2
 
--- Equip button for when rod is in backpack
 local equipBtn = Instance.new("TextButton")
 equipBtn.Name = "equipBtn"
 equipBtn.Size = UDim2.new(0, 80, 0, 30)
@@ -593,6 +598,13 @@ local function adjustUIForScreenSize()
     sp3.Position = UDim2.new(0, 10, 0, statsHeight + statusHeight + 30)
     
     sp3.CanvasSize = UDim2.new(0, 0, 0, 110)
+    
+    fcl.Size = UDim2.new(0.3, -30, 0, 20)
+    tcl.Size = UDim2.new(0.3, -30, 0, 20)
+    dcl.Size = UDim2.new(0.34, -30, 0, 20)
+    
+    fpl.Size = UDim2.new(0.5, -30, 0, 20)
+    ncl.Size = UDim2.new(0.5, -30, 0, 20)
 end
 
 mb.MouseButton1Click:Connect(function()
@@ -615,6 +627,8 @@ local function msd(sf, sl, kn, vl, min, max, vf, cb)
     
     local function updateSlider(relX)
         local clamped = math.clamp(relX, 0, 1)
+        sl.Size = UDim2.new(clamped, 0, 1, 0)
+        kn.Position = UDim2.new(clamped, -10, 0.5,  0, 1)
         sl.Size = UDim2.new(clamped, 0, 1, 0)
         kn.Position = UDim2.new(clamped, -10, 0.5, -10)
         
@@ -690,13 +704,11 @@ msd(trf, trs, trk, trv, 0, 100, "%d%%", function(v)
     cd = {baseTime, baseTime + 5 + extension}
 end)
 
--- Function to check if player has fishing rod
 local function checkFishingRod()
     hasFishingRod = false
     rodEquipped = false
     rodInBackpack = false
     
-    -- Check if rod is equipped
     if lp.Character then
         local rod = lp.Character:FindFirstChild("Fishing Rod")
         if rod then
@@ -707,7 +719,6 @@ local function checkFishingRod()
         end
     end
     
-    -- Check if rod is in backpack
     if lp.Backpack then
         local rod = lp.Backpack:FindFirstChild("Fishing Rod")
         if rod then
@@ -718,7 +729,6 @@ local function checkFishingRod()
     end
 end
 
--- Function to equip fishing rod from backpack
 local function equipFishingRod()
     if lp.Backpack then
         local rod = lp.Backpack:FindFirstChild("Fishing Rod")
@@ -728,7 +738,6 @@ local function equipFishingRod()
     end
 end
 
--- Connect equip button
 equipBtn.MouseButton1Click:Connect(equipFishingRod)
 
 local function ufr()
@@ -766,10 +775,8 @@ local lastUpdateTime = 0
 local function ug()
     if not fcl or not tcl or not dcl or not tcl2 or not trl or not fpl or not ncl or not sl or not si then return end
     
-    -- Update fishing rod status
     checkFishingRod()
     
-    -- Update UI based on fishing rod status
     if not hasFishingRod then
         sl.Text = "No fishing rod found! Buy one first."
         sl.TextColor3 = Color3.fromRGB(255, 100, 100)
@@ -896,14 +903,11 @@ local function af()
                 validateFishing = vc
             })
         else
-            fr:FireServer({
-                fishingAction = "fish",
-                validateFishing = vc
-            })
+            rat()
         end
     end
     
-    task.wait(wt / 10)
+    task.wait(wt / 5)
     ap = false
     if rodEquipped then
         rat()
@@ -919,9 +923,6 @@ onc = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
                 vc = a[1].validateFishing
                 task.spawn(af)
             elseif a[1].fishingAction == "destroyBuoy" then
-                local cm = math.floor((os.time() - st.st) / 60)
-                st.sf[cm] = (st.sf[cm] or 0) + 1
-                st.lct = os.time()
             end
         end
     end
@@ -966,7 +967,7 @@ adjustUIForScreenSize()
 
 game:GetService("Workspace").Temp.DescendantRemoving:Connect(function(instance)
     if instance.Name == lp.UserId .. ".buoy" then
-        task.wait(4)
+        task.wait(2)
         local tool = lp.Character and lp.Character:FindFirstChild("Fishing Rod")
         if tool then
             tool:Activate()
