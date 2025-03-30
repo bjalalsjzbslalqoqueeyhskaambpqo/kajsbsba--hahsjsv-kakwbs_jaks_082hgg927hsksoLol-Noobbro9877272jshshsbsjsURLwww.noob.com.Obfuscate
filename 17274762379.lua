@@ -22,9 +22,10 @@ if currentVersion ~= expectedVersion then
     textLabel.Size = UDim2.new(1, -10, 1, -10)
     textLabel.Position = UDim2.new(0, 5, 0, 5)
     textLabel.Text = "⚠️ Warning: Newer game version detected!\n\n" ..
+    "Check in the secondary account that everything is correct!\n\n" ..
                      "Script Version: " .. expectedVersion .. "\n" ..
                      "Current Version: " .. currentVersion .. "\n\n" ..
-                     "Contact Dev: OneCreatorX on YouTube or Discord!"
+                     "Contact Dev: OneCreatorX on YouTube or Discord for udp!"
     textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     textLabel.TextScaled = true
     textLabel.Font = Enum.Font.GothamBold
