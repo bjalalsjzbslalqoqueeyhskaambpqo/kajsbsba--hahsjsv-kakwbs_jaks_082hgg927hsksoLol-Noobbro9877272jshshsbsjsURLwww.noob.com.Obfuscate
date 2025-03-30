@@ -37,7 +37,7 @@ if currentVersion ~= expectedVersion then
     uiStroke.Color = Color3.fromRGB(255, 255, 255)
     uiStroke.Parent = frame
 
-    task.wait(10)
+    task.wait(5)
 
     for i = 0, 1, 0.1 do
         frame.BackgroundTransparency = i
