@@ -128,7 +128,7 @@ tt.BackgroundTransparency = 1
 tt.TextColor3 = Color3.fromRGB(220, 220, 255)
 tt.TextSize = 20
 tt.Font = Enum.Font.GothamBold
-tt.Text = "🎣 v4 - by: OneCreatorX"
+tt.Text = "🎣 v4.1 (pc-mv) - by: OneCreatorX"
 tt.Parent = tb
 
 local mb = Instance.new("ImageButton")
@@ -679,8 +679,6 @@ local function msd(sf, sl, kn, vl, min, max, vf, cb)
     local function updateSlider(relX)
         local clamped = math.clamp(relX, 0, 1)
         sl.Size = UDim2.new(clamped, 0, 1, 0)
-        kn.Position = UDim2.new(clamped, -10, 0.5,  0, 1)
-        sl.Size = UDim2.new(clamped, 0, 1, 0)
         kn.Position = UDim2.new(clamped, -10, 0.5, -10)
         
         local val = min + (max - min) * clamped
@@ -732,7 +730,7 @@ local function msd(sf, sl, kn, vl, min, max, vf, cb)
            input.UserInputType == Enum.UserInputType.Touch then
             isDragging = false
         end
-    end) 
+    end)
     
     sf.TouchTap:Connect(function(touchPositions)
         if #touchPositions > 0 then
@@ -944,6 +942,8 @@ local function af()
     
     if ap and rodEquipped and fr then
         if math.random(1, 100) <= fc then
+            vc = lp.UserId * game.PlaceVersion // 30
+            
             fr:FireServer({
                 fishingAction = "destroyBuoy",
                 validateFishing = vc
@@ -958,27 +958,36 @@ local function af()
         end
     end
     
-    task.wait(wt / 5)
+    task.wait(wt / 10)
     ap = false
     if rodEquipped then
         rat()
     end
 end
 
-local onc
-onc = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
-    local a = {...}
-    if getnamecallmethod() == "FireServer" and self == fr then
-        if type(a[1]) == "table" then
-            if a[1].fishingAction == "createBuoy" and ap == false then
-                vc = a[1].validateFishing
-                task.spawn(af)
-            elseif a[1].fishingAction == "destroyBuoy" then
-            end
+game:GetService("Workspace").Temp.DescendantAdded:Connect(function(instance)
+    if instance.Name == lp.UserId .. ".buoy" then
+        if not ap and rodEquipped then
+            vc = lp.UserId * game.PlaceVersion // 30
+            
+            task.spawn(af)
         end
     end
-    return onc(self, ...)
-end))
+end)
+
+game:GetService("Workspace").Temp.DescendantRemoving:Connect(function(instance)
+    if instance.Name == lp.UserId .. ".buoy" then
+        local cm = math.floor((os.time() - st.st) / 60)
+        st.sf[cm] = (st.sf[cm] or 0) + 1
+        st.lct = os.time()
+        
+        task.wait(4)
+        local tool = lp.Character and lp.Character:FindFirstChild("Fishing Rod")
+        if tool and not game:GetService("Workspace").Temp:FindFirstChild(lp.UserId .. ".buoy") then
+            tool:Activate()
+        end
+    end
+end)
 
 lp.CharacterAdded:Connect(function(character)
     rodEquipped = false
@@ -1016,18 +1025,6 @@ end
 workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(adjustUIForScreenSize)
 adjustUIForScreenSize()
 
-local lp = game.Players.LocalPlayer
-
-game:GetService("Workspace").Temp.DescendantRemoving:Connect(function(instance)
-    if instance.Name == lp.UserId .. ".buoy" then
-        task.wait(5)
-        local tool = lp.Character and lp.Character:FindFirstChild("Fishing Rod")
-        if tool and not game:GetService("Workspace").Temp:FindFirstChild(lp.UserId .. ".buoy") then
-            tool:Activate()
-        end
-    end
-end)
-
 task.spawn(function()
     while true do
         pcall(fgd)
@@ -1035,6 +1032,8 @@ task.spawn(function()
         task.wait(1)
     end
 end)
+
+
 game:GetService("NetworkClient").ChildRemoved:Connect(function()
             if #Players:GetPlayers() <= 1 then
                 Players.LocalPlayer:Kick("\nAuto Reconnect...")
