@@ -984,12 +984,33 @@ game:GetService("Workspace").Temp.DescendantRemoving:Connect(function(instance)
         local cm = math.floor((os.time() - st.st) / 60)
         st.sf[cm] = (st.sf[cm] or 0) + 1
         st.lct = os.time()
-        
-        task.wait(4)
+        spawn(function()
+task.wait(5)
+        local tool = lp.Character and lp.Character:FindFirstChild("Fishing Rod")
+        if tool and not game:GetService("Workspace").Temp:FindFirstChild(lp.UserId .. ".buoy") then
+            tool:Activate()
+                    end
+                end)
+            spawn(function()
+task.wait(7)
+        local tool = lp.Character and lp.Character:FindFirstChild("Fishing Rod")
+        if tool and not game:GetService("Workspace").Temp:FindFirstChild(lp.UserId .. ".buoy") then
+            tool:Activate()
+                    end
+                end)
+            spawn(function()
+task.wait(10)
+        local tool = lp.Character and lp.Character:FindFirstChild("Fishing Rod")
+        if tool and not game:GetService("Workspace").Temp:FindFirstChild(lp.UserId .. ".buoy") then
+            tool:Activate()
+                    end
+                end)
+        task.wait(3)
         local tool = lp.Character and lp.Character:FindFirstChild("Fishing Rod")
         if tool and not game:GetService("Workspace").Temp:FindFirstChild(lp.UserId .. ".buoy") then
             tool:Activate()
         end
+            
     end
 end)
 
