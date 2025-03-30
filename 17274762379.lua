@@ -128,7 +128,7 @@ tt.BackgroundTransparency = 1
 tt.TextColor3 = Color3.fromRGB(220, 220, 255)
 tt.TextSize = 20
 tt.Font = Enum.Font.GothamBold
-tt.Text = "🎣 v4.1 (pc-mv) - by: OneCreatorX"
+tt.Text = "🎣v4.1 (💻-📱)- by: OneCreatorX"
 tt.Parent = tb
 
 local mb = Instance.new("ImageButton")
