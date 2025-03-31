@@ -814,9 +814,8 @@ local function rat()
     if ch then
         for _, tl in ipairs(ch:GetChildren()) do
             if tl:IsA("Tool") and tl.Name == "Fishing Rod" then
-                lp.Character.Humanoid:UnequipTools()
                 task.wait(math.random(3,6)/10)
-                lp.Character.Humanoid:EquipTool(tl)
+                tl:Activate()
                 task.wait(math.random(3,6)/10)
                 tl:Activate()
             end
