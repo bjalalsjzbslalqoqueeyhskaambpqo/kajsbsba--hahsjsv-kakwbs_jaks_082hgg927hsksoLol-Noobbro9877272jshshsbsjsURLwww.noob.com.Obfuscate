@@ -287,7 +287,6 @@ connectIfReady()
 
 gui.DescendantAdded:Connect(function(descendant)
 	if descendant:IsA("TextLabel") and descendant.Name == "TextLabel" then
-		-- Confirmar que está en la ruta correcta
 		local fullPath = descendant:GetFullName()
 		if fullPath:find("DialogApp.Dialog.NormalDialog.Info.TextLabel") then
 			print("Nuevo TextLabel detectado dinámicamente: " .. fullPath)
@@ -300,7 +299,13 @@ gui.DescendantAdded:Connect(function(descendant)
 end)
 
 
+local StarterGui = game:GetService("StarterGui")
 
+StarterGui:SetCore("SendNotification", {
+    Title = "Success",
+    Text = "Listo",
+    Duration = 3
+})
 
 workspace:WaitForChild("Interiors").ChildAdded:Connect(function(child)
 if child.Name == "MainMap!Default" and not dialogProcessing then
