@@ -253,40 +253,50 @@ infoText:GetPropertyChangedSignal("Text"):Connect(function()
 checkTextForKeywords(infoText.Text)
 end)
 
--- Detectar cuando se agrega un child en dialogApp
-dialogApp.ChildAdded:Connect(function(child)
-    print("Nuevo child agregado: " .. child.Name)  -- Depuración: Mostrar qué child se agregó
 
-    if child.Name == "Info" then
-        print("Info detectado.")  -- Depuración: Confirmar que se encontró el Info
 
-        local infoText = child:FindFirstChild("TextLabel")
-        if infoText then
-            print("TextLabel encontrado dentro de Info: " .. infoText.Name)  -- Depuración: Confirmar que se encontró el TextLabel
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local gui = player:WaitForChild("PlayerGui")
 
-            infoText:GetPropertyChangedSignal("Text"):Connect(function()
-                print("Texto cambiado en " .. infoText.Name .. ": " .. infoText.Text)  -- Depuración: Mostrar el texto cambiado
-                checkTextForKeywords(infoText.Text)
-            end)
-        else
-            print("No se encontró TextLabel dentro de Info.")  -- Depuración: Si no se encuentra TextLabel
-        end
-    end
-end)
+local function connectIfReady()
+	local dialogApp = gui:FindFirstChild("DialogApp")
+	if not dialogApp then return end
 
--- Detectar cuando se agrega un child dentro de Info
-dialogApp.Info.ChildAdded:Connect(function(child)
-    print("Nuevo child agregado a Info: " .. child.Name)  -- Depuración: Mostrar qué child se agregó a Info
+	local dialog = dialogApp:FindFirstChild("Dialog")
+	if not dialog then return end
 
-    if child:IsA("TextLabel") then
-        print("TextLabel detectado dentro de Info: " .. child.Name)  -- Depuración: Confirmar que se encontró el TextLabel
+	local normalDialog = dialog:FindFirstChild("NormalDialog")
+	if not normalDialog then return end
 
-        infoText = child
-        infoText:GetPropertyChangedSignal("Text"):Connect(function()
-            print("Texto cambiado en " .. infoText.Name .. ": " .. infoText.Text)  -- Depuración: Mostrar el texto cambiado
-            checkTextForKeywords(infoText.Text)
-        end)
-    end
+	local info = normalDialog:FindFirstChild("Info")
+	if not info then return end
+
+	local infoText = info:FindFirstChild("TextLabel")
+	if not infoText then return end
+
+	print("TextLabel encontrado: " .. infoText:GetFullName())
+
+	infoText:GetPropertyChangedSignal("Text"):Connect(function()
+		print("Texto cambiado: " .. infoText.Text)
+		checkTextForKeywords(infoText.Text)
+	end)
+end
+
+connectIfReady()
+
+gui.DescendantAdded:Connect(function(descendant)
+	if descendant:IsA("TextLabel") and descendant.Name == "TextLabel" then
+		-- Confirmar que está en la ruta correcta
+		local fullPath = descendant:GetFullName()
+		if fullPath:find("DialogApp.Dialog.NormalDialog.Info.TextLabel") then
+			print("Nuevo TextLabel detectado dinámicamente: " .. fullPath)
+			descendant:GetPropertyChangedSignal("Text"):Connect(function()
+				print("Texto cambiado dinámicamente: " .. descendant.Text)
+				checkTextForKeywords(descendant.Text)
+			end)
+		end
+	end
 end)
 
 
