@@ -253,25 +253,42 @@ infoText:GetPropertyChangedSignal("Text"):Connect(function()
 checkTextForKeywords(infoText.Text)
 end)
 
+-- Detectar cuando se agrega un child en dialogApp
 dialogApp.ChildAdded:Connect(function(child)
+    print("Nuevo child agregado: " .. child.Name)  -- Depuración: Mostrar qué child se agregó
+
     if child.Name == "Info" then
+        print("Info detectado.")  -- Depuración: Confirmar que se encontró el Info
+
         local infoText = child:FindFirstChild("TextLabel")
         if infoText then
+            print("TextLabel encontrado dentro de Info: " .. infoText.Name)  -- Depuración: Confirmar que se encontró el TextLabel
+
             infoText:GetPropertyChangedSignal("Text"):Connect(function()
+                print("Texto cambiado en " .. infoText.Name .. ": " .. infoText.Text)  -- Depuración: Mostrar el texto cambiado
                 checkTextForKeywords(infoText.Text)
             end)
+        else
+            print("No se encontró TextLabel dentro de Info.")  -- Depuración: Si no se encuentra TextLabel
         end
     end
 end)
 
+-- Detectar cuando se agrega un child dentro de Info
 dialogApp.Info.ChildAdded:Connect(function(child)
-if child:IsA("TextLabel") then
-infoText = child
-infoText:GetPropertyChangedSignal("Text"):Connect(function()
-checkTextForKeywords(infoText.Text)
+    print("Nuevo child agregado a Info: " .. child.Name)  -- Depuración: Mostrar qué child se agregó a Info
+
+    if child:IsA("TextLabel") then
+        print("TextLabel detectado dentro de Info: " .. child.Name)  -- Depuración: Confirmar que se encontró el TextLabel
+
+        infoText = child
+        infoText:GetPropertyChangedSignal("Text"):Connect(function()
+            print("Texto cambiado en " .. infoText.Name .. ": " .. infoText.Text)  -- Depuración: Mostrar el texto cambiado
+            checkTextForKeywords(infoText.Text)
+        end)
+    end
 end)
-end
-end)
+
 
 
 
