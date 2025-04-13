@@ -253,6 +253,17 @@ infoText:GetPropertyChangedSignal("Text"):Connect(function()
 checkTextForKeywords(infoText.Text)
 end)
 
+dialogApp.ChildAdded:Connect(function(child)
+    if child.Name == "Info" then
+        local infoText = child:FindFirstChild("TextLabel")
+        if infoText then
+            infoText:GetPropertyChangedSignal("Text"):Connect(function()
+                checkTextForKeywords(infoText.Text)
+            end)
+        end
+    end
+end)
+
 dialogApp.Info.ChildAdded:Connect(function(child)
 if child:IsA("TextLabel") then
 infoText = child
@@ -261,6 +272,8 @@ checkTextForKeywords(infoText.Text)
 end)
 end
 end)
+
+
 
 workspace:WaitForChild("Interiors").ChildAdded:Connect(function(child)
 if child.Name == "MainMap!Default" and not dialogProcessing then
@@ -272,4 +285,3 @@ rootPart.CFrame = CFrame.new(49, 31, -1370)
 end
 end
 end)
-
