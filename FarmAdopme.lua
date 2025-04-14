@@ -247,6 +247,7 @@ workspace:WaitForChild("Interiors").ChildAdded:Connect(function(child)
 		wait(15)
 		if not dialogProcessing then
 			notify("Transportando a la zona afectada")
+local character = player.Character or player.CharacterAdded:Wait() local rootPart = character:WaitForChild("HumanoidRootPart") rootPart.CFrame = CFrame.new(49, 31, -1370)
 		end
 	end
 end)
