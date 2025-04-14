@@ -7,8 +7,8 @@ local buttonsContainer = dialogApp:WaitForChild("Buttons")
 local StarterGui = game:GetService("StarterGui")
 
 local keywords = {
-	sakura = {delay = 60, action = "collectionMode"},
-	tokio = {delay = 60, action = "destructionMode"}
+	sakura = {delay = 70, action = "collectionMode"},
+	tokio = {delay = 70, action = "destructionMode"}
 }
 
 local canProcessMap = true
@@ -244,7 +244,7 @@ StarterGui:SetCore("SendNotification", {
 
 workspace:WaitForChild("Interiors").ChildAdded:Connect(function(child)
 	if child.Name == "MainMap!Default" and not dialogProcessing then
-		wait(15)
+		wait(20)
 		if not dialogProcessing then
 			notify("Transportando a la zona afectada")
 local character = player.Character or player.CharacterAdded:Wait() local rootPart = character:WaitForChild("HumanoidRootPart") rootPart.CFrame = CFrame.new(49, 31, -1370)
