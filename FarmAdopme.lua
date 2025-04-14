@@ -1,21 +1,16 @@
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local gui = player:WaitForChild("PlayerGui")
-local dialogApp = gui:WaitForChild("DialogApp"):WaitForChild("Dialog"):WaitForChild("NormalDialog")
-local infoText = dialogApp:WaitForChild("Info"):WaitForChild("TextLabel")
-local buttonsContainer = dialogApp:WaitForChild("Buttons")
 local StarterGui = game:GetService("StarterGui")
 
+local dialogProcessing = false
+local lastTextChecked = ""
 local keywords = {
 	sakura = {delay = 70, action = "collectionMode"},
 	tokio = {delay = 70, action = "destructionMode"},
 	tokyo = {delay = 70, action = "destructionMode"},
 	toykyo = {delay = 70, action = "destructionMode"}
 }
-
-local canProcessMap = true
-local dialogProcessing = false
-local lastTextChecked = ""
 
 local function getConnectionInfo(func)
 	if not func then return "Función desconocida" end
@@ -28,11 +23,7 @@ end
 
 local function testGUIElement(element)
 	if not element or not element:IsA("GuiObject") then return end
-	local events = {
-		"MouseButton1Click", "MouseButton2Click", "MouseEnter", "MouseLeave", "Activated", "Changed",
-		"Focused", "FocusLost", "InputBegan", "InputEnded", "MouseButton1Down", "MouseButton1Up",
-		"MouseButton2Down", "MouseButton2Up", "MouseMoved", "InputChanged", "TouchTap", "TouchLongTap"
-	}
+	local events = {"MouseButton1Click", "MouseButton2Click", "MouseEnter", "MouseLeave", "Activated", "Changed", "Focused", "FocusLost", "InputBegan", "InputEnded", "MouseButton1Down", "MouseButton1Up", "MouseButton2Down", "MouseButton2Up", "MouseMoved", "InputChanged", "TouchTap", "TouchLongTap"}
 	for _, eventName in ipairs(events) do
 		pcall(function()
 			if typeof(element[eventName]) == "RBXScriptSignal" then
@@ -53,11 +44,10 @@ local function activateYesButton(button)
 	end)
 end
 
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local gui = player:WaitForChild("PlayerGui")
+local buttonsContainer = nil
 
 local function setupButtonDetection(container)
+	container = container or buttonsContainer
 	for _, button in ipairs(container:GetChildren()) do
 		if button:IsA("ImageButton") then
 			local textLabel = button:FindFirstChildWhichIsA("TextLabel", true)
@@ -84,161 +74,116 @@ end
 local function connectIfReady()
 	local dialogApp = gui:FindFirstChild("DialogApp")
 	if not dialogApp then return end
-
 	local dialog = dialogApp:FindFirstChild("Dialog")
 	if not dialog then return end
-
 	local normalDialog = dialog:FindFirstChild("NormalDialog")
 	if not normalDialog then return end
-
 	local info = normalDialog:FindFirstChild("Info")
 	if not info then return end
-
 	local infoText = info:FindFirstChild("TextLabel")
 	if infoText then
 		infoText:GetPropertyChangedSignal("Text"):Connect(function()
 			checkTextForKeywords(infoText.Text)
 		end)
 	end
-
 	local buttons = normalDialog:FindFirstChild("Buttons")
 	if buttons then
+		buttonsContainer = buttons
 		setupButtonDetection(buttons)
 	end
 end
 
-connectIfReady()
-
-gui.DescendantAdded:Connect(function(descendant)
-
-	if descendant:IsA("ImageButton") and descendant.Parent and descendant.Parent.Name == "Buttons" then
-		local fullPath = descendant:GetFullName()
-		if fullPath:find("DialogApp.Dialog.NormalDialog.Buttons") then
-			local textLabel = descendant:FindFirstChildWhichIsA("TextLabel", true)
-			if textLabel and textLabel.Text == "Yes" then
-				dialogProcessing = true
-				activateYesButton(descendant)
-				task.spawn(function()
-					wait(30)
-					dialogProcessing = false
-				end)
-			end
-		end
-	end
-end)
-
 local function notify(text)
-	StarterGui:SetCore("SendNotification", {
-		Title = "Notificación",
-		Text = text,
-		Duration = 4
-	})
+	pcall(function()
+		StarterGui:SetCore("SendNotification", {Title = "Notificación", Text = text, Duration = 4})
+	end)
 end
 
 local function runDestructionMode()
 	task.spawn(function()
-	local player = game.Players.LocalPlayer
-	repeat task.wait() until player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-	local humanoidRootPart = player.Character:WaitForChild("HumanoidRootPart")
-
-	local function isColorBlocked(color)
-		local r, g, b = math.round(color.R * 255), math.round(color.G * 255), math.round(color.B * 255)
-		local blocked = {
-			["175,175,175"] = true,
-			["200,200,200"] = true,
-			["229,229,229"] = true
-		}
-		return blocked[("%d,%d,%d"):format(r, g, b)] == true
-	end
-
-	local function isDestructible(model)
-		local meshParts = model:GetDescendants()
-		for _, part in ipairs(meshParts) do
-			if part:IsA("MeshPart") then
-				if not isColorBlocked(part.Color) then
-					return true
-				end
-			end
+		local player = game.Players.LocalPlayer
+		repeat task.wait() until player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+		local humanoidRootPart = player.Character:WaitForChild("HumanoidRootPart")
+		local function isColorBlocked(color)
+			local r, g, b = math.round(color.R * 255), math.round(color.G * 255), math.round(color.B * 255)
+			local blocked = {["175,175,175"] = true, ["200,200,200"] = true, ["229,229,229"] = true}
+			return blocked[("%d,%d,%d"):format(r, g, b)] == true
 		end
-		return false
-	end
-
-	local function getClosestValidRoot(map, minDist)
-		local buildingsFolder
-		for _, child in ipairs(map:GetChildren()) do
-			if child:IsA("Folder") and child.Name == "Buildings" then
-				buildingsFolder = child
-				break
-			end
-		end
-		if not buildingsFolder then return nil end
-
-		local currentPos = humanoidRootPart.Position
-		local closest, closestDist = nil, math.huge
-
-		for _, model in ipairs(buildingsFolder:GetChildren()) do
-			if model:IsA("Model") and isDestructible(model) then
-				local root = model:FindFirstChild("Root", true)
-				if root and root:IsA("BasePart") and root:IsDescendantOf(workspace) then
-					local dist = (Vector3.new(root.Position.X, 0, root.Position.Z) - Vector3.new(currentPos.X, 0, currentPos.Z)).Magnitude
-					if dist >= minDist and dist < closestDist then
-						closest = root
-						closestDist = dist
+		local function isDestructible(model)
+			local meshParts = model:GetDescendants()
+			for _, part in ipairs(meshParts) do
+				if part:IsA("MeshPart") then
+					if not isColorBlocked(part.Color) then
+						return true
 					end
 				end
 			end
+			return false
 		end
-		return closest
-	end
-
-	local function findActiveMap()
-		for _, interior in ipairs(workspace.Interiors:GetChildren()) do
-			if interior:FindFirstChild("Programmed") and interior.Programmed:FindFirstChild("Map") then
-				return interior.Programmed.Map
+		local function getClosestValidRoot(map, minDist)
+			local buildingsFolder
+			for _, child in ipairs(map:GetChildren()) do
+				if child:IsA("Folder") and child.Name == "Buildings" then
+					buildingsFolder = child
+					break
+				end
+			end
+			if not buildingsFolder then return nil end
+			local currentPos = humanoidRootPart.Position
+			local closest, closestDist = nil, math.huge
+			for _, model in ipairs(buildingsFolder:GetChildren()) do
+				if model:IsA("Model") and isDestructible(model) then
+					local root = model:FindFirstChild("Root", true)
+					if root and root:IsA("BasePart") and root:IsDescendantOf(workspace) then
+						local dist = (Vector3.new(root.Position.X, 0, root.Position.Z) - Vector3.new(currentPos.X, 0, currentPos.Z)).Magnitude
+						if dist >= minDist and dist < closestDist then
+							closest = root
+							closestDist = dist
+						end
+					end
+				end
+			end
+			return closest
+		end
+		local function findActiveMap()
+			for _, interior in ipairs(workspace.Interiors:GetChildren()) do
+				if interior:FindFirstChild("Programmed") and interior.Programmed:FindFirstChild("Map") then
+					return interior.Programmed.Map
+				end
 			end
 		end
-	end
-
-	local minDistance = 4
-	local growthTimer = 0
-	while true do
-		local map = findActiveMap()
-		if not map then break end
-
-		local target = getClosestValidRoot(map, minDistance)
-		if not target then
-			task.wait(1)
-			continue
+		local minDistance = 4
+		local growthTimer = 0
+		while true do
+			local map = findActiveMap()
+			if not map then break end
+			local target = getClosestValidRoot(map, minDistance)
+			if not target then
+				task.wait(1)
+				continue
+			end
+			humanoidRootPart.CanCollide = false
+			local startPos = humanoidRootPart.Position
+			local endPos = Vector3.new(target.Position.X, startPos.Y, target.Position.Z)
+			local t = 0
+			while t < 1 do
+				if not target:IsDescendantOf(workspace) then break end
+				local progress = t
+				local newPos = startPos:Lerp(endPos, progress)
+				local oscillation = math.sin(t * math.pi * 6) * 10
+				local lookVector = (endPos - startPos).Unit
+				local rotation = CFrame.Angles(0, math.rad(oscillation), 0)
+				local forward = CFrame.new(newPos, newPos + lookVector)
+				humanoidRootPart.CFrame = forward * rotation
+				t = t + 0.05
+				task.wait(0.02)
+			end
+			growthTimer = growthTimer + 1
+			if growthTimer % 20 == 0 then
+				minDistance = math.min(minDistance * 1.5, 80)
+			end
 		end
-
-		humanoidRootPart.CanCollide = false
-		local startPos = humanoidRootPart.Position
-		local endPos = Vector3.new(target.Position.X, startPos.Y, target.Position.Z)
-		local t = 0
-
-		while t < 1 do
-			if not target:IsDescendantOf(workspace) then break end
-
-			local progress = t
-			local newPos = startPos:Lerp(endPos, progress)
-
-			local oscillation = math.sin(t * math.pi * 6) * 10
-			local lookVector = (endPos - startPos).Unit
-			local rotation = CFrame.Angles(0, math.rad(oscillation), 0)
-			local forward = CFrame.new(newPos, newPos + lookVector)
-
-			humanoidRootPart.CFrame = forward * rotation
-
-			t += 0.05
-			task.wait(0.02)
-		end
-
-		growthTimer += 1
-		if growthTimer % 20 == 0 then
-			minDistance = math.min(minDistance * 1.5, 80)
-		end
-	end
-end)
+	end)
 end
 
 local function runCollectionMode()
@@ -267,7 +212,7 @@ local function runCollectionMode()
 	end)
 end
 
-local function checkTextForKeywords(text)
+function checkTextForKeywords(text)
 	if text == lastTextChecked then return end
 	lastTextChecked = text
 	local textLower = text:lower()
@@ -283,14 +228,17 @@ local function checkTextForKeywords(text)
 					runCollectionMode()
 				end
 			end)
-			setupButtonDetection()
+			setupButtonDetection(buttonsContainer)
 			break
 		end
 	end
 end
 
-infoText:GetPropertyChangedSignal("Text"):Connect(function()
-	checkTextForKeywords(infoText.Text)
+local dialogAppPath = gui:WaitForChild("DialogApp"):WaitForChild("Dialog"):WaitForChild("NormalDialog")
+local infoTextRef = dialogAppPath:WaitForChild("Info"):WaitForChild("TextLabel")
+local buttonsContainerRef = dialogAppPath:WaitForChild("Buttons")
+infoTextRef:GetPropertyChangedSignal("Text"):Connect(function()
+	checkTextForKeywords(infoTextRef.Text)
 end)
 
 gui.DescendantAdded:Connect(function(descendant)
@@ -302,20 +250,34 @@ gui.DescendantAdded:Connect(function(descendant)
 			end)
 		end
 	end
+	if descendant:IsA("ImageButton") and descendant.Parent and descendant.Parent.Name == "Buttons" then
+		local fullPath = descendant:GetFullName()
+		if fullPath:find("DialogApp.Dialog.NormalDialog.Buttons") then
+			local textLabel = descendant:FindFirstChildWhichIsA("TextLabel", true)
+			if textLabel and textLabel.Text == "Yes" then
+				dialogProcessing = true
+				activateYesButton(descendant)
+				task.spawn(function()
+					wait(30)
+					dialogProcessing = false
+				end)
+			end
+		end
+	end
 end)
 
-StarterGui:SetCore("SendNotification", {
-	Title = "Success",
-	Text = "Listo",
-	Duration = 3
-})
+pcall(function()
+	StarterGui:SetCore("SendNotification", {Title = "Success", Text = "Listo", Duration = 3})
+end)
 
 workspace:WaitForChild("Interiors").ChildAdded:Connect(function(child)
 	if child.Name == "MainMap!Default" and not dialogProcessing then
 		wait(15)
 		if not dialogProcessing then
 			notify("Transportando a la zona afk")
-local character = player.Character or player.CharacterAdded:Wait() local rootPart = character:WaitForChild("HumanoidRootPart") rootPart.CFrame = CFrame.new(49, 31, -1370)
+			local character = player.Character or player.CharacterAdded:Wait()
+			local rootPart = character:WaitForChild("HumanoidRootPart")
+			rootPart.CFrame = CFrame.new(49, 31, -1370)
 		end
 	end
 end)
