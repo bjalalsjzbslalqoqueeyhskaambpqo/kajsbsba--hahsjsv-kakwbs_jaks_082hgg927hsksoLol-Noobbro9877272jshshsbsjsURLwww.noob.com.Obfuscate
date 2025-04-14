@@ -246,7 +246,7 @@ workspace:WaitForChild("Interiors").ChildAdded:Connect(function(child)
 	if child.Name == "MainMap!Default" and not dialogProcessing then
 		wait(20)
 		if not dialogProcessing then
-			notify("Transportando a la zona afectada")
+			notify("Transportando a la zona afk")
 local character = player.Character or player.CharacterAdded:Wait() local rootPart = character:WaitForChild("HumanoidRootPart") rootPart.CFrame = CFrame.new(49, 31, -1370)
 		end
 	end
