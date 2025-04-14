@@ -9,7 +9,8 @@ local StarterGui = game:GetService("StarterGui")
 local keywords = {
 	sakura = {delay = 70, action = "collectionMode"},
 	tokio = {delay = 70, action = "destructionMode"},
-	tokyo = {delay = 70, action = "destructionMode"}
+	tokyo = {delay = 70, action = "destructionMode"},
+	toykyo = {delay = 70, action = "destructionMode"}
 }
 
 local canProcessMap = true
