@@ -322,7 +322,7 @@ titleContainer.BackgroundTransparency = 1
 
 local title = Instance.new("TextLabel", titleContainer)
 title.Size = UDim2.new(1, 0, 1, 0)
-title.Text = "FARM CHRONO v2"
+title.Text = "FARM - OneCreatorX"
 title.Font = Enum.Font.GothamBlack
 title.TextSize = 26
 title.TextTransparency = 0.1
