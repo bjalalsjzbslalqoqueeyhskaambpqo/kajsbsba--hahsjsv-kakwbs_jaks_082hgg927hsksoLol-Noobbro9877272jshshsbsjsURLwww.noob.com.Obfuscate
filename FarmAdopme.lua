@@ -67,7 +67,7 @@ local function setupButtonDetection()
 				dialogProcessing = true
 				activateYesButton(button)
 				task.spawn(function()
-					wait(25)
+					wait(30)
 					dialogProcessing = false
 				end)
 			end
@@ -85,92 +85,108 @@ end
 
 local function runDestructionMode()
 	task.spawn(function()
-		local character = player.Character or player.CharacterAdded:Wait()
-		local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+	local player = game.Players.LocalPlayer
+	repeat task.wait() until player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+	local humanoidRootPart = player.Character:WaitForChild("HumanoidRootPart")
 
-		local function isColorBlocked(color)
-			local r, g, b = math.round(color.R * 255), math.round(color.G * 255), math.round(color.B * 255)
-			local blocked = {
-				["175,175,175"] = true,
-				["200,200,200"] = true,
-				["229,229,229"] = true
-			}
-			return blocked[("%d,%d,%d"):format(r, g, b)] == true
-		end
+	local function isColorBlocked(color)
+		local r, g, b = math.round(color.R * 255), math.round(color.G * 255), math.round(color.B * 255)
+		local blocked = {
+			["175,175,175"] = true,
+			["200,200,200"] = true,
+			["229,229,229"] = true
+		}
+		return blocked[("%d,%d,%d"):format(r, g, b)] == true
+	end
 
-		local function isDestructible(model)
-			for _, part in ipairs(model:GetDescendants()) do
-				if part:IsA("MeshPart") and not isColorBlocked(part.Color) then
+	local function isDestructible(model)
+		local meshParts = model:GetDescendants()
+		for _, part in ipairs(meshParts) do
+			if part:IsA("MeshPart") then
+				if not isColorBlocked(part.Color) then
 					return true
 				end
 			end
-			return false
 		end
+		return false
+	end
 
-		local function getClosestValidRoot(map, minDist)
-			local folder = map:FindFirstChild("Buildings")
-			if not folder then return nil end
-			local currentPos = humanoidRootPart.Position
-			local closest, closestDist = nil, math.huge
-			for _, model in ipairs(folder:GetChildren()) do
-				if model:IsA("Model") and isDestructible(model) then
-					local root = model:FindFirstChild("Root", true)
-					if root and root:IsA("BasePart") then
-						local dist = (Vector3.new(root.Position.X, 0, root.Position.Z) - Vector3.new(currentPos.X, 0, currentPos.Z)).Magnitude
-						if dist >= minDist and dist < closestDist then
-							closest = root
-							closestDist = dist
-						end
+	local function getClosestValidRoot(map, minDist)
+		local buildingsFolder
+		for _, child in ipairs(map:GetChildren()) do
+			if child:IsA("Folder") and child.Name == "Buildings" then
+				buildingsFolder = child
+				break
+			end
+		end
+		if not buildingsFolder then return nil end
+
+		local currentPos = humanoidRootPart.Position
+		local closest, closestDist = nil, math.huge
+
+		for _, model in ipairs(buildingsFolder:GetChildren()) do
+			if model:IsA("Model") and isDestructible(model) then
+				local root = model:FindFirstChild("Root", true)
+				if root and root:IsA("BasePart") and root:IsDescendantOf(workspace) then
+					local dist = (Vector3.new(root.Position.X, 0, root.Position.Z) - Vector3.new(currentPos.X, 0, currentPos.Z)).Magnitude
+					if dist >= minDist and dist < closestDist then
+						closest = root
+						closestDist = dist
 					end
 				end
 			end
-			return closest
 		end
+		return closest
+	end
 
-		local function findActiveMap()
-			for _, interior in ipairs(workspace.Interiors:GetChildren()) do
-				if interior:FindFirstChild("Programmed") and interior.Programmed:FindFirstChild("Map") then
-					return interior.Programmed.Map
-				end
-			end
-		end
-
-		local minDistance = 4
-		local growthTimer = 0
-		while true do
-			local map = findActiveMap()
-			if not map then break end
-
-			local target = getClosestValidRoot(map, minDistance)
-			if not target then
-				task.wait(1)
-				continue
-			end
-
-			humanoidRootPart.CanCollide = false
-			local startPos = humanoidRootPart.Position
-			local endPos = Vector3.new(target.Position.X, startPos.Y, target.Position.Z)
-			local t = 0
-
-			while t < 1 do
-				if not target:IsDescendantOf(workspace) then break end
-				local progress = t
-				local newPos = startPos:Lerp(endPos, progress)
-				local oscillation = math.sin(t * math.pi * 6) * 10
-				local lookVector = (endPos - startPos).Unit
-				local rotation = CFrame.Angles(0, math.rad(oscillation), 0)
-				local forward = CFrame.new(newPos, newPos + lookVector)
-				humanoidRootPart.CFrame = forward * rotation
-				t += 0.05
-				task.wait(0.02)
-			end
-
-			growthTimer += 1
-			if growthTimer % 20 == 0 then
-				minDistance = math.min(minDistance * 1.5, 80)
+	local function findActiveMap()
+		for _, interior in ipairs(workspace.Interiors:GetChildren()) do
+			if interior:FindFirstChild("Programmed") and interior.Programmed:FindFirstChild("Map") then
+				return interior.Programmed.Map
 			end
 		end
-	end)
+	end
+
+	local minDistance = 4
+	local growthTimer = 0
+	while true do
+		local map = findActiveMap()
+		if not map then break end
+
+		local target = getClosestValidRoot(map, minDistance)
+		if not target then
+			task.wait(1)
+			continue
+		end
+
+		humanoidRootPart.CanCollide = false
+		local startPos = humanoidRootPart.Position
+		local endPos = Vector3.new(target.Position.X, startPos.Y, target.Position.Z)
+		local t = 0
+
+		while t < 1 do
+			if not target:IsDescendantOf(workspace) then break end
+
+			local progress = t
+			local newPos = startPos:Lerp(endPos, progress)
+
+			local oscillation = math.sin(t * math.pi * 6) * 10
+			local lookVector = (endPos - startPos).Unit
+			local rotation = CFrame.Angles(0, math.rad(oscillation), 0)
+			local forward = CFrame.new(newPos, newPos + lookVector)
+
+			humanoidRootPart.CFrame = forward * rotation
+
+			t += 0.05
+			task.wait(0.02)
+		end
+
+		growthTimer += 1
+		if growthTimer % 20 == 0 then
+			minDistance = math.min(minDistance * 1.5, 80)
+		end
+	end
+end)
 end
 
 local function runCollectionMode()
@@ -244,7 +260,7 @@ StarterGui:SetCore("SendNotification", {
 
 workspace:WaitForChild("Interiors").ChildAdded:Connect(function(child)
 	if child.Name == "MainMap!Default" and not dialogProcessing then
-		wait(20)
+		wait(15)
 		if not dialogProcessing then
 			notify("Transportando a la zona afk")
 local character = player.Character or player.CharacterAdded:Wait() local rootPart = character:WaitForChild("HumanoidRootPart") rootPart.CFrame = CFrame.new(49, 31, -1370)
