@@ -53,8 +53,12 @@ local function activateYesButton(button)
 	end)
 end
 
-local function setupButtonDetection()
-	for _, button in ipairs(buttonsContainer:GetChildren()) do
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local gui = player:WaitForChild("PlayerGui")
+
+local function setupButtonDetection(container)
+	for _, button in ipairs(container:GetChildren()) do
 		if button:IsA("ImageButton") then
 			local textLabel = button:FindFirstChildWhichIsA("TextLabel", true)
 			if textLabel and textLabel.Text == "Yes" then
@@ -62,7 +66,7 @@ local function setupButtonDetection()
 			end
 		end
 	end
-	buttonsContainer.ChildAdded:Connect(function(button)
+	container.ChildAdded:Connect(function(button)
 		if button:IsA("ImageButton") then
 			local textLabel = button:FindFirstChildWhichIsA("TextLabel", true)
 			if textLabel and textLabel.Text == "Yes" then
@@ -76,6 +80,52 @@ local function setupButtonDetection()
 		end
 	end)
 end
+
+local function connectIfReady()
+	local dialogApp = gui:FindFirstChild("DialogApp")
+	if not dialogApp then return end
+
+	local dialog = dialogApp:FindFirstChild("Dialog")
+	if not dialog then return end
+
+	local normalDialog = dialog:FindFirstChild("NormalDialog")
+	if not normalDialog then return end
+
+	local info = normalDialog:FindFirstChild("Info")
+	if not info then return end
+
+	local infoText = info:FindFirstChild("TextLabel")
+	if infoText then
+		infoText:GetPropertyChangedSignal("Text"):Connect(function()
+			checkTextForKeywords(infoText.Text)
+		end)
+	end
+
+	local buttons = normalDialog:FindFirstChild("Buttons")
+	if buttons then
+		setupButtonDetection(buttons)
+	end
+end
+
+connectIfReady()
+
+gui.DescendantAdded:Connect(function(descendant)
+
+	if descendant:IsA("ImageButton") and descendant.Parent and descendant.Parent.Name == "Buttons" then
+		local fullPath = descendant:GetFullName()
+		if fullPath:find("DialogApp.Dialog.NormalDialog.Buttons") then
+			local textLabel = descendant:FindFirstChildWhichIsA("TextLabel", true)
+			if textLabel and textLabel.Text == "Yes" then
+				dialogProcessing = true
+				activateYesButton(descendant)
+				task.spawn(function()
+					wait(30)
+					dialogProcessing = false
+				end)
+			end
+		end
+	end
+end)
 
 local function notify(text)
 	StarterGui:SetCore("SendNotification", {
