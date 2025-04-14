@@ -281,3 +281,195 @@ workspace:WaitForChild("Interiors").ChildAdded:Connect(function(child)
 		end
 	end
 end)
+
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local p = Players.LocalPlayer
+local gui = p:WaitForChild("PlayerGui")
+
+local sg = Instance.new("ScreenGui", gui)
+sg.Name = "FarmUI"
+sg.ResetOnSpawn = false
+
+local mainF = Instance.new("Frame", sg)
+mainF.Size = UDim2.new(0, 340, 0, 180)
+mainF.Position = UDim2.new(0.5, -170, 0.5, -90)
+mainF.BackgroundTransparency = 0.1
+mainF.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+mainF.BorderSizePixel = 0
+mainF.Active = true
+mainF.Draggable = true
+
+local mainCorner = Instance.new("UICorner", mainF)
+mainCorner.CornerRadius = UDim.new(0, 14)
+
+local mainGrad = Instance.new("UIGradient", mainF)
+mainGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 45, 45)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 10, 10))
+})
+mainGrad.Rotation = 90
+
+local mainStroke = Instance.new("UIStroke", mainF)
+mainStroke.Color = Color3.fromRGB(255, 180, 50)
+mainStroke.Thickness = 2
+mainStroke.Transparency = 0.3
+
+local titleContainer = Instance.new("Frame", mainF)
+titleContainer.Size = UDim2.new(1, -40, 0, 40)
+titleContainer.Position = UDim2.new(0, 20, 0, 10)
+titleContainer.BackgroundTransparency = 1
+
+local title = Instance.new("TextLabel", titleContainer)
+title.Size = UDim2.new(1, 0, 1, 0)
+title.Text = "FARM CHRONO v2"
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 26
+title.TextTransparency = 0.1
+title.TextXAlignment = Enum.TextXAlignment.Center
+
+local titleGradient = Instance.new("UIGradient", title)
+titleGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 230, 100)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 200, 50)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 180, 30))
+})
+titleGradient.Rotation = -45
+
+local titleDivider = Instance.new("Frame", titleContainer)
+titleDivider.Size = UDim2.new(1, -40, 0, 2)
+titleDivider.Position = UDim2.new(0, 20, 1, -5)
+titleDivider.BackgroundColor3 = Color3.fromRGB(255, 200, 50)
+titleDivider.BorderSizePixel = 0
+
+local timerContainer = Instance.new("Frame", mainF)
+timerContainer.Size = UDim2.new(1, -40, 0, 100)
+timerContainer.Position = UDim2.new(0, 20, 0, 60)
+timerContainer.BackgroundTransparency = 1
+
+local listLayout = Instance.new("UIListLayout", timerContainer)
+listLayout.FillDirection = Enum.FillDirection.Horizontal
+listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+listLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+listLayout.Padding = UDim.new(0, 8)
+
+local function createDigitBox()
+    local container = Instance.new("Frame", timerContainer)
+    container.Size = UDim2.new(0, 42, 0, 64)
+    container.BackgroundTransparency = 1
+    container.ClipsDescendants = true
+    
+    local box = Instance.new("Frame", container)
+    box.Size = UDim2.new(1, 0, 1, 0)
+    box.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    
+    local boxGradient = Instance.new("UIGradient", box)
+    boxGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 50, 50)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 30, 30))
+    })
+    boxGradient.Rotation = 90
+    
+    local corner = Instance.new("UICorner", box)
+    corner.CornerRadius = UDim.new(0, 6)
+    
+    local stroke = Instance.new("UIStroke", box)
+    stroke.Color = Color3.fromRGB(255, 200, 50)
+    stroke.Thickness = 1.5
+    stroke.Transparency = 0.2
+    
+    local currentDigit = Instance.new("TextLabel", box)
+    currentDigit.Size = UDim2.new(1, 0, 1, 0)
+    currentDigit.Text = "0"
+    currentDigit.Font = Enum.Font.GothamBlack
+    currentDigit.TextSize = 38
+    currentDigit.TextColor3 = Color3.fromRGB(255, 220, 80)
+    currentDigit.TextXAlignment = Enum.TextXAlignment.Center
+    currentDigit.AnchorPoint = Vector2.new(0.5, 0.5)
+    currentDigit.Position = UDim2.new(0.5, 0, 0.5, 0)
+    
+    local digitGradient = Instance.new("UIGradient", currentDigit)
+    digitGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 240, 150)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 200, 50))
+    })
+    digitGradient.Rotation = 90
+    
+    return {container = container, box = box, current = currentDigit}
+end
+
+local function updateDigit(digitInfo, newVal)
+    local oldDigit = digitInfo.current
+    if oldDigit.Text == newVal then return end
+    
+    local newDigit = oldDigit:Clone()
+    newDigit.Text = newVal
+    newDigit.Position = UDim2.new(0.5, 0, 1.5, 0)
+    newDigit.TextTransparency = 1
+    newDigit.Parent = digitInfo.box
+    
+    local tweenOut = TweenService:Create(oldDigit, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {
+        Position = UDim2.new(0.5, 0, -0.5, 0),
+        TextTransparency = 1,
+        Size = UDim2.new(1, 0, 0.5, 0)
+    })
+    
+    local tweenIn = TweenService:Create(newDigit, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        TextTransparency = 0,
+        Size = UDim2.new(1, 0, 1, 0)
+    })
+    
+    tweenOut:Play()
+    tweenIn:Play()
+    
+    tweenOut.Completed:Connect(function()
+        oldDigit:Destroy()
+        digitInfo.current = newDigit
+    end)
+end
+
+local digits = {}
+local colonLabels = {}
+
+for i = 1, 6 do
+    digits[i] = createDigitBox()
+    if i % 2 == 0 and i ~= 6 then
+        local colon = Instance.new("TextLabel", timerContainer)
+        colon.Size = UDim2.new(0, 12, 0, 64)
+        colon.Text = ":"
+        colon.Font = Enum.Font.GothamBlack
+        colon.TextSize = 38
+        colon.TextColor3 = Color3.fromRGB(255, 200, 50)
+        colon.BackgroundTransparency = 1
+        colon.Position = UDim2.new(0, 0, 0.12, 0)
+    end
+end
+
+local startTime = os.time()
+local prevDigits = {"0","0","0","0","0","0"}
+
+while true do
+    local elapsed = os.time() - startTime
+    local hours = math.floor(elapsed / 3600)
+    local minutes = math.floor((elapsed % 3600) / 60)
+    local seconds = elapsed % 60
+    
+    local timeValues = {
+        string.format("%02d", hours):sub(1,1),
+        string.format("%02d", hours):sub(2,2),
+        string.format("%02d", minutes):sub(1,1),
+        string.format("%02d", minutes):sub(2,2),
+        string.format("%02d", seconds):sub(1,1),
+        string.format("%02d", seconds):sub(2,2)
+    }
+    
+    for i = 1, 6 do
+        if timeValues[i] ~= prevDigits[i] then
+            updateDigit(digits[i], timeValues[i])
+        end
+    end
+    
+    prevDigits = timeValues
+    wait(0.1)
+end
