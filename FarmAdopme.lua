@@ -291,6 +291,33 @@ workspace:WaitForChild("Interiors").ChildAdded:Connect(function(child)
 	end
 end)
 
+spawn(function()
+pcall(function()
+				local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local NetworkClient = game:GetService("NetworkClient")
+local VirtualUser = game:GetService("VirtualUser")
+
+NetworkClient.ChildRemoved:Connect(function()
+    if #Players:GetPlayers() <= 1 then
+        Players.LocalPlayer:Kick("\nReconectando automáticamente...")
+        task.wait(1)
+        TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
+    else
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
+    end
+end)
+
+Players.LocalPlayer.Idled:Connect(function()
+    VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    task.wait(1)
+    VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+end)
+
+			end)
+
+
+	end)
 
 
 
