@@ -104,24 +104,34 @@ local function runDestructionMode()
 		local player = game.Players.LocalPlayer
 		repeat task.wait() until player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 		local humanoidRootPart = player.Character:WaitForChild("HumanoidRootPart")
+		local map = nil
+		repeat
+			map = (function()
+				for _, interior in ipairs(workspace.Interiors:GetChildren()) do
+					if interior:FindFirstChild("Programmed") and interior.Programmed:FindFirstChild("Map") then
+						return interior.Programmed.Map
+					end
+				end
+				return nil
+			end)()
+			task.wait()
+		until map
+		task.wait(10)
 		local function isColorBlocked(color)
 			local r, g, b = math.round(color.R * 255), math.round(color.G * 255), math.round(color.B * 255)
 			local blocked = {["175,175,175"] = true, ["200,200,200"] = true, ["229,229,229"] = true}
 			return blocked[("%d,%d,%d"):format(r, g, b)] == true
 		end
 		local function isDestructible(model)
-			local meshParts = model:GetDescendants()
-			for _, part in ipairs(meshParts) do
-				if part:IsA("MeshPart") then
-					if not isColorBlocked(part.Color) then
-						return true
-					end
+			for _, part in ipairs(model:GetDescendants()) do
+				if part:IsA("MeshPart") and not isColorBlocked(part.Color) then
+					return true
 				end
 			end
 			return false
 		end
 		local function getClosestValidRoot(map, minDist)
-			local buildingsFolder
+			local buildingsFolder = nil
 			for _, child in ipairs(map:GetChildren()) do
 				if child:IsA("Folder") and child.Name == "Buildings" then
 					buildingsFolder = child
@@ -145,38 +155,34 @@ local function runDestructionMode()
 			end
 			return closest
 		end
-		local function findActiveMap()
-			for _, interior in ipairs(workspace.Interiors:GetChildren()) do
-				if interior:FindFirstChild("Programmed") and interior.Programmed:FindFirstChild("Map") then
-					return interior.Programmed.Map
-				end
-			end
-		end
 		local minDistance = 4
 		local growthTimer = 0
 		while true do
-			local map = findActiveMap()
-			if not map then break end
-			local target = getClosestValidRoot(map, minDistance)
+			local currentMap = nil
+			for _, interior in ipairs(workspace.Interiors:GetChildren()) do
+				if interior:FindFirstChild("Programmed") and interior.Programmed:FindFirstChild("Map") then
+					currentMap = interior.Programmed.Map
+					break
+				end
+			end
+			if not currentMap then break end
+			local target = getClosestValidRoot(currentMap, minDistance)
 			if not target then
 				task.wait(1)
-				continue
-			end
-			humanoidRootPart.CanCollide = false
-			local startPos = humanoidRootPart.Position
-			local endPos = Vector3.new(target.Position.X, startPos.Y, target.Position.Z)
-			local t = 0
-			while t < 1 do
-				if not target:IsDescendantOf(workspace) then break end
-				local progress = t
-				local newPos = startPos:Lerp(endPos, progress)
-				local oscillation = math.sin(t * math.pi * 6) * 10
-				local lookVector = (endPos - startPos).Unit
-				local rotation = CFrame.Angles(0, math.rad(oscillation), 0)
-				local forward = CFrame.new(newPos, newPos + lookVector)
-				humanoidRootPart.CFrame = forward * rotation
-				t = t + 0.05
-				task.wait(0.02)
+			else
+				humanoidRootPart.CanCollide = false
+				local startPos = humanoidRootPart.Position
+				local endPos = Vector3.new(target.Position.X, startPos.Y, target.Position.Z)
+				local t = 0
+				while t < 1 do
+					if not target:IsDescendantOf(workspace) then break end
+					local newPos = startPos:Lerp(endPos, t)
+					local oscillation = math.sin(t * math.pi * 6) * 10
+					local lookVector = (endPos - startPos).Unit
+					humanoidRootPart.CFrame = CFrame.new(newPos, newPos + lookVector) * CFrame.Angles(0, math.rad(oscillation), 0)
+					t = t + 0.05
+					task.wait(0.02)
+				end
 			end
 			growthTimer = growthTimer + 1
 			if growthTimer % 20 == 0 then
@@ -188,8 +194,13 @@ end
 
 local function runCollectionMode()
 	task.spawn(function()
+		local interior = nil
+		repeat
+			interior = workspace:FindFirstChild("Interiors") and workspace.Interiors:FindFirstChild("BlossomShakedownInterior")
+			task.wait(0.5)
+		until interior
+		task.wait(10)
 		local function collectRings()
-			local interior = workspace:FindFirstChild("Interiors"):FindFirstChild("BlossomShakedownInterior")
 			if not interior or not interior:FindFirstChild("RingPickups") then return end
 			local character = player.Character or player.CharacterAdded:Wait()
 			for _, ring in ipairs(interior.RingPickups:GetChildren()) do
@@ -207,7 +218,7 @@ local function runCollectionMode()
 			end
 		end
 		collectRings()
-		wait(5)
+		task.wait(5)
 		collectRings()
 	end)
 end
@@ -220,8 +231,6 @@ function checkTextForKeywords(text)
 		if textLower:find(word:lower()) then
 			notify("Nuevo minijuego detectado: " .. word)
 			task.spawn(function()
-				wait(config.delay)
-				notify("Iniciando autoplay para: " .. word)
 				if config.action == "destructionMode" then
 					runDestructionMode()
 				elseif config.action == "collectionMode" then
@@ -281,6 +290,7 @@ workspace:WaitForChild("Interiors").ChildAdded:Connect(function(child)
 		end
 	end
 end)
+
 
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
