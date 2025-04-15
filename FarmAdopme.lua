@@ -479,7 +479,10 @@ gui.DescendantAdded:Connect(function(descendant)
 	end
 end)
 
-local PathfindingService = game:GetService("PathfindingService")
+
+
+workspace:WaitForChild("Interiors").ChildAdded:Connect(function(child)
+		local PathfindingService = game:GetService("PathfindingService")
 local Players = game:GetService("Players")
 
 local player = Players.LocalPlayer
@@ -509,9 +512,7 @@ function tryPathToPosition(character, destination)
 	else
 		warn("Ruta no encontrada. Se usará teletransporte como alternativa.")
 	end
-end
-
-workspace:WaitForChild("Interiors").ChildAdded:Connect(function(child)
+		end
 	if child.Name == "MainMap!Default" and not dialogProcessing then
 		local character = player.Character or player.CharacterAdded:Wait()
 		tryPathToPosition(character, destination)
@@ -542,10 +543,10 @@ NetworkClient.ChildRemoved:Connect(function()
         Players.LocalPlayer:Kick("\nReconectando automáticamente...")
         task.wait(1)
         TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
-								wait(3)
+								
     else
         TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
-								wait(3)
+								
 							
     end
 end)
