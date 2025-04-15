@@ -88,9 +88,89 @@ local function connectIfReady()
 end
 
 local function notify(text)
-	pcall(function()
-		StarterGui:SetCore("SendNotification", {Title = "Notificación", Text = text, Duration = 4})
-	end)
+    pcall(function()
+        local StarterGui = game:GetService("StarterGui")
+        local Players = game:GetService("Players")
+        local player = Players.LocalPlayer
+        local gui = player:WaitForChild("PlayerGui")
+        
+        local notificationGui = Instance.new("ScreenGui")
+        notificationGui.Name = "CustomNotification"
+        notificationGui.ResetOnSpawn = false
+        notificationGui.Parent = gui
+        
+        local mainFrame = Instance.new("Frame")
+        mainFrame.Size = UDim2.new(0, 280, 0, 70)
+        mainFrame.Position = UDim2.new(1, 10, 0.8, 0)
+        mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        mainFrame.BorderSizePixel = 0
+        mainFrame.Parent = notificationGui
+        
+        local cornerRadius = Instance.new("UICorner")
+        cornerRadius.CornerRadius = UDim.new(0, 8)
+        cornerRadius.Parent = mainFrame
+        
+        local stroke = Instance.new("UIStroke")
+        stroke.Color = Color3.fromRGB(255, 200, 50)
+        stroke.Thickness = 2
+        stroke.Transparency = 0.2
+        stroke.Parent = mainFrame
+        
+        local gradient = Instance.new("UIGradient")
+        gradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 45, 45)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(25, 25, 25))
+        })
+        gradient.Rotation = 90
+        gradient.Parent = mainFrame
+        
+        local titleLabel = Instance.new("TextLabel")
+        titleLabel.Size = UDim2.new(1, -20, 0, 25)
+        titleLabel.Position = UDim2.new(0, 10, 0, 8)
+        titleLabel.BackgroundTransparency = 1
+        titleLabel.Text = "Notificación"
+        titleLabel.Font = Enum.Font.GothamBold
+        titleLabel.TextSize = 16
+        titleLabel.TextColor3 = Color3.fromRGB(255, 200, 50)
+        titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+        titleLabel.Parent = mainFrame
+        
+        local textLabel = Instance.new("TextLabel")
+        textLabel.Size = UDim2.new(1, -20, 0, 30)
+        textLabel.Position = UDim2.new(0, 10, 0, 33)
+        textLabel.BackgroundTransparency = 1
+        textLabel.Text = text
+        textLabel.Font = Enum.Font.Gotham
+        textLabel.TextSize = 14
+        textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        textLabel.TextXAlignment = Enum.TextXAlignment.Left
+        textLabel.TextWrapped = true
+        textLabel.Parent = mainFrame
+        
+        mainFrame:TweenPosition(
+            UDim2.new(0.98, -280, 0.8, 0),
+            Enum.EasingDirection.Out,
+            Enum.EasingStyle.Quart,
+            0.4,
+            true
+        )
+        
+        task.spawn(function()
+            task.wait(4)
+            if notificationGui and notificationGui.Parent then
+                mainFrame:TweenPosition(
+                    UDim2.new(1, 10, 0.8, 0),
+                    Enum.EasingDirection.In,
+                    Enum.EasingStyle.Quart,
+                    0.4,
+                    true,
+                    function()
+                        notificationGui:Destroy()
+                    end
+                )
+            end
+        end)
+    end)
 end
 
 local function runDestructionMode()
