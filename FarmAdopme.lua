@@ -386,7 +386,12 @@ stopped = false
 			task.wait(0.5)
 		until interior
 
-		task.wait(10)
+		task.wait(3)
+			game.Players.LocalPlayer.Character:WaitForChild("Humanoid"):MoveTo(
+    game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").Position +
+    game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame.LookVector * 10
+			)
+			task.wait(3)
 
 		local function collectRings()
 			if stopped or not interior or not interior:FindFirstChild("RingPickups") then return end
