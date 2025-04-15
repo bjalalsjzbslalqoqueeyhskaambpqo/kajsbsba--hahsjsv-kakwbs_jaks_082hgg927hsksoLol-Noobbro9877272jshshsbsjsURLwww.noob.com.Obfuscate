@@ -368,7 +368,15 @@ inputBox.FocusLost:Connect(function()
 	end
 end)
 
+
+local stopped = false
+
+local minMargen = math.floor(max * 0.85)
+local maxMargen = math.floor(max * 0.98)
+local margenObjetivo = math.random(minMargen, maxMargen)
+
 local function runCollectionMode()
+stopped = true
 	task.spawn(function()
 		local interior = nil
 		repeat
@@ -376,24 +384,25 @@ local function runCollectionMode()
 			task.wait(0.5)
 		until interior
 
-		repeat
-			local currentText = game:GetService("Players").LocalPlayer.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel.Text
-			local cleaned = tostring(currentText or ""):gsub("[^%d]", "")
-			local number = tonumber(cleaned) or 0
-			task.wait()
-		until number == 0
+		task.wait(10)
 
 		local function collectRings()
-			if not interior or not interior:FindFirstChild("RingPickups") then return end
+			if stopped or not interior or not interior:FindFirstChild("RingPickups") then return end
 			local character = player.Character or player.CharacterAdded:Wait()
+
 			for _, ring in ipairs(interior.RingPickups:GetChildren()) do
+				if stopped then return end
 				if ring:IsA("Model") then
 					local goal = ring:GetPivot().Position
 					for t = 0, 1, 0.03 do
-						local currentText = game:GetService("Players").LocalPlayer.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel.Text
-						local cleaned = tostring(currentText or ""):gsub("[^%d]", "")
-						local value = tonumber(cleaned) or 0
-						if character and character:IsDescendantOf(workspace) and value < max then
+						local label = player.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel
+						local text = label and label.Text
+						local value = tonumber(text and text:gsub("%.", ""))
+						if value and value >= margenObjetivo then
+							stopped = true
+							return
+						end
+						if character and character:IsDescendantOf(workspace) then
 							character:PivotTo(character:GetPivot():Lerp(CFrame.new(goal), t))
 							task.wait()
 						else
@@ -404,11 +413,14 @@ local function runCollectionMode()
 			end
 		end
 
-		collectRings()
-		task.wait(5)
-		collectRings()
+		while not stopped do
+			collectRings()
+			task.wait(5)
+		end
 	end)
 end
+
+
 
 function checkTextForKeywords(text)
 	if text == lastTextChecked then return end
