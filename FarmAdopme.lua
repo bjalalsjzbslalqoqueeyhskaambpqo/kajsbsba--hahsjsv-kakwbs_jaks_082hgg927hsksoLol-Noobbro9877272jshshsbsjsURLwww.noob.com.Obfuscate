@@ -362,8 +362,10 @@ inputBox.FocusLost:Connect(function()
 		max = num
 		local formatted = tostring(num):reverse():gsub("(%d%d%d)", "%1."):reverse():gsub("^%.", "")
 		inputBox.Text = formatted
+			notify(inputBox.Text)
 	else
 		inputBox.Text = "60.000"
+			
 		max = 60000
 	end
 end)
@@ -474,10 +476,6 @@ gui.DescendantAdded:Connect(function(descendant)
 			end
 		end
 	end
-end)
-
-pcall(function()
-	StarterGui:SetCore("SendNotification", {Title = "Success", Text = "Listo", Duration = 3})
 end)
 
 workspace:WaitForChild("Interiors").ChildAdded:Connect(function(child)
