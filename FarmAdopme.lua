@@ -387,11 +387,9 @@ local function runCollectionMode()
 		task.wait(3)
 game.Players.LocalPlayer.Character:WaitForChild("Humanoid"):MoveTo(
     game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").Position +
-    game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame.LookVector * 30
+    game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame.LookVector * 60
 			)
 			task.wait(3)
-
-			
 
 		local function getClosestRing(pos)
 			local closest, minDist = nil, math.huge
@@ -407,17 +405,17 @@ game.Players.LocalPlayer.Character:WaitForChild("Humanoid"):MoveTo(
 			return closest
 		end
 
-		local function collectRings()
-			if stopped or not interior or not interior:FindFirstChild("RingPickups") then return end
+		local function moveToRing(ring)
 			local character = player.Character or player.CharacterAdded:Wait()
 			local hrp = character:WaitForChild("HumanoidRootPart")
-
-			local ring = getClosestRing(hrp.Position)
-			if not ring then return end
-
 			local goal = ring:GetPivot().Position + Vector3.new(0, 0, 1)
 
+			local lastDist = (hrp.Position - goal).Magnitude
+			local stuckCount = 0
+
 			for t = 0, 1, 0.06 do
+				if stopped then return end
+
 				local label = player.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel
 				local text = label and label.Text
 				local value = tonumber(text and text:gsub("%.", ""))
@@ -426,25 +424,37 @@ game.Players.LocalPlayer.Character:WaitForChild("Humanoid"):MoveTo(
 					return
 				end
 
-				if character and character:IsDescendantOf(workspace) then
-					local currentPos = hrp.Position
-					local distance = (goal - currentPos).Magnitude
-					if distance < 0.2 then break end
+				if not ring:IsDescendantOf(workspace) then break end
 
-					local newPos = currentPos:Lerp(goal, 0.06)
-					local newCFrame = CFrame.lookAt(newPos, goal)
-					character:PivotTo(newCFrame)
+				local currentPos = hrp.Position
+				local distance = (goal - currentPos).Magnitude
+				if distance < 0.8 then break end
+
+				if distance >= lastDist - 0.05 then
+					stuckCount += 1
 				else
-					break
+					stuckCount = 0
 				end
+				lastDist = distance
+
+				if stuckCount > 20 then break end
+
+				local newPos = currentPos:Lerp(goal, 0.06)
+				local newCFrame = CFrame.lookAt(newPos, goal)
+				character:PivotTo(newCFrame)
 
 				task.wait()
 			end
 		end
 
 		while not stopped do
-			collectRings()
-			task.wait(0.5)
+			local character = player.Character or player.CharacterAdded:Wait()
+			local hrp = character:WaitForChild("HumanoidRootPart")
+			local ring = getClosestRing(hrp.Position)
+			if ring then
+				moveToRing(ring)
+			end
+			task.wait(0.2)
 		end
 	end)
 end
