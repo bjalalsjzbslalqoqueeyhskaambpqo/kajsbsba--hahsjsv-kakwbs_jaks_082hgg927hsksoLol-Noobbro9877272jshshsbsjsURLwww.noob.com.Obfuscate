@@ -504,15 +504,52 @@ gui.DescendantAdded:Connect(function(descendant)
 	end
 end)
 
+local PathfindingService = game:GetService("PathfindingService")
+local Players = game:GetService("Players")
+
+local player = Players.LocalPlayer
+local destination = Vector3.new(49, 31, -1370)
+local timeLimit = 15 -- segundos para intentar llegar antes del tp
+local arrived = false
+
+function tryPathToPosition(character, destination)
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	local rootPart = character:FindFirstChild("HumanoidRootPart")
+	if not humanoid or not rootPart then return end
+
+	local path = PathfindingService:CreatePath({
+		AgentRadius = 2,
+		AgentHeight = 5,
+		AgentCanJump = true,
+		AgentCanClimb = true
+	})
+
+	path:ComputeAsync(rootPart.Position, destination)
+
+	if path.Status == Enum.PathStatus.Complete then
+		path:MoveTo(character)
+		path.MoveToFinished:Connect(function(reached)
+			arrived = reached
+		end)
+	else
+		warn("Ruta no encontrada. Se usará teletransporte como alternativa.")
+	end
+end
+
 workspace:WaitForChild("Interiors").ChildAdded:Connect(function(child)
 	if child.Name == "MainMap!Default" and not dialogProcessing then
-		wait(15)
-		if not dialogProcessing then
-			notify("Transportando a la zona afk")
-			local character = player.Character or player.CharacterAdded:Wait()
-			local rootPart = character:WaitForChild("HumanoidRootPart")
-			rootPart.CFrame = CFrame.new(49, 31, -1370)
-		end
+		local character = player.Character or player.CharacterAdded:Wait()
+		tryPathToPosition(character, destination)
+
+		task.delay(timeLimit, function()
+			if not arrived and not dialogProcessing then
+				notify("Transportando a la zona afk")
+				local rootPart = character:FindFirstChild("HumanoidRootPart")
+				if rootPart then
+					rootPart.CFrame = CFrame.new(destination)
+				end
+			end
+		end)
 	end
 end)
 
