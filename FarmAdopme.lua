@@ -371,7 +371,6 @@ inputBox.FocusLost:Connect(function()
 end)
 
 local stopped = false
-
 local minMargen = math.floor(max * 0.85)
 local maxMargen = math.floor(max * 0.98)
 local margenObjetivo = math.random(minMargen, maxMargen)
@@ -379,41 +378,67 @@ local margenObjetivo = math.random(minMargen, maxMargen)
 local function runCollectionMode()
 	stopped = false
 	task.spawn(function()
-		local interior = nil
+		local interior
 		repeat
 			interior = workspace:FindFirstChild("Interiors") and workspace.Interiors:FindFirstChild("BlossomShakedownInterior")
 			task.wait(0.5)
 		until interior
 
 		task.wait(3)
+game.Players.LocalPlayer.Character:WaitForChild("Humanoid"):MoveTo(
+    game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").Position +
+    game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame.LookVector * 30
+			)
+			task.wait(3)
+
+			
+
+		local function getClosestRing(pos)
+			local closest, minDist = nil, math.huge
+			for _, ring in ipairs(interior.RingPickups:GetChildren()) do
+				if ring:IsA("Model") then
+					local dist = (ring:GetPivot().Position - pos).Magnitude
+					if dist < minDist then
+						minDist = dist
+						closest = ring
+					end
+				end
+			end
+			return closest
+		end
 
 		local function collectRings()
 			if stopped or not interior or not interior:FindFirstChild("RingPickups") then return end
 			local character = player.Character or player.CharacterAdded:Wait()
 			local hrp = character:WaitForChild("HumanoidRootPart")
 
-			for _, ring in ipairs(interior.RingPickups:GetChildren()) do
-				if stopped then return end
-				if ring:IsA("Model") then
-					local goal = ring:GetPivot().Position + Vector3.new(0, 0, 2) -- atraviesa un poco
+			local ring = getClosestRing(hrp.Position)
+			if not ring then return end
 
-					while (hrp.Position - goal).Magnitude > 0.5 and not stopped do
-						local label = player.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel
-						local text = label and label.Text
-						local value = tonumber(text and text:gsub("%.", ""))
-						if value and value >= margenObjetivo then
-							stopped = true
-							return
-						end
+			local goal = ring:GetPivot().Position + Vector3.new(0, 0, 1)
 
-						local direction = (goal - hrp.Position).Unit
-						local speed = 6
-						local newPos = hrp.Position + direction * speed
-						local newCFrame = CFrame.lookAt(newPos, goal)
-						character:PivotTo(newCFrame)
-						task.wait(0.01)
-					end
+			for t = 0, 1, 0.06 do
+				local label = player.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel
+				local text = label and label.Text
+				local value = tonumber(text and text:gsub("%.", ""))
+				if value and value >= margenObjetivo then
+					stopped = true
+					return
 				end
+
+				if character and character:IsDescendantOf(workspace) then
+					local currentPos = hrp.Position
+					local distance = (goal - currentPos).Magnitude
+					if distance < 0.2 then break end
+
+					local newPos = currentPos:Lerp(goal, 0.06)
+					local newCFrame = CFrame.lookAt(newPos, goal)
+					character:PivotTo(newCFrame)
+				else
+					break
+				end
+
+				task.wait()
 			end
 		end
 
@@ -479,53 +504,15 @@ gui.DescendantAdded:Connect(function(descendant)
 	end
 end)
 
-
-
 workspace:WaitForChild("Interiors").ChildAdded:Connect(function(child)
-		local PathfindingService = game:GetService("PathfindingService")
-local Players = game:GetService("Players")
-
-local player = Players.LocalPlayer
-local destination = Vector3.new(49, 31, -1370)
-local timeLimit = 15 -- segundos para intentar llegar antes del tp
-local arrived = false
-
-function tryPathToPosition(character, destination)
-	local humanoid = character:FindFirstChildOfClass("Humanoid")
-	local rootPart = character:FindFirstChild("HumanoidRootPart")
-	if not humanoid or not rootPart then return end
-
-	local path = PathfindingService:CreatePath({
-		AgentRadius = 2,
-		AgentHeight = 5,
-		AgentCanJump = true,
-		AgentCanClimb = true
-	})
-
-	path:ComputeAsync(rootPart.Position, destination)
-
-	if path.Status == Enum.PathStatus.Complete then
-		path:MoveTo(character)
-		path.MoveToFinished:Connect(function(reached)
-			arrived = reached
-		end)
-	else
-		warn("Ruta no encontrada. Se usará teletransporte como alternativa.")
-	end
-		end
 	if child.Name == "MainMap!Default" and not dialogProcessing then
-		local character = player.Character or player.CharacterAdded:Wait()
-		tryPathToPosition(character, destination)
-
-		task.delay(timeLimit, function()
-			if not arrived and not dialogProcessing then
-				notify("Transportando a la zona afk")
-				local rootPart = character:FindFirstChild("HumanoidRootPart")
-				if rootPart then
-					rootPart.CFrame = CFrame.new(destination)
-				end
-			end
-		end)
+		wait(15)
+		if not dialogProcessing then
+			notify("Transportando a la zona afk")
+			local character = player.Character or player.CharacterAdded:Wait()
+			local rootPart = character:WaitForChild("HumanoidRootPart")
+			rootPart.CFrame = CFrame.new(49, 31, -1370)
+		end
 	end
 end)
 
@@ -539,15 +526,15 @@ local VirtualUser = game:GetService("VirtualUser")
 NetworkClient.ChildRemoved:Connect(function()
 					
     if #Players:GetPlayers() <= 1 then
-							
+							for i = 1, 10 do
         Players.LocalPlayer:Kick("\nReconectando automáticamente...")
         task.wait(1)
         TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
-								
+								wait(3)
     else
         TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
-								
-							
+								wait(3)
+							end
     end
 end)
 
@@ -561,4 +548,3 @@ end)
 
 
 	end)
-
