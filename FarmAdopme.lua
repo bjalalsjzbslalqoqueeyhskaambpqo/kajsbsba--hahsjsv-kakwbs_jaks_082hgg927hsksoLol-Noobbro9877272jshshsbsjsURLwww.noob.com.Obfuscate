@@ -538,7 +538,7 @@ local VirtualUser = game:GetService("VirtualUser")
 NetworkClient.ChildRemoved:Connect(function()
 					
     if #Players:GetPlayers() <= 1 then
-							for i = 1, 10 do
+							
         Players.LocalPlayer:Kick("\nReconectando automáticamente...")
         task.wait(1)
         TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
@@ -546,7 +546,7 @@ NetworkClient.ChildRemoved:Connect(function()
     else
         TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
 								wait(3)
-							end
+							
     end
 end)
 
