@@ -376,7 +376,7 @@ local maxMargen = math.floor(max * 0.98)
 local margenObjetivo = math.random(minMargen, maxMargen)
 
 local function runCollectionMode()
-stopped = true
+stopped = false
 	task.spawn(function()
 		local interior = nil
 		repeat
