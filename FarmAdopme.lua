@@ -371,6 +371,7 @@ inputBox.FocusLost:Connect(function()
 end)
 
 local stopped = false
+
 local minMargen = math.floor(max * 0.85)
 local maxMargen = math.floor(max * 0.98)
 local margenObjetivo = math.random(minMargen, maxMargen)
@@ -378,83 +379,47 @@ local margenObjetivo = math.random(minMargen, maxMargen)
 local function runCollectionMode()
 	stopped = false
 	task.spawn(function()
-		local interior
+		local interior = nil
 		repeat
 			interior = workspace:FindFirstChild("Interiors") and workspace.Interiors:FindFirstChild("BlossomShakedownInterior")
 			task.wait(0.5)
 		until interior
 
 		task.wait(3)
-game.Players.LocalPlayer.Character:WaitForChild("Humanoid"):MoveTo(
-    game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").Position +
-    game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame.LookVector * 60
-			)
-			task.wait(3)
 
-		local function getClosestRing(pos)
-			local closest, minDist = nil, math.huge
-			for _, ring in ipairs(interior.RingPickups:GetChildren()) do
-				if ring:IsA("Model") then
-					local dist = (ring:GetPivot().Position - pos).Magnitude
-					if dist < minDist then
-						minDist = dist
-						closest = ring
-					end
-				end
-			end
-			return closest
-		end
-
-		local function moveToRing(ring)
+		local function collectRings()
+			if stopped or not interior or not interior:FindFirstChild("RingPickups") then return end
 			local character = player.Character or player.CharacterAdded:Wait()
 			local hrp = character:WaitForChild("HumanoidRootPart")
-			local goal = ring:GetPivot().Position + Vector3.new(0, 0, 1)
 
-			local lastDist = (hrp.Position - goal).Magnitude
-			local stuckCount = 0
-
-			for t = 0, 1, 0.06 do
+			for _, ring in ipairs(interior.RingPickups:GetChildren()) do
 				if stopped then return end
+				if ring:IsA("Model") then
+					local goal = ring:GetPivot().Position + Vector3.new(0, 0, 2) -- atraviesa un poco
 
-				local label = player.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel
-				local text = label and label.Text
-				local value = tonumber(text and text:gsub("%.", ""))
-				if value and value >= margenObjetivo then
-					stopped = true
-					return
+					while (hrp.Position - goal).Magnitude > 0.5 and not stopped do
+						local label = player.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel
+						local text = label and label.Text
+						local value = tonumber(text and text:gsub("%.", ""))
+						if value and value >= margenObjetivo then
+							stopped = true
+							return
+						end
+
+						local direction = (goal - hrp.Position).Unit
+						local speed = 6
+						local newPos = hrp.Position + direction * speed
+						local newCFrame = CFrame.lookAt(newPos, goal)
+						character:PivotTo(newCFrame)
+						task.wait(0.01)
+					end
 				end
-
-				if not ring:IsDescendantOf(workspace) then break end
-
-				local currentPos = hrp.Position
-				local distance = (goal - currentPos).Magnitude
-				if distance < 0.8 then break end
-
-				if distance >= lastDist - 0.05 then
-					stuckCount += 1
-				else
-					stuckCount = 0
-				end
-				lastDist = distance
-
-				if stuckCount > 20 then break end
-
-				local newPos = currentPos:Lerp(goal, 0.06)
-				local newCFrame = CFrame.lookAt(newPos, goal)
-				character:PivotTo(newCFrame)
-
-				task.wait()
 			end
 		end
 
 		while not stopped do
-			local character = player.Character or player.CharacterAdded:Wait()
-			local hrp = character:WaitForChild("HumanoidRootPart")
-			local ring = getClosestRing(hrp.Position)
-			if ring then
-				moveToRing(ring)
-			end
-			task.wait(0.2)
+			collectRings()
+			task.wait(0.5)
 		end
 	end)
 end
