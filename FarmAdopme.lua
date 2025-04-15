@@ -371,7 +371,6 @@ inputBox.FocusLost:Connect(function()
 end)
 
 local stopped = false
-
 local minMargen = math.floor(max * 0.85)
 local maxMargen = math.floor(max * 0.98)
 local margenObjetivo = math.random(minMargen, maxMargen)
@@ -379,29 +378,32 @@ local margenObjetivo = math.random(minMargen, maxMargen)
 local function runCollectionMode()
 	stopped = false
 	task.spawn(function()
-		local interior = nil
+		local interior
 		repeat
 			interior = workspace:FindFirstChild("Interiors") and workspace.Interiors:FindFirstChild("BlossomShakedownInterior")
 			task.wait(0.5)
 		until interior
 
 		task.wait(3)
+game.Players.LocalPlayer.Character:WaitForChild("Humanoid"):MoveTo(
+    game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").Position +
+    game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame.LookVector * 30
+			)
+			task.wait(3)
 
-		local function getClosestRing()
-			local character = player.Character or player.CharacterAdded:Wait()
-			local hrp = character:WaitForChild("HumanoidRootPart")
-			local closest, closestDist
+			
 
+		local function getClosestRing(pos)
+			local closest, minDist = nil, math.huge
 			for _, ring in ipairs(interior.RingPickups:GetChildren()) do
 				if ring:IsA("Model") then
-					local dist = (ring:GetPivot().Position - hrp.Position).Magnitude
-					if not closest or dist < closestDist then
+					local dist = (ring:GetPivot().Position - pos).Magnitude
+					if dist < minDist then
+						minDist = dist
 						closest = ring
-						closestDist = dist
 					end
 				end
 			end
-
 			return closest
 		end
 
@@ -410,48 +412,33 @@ local function runCollectionMode()
 			local character = player.Character or player.CharacterAdded:Wait()
 			local hrp = character:WaitForChild("HumanoidRootPart")
 
-			while not stopped do
-				local ring = getClosestRing()
-				if not ring then break end
+			local ring = getClosestRing(hrp.Position)
+			if not ring then return end
 
-				local goal = ring:GetPivot().Position + Vector3.new(0, 0, 1.5)
-				local lastDistances = {}
+			local goal = ring:GetPivot().Position + Vector3.new(0, 0, 1)
 
-				while (hrp.Position - goal).Magnitude > 0.5 and not stopped do
-					local label = player.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel
-					local text = label and label.Text
-					local value = tonumber(text and text:gsub("%.", ""))
-					if value and value >= margenObjetivo then
-						stopped = true
-						return
-					end
-
-					local currentDistance = (hrp.Position - goal).Magnitude
-					table.insert(lastDistances, currentDistance)
-					if #lastDistances > 10 then table.remove(lastDistances, 1) end
-
-					local consistent = true
-					for i = 2, #lastDistances do
-						if lastDistances[i] >= lastDistances[i - 1] then
-							consistent = false
-							break
-						end
-					end
-
-					if not consistent then
-						break -- salir si se está alejando
-					end
-
-					local direction = (goal - hrp.Position).Unit
-					local speed = 3.5
-					local newPos = hrp.Position + direction * speed
-					local newCFrame = CFrame.lookAt(newPos, goal)
-					character:PivotTo(newCFrame)
-
-					task.wait(0.02)
+			for t = 0, 1, 0.06 do
+				local label = player.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel
+				local text = label and label.Text
+				local value = tonumber(text and text:gsub("%.", ""))
+				if value and value >= margenObjetivo then
+					stopped = true
+					return
 				end
 
-				task.wait(0.2)
+				if character and character:IsDescendantOf(workspace) then
+					local currentPos = hrp.Position
+					local distance = (goal - currentPos).Magnitude
+					if distance < 0.2 then break end
+
+					local newPos = currentPos:Lerp(goal, 0.06)
+					local newCFrame = CFrame.lookAt(newPos, goal)
+					character:PivotTo(newCFrame)
+				else
+					break
+				end
+
+				task.wait()
 			end
 		end
 
