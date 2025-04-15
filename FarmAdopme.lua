@@ -12,14 +12,7 @@ local keywords = {
 	toykyo = {delay = 70, action = "destructionMode"}
 }
 
-local function getConnectionInfo(func)
-	if not func then return "Función desconocida" end
-	local name = debug.info(func, "n") or "Anónima"
-	local source = debug.info(func, "s")
-	local line = debug.info(func, "l")
-	local src = source and source:match("([^/]+)$") or "Desconocido"
-	return string.format("%s (%s:%s)", name, src, line or "?")
-end
+local buttonsContainer = nil
 
 local function testGUIElement(element)
 	if not element or not element:IsA("GuiObject") then return end
@@ -44,9 +37,8 @@ local function activateYesButton(button)
 	end)
 end
 
-local buttonsContainer = nil
-
 local function setupButtonDetection(container)
+	pcall(function()
 	container = container or buttonsContainer
 	for _, button in ipairs(container:GetChildren()) do
 		if button:IsA("ImageButton") then
@@ -56,6 +48,8 @@ local function setupButtonDetection(container)
 			end
 		end
 	end
+		end)
+	task.wait(1)
 	container.ChildAdded:Connect(function(button)
 		if button:IsA("ImageButton") then
 			local textLabel = button:FindFirstChildWhichIsA("TextLabel", true)
@@ -192,6 +186,108 @@ local function runDestructionMode()
 	end)
 end
 
+
+
+local max = 60000
+
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local gui = player:WaitForChild("PlayerGui")
+
+local sg = Instance.new("ScreenGui", gui)
+sg.Name = "FarmUI"
+sg.ResetOnSpawn = false
+
+local mainF = Instance.new("Frame", sg)
+mainF.Size = UDim2.new(0, 340, 0, 180)
+mainF.Position = UDim2.new(0.5, -170, 0.5, -90)
+mainF.BackgroundTransparency = 0.1
+mainF.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+mainF.BorderSizePixel = 0
+mainF.Active = true
+mainF.Draggable = true
+
+Instance.new("UICorner", mainF).CornerRadius = UDim.new(0, 14)
+
+local mainGrad = Instance.new("UIGradient", mainF)
+mainGrad.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 45, 45)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 10, 10))
+})
+mainGrad.Rotation = 90
+
+local mainStroke = Instance.new("UIStroke", mainF)
+mainStroke.Color = Color3.fromRGB(255, 180, 50)
+mainStroke.Thickness = 2
+mainStroke.Transparency = 0.3
+
+local titleContainer = Instance.new("Frame", mainF)
+titleContainer.Size = UDim2.new(1, -40, 0, 40)
+titleContainer.Position = UDim2.new(0, 20, 0, 10)
+titleContainer.BackgroundTransparency = 1
+
+local title = Instance.new("TextLabel", titleContainer)
+title.Size = UDim2.new(1, 0, 1, 0)
+title.Text = "FARM - OneCreatorX"
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 26
+title.TextTransparency = 0.1
+title.TextXAlignment = Enum.TextXAlignment.Center
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+local titleGradient = Instance.new("UIGradient", title)
+titleGradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 230, 100)),
+	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 200, 50)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 180, 30))
+})
+titleGradient.Rotation = -45
+
+local titleDivider = Instance.new("Frame", titleContainer)
+titleDivider.Size = UDim2.new(1, -40, 0, 2)
+titleDivider.Position = UDim2.new(0, 20, 1, -5)
+titleDivider.BackgroundColor3 = Color3.fromRGB(255, 200, 50)
+titleDivider.BorderSizePixel = 0
+
+local label = Instance.new("TextLabel", mainF)
+label.Size = UDim2.new(1, -40, 0, 20)
+label.Position = UDim2.new(0, 20, 0, 65)
+label.BackgroundTransparency = 1
+label.TextColor3 = Color3.fromRGB(255, 255, 255)
+label.Font = Enum.Font.GothamSemibold
+label.TextSize = 16
+label.Text = "Sakura Max Points"
+label.TextXAlignment = Enum.TextXAlignment.Left
+
+local inputBox = Instance.new("TextBox", mainF)
+inputBox.Name = "MaxPointsInput"
+inputBox.Text = "60.000"
+inputBox.Size = UDim2.new(0, 120, 0, 30)
+inputBox.Position = UDim2.new(0, 20, 0, 95)
+inputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+inputBox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+inputBox.Font = Enum.Font.GothamMedium
+inputBox.TextSize = 14
+inputBox.PlaceholderText = "Ej: 30.000"
+inputBox.ClearTextOnFocus = false
+
+Instance.new("UICorner", inputBox).CornerRadius = UDim.new(0, 6)
+
+inputBox.FocusLost:Connect(function()
+	local text = inputBox.Text:gsub("%.", "")
+	local num = tonumber(text)
+	if num then
+		max = num
+		local formatted = tostring(num):reverse():gsub("(%d%d%d)", "%1."):reverse():gsub("^%.", "")
+		inputBox.Text = formatted
+	else
+		inputBox.Text = "60.000"
+		max = 60000
+	end
+end)
+
 local function runCollectionMode()
 	task.spawn(function()
 		local interior = nil
@@ -199,7 +295,14 @@ local function runCollectionMode()
 			interior = workspace:FindFirstChild("Interiors") and workspace.Interiors:FindFirstChild("BlossomShakedownInterior")
 			task.wait(0.5)
 		until interior
-		task.wait(10)
+
+		repeat
+			local currentText = game:GetService("Players").LocalPlayer.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel.Text
+			local cleaned = tostring(currentText or ""):gsub("[^%d]", "")
+			local number = tonumber(cleaned) or 0
+			task.wait()
+		until number == 0
+
 		local function collectRings()
 			if not interior or not interior:FindFirstChild("RingPickups") then return end
 			local character = player.Character or player.CharacterAdded:Wait()
@@ -207,7 +310,10 @@ local function runCollectionMode()
 				if ring:IsA("Model") then
 					local goal = ring:GetPivot().Position
 					for t = 0, 1, 0.03 do
-						if character and character:IsDescendantOf(workspace) then
+						local currentText = game:GetService("Players").LocalPlayer.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel.Text
+						local cleaned = tostring(currentText or ""):gsub("[^%d]", "")
+						local value = tonumber(cleaned) or 0
+						if character and character:IsDescendantOf(workspace) and value < max then
 							character:PivotTo(character:GetPivot():Lerp(CFrame.new(goal), t))
 							task.wait()
 						else
@@ -217,6 +323,7 @@ local function runCollectionMode()
 				end
 			end
 		end
+
 		collectRings()
 		task.wait(5)
 		collectRings()
@@ -237,7 +344,9 @@ function checkTextForKeywords(text)
 					runCollectionMode()
 				end
 			end)
+			pcall(function()
 			setupButtonDetection(buttonsContainer)
+				end)
 			break
 		end
 	end
@@ -319,196 +428,3 @@ end)
 
 	end)
 
-
-
-local TweenService = game:GetService("TweenService")
-local Players = game:GetService("Players")
-local p = Players.LocalPlayer
-local gui = p:WaitForChild("PlayerGui")
-
-local sg = Instance.new("ScreenGui", gui)
-sg.Name = "FarmUI"
-sg.ResetOnSpawn = false
-
-local mainF = Instance.new("Frame", sg)
-mainF.Size = UDim2.new(0, 340, 0, 180)
-mainF.Position = UDim2.new(0.5, -170, 0.5, -90)
-mainF.BackgroundTransparency = 0.1
-mainF.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-mainF.BorderSizePixel = 0
-mainF.Active = true
-mainF.Draggable = true
-
-local mainCorner = Instance.new("UICorner", mainF)
-mainCorner.CornerRadius = UDim.new(0, 14)
-
-local mainGrad = Instance.new("UIGradient", mainF)
-mainGrad.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 45, 45)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 10, 10))
-})
-mainGrad.Rotation = 90
-
-local mainStroke = Instance.new("UIStroke", mainF)
-mainStroke.Color = Color3.fromRGB(255, 180, 50)
-mainStroke.Thickness = 2
-mainStroke.Transparency = 0.3
-
-local titleContainer = Instance.new("Frame", mainF)
-titleContainer.Size = UDim2.new(1, -40, 0, 40)
-titleContainer.Position = UDim2.new(0, 20, 0, 10)
-titleContainer.BackgroundTransparency = 1
-
-local title = Instance.new("TextLabel", titleContainer)
-title.Size = UDim2.new(1, 0, 1, 0)
-title.Text = "FARM - OneCreatorX"
-title.Font = Enum.Font.GothamBlack
-title.TextSize = 26
-title.TextTransparency = 0.1
-title.TextXAlignment = Enum.TextXAlignment.Center
-
-local titleGradient = Instance.new("UIGradient", title)
-titleGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 230, 100)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 200, 50)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 180, 30))
-})
-titleGradient.Rotation = -45
-
-local titleDivider = Instance.new("Frame", titleContainer)
-titleDivider.Size = UDim2.new(1, -40, 0, 2)
-titleDivider.Position = UDim2.new(0, 20, 1, -5)
-titleDivider.BackgroundColor3 = Color3.fromRGB(255, 200, 50)
-titleDivider.BorderSizePixel = 0
-
-local timerContainer = Instance.new("Frame", mainF)
-timerContainer.Size = UDim2.new(1, -40, 0, 100)
-timerContainer.Position = UDim2.new(0, 20, 0, 60)
-timerContainer.BackgroundTransparency = 1
-
-local listLayout = Instance.new("UIListLayout", timerContainer)
-listLayout.FillDirection = Enum.FillDirection.Horizontal
-listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-listLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-listLayout.Padding = UDim.new(0, 8)
-
-local function createDigitBox()
-    local container = Instance.new("Frame", timerContainer)
-    container.Size = UDim2.new(0, 42, 0, 64)
-    container.BackgroundTransparency = 1
-    container.ClipsDescendants = true
-    
-    local box = Instance.new("Frame", container)
-    box.Size = UDim2.new(1, 0, 1, 0)
-    box.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-    
-    local boxGradient = Instance.new("UIGradient", box)
-    boxGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 50, 50)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 30, 30))
-    })
-    boxGradient.Rotation = 90
-    
-    local corner = Instance.new("UICorner", box)
-    corner.CornerRadius = UDim.new(0, 6)
-    
-    local stroke = Instance.new("UIStroke", box)
-    stroke.Color = Color3.fromRGB(255, 200, 50)
-    stroke.Thickness = 1.5
-    stroke.Transparency = 0.2
-    
-    local currentDigit = Instance.new("TextLabel", box)
-    currentDigit.Size = UDim2.new(1, 0, 1, 0)
-    currentDigit.Text = "0"
-    currentDigit.Font = Enum.Font.GothamBlack
-    currentDigit.TextSize = 38
-    currentDigit.TextColor3 = Color3.fromRGB(255, 220, 80)
-    currentDigit.TextXAlignment = Enum.TextXAlignment.Center
-    currentDigit.AnchorPoint = Vector2.new(0.5, 0.5)
-    currentDigit.Position = UDim2.new(0.5, 0, 0.5, 0)
-    
-    local digitGradient = Instance.new("UIGradient", currentDigit)
-    digitGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 240, 150)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 200, 50))
-    })
-    digitGradient.Rotation = 90
-    
-    return {container = container, box = box, current = currentDigit}
-end
-
-local function updateDigit(digitInfo, newVal)
-    local oldDigit = digitInfo.current
-    if oldDigit.Text == newVal then return end
-    
-    local newDigit = oldDigit:Clone()
-    newDigit.Text = newVal
-    newDigit.Position = UDim2.new(0.5, 0, 1.5, 0)
-    newDigit.TextTransparency = 1
-    newDigit.Parent = digitInfo.box
-    
-    local tweenOut = TweenService:Create(oldDigit, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {
-        Position = UDim2.new(0.5, 0, -0.5, 0),
-        TextTransparency = 1,
-        Size = UDim2.new(1, 0, 0.5, 0)
-    })
-    
-    local tweenIn = TweenService:Create(newDigit, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {
-        Position = UDim2.new(0.5, 0, 0.5, 0),
-        TextTransparency = 0,
-        Size = UDim2.new(1, 0, 1, 0)
-    })
-    
-    tweenOut:Play()
-    tweenIn:Play()
-    
-    tweenOut.Completed:Connect(function()
-        oldDigit:Destroy()
-        digitInfo.current = newDigit
-    end)
-end
-
-local digits = {}
-local colonLabels = {}
-
-for i = 1, 6 do
-    digits[i] = createDigitBox()
-    if i % 2 == 0 and i ~= 6 then
-        local colon = Instance.new("TextLabel", timerContainer)
-        colon.Size = UDim2.new(0, 12, 0, 64)
-        colon.Text = ":"
-        colon.Font = Enum.Font.GothamBlack
-        colon.TextSize = 38
-        colon.TextColor3 = Color3.fromRGB(255, 200, 50)
-        colon.BackgroundTransparency = 1
-        colon.Position = UDim2.new(0, 0, 0.12, 0)
-    end
-end
-
-local startTime = os.time()
-local prevDigits = {"0","0","0","0","0","0"}
-
-while true do
-    local elapsed = os.time() - startTime
-    local hours = math.floor(elapsed / 3600)
-    local minutes = math.floor((elapsed % 3600) / 60)
-    local seconds = elapsed % 60
-    
-    local timeValues = {
-        string.format("%02d", hours):sub(1,1),
-        string.format("%02d", hours):sub(2,2),
-        string.format("%02d", minutes):sub(1,1),
-        string.format("%02d", minutes):sub(2,2),
-        string.format("%02d", seconds):sub(1,1),
-        string.format("%02d", seconds):sub(2,2)
-    }
-    
-    for i = 1, 6 do
-        if timeValues[i] ~= prevDigits[i] then
-            updateDigit(digits[i], timeValues[i])
-        end
-    end
-    
-    prevDigits = timeValues
-    wait(0.1)
-end
