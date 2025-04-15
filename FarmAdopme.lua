@@ -387,33 +387,71 @@ local function runCollectionMode()
 
 		task.wait(3)
 
+		local function getClosestRing()
+			local character = player.Character or player.CharacterAdded:Wait()
+			local hrp = character:WaitForChild("HumanoidRootPart")
+			local closest, closestDist
+
+			for _, ring in ipairs(interior.RingPickups:GetChildren()) do
+				if ring:IsA("Model") then
+					local dist = (ring:GetPivot().Position - hrp.Position).Magnitude
+					if not closest or dist < closestDist then
+						closest = ring
+						closestDist = dist
+					end
+				end
+			end
+
+			return closest
+		end
+
 		local function collectRings()
 			if stopped or not interior or not interior:FindFirstChild("RingPickups") then return end
 			local character = player.Character or player.CharacterAdded:Wait()
 			local hrp = character:WaitForChild("HumanoidRootPart")
 
-			for _, ring in ipairs(interior.RingPickups:GetChildren()) do
-				if stopped then return end
-				if ring:IsA("Model") then
-					local goal = ring:GetPivot().Position + Vector3.new(0, 0, 2)
+			while not stopped do
+				local ring = getClosestRing()
+				if not ring then break end
 
-					while (hrp.Position - goal).Magnitude > 0.5 and not stopped do
-						local label = player.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel
-						local text = label and label.Text
-						local value = tonumber(text and text:gsub("%.", ""))
-						if value and value >= margenObjetivo then
-							stopped = true
-							return
-						end
+				local goal = ring:GetPivot().Position + Vector3.new(0, 0, 1.5)
+				local lastDistances = {}
 
-						local direction = (goal - hrp.Position).Unit
-						local speed = 2.5
-						local newPos = hrp.Position + direction * speed
-						local newCFrame = CFrame.lookAt(newPos, goal)
-						character:PivotTo(newCFrame)
-						task.wait(0.02)
+				while (hrp.Position - goal).Magnitude > 0.5 and not stopped do
+					local label = player.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel
+					local text = label and label.Text
+					local value = tonumber(text and text:gsub("%.", ""))
+					if value and value >= margenObjetivo then
+						stopped = true
+						return
 					end
+
+					local currentDistance = (hrp.Position - goal).Magnitude
+					table.insert(lastDistances, currentDistance)
+					if #lastDistances > 10 then table.remove(lastDistances, 1) end
+
+					local consistent = true
+					for i = 2, #lastDistances do
+						if lastDistances[i] >= lastDistances[i - 1] then
+							consistent = false
+							break
+						end
+					end
+
+					if not consistent then
+						break -- salir si se está alejando
+					end
+
+					local direction = (goal - hrp.Position).Unit
+					local speed = 3.5
+					local newPos = hrp.Position + direction * speed
+					local newCFrame = CFrame.lookAt(newPos, goal)
+					character:PivotTo(newCFrame)
+
+					task.wait(0.02)
 				end
+
+				task.wait(0.2)
 			end
 		end
 
@@ -423,8 +461,6 @@ local function runCollectionMode()
 		end
 	end)
 end
-
-
 
 
 function checkTextForKeywords(text)
