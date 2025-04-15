@@ -370,7 +370,6 @@ inputBox.FocusLost:Connect(function()
 	end
 end)
 
-
 local stopped = false
 
 local minMargen = math.floor(max * 0.85)
@@ -387,10 +386,6 @@ local function runCollectionMode()
 		until interior
 
 		task.wait(3)
-		local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-		local humanoid = game.Players.LocalPlayer.Character:WaitForChild("Humanoid")
-		humanoid:MoveTo(hrp.Position + hrp.CFrame.LookVector * 30)
-		task.wait(3)
 
 		local function collectRings()
 			if stopped or not interior or not interior:FindFirstChild("RingPickups") then return end
@@ -400,8 +395,9 @@ local function runCollectionMode()
 			for _, ring in ipairs(interior.RingPickups:GetChildren()) do
 				if stopped then return end
 				if ring:IsA("Model") then
-					local goal = ring:GetPivot().Position
-					for i = 1, 100 do
+					local goal = ring:GetPivot().Position + Vector3.new(0, 0, 2)
+
+					while (hrp.Position - goal).Magnitude > 0.5 and not stopped do
 						local label = player.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel
 						local text = label and label.Text
 						local value = tonumber(text and text:gsub("%.", ""))
@@ -409,15 +405,13 @@ local function runCollectionMode()
 							stopped = true
 							return
 						end
-						if character and character:IsDescendantOf(workspace) then
-							local current = hrp.CFrame.Position
-							local nextPos = current + (goal - current).Unit * 0.5
-							local newCFrame = CFrame.lookAt(nextPos, goal)
-							character:PivotTo(newCFrame)
-							task.wait(0.03)
-						else
-							break
-						end
+
+						local direction = (goal - hrp.Position).Unit
+						local speed = 2.5
+						local newPos = hrp.Position + direction * speed
+						local newCFrame = CFrame.lookAt(newPos, goal)
+						character:PivotTo(newCFrame)
+						task.wait(0.02)
 					end
 				end
 			end
@@ -425,10 +419,11 @@ local function runCollectionMode()
 
 		while not stopped do
 			collectRings()
-			task.wait(5)
+			task.wait(0.5)
 		end
 	end)
 end
+
 
 
 
