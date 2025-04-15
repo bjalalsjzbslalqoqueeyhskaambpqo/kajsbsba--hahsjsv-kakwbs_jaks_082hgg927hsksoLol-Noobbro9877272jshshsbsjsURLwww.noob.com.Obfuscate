@@ -378,7 +378,7 @@ local maxMargen = math.floor(max * 0.98)
 local margenObjetivo = math.random(minMargen, maxMargen)
 
 local function runCollectionMode()
-stopped = false
+	stopped = false
 	task.spawn(function()
 		local interior = nil
 		repeat
@@ -387,21 +387,21 @@ stopped = false
 		until interior
 
 		task.wait(3)
-			game.Players.LocalPlayer.Character:WaitForChild("Humanoid"):MoveTo(
-    game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").Position +
-    game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame.LookVector * 10
-			)
-			task.wait(3)
+		local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+		local humanoid = game.Players.LocalPlayer.Character:WaitForChild("Humanoid")
+		humanoid:MoveTo(hrp.Position + hrp.CFrame.LookVector * 30)
+		task.wait(3)
 
 		local function collectRings()
 			if stopped or not interior or not interior:FindFirstChild("RingPickups") then return end
 			local character = player.Character or player.CharacterAdded:Wait()
+			local hrp = character:WaitForChild("HumanoidRootPart")
 
 			for _, ring in ipairs(interior.RingPickups:GetChildren()) do
 				if stopped then return end
 				if ring:IsA("Model") then
 					local goal = ring:GetPivot().Position
-					for t = 0, 1, 0.03 do
+					for i = 1, 100 do
 						local label = player.PlayerGui.MinigameInGameApp.Body.Right.Container.ValueLabel
 						local text = label and label.Text
 						local value = tonumber(text and text:gsub("%.", ""))
@@ -410,8 +410,11 @@ stopped = false
 							return
 						end
 						if character and character:IsDescendantOf(workspace) then
-							character:PivotTo(character:GetPivot():Lerp(CFrame.new(goal), t))
-							task.wait()
+							local current = hrp.CFrame.Position
+							local nextPos = current + (goal - current).Unit * 0.5
+							local newCFrame = CFrame.lookAt(nextPos, goal)
+							character:PivotTo(newCFrame)
+							task.wait(0.03)
 						else
 							break
 						end
