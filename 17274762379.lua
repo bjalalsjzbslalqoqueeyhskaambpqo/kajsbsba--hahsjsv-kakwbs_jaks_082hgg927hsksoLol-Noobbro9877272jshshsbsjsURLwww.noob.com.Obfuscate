@@ -12,9 +12,9 @@ workspace.ChildAdded:Connect(function(c)
         end)
         while alive do
             vim:SendMouseButtonEvent(mouse.X, mouse.Y, 0, true, nil, 0)
-            task.wait(0.05)
+            
             vim:SendMouseButtonEvent(mouse.X, mouse.Y, 0, false, nil, 0)
-            task.wait(0.55)
+            task.wait(0.40)
         end
     end
 end)
