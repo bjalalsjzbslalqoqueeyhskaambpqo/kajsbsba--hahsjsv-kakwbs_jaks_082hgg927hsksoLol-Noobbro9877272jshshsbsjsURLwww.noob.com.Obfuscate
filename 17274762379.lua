@@ -919,10 +919,10 @@ local function fgd()
     end)
     
     if s and d then
-        if d.fishingItems then
-            st.fc = d.fishingItems.Fish or 0
-            st.tc = d.fishingItems.Trash or 0
-            st.dc = d.fishingItems.Diamond or 0
+        if d.fishing then
+            st.fc = d.fishing.Fish or 0
+            st.tc = d.fishing.Trash or 0
+            st.dc = d.fishing.Diamond or 0
         end
         if d.fishes then
             st.tt = d.fishes
