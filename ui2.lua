@@ -965,12 +965,7 @@ function UILib.Create(title, version)
     
     local os, osf = lib.cSec(gp, "Options")
     local ot, _, _ = lib.cTgl(os, "Enable Notifications", true, Color3.fromRGB(60, 120, 180))
-    local op, _ = lib.cInp(os, "Notification Duration:", "3")
-    local ob, _ = lib.cAct(os, "Reset All Settings", Color3.fromRGB(180, 70, 70))
-    
-    ob.MouseButton1Click:Connect(function()
-        lib.notify("Settings", "All settings have been reset to default.", 3, Color3.fromRGB(255, 100, 100))
-    end)
+
     
     return lib
 end
