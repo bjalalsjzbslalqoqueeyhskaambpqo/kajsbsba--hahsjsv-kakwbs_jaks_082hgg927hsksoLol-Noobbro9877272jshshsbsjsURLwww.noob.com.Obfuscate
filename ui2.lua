@@ -158,7 +158,7 @@ function UILib.Create(title, version)
     mbp.PaddingBottom = UDim.new(0, 10)
     mbp.Parent = mbs
     
-    local cc = Instance.new("Frame")
+    local cc = Instance.new("ScrollingFrame")
     cc.Name = "CC"
     cc.Size = UDim2.new(1, -90, 1, 0)
     cc.Position = UDim2.new(0, 85, 0, 0)
