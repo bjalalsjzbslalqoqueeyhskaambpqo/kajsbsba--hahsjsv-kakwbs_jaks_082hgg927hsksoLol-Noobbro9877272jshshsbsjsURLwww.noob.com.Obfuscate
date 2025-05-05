@@ -1,5 +1,5 @@
-local NexusUI = {}
-NexusUI.__index = NexusUI
+local OneX = {}
+OneX.__index = OneX
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -11,19 +11,20 @@ local GuiService = game:GetService("GuiService")
 
 local PLAYER = Players.LocalPlayer
 local MOUSE = PLAYER:GetMouse()
-local SCREEN_GUI_NAME = "NexusUILibrary"
+local SCREEN_GUI_NAME = "OneXLibrary"
 local DEFAULT_FONT = Enum.Font.GothamSemibold
 local DEFAULT_TEXT_SIZE = 14
 local DEFAULT_CORNER_RADIUS = UDim.new(0, 6)
 local DEFAULT_PADDING = UDim.new(0, 8)
-local DEFAULT_TWEEN_INFO = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+local DEFAULT_TWEEN_INFO = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 
 local COLORS = {
     BACKGROUND = Color3.fromRGB(30, 30, 35),
     BACKGROUND_DARK = Color3.fromRGB(25, 25, 30),
     BACKGROUND_LIGHT = Color3.fromRGB(40, 40, 45),
-    ACCENT = Color3.fromRGB(0, 170, 255),
-    ACCENT_DARK = Color3.fromRGB(0, 140, 210),
+    ACCENT = Color3.fromRGB(0, 180, 130),
+    ACCENT_DARK = Color3.fromRGB(0, 150, 100),
+    ACCENT_LIGHT = Color3.fromRGB(40, 210, 150),
     TEXT_PRIMARY = Color3.fromRGB(255, 255, 255),
     TEXT_SECONDARY = Color3.fromRGB(180, 180, 180),
     SUCCESS = Color3.fromRGB(50, 200, 100),
@@ -68,6 +69,18 @@ local function createPadding(parent, padding)
     return uiPadding
 end
 
+local function createGradient(parent, colorSequence, rotation)
+    local gradient = createInstance("UIGradient", {
+        Color = colorSequence or ColorSequence.new({
+            ColorSequenceKeypoint.new(0, COLORS.ACCENT),
+            ColorSequenceKeypoint.new(1, COLORS.ACCENT_DARK)
+        }),
+        Rotation = rotation or 90,
+        Parent = parent
+    })
+    return gradient
+end
+
 local function tween(instance, properties, duration, easingStyle, easingDirection)
     local tweenInfo = TweenInfo.new(
         duration or DEFAULT_TWEEN_INFO.Time,
@@ -79,10 +92,46 @@ local function tween(instance, properties, duration, easingStyle, easingDirectio
     return tween
 end
 
-function NexusUI.new(title, theme)
-    local self = setmetatable({}, NexusUI)
+local function createImageOrEmoji(parent, imageIdOrEmoji, size, position, imageColor)
+    local isEmoji = imageIdOrEmoji and #imageIdOrEmoji <= 8 and not imageIdOrEmoji:match("^rbxassetid://")
     
-    self.title = title or "Nexus UI"
+    if isEmoji then
+        local textLabel = createInstance("TextLabel", {
+            Name = "Emoji",
+            Size = size or UDim2.fromOffset(20, 20),
+            Position = position or UDim2.fromOffset(0, 0),
+            BackgroundTransparency = 1,
+            Text = imageIdOrEmoji,
+            TextColor3 = imageColor or COLORS.TEXT_PRIMARY,
+            TextSize = (size and size.X.Offset * 0.7) or 16,
+            Font = Enum.Font.GothamBold,
+            Parent = parent
+        })
+        return textLabel
+    else
+        local imageId = imageIdOrEmoji
+        if imageIdOrEmoji and not imageIdOrEmoji:match("^rbxassetid://") then
+            imageId = "rbxassetid://" .. imageIdOrEmoji
+        end
+        
+        local imageLabel = createInstance("ImageLabel", {
+            Name = "Icon",
+            Size = size or UDim2.fromOffset(20, 20),
+            Position = position or UDim2.fromOffset(0, 0),
+            BackgroundTransparency = 1,
+            Image = imageId,
+            ImageColor3 = imageColor or COLORS.TEXT_PRIMARY,
+            ScaleType = Enum.ScaleType.Fit,
+            Parent = parent
+        })
+        return imageLabel
+    end
+end
+
+function OneX.new(title, theme)
+    local self = setmetatable({}, OneX)
+    
+    self.title = title or "OneX UI"
     self.theme = theme or "Dark"
     self.windows = {}
     self.currentWindow = nil
@@ -103,7 +152,7 @@ function NexusUI.new(title, theme)
     return self
 end
 
-function NexusUI:createMainGUI()
+function OneX:createMainGUI()
     if CoreGui:FindFirstChild(SCREEN_GUI_NAME) then
         CoreGui:FindFirstChild(SCREEN_GUI_NAME):Destroy()
     end
@@ -118,8 +167,8 @@ function NexusUI:createMainGUI()
     
     self.mainFrame = createInstance("Frame", {
         Name = "MainFrame",
-        Size = UDim2.new(0, 500, 0, 350),
-        Position = UDim2.new(0.5, -250, 0.5, -175),
+        Size = UDim2.new(0, 550, 0, 350),
+        Position = UDim2.new(0.5, -275, 0.5, -175),
         BackgroundColor3 = COLORS.BACKGROUND,
         BorderSizePixel = 0,
         Active = true,
@@ -138,6 +187,11 @@ function NexusUI:createMainGUI()
         Parent = self.mainFrame
     })
     createCorner(self.titleBar)
+    
+    local titleGradient = createGradient(self.titleBar, ColorSequence.new({
+        ColorSequenceKeypoint.new(0, COLORS.BACKGROUND_DARK),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 35, 40))
+    }), 45)
     
     self.titleText = createInstance("TextLabel", {
         Name = "TitleText",
@@ -190,12 +244,17 @@ function NexusUI:createMainGUI()
     
     self.tabContainer = createInstance("Frame", {
         Name = "TabContainer",
-        Size = UDim2.new(0, 120, 1, 0),
+        Size = UDim2.new(0, 130, 1, 0),
         Position = UDim2.new(0, 0, 0, 0),
         BackgroundColor3 = COLORS.BACKGROUND_DARK,
         BorderSizePixel = 0,
         Parent = self.contentFrame
     })
+    
+    local tabContainerGradient = createGradient(self.tabContainer, ColorSequence.new({
+        ColorSequenceKeypoint.new(0, COLORS.BACKGROUND_DARK),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 30, 35))
+    }), 90)
     
     self.tabScrollFrame = createInstance("ScrollingFrame", {
         Name = "TabScrollFrame",
@@ -218,8 +277,8 @@ function NexusUI:createMainGUI()
     
     self.windowContainer = createInstance("Frame", {
         Name = "WindowContainer",
-        Size = UDim2.new(1, -120, 1, 0),
-        Position = UDim2.new(0, 120, 0, 0),
+        Size = UDim2.new(1, -130, 1, 0),
+        Position = UDim2.new(0, 130, 0, 0),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         Parent = self.contentFrame
@@ -228,7 +287,7 @@ function NexusUI:createMainGUI()
     self:setupEvents()
 end
 
-function NexusUI:setupEvents()
+function OneX:setupEvents()
     self.minimizeButton.MouseButton1Click:Connect(function()
         self:toggleMinimize()
     end)
@@ -244,7 +303,7 @@ function NexusUI:setupEvents()
     self:handleResponsiveDesign()
 end
 
-function NexusUI:handleResponsiveDesign()
+function OneX:handleResponsiveDesign()
     local function updateSize()
         local screenSize = workspace.CurrentCamera.ViewportSize
         local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
@@ -252,15 +311,15 @@ function NexusUI:handleResponsiveDesign()
         if isMobile then
             self.mainFrame.Size = UDim2.new(0.9, 0, 0.7, 0)
             self.mainFrame.Position = UDim2.new(0.5, -self.mainFrame.AbsoluteSize.X/2, 0.5, -self.mainFrame.AbsoluteSize.Y/2)
-            self.tabContainer.Size = UDim2.new(0, 80, 1, 0)
-            self.windowContainer.Size = UDim2.new(1, -80, 1, 0)
-            self.windowContainer.Position = UDim2.new(0, 80, 0, 0)
+            self.tabContainer.Size = UDim2.new(0, 100, 1, 0)
+            self.windowContainer.Size = UDim2.new(1, -100, 1, 0)
+            self.windowContainer.Position = UDim2.new(0, 100, 0, 0)
         else
-            self.mainFrame.Size = UDim2.new(0, 500, 0, 350)
-            self.mainFrame.Position = UDim2.new(0.5, -250, 0.5, -175)
-            self.tabContainer.Size = UDim2.new(0, 120, 1, 0)
-            self.windowContainer.Size = UDim2.new(1, -120, 1, 0)
-            self.windowContainer.Position = UDim2.new(0, 120, 0, 0)
+            self.mainFrame.Size = UDim2.new(0, 550, 0, 350)
+            self.mainFrame.Position = UDim2.new(0.5, -275, 0.5, -175)
+            self.tabContainer.Size = UDim2.new(0, 130, 1, 0)
+            self.windowContainer.Size = UDim2.new(1, -130, 1, 0)
+            self.windowContainer.Position = UDim2.new(0, 130, 0, 0)
         end
     end
     
@@ -269,44 +328,44 @@ function NexusUI:handleResponsiveDesign()
     self.connections.screenSizeChanged = workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(updateSize)
 end
 
-function NexusUI:toggleMinimize()
+function OneX:toggleMinimize()
     self.minimized = not self.minimized
     
     if self.minimized then
-        tween(self.mainFrame, {Size = UDim2.new(0, 500, 0, 36)})
-        self.contentFrame.Visible = false
+        tween(self.mainFrame, {Size = UDim2.new(0, 550, 0, 36)}, 0.5, Enum.EasingStyle.Quint)
+        task.delay(0.2, function()
+            self.contentFrame.Visible = false
+        end)
     else
-        tween(self.mainFrame, {Size = UDim2.new(0, 500, 0, 350)})
         self.contentFrame.Visible = true
+        tween(self.mainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.5, Enum.EasingStyle.Quint)
     end
 end
 
-function NexusUI:addTab(name, icon)
+function OneX:addTab(name, imageIdOrEmoji)
     local tabButton = createInstance("TextButton", {
         Name = name .. "Tab",
-        Size = UDim2.new(1, 0, 0, 32),
+        Size = UDim2.new(1, 0, 0, 36),
         BackgroundColor3 = COLORS.BACKGROUND_LIGHT,
+        BackgroundTransparency = 0.8,
         BorderSizePixel = 0,
-        Text = name,
+        Text = imageIdOrEmoji and "   " .. name or name,
         TextColor3 = COLORS.TEXT_SECONDARY,
         TextSize = DEFAULT_TEXT_SIZE,
         Font = DEFAULT_FONT,
+        TextXAlignment = Enum.TextXAlignment.Left,
         Parent = self.tabScrollFrame
     })
     createCorner(tabButton, UDim.new(0, 4))
     
-    if icon then
-        local iconImage = createInstance("ImageLabel", {
-            Name = "Icon",
-            Size = UDim2.new(0, 16, 0, 16),
-            Position = UDim2.new(0, 8, 0.5, -8),
-            BackgroundTransparency = 1,
-            Image = icon,
-            Parent = tabButton
-        })
-        
-        tabButton.Text = "    " .. name
-        tabButton.TextXAlignment = Enum.TextXAlignment.Left
+    if imageIdOrEmoji then
+        local icon = createImageOrEmoji(
+            tabButton, 
+            imageIdOrEmoji, 
+            UDim2.fromOffset(18, 18), 
+            UDim2.new(0, 8, 0.5, -9),
+            COLORS.TEXT_SECONDARY
+        )
     end
     
     local window = createInstance("ScrollingFrame", {
@@ -320,7 +379,7 @@ function NexusUI:addTab(name, icon)
         Visible = false,
         Parent = self.windowContainer
     })
-    createPadding(window)
+    createPadding(window, UDim.new(0, 10))
     
     local listLayout = createInstance("UIListLayout", {
         Padding = UDim.new(0, 8),
@@ -349,31 +408,51 @@ function NexusUI:addTab(name, icon)
     return self.windows[name]
 end
 
-function NexusUI:selectTab(name)
+function OneX:selectTab(name)
     if not self.windows[name] then return end
     
     for tabName, window in pairs(self.windows) do
         window.frame.Visible = false
-        window.button.BackgroundColor3 = COLORS.BACKGROUND_LIGHT
-        window.button.TextColor3 = COLORS.TEXT_SECONDARY
+        
+        tween(window.button, {
+            BackgroundColor3 = COLORS.BACKGROUND_LIGHT,
+            BackgroundTransparency = 0.8,
+            TextColor3 = COLORS.TEXT_SECONDARY
+        })
+        
+        if window.button:FindFirstChild("Icon") then
+            tween(window.button.Icon, {ImageColor3 = COLORS.TEXT_SECONDARY})
+        elseif window.button:FindFirstChild("Emoji") then
+            tween(window.button.Emoji, {TextColor3 = COLORS.TEXT_SECONDARY})
+        end
     end
     
     self.windows[name].frame.Visible = true
-    self.windows[name].button.BackgroundColor3 = COLORS.ACCENT
-    self.windows[name].button.TextColor3 = COLORS.TEXT_PRIMARY
+    
+    tween(self.windows[name].button, {
+        BackgroundColor3 = COLORS.ACCENT,
+        BackgroundTransparency = 0.7,
+        TextColor3 = COLORS.TEXT_PRIMARY
+    })
+    
+    if self.windows[name].button:FindFirstChild("Icon") then
+        tween(self.windows[name].button.Icon, {ImageColor3 = COLORS.TEXT_PRIMARY})
+    elseif self.windows[name].button:FindFirstChild("Emoji") then
+        tween(self.windows[name].button.Emoji, {TextColor3 = COLORS.TEXT_PRIMARY})
+    end
     
     self.currentWindow = name
 end
 
-function NexusUI:addLabel(tabName, text)
+function OneX:addOneLabel(tabName, text, textColor)
     if not self.windows[tabName] then return end
     
     local label = createInstance("TextLabel", {
-        Name = "Label",
+        Name = "OneLabel",
         Size = UDim2.new(1, 0, 0, 30),
         BackgroundTransparency = 1,
         Text = text,
-        TextColor3 = COLORS.TEXT_PRIMARY,
+        TextColor3 = textColor or COLORS.TEXT_PRIMARY,
         TextSize = DEFAULT_TEXT_SIZE,
         Font = DEFAULT_FONT,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -384,11 +463,11 @@ function NexusUI:addLabel(tabName, text)
     return label
 end
 
-function NexusUI:addButton(tabName, text, callback)
+function OneX:addOneButton(tabName, text, callback, buttonColor, imageIdOrEmoji)
     if not self.windows[tabName] then return end
     
     local buttonContainer = createInstance("Frame", {
-        Name = "ButtonContainer",
+        Name = "OneButtonContainer",
         Size = UDim2.new(1, 0, 0, 36),
         BackgroundTransparency = 1,
         Parent = self.windows[tabName].frame
@@ -397,29 +476,48 @@ function NexusUI:addButton(tabName, text, callback)
     local button = createInstance("TextButton", {
         Name = "Button",
         Size = UDim2.new(1, 0, 1, 0),
-        BackgroundColor3 = COLORS.BACKGROUND_LIGHT,
-        Text = text,
+        BackgroundColor3 = buttonColor or COLORS.BACKGROUND_LIGHT,
+        Text = imageIdOrEmoji and "   " .. text or text,
         TextColor3 = COLORS.TEXT_PRIMARY,
         TextSize = DEFAULT_TEXT_SIZE,
         Font = DEFAULT_FONT,
+        TextXAlignment = imageIdOrEmoji and Enum.TextXAlignment.Left or Enum.TextXAlignment.Center,
         Parent = buttonContainer
     })
     createCorner(button)
     
+    if imageIdOrEmoji then
+        local icon = createImageOrEmoji(
+            button, 
+            imageIdOrEmoji, 
+            UDim2.fromOffset(20, 20), 
+            UDim2.new(0, 10, 0.5, -10)
+        )
+    end
+    
+    local buttonGradient = createGradient(button, ColorSequence.new({
+        ColorSequenceKeypoint.new(0, (buttonColor or COLORS.BACKGROUND_LIGHT)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(
+            math.clamp((buttonColor or COLORS.BACKGROUND_LIGHT).R * 255 + 15, 0, 255) / 255,
+            math.clamp((buttonColor or COLORS.BACKGROUND_LIGHT).G * 255 + 15, 0, 255) / 255,
+            math.clamp((buttonColor or COLORS.BACKGROUND_LIGHT).B * 255 + 15, 0, 255) / 255
+        ))
+    }), 90)
+    
     button.MouseEnter:Connect(function()
-        tween(button, {BackgroundColor3 = COLORS.ACCENT})
+        tween(button, {BackgroundColor3 = buttonColor == COLORS.ACCENT and COLORS.ACCENT_LIGHT or COLORS.ACCENT})
     end)
     
     button.MouseLeave:Connect(function()
-        tween(button, {BackgroundColor3 = COLORS.BACKGROUND_LIGHT})
+        tween(button, {BackgroundColor3 = buttonColor or COLORS.BACKGROUND_LIGHT})
     end)
     
     button.MouseButton1Down:Connect(function()
-        tween(button, {BackgroundColor3 = COLORS.ACCENT_DARK})
+        tween(button, {BackgroundColor3 = buttonColor == COLORS.ACCENT and COLORS.ACCENT_DARK or COLORS.ACCENT_DARK})
     end)
     
     button.MouseButton1Up:Connect(function()
-        tween(button, {BackgroundColor3 = COLORS.ACCENT})
+        tween(button, {BackgroundColor3 = buttonColor == COLORS.ACCENT and COLORS.ACCENT_LIGHT or COLORS.ACCENT})
     end)
     
     button.MouseButton1Click:Connect(function()
@@ -430,11 +528,11 @@ function NexusUI:addButton(tabName, text, callback)
     return button
 end
 
-function NexusUI:addToggle(tabName, text, default, callback)
+function OneX:addOneToggle(tabName, text, default, callback, imageIdOrEmoji)
     if not self.windows[tabName] then return end
     
     local toggleContainer = createInstance("Frame", {
-        Name = "ToggleContainer",
+        Name = "OneToggleContainer",
         Size = UDim2.new(1, 0, 0, 36),
         BackgroundTransparency = 1,
         Parent = self.windows[tabName].frame
@@ -443,7 +541,7 @@ function NexusUI:addToggle(tabName, text, default, callback)
     local label = createInstance("TextLabel", {
         Name = "Label",
         Size = UDim2.new(1, -56, 1, 0),
-        Position = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0, imageIdOrEmoji and 30 or 0, 0, 0),
         BackgroundTransparency = 1,
         Text = text,
         TextColor3 = COLORS.TEXT_PRIMARY,
@@ -452,6 +550,15 @@ function NexusUI:addToggle(tabName, text, default, callback)
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = toggleContainer
     })
+    
+    if imageIdOrEmoji then
+        local icon = createImageOrEmoji(
+            toggleContainer, 
+            imageIdOrEmoji, 
+            UDim2.fromOffset(20, 20), 
+            UDim2.new(0, 0, 0.5, -10)
+        )
+    end
     
     local toggleBackground = createInstance("Frame", {
         Name = "Background",
@@ -512,7 +619,7 @@ function NexusUI:addToggle(tabName, text, default, callback)
     }
 end
 
-function NexusUI:addSlider(tabName, text, min, max, default, callback)
+function OneX:addOneSlider(tabName, text, min, max, default, callback, imageIdOrEmoji)
     if not self.windows[tabName] then return end
     
     min = min or 0
@@ -520,23 +627,39 @@ function NexusUI:addSlider(tabName, text, min, max, default, callback)
     default = default or min
     
     local sliderContainer = createInstance("Frame", {
-        Name = "SliderContainer",
+        Name = "OneSliderContainer",
         Size = UDim2.new(1, 0, 0, 50),
         BackgroundTransparency = 1,
         Parent = self.windows[tabName].frame
     })
     
+    local labelContainer = createInstance("Frame", {
+        Name = "LabelContainer",
+        Size = UDim2.new(1, 0, 0, 20),
+        BackgroundTransparency = 1,
+        Parent = sliderContainer
+    })
+    
+    if imageIdOrEmoji then
+        local icon = createImageOrEmoji(
+            labelContainer, 
+            imageIdOrEmoji, 
+            UDim2.fromOffset(16, 16), 
+            UDim2.new(0, 0, 0.5, -8)
+        )
+    end
+    
     local label = createInstance("TextLabel", {
         Name = "Label",
-        Size = UDim2.new(1, 0, 0, 20),
-        Position = UDim2.new(0, 0, 0, 0),
+        Size = UDim2.new(1, -60, 1, 0),
+        Position = UDim2.new(0, imageIdOrEmoji and 24 or 0, 0, 0),
         BackgroundTransparency = 1,
         Text = text,
         TextColor3 = COLORS.TEXT_PRIMARY,
         TextSize = DEFAULT_TEXT_SIZE,
         Font = DEFAULT_FONT,
         TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = sliderContainer
+        Parent = labelContainer
     })
     
     local valueLabel = createInstance("TextLabel", {
@@ -549,7 +672,7 @@ function NexusUI:addSlider(tabName, text, min, max, default, callback)
         TextSize = DEFAULT_TEXT_SIZE,
         Font = DEFAULT_FONT,
         TextXAlignment = Enum.TextXAlignment.Right,
-        Parent = sliderContainer
+        Parent = labelContainer
     })
     
     local sliderBackground = createInstance("Frame", {
@@ -590,6 +713,7 @@ function NexusUI:addSlider(tabName, text, min, max, default, callback)
         
         sliderFill.Size = UDim2.new(0, buttonPosition, 1, 0)
         sliderButton.Position = UDim2.new(0, buttonPosition - 8, 0.5, -8)
+        valueLabel.Text = tostring(math.floor(value * 100) /  buttonPosition - 8, 0.5, -8)
         valueLabel.Text = tostring(math.floor(value * 100) / 100)
         
         if callback then callback(value) end
@@ -643,11 +767,11 @@ function NexusUI:addSlider(tabName, text, min, max, default, callback)
     }
 end
 
-function NexusUI:addTextbox(tabName, placeholder, callback)
+function OneX:addOneTextbox(tabName, placeholder, callback, imageIdOrEmoji)
     if not self.windows[tabName] then return end
     
     local textboxContainer = createInstance("Frame", {
-        Name = "TextboxContainer",
+        Name = "OneTextboxContainer",
         Size = UDim2.new(1, 0, 0, 36),
         BackgroundTransparency = 1,
         Parent = self.windows[tabName].frame
@@ -655,7 +779,8 @@ function NexusUI:addTextbox(tabName, placeholder, callback)
     
     local textbox = createInstance("TextBox", {
         Name = "Textbox",
-        Size = UDim2.new(1, 0, 1, 0),
+        Size = UDim2.new(1, imageIdOrEmoji and -30 or 0, 1, 0),
+        Position = UDim2.new(0, imageIdOrEmoji and 30 or 0, 0, 0),
         BackgroundColor3 = COLORS.BACKGROUND_LIGHT,
         PlaceholderText = placeholder or "Enter text...",
         PlaceholderColor3 = COLORS.TEXT_SECONDARY,
@@ -669,6 +794,15 @@ function NexusUI:addTextbox(tabName, placeholder, callback)
     createCorner(textbox)
     createPadding(textbox, UDim.new(0, 8))
     
+    if imageIdOrEmoji then
+        local icon = createImageOrEmoji(
+            textboxContainer, 
+            imageIdOrEmoji, 
+            UDim2.fromOffset(20, 20), 
+            UDim2.new(0, 0, 0.5, -10)
+        )
+    end
+    
     textbox.FocusLost:Connect(function(enterPressed)
         if callback then callback(textbox.Text, enterPressed) end
     end)
@@ -681,14 +815,14 @@ function NexusUI:addTextbox(tabName, placeholder, callback)
     }
 end
 
-function NexusUI:addDropdown(tabName, text, options, callback)
+function OneX:addOneDropdown(tabName, text, options, callback, imageIdOrEmoji)
     if not self.windows[tabName] then return end
     
     options = options or {}
     local selected = options[1] or ""
     
     local dropdownContainer = createInstance("Frame", {
-        Name = "DropdownContainer",
+        Name = "OneDropdownContainer",
         Size = UDim2.new(1, 0, 0, 36),
         BackgroundTransparency = 1,
         Parent = self.windows[tabName].frame
@@ -697,7 +831,7 @@ function NexusUI:addDropdown(tabName, text, options, callback)
     local label = createInstance("TextLabel", {
         Name = "Label",
         Size = UDim2.new(0.5, -5, 1, 0),
-        Position = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0, imageIdOrEmoji and 30 or 0, 0, 0),
         BackgroundTransparency = 1,
         Text = text,
         TextColor3 = COLORS.TEXT_PRIMARY,
@@ -706,6 +840,15 @@ function NexusUI:addDropdown(tabName, text, options, callback)
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = dropdownContainer
     })
+    
+    if imageIdOrEmoji then
+        local icon = createImageOrEmoji(
+            dropdownContainer, 
+            imageIdOrEmoji, 
+            UDim2.fromOffset(20, 20), 
+            UDim2.new(0, 0, 0.5, -10)
+        )
+    end
     
     local dropdown = createInstance("TextButton", {
         Name = "Dropdown",
@@ -774,6 +917,7 @@ function NexusUI:addDropdown(tabName, text, options, callback)
             selected = option
             dropdown.Text = selected
             optionsFrame.Visible = false
+            arrow.Text = "▼"
             if callback then callback(selected) end
         end)
     end
@@ -820,11 +964,11 @@ function NexusUI:addDropdown(tabName, text, options, callback)
     }
 end
 
-function NexusUI:addSeparator(tabName, text)
+function OneX:addOneSeparator(tabName, text)
     if not self.windows[tabName] then return end
     
     local separatorContainer = createInstance("Frame", {
-        Name = "SeparatorContainer",
+        Name = "OneSeparatorContainer",
         Size = UDim2.new(1, 0, 0, 20),
         BackgroundTransparency = 1,
         Parent = self.windows[tabName].frame
@@ -834,7 +978,8 @@ function NexusUI:addSeparator(tabName, text)
         Name = "Line1",
         Size = UDim2.new(0.5, -10, 0, 1),
         Position = UDim2.new(0, 0, 0.5, 0),
-        BackgroundColor3 = COLORS.BACKGROUND_LIGHT,
+        BackgroundColor3 = COLORS.ACCENT,
+        BackgroundTransparency = 0.7,
         BorderSizePixel = 0,
         Parent = separatorContainer
     })
@@ -843,7 +988,8 @@ function NexusUI:addSeparator(tabName, text)
         Name = "Line2",
         Size = UDim2.new(0.5, -10, 0, 1),
         Position = UDim2.new(0.5, 10, 0.5, 0),
-        BackgroundColor3 = COLORS.BACKGROUND_LIGHT,
+        BackgroundColor3 = COLORS.ACCENT,
+        BackgroundTransparency = 0.7,
         BorderSizePixel = 0,
         Parent = separatorContainer
     })
@@ -855,7 +1001,7 @@ function NexusUI:addSeparator(tabName, text)
             Position = UDim2.new(0.5, 0, 0, 0),
             BackgroundTransparency = 1,
             Text = text,
-            TextColor3 = COLORS.TEXT_SECONDARY,
+            TextColor3 = COLORS.ACCENT,
             TextSize = 12,
             Font = DEFAULT_FONT,
             AutomaticSize = Enum.AutomaticSize.X,
@@ -867,19 +1013,30 @@ function NexusUI:addSeparator(tabName, text)
     return separatorContainer
 end
 
-function NexusUI:addSection(tabName, text)
+function OneX:addOneSection(tabName, text, imageIdOrEmoji)
     if not self.windows[tabName] then return end
     
     local sectionContainer = createInstance("Frame", {
-        Name = "SectionContainer",
+        Name = "OneSectionContainer",
         Size = UDim2.new(1, 0, 0, 30),
         BackgroundTransparency = 1,
         Parent = self.windows[tabName].frame
     })
     
+    if imageIdOrEmoji then
+        local icon = createImageOrEmoji(
+            sectionContainer, 
+            imageIdOrEmoji, 
+            UDim2.fromOffset(20, 20), 
+            UDim2.new(0, 0, 0.5, -10),
+            COLORS.ACCENT
+        )
+    end
+    
     local label = createInstance("TextLabel", {
         Name = "Label",
-        Size = UDim2.new(1, 0, 1, 0),
+        Size = UDim2.new(1, imageIdOrEmoji and -25 or 0, 1, 0),
+        Position = UDim2.new(0, imageIdOrEmoji and 25 or 0, 0, 0),
         BackgroundTransparency = 1,
         Text = text,
         TextColor3 = COLORS.ACCENT,
@@ -894,6 +1051,7 @@ function NexusUI:addSection(tabName, text)
         Size = UDim2.new(1, 0, 0, 1),
         Position = UDim2.new(0, 0, 1, -1),
         BackgroundColor3 = COLORS.ACCENT,
+        BackgroundTransparency = 0.7,
         BorderSizePixel = 0,
         Parent = sectionContainer
     })
@@ -902,11 +1060,11 @@ function NexusUI:addSection(tabName, text)
     return sectionContainer
 end
 
-function NexusUI:addInfo(tabName, text, color)
+function OneX:addOneInfo(tabName, text, color, imageIdOrEmoji)
     if not self.windows[tabName] then return end
     
     local infoContainer = createInstance("Frame", {
-        Name = "InfoContainer",
+        Name = "OneInfoContainer",
         Size = UDim2.new(1, 0, 0, 0),
         AutomaticSize = Enum.AutomaticSize.Y,
         BackgroundColor3 = COLORS.BACKGROUND_LIGHT,
@@ -914,9 +1072,20 @@ function NexusUI:addInfo(tabName, text, color)
     })
     createCorner(infoContainer)
     
+    if imageIdOrEmoji then
+        local icon = createImageOrEmoji(
+            infoContainer, 
+            imageIdOrEmoji, 
+            UDim2.fromOffset(20, 20), 
+            UDim2.new(0, 10, 0, 10),
+            color or COLORS.TEXT_SECONDARY
+        )
+    end
+    
     local infoText = createInstance("TextLabel", {
         Name = "InfoText",
-        Size = UDim2.new(1, 0, 0, 0),
+        Size = UDim2.new(1, imageIdOrEmoji and -40 or 0, 0, 0),
+        Position = UDim2.new(0, imageIdOrEmoji and 40 or 0, 0, 0),
         BackgroundTransparency = 1,
         Text = text,
         TextColor3 = color or COLORS.TEXT_SECONDARY,
@@ -932,11 +1101,11 @@ function NexusUI:addInfo(tabName, text, color)
     return infoContainer
 end
 
-function NexusUI:addSocialLink(tabName, platform, url, icon)
+function OneX:addOneSocialLink(tabName, platform, url, imageIdOrEmoji)
     if not self.windows[tabName] then return end
     
     local linkContainer = createInstance("Frame", {
-        Name = "SocialLinkContainer",
+        Name = "OneSocialLinkContainer",
         Size = UDim2.new(1, 0, 0, 36),
         BackgroundTransparency = 1,
         Parent = self.windows[tabName].frame
@@ -946,26 +1115,22 @@ function NexusUI:addSocialLink(tabName, platform, url, icon)
         Name = "LinkButton",
         Size = UDim2.new(1, 0, 1, 0),
         BackgroundColor3 = COLORS.BACKGROUND_LIGHT,
-        Text = platform,
+        Text = imageIdOrEmoji and "   " .. platform or platform,
         TextColor3 = COLORS.TEXT_PRIMARY,
         TextSize = DEFAULT_TEXT_SIZE,
         Font = DEFAULT_FONT,
+        TextXAlignment = imageIdOrEmoji and Enum.TextXAlignment.Left or Enum.TextXAlignment.Center,
         Parent = linkContainer
     })
     createCorner(linkButton)
     
-    if icon then
-        local iconImage = createInstance("ImageLabel", {
-            Name = "Icon",
-            Size = UDim2.new(0, 20, 0, 20),
-            Position = UDim2.new(0, 8, 0.5, -10),
-            BackgroundTransparency = 1,
-            Image = icon,
-            Parent = linkButton
-        })
-        
-        linkButton.Text = "    " .. platform
-        linkButton.TextXAlignment = Enum.TextXAlignment.Left
+    if imageIdOrEmoji then
+        local icon = createImageOrEmoji(
+            linkButton, 
+            imageIdOrEmoji, 
+            UDim2.fromOffset(20, 20), 
+            UDim2.new(0, 10, 0.5, -10)
+        )
     end
     
     linkButton.MouseButton1Click:Connect(function()
@@ -980,7 +1145,367 @@ function NexusUI:addSocialLink(tabName, platform, url, icon)
     return linkButton
 end
 
-function NexusUI:notify(title, message, duration)
+function OneX:addOneColorPicker(tabName, text, defaultColor, callback, imageIdOrEmoji)
+    if not self.windows[tabName] then return end
+    
+    defaultColor = defaultColor or Color3.fromRGB(255, 255, 255)
+    
+    local colorPickerContainer = createInstance("Frame", {
+        Name = "OneColorPickerContainer",
+        Size = UDim2.new(1, 0, 0, 36),
+        BackgroundTransparency = 1,
+        Parent = self.windows[tabName].frame
+    })
+    
+    local label = createInstance("TextLabel", {
+        Name = "Label",
+        Size = UDim2.new(1, -56, 1, 0),
+        Position = UDim2.new(0, imageIdOrEmoji and 30 or 0, 0, 0),
+        BackgroundTransparency = 1,
+        Text = text,
+        TextColor3 = COLORS.TEXT_PRIMARY,
+        TextSize = DEFAULT_TEXT_SIZE,
+        Font = DEFAULT_FONT,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = colorPickerContainer
+    })
+    
+    if imageIdOrEmoji then
+        local icon = createImageOrEmoji(
+            colorPickerContainer, 
+            imageIdOrEmoji, 
+            UDim2.fromOffset(20, 20), 
+            UDim2.new(0, 0, 0.5, -10)
+        )
+    end
+    
+    local colorDisplay = createInstance("Frame", {
+        Name = "ColorDisplay",
+        Size = UDim2.new(0, 36, 0, 26),
+        Position = UDim2.new(1, -36, 0.5, -13),
+        BackgroundColor3 = defaultColor,
+        Parent = colorPickerContainer
+    })
+    createCorner(colorDisplay, UDim.new(0, 4))
+    
+    local colorPicker = createInstance("Frame", {
+        Name = "ColorPicker",
+        Size = UDim2.new(0, 200, 0, 200),
+        Position = UDim2.new(1, -200, 1, 10),
+        BackgroundColor3 = COLORS.BACKGROUND_DARK,
+        Visible = false,
+        ZIndex = 100,
+        Parent = colorPickerContainer
+    })
+    createCorner(colorPicker)
+    createStroke(colorPicker, COLORS.ACCENT, 1)
+    
+    local hueFrame = createInstance("Frame", {
+        Name = "HueFrame",
+        Size = UDim2.new(0, 20, 1, -20),
+        Position = UDim2.new(1, -30, 0, 10),
+        BackgroundColor3 = Color3.fromRGB(255, 0, 0),
+        ZIndex = 101,
+        Parent = colorPicker
+    })
+    createCorner(hueFrame)
+    
+    local hueGradient = createInstance("UIGradient", {
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+            ColorSequenceKeypoint.new(0.167, Color3.fromRGB(255, 255, 0)),
+            ColorSequenceKeypoint.new(0.333, Color3.fromRGB(0, 255, 0)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 255)),
+            ColorSequenceKeypoint.new(0.667, Color3.fromRGB(0, 0, 255)),
+            ColorSequenceKeypoint.new(0.833, Color3.fromRGB(255, 0, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
+        }),
+        Rotation = 90,
+        Parent = hueFrame
+    })
+    
+    local hueSelector = createInstance("Frame", {
+        Name = "HueSelector",
+        Size = UDim2.new(1, 4, 0, 3),
+        Position = UDim2.new(0, -2, 0, 0),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        ZIndex = 102,
+        Parent = hueFrame
+    })
+    createCorner(hueSelector, UDim.new(0, 2))
+    
+    local satValFrame = createInstance("Frame", {
+        Name = "SatValFrame",
+        Size = UDim2.new(1, -60, 1, -20),
+        Position = UDim2.new(0, 10, 0, 10),
+        BackgroundColor3 = Color3.fromRGB(255, 0, 0),
+        ZIndex = 101,
+        Parent = colorPicker
+    })
+    createCorner(satValFrame)
+    
+    local satGradient = createInstance("UIGradient", {
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
+        }),
+        Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 0),
+            NumberSequenceKeypoint.new(1, 0)
+        }),
+        Rotation = 0,
+        Parent = satValFrame
+    })
+    
+    local valGradient = createInstance("Frame", {
+        Name = "ValGradient",
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+        BackgroundTransparency = 0,
+        ZIndex = 102,
+        Parent = satValFrame
+    })
+    createCorner(valGradient)
+    
+    local valGradientTransparency = createInstance("UIGradient", {
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))
+        }),
+        Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 1),
+            NumberSequenceKeypoint.new(1, 0)
+        }),
+        Rotation = 90,
+        Parent = valGradient
+    })
+    
+    local satValSelector = createInstance("Frame", {
+        Name = "SatValSelector",
+        Size = UDim2.new(0, 6, 0, 6),
+        Position = UDim2.new(1, 0, 0, 0),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        ZIndex = 103,
+        Parent = satValFrame
+    })
+    createCorner(satValSelector, UDim.new(1, 0))
+    createStroke(satValSelector, Color3.fromRGB(0, 0, 0), 1)
+    
+    local rgbDisplay = createInstance("TextLabel", {
+        Name = "RGBDisplay",
+        Size = UDim2.new(1, 0, 0, 20),
+        Position = UDim2.new(0, 0, 1, -20),
+        BackgroundTransparency = 1,
+        Text = string.format("RGB: %d, %d, %d", 
+            math.floor(defaultColor.R * 255), 
+            math.floor(defaultColor.G * 255), 
+            math.floor(defaultColor.B * 255)),
+        TextColor3 = COLORS.TEXT_PRIMARY,
+        TextSize = 12,
+        Font = DEFAULT_FONT,
+        ZIndex = 101,
+        Parent = colorPicker
+    })
+    
+    local currentColor = defaultColor
+    local hue, sat, val = 0, 0, 1
+    
+    local function updateColor()
+        local color = Color3.fromHSV(hue, sat, val)
+        currentColor = color
+        colorDisplay.BackgroundColor3 = color
+        satValFrame.BackgroundColor3 = Color3.fromHSV(hue, 1, 1)
+        rgbDisplay.Text = string.format("RGB: %d, %d, %d", 
+            math.floor(color.R * 255), 
+            math.floor(color.G * 255), 
+            math.floor(color.B * 255))
+        
+        if callback then callback(color) end
+    end
+    
+    local function updateHue(inputPosition)
+        local offset = math.clamp((inputPosition.Y - hueFrame.AbsolutePosition.Y) / hueFrame.AbsoluteSize.Y, 0, 1)
+        hue = 1 - offset
+        hueSelector.Position = UDim2.new(0, -2, offset, -1.5)
+        updateColor()
+    end
+    
+    local function updateSatVal(inputPosition)
+        local xOffset = math.clamp((inputPosition.X - satValFrame.AbsolutePosition.X) / satValFrame.AbsoluteSize.X, 0, 1)
+        local yOffset = math.clamp((inputPosition.Y - satValFrame.AbsolutePosition.Y) / satValFrame.AbsoluteSize.Y, 0, 1)
+        
+        sat = xOffset
+        val = 1 - yOffset
+        
+        satValSelector.Position = UDim2.new(xOffset, 0, yOffset, 0)
+        updateColor()
+    end
+    
+    local function initializeFromColor(color)
+        local h, s, v = Color3.toHSV(color)
+        hue, sat, val = h, s, v
+        
+        hueSelector.Position = UDim2.new(0, -2, 1 - h, -1.5)
+        satValSelector.Position = UDim2.new(s, 0, 1 - v, 0)
+        satValFrame.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
+        
+        updateColor()
+    end
+    
+    initializeFromColor(defaultColor)
+    
+    colorDisplay.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            colorPicker.Visible = not colorPicker.Visible
+        end
+    end)
+    
+    hueFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            updateHue(input.Position)
+        end
+    end)
+    
+    hueFrame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            if input.UserInputState == Enum.UserInputState.Begin or input.UserInputState == Enum.UserInputState.Change then
+                updateHue(input.Position)
+            end
+        end
+    end)
+    
+    satValFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            updateSatVal(input.Position)
+        end
+    end)
+    
+    satValFrame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            if input.UserInputState == Enum.UserInputState.Begin or input.UserInputState == Enum.UserInputState.Change then
+                updateSatVal(input.Position)
+            end
+        end
+    end)
+    
+    UserInputService.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            if colorPicker.Visible then
+                local position = input.Position
+                local pickerPosition = colorPicker.AbsolutePosition
+                local pickerSize = colorPicker.AbsoluteSize
+                
+                local inPicker = position.X >= pickerPosition.X and position.X <= pickerPosition.X + pickerSize.X and
+                               position.Y >= pickerPosition.Y and position.Y <= pickerPosition.Y + pickerSize.Y
+                
+                local inDisplay = position.X >= colorDisplay.AbsolutePosition.X and position.X <= colorDisplay.AbsolutePosition.X + colorDisplay.AbsoluteSize.X and
+                                position.Y >= colorDisplay.AbsolutePosition.Y and position.Y <= colorDisplay.AbsolutePosition.Y + colorDisplay.AbsoluteSize.Y
+                
+                if not inPicker and not inDisplay then
+                    colorPicker.Visible = false
+                end
+            end
+        end
+    end)
+    
+    table.insert(self.windows[tabName].elements, colorPickerContainer)
+    
+    return {
+        getValue = function() return currentColor end,
+        setValue = function(color) 
+            initializeFromColor(color)
+        end
+    }
+end
+
+function OneX:addOneKeybind(tabName, text, defaultKey, callback, imageIdOrEmoji)
+    if not self.windows[tabName] then return end
+    
+    local keybindContainer = createInstance("Frame", {
+        Name = "OneKeybindContainer",
+        Size = UDim2.new(1, 0, 0, 36),
+        BackgroundTransparency = 1,
+        Parent = self.windows[tabName].frame
+    })
+    
+    local label = createInstance("TextLabel", {
+        Name = "Label",
+        Size = UDim2.new(1, -80, 1, 0),
+        Position = UDim2.new(0, imageIdOrEmoji and 30 or 0, 0, 0),
+        BackgroundTransparency = 1,
+        Text = text,
+        TextColor3 = COLORS.TEXT_PRIMARY,
+        TextSize = DEFAULT_TEXT_SIZE,
+        Font = DEFAULT_FONT,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = keybindContainer
+    })
+    
+    if imageIdOrEmoji then
+        local icon = createImageOrEmoji(
+            keybindContainer, 
+            imageIdOrEmoji, 
+            UDim2.fromOffset(20, 20), 
+            UDim2.new(0, 0, 0.5, -10)
+        )
+    end
+    
+    local keybindButton = createInstance("TextButton", {
+        Name = "KeybindButton",
+        Size = UDim2.new(0, 70, 0, 30),
+        Position = UDim2.new(1, -70, 0.5, -15),
+        BackgroundColor3 = COLORS.BACKGROUND_LIGHT,
+        Text = defaultKey and defaultKey.Name or "None",
+        TextColor3 = COLORS.TEXT_PRIMARY,
+        TextSize = DEFAULT_TEXT_SIZE,
+        Font = DEFAULT_FONT,
+        Parent = keybindContainer
+    })
+    createCorner(keybindButton, UDim.new(0, 4))
+    
+    local currentKey = defaultKey
+    local listening = false
+    
+    keybindButton.MouseButton1Click:Connect(function()
+        if listening then return end
+        
+        listening = true
+        keybindButton.Text = "..."
+        
+        local connection
+        connection = UserInputService.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.Keyboard then
+                currentKey = input.KeyCode
+                keybindButton.Text = currentKey.Name
+                listening = false
+                connection:Disconnect()
+                
+                if callback then callback(currentKey) end
+            end
+        end)
+    end)
+    
+    if defaultKey then
+        UserInputService.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == currentKey and not listening then
+                if callback then callback(currentKey) end
+            end
+        end)
+    end
+    
+    table.insert(self.windows[tabName].elements, keybindContainer)
+    
+    return {
+        getKey = function() return currentKey end,
+        setKey = function(key) 
+            currentKey = key
+            keybindButton.Text = key and key.Name or "None"
+        end
+    }
+end
+
+function OneX:notify(title, message, duration)
     duration = duration or 3
     
     local notificationContainer = createInstance("Frame", {
@@ -993,6 +1518,11 @@ function NexusUI:notify(title, message, duration)
     })
     createCorner(notificationContainer)
     createStroke(notificationContainer, COLORS.ACCENT, 1)
+    
+    local notificationGradient = createGradient(notificationContainer, ColorSequence.new({
+        ColorSequenceKeypoint.new(0, COLORS.BACKGROUND_DARK),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 35, 40))
+    }), 45)
     
     local notificationTitle = createInstance("TextLabel", {
         Name = "Title",
@@ -1032,7 +1562,7 @@ function NexusUI:notify(title, message, duration)
     return notificationContainer
 end
 
-function NexusUI:setupUtilities()
+function OneX:setupUtilities()
     local antiAFKConnection = nil
     
     local function setupAntiAFK()
@@ -1195,7 +1725,7 @@ function NexusUI:setupUtilities()
     end
 end
 
-function NexusUI:destroy()
+function OneX:destroy()
     for _, connection in pairs(self.connections) do
         if connection then
             connection:Disconnect()
@@ -1212,60 +1742,63 @@ function NexusUI:destroy()
     end
 end
 
-function NexusUI.createDefault()
-    local ui = NexusUI.new("Nexus UI")
+function OneX.createDefault()
+    local ui = OneX.new("OneX UI")
     
-    local mainTab = ui:addTab("Main")
-    local utilityTab = ui:addTab("Utility")
-    local settingsTab = ui:addTab("Settings")
-    local creditsTab = ui:addTab("Credits")
+    local mainTab = ui:addTab("Main", "🏠")
+    local utilityTab = ui:addTab("Utility", "🛠️")
+    local settingsTab = ui:addTab("Settings", "⚙️")
+    local creditsTab = ui:addTab("Credits", "ℹ️")
     
-    ui:addSection("mainTab", "Main Features")
-    ui:addInfo("mainTab", "Welcome to Nexus UI Library! This is a default UI template. Customize it to fit your needs.")
-    ui:addButton("mainTab", "Example Button", function()
+    ui:addOneSection("mainTab", "Main Features", "🚀")
+    ui:addOneInfo("mainTab", "Welcome to OneX UI Library! This is a default UI template. Customize it to fit your needs.", COLORS.ACCENT, "💡")
+    ui:addOneButton("mainTab", "Example Button", function()
         ui:notify("Button Clicked", "You clicked the example button!", 3)
-    end)
-    ui:addToggle("mainTab", "Example Toggle", false, function(value)
+    end, COLORS.ACCENT, "🔘")
+    ui:addOneToggle("mainTab", "Example Toggle", false, function(value)
         ui:notify("Toggle Changed", "Toggle is now " .. (value and "enabled" or "disabled"), 3)
-    end)
-    ui:addSlider("mainTab", "Example Slider", 0, 100, 50, function(value)
-    end)
+    end, "🔄")
+    ui:addOneSlider("mainTab", "Example Slider", 0, 100, 50, function(value)
+    end, "📊")
     
-    ui:addSection("utilityTab", "Game Utilities")
-    ui:addToggle("utilityTab", "Anti AFK", false, function(value)
+    ui:addOneSection("utilityTab", "Game Utilities", "🎮")
+    ui:addOneToggle("utilityTab", "Anti AFK", false, function(value)
         ui.toggleAntiAFK(value)
-    end)
-    ui:addToggle("utilityTab", "Auto Reconnect", false, function(value)
+    end, "⏰")
+    ui:addOneToggle("utilityTab", "Auto Reconnect", false, function(value)
         ui.toggleAutoReconnect(value)
-    end)
-    ui:addToggle("utilityTab", "Speed Hack", false, function(value)
+    end, "🔄")
+    ui:addOneToggle("utilityTab", "Speed Hack", false, function(value)
         ui.toggleSpeed(value)
-    end)
-    ui:addSlider("utilityTab", "Speed Multiplier", 1, 10, 2, function(value)
+    end, "⚡")
+    ui:addOneSlider("utilityTab", "Speed Multiplier", 1, 10, 2, function(value)
         ui.utilities.speedMultiplier = value
         if ui.utilities.speedEnabled then
             ui.toggleSpeed(true, value)
         end
-    end)
-    ui:addToggle("utilityTab", "Full Brightness", false, function(value)
+    end, "🏃")
+    ui:addOneToggle("utilityTab", "Full Brightness", false, function(value)
         ui.toggleFullBrightness(value)
-    end)
+    end, "💡")
     
-    ui:addSection("settingsTab", "UI Settings")
-    ui:addDropdown("settingsTab", "Theme", {"Dark", "Light"}, function(value)
+    ui:addOneSection("settingsTab", "UI Settings", "🎨")
+    ui:addOneDropdown("settingsTab", "Theme", {"Dark", "Light"}, function(value)
         ui:notify("Theme Changed", "Theme changed to " .. value, 3)
-    end)
-    ui:addButton("settingsTab", "Reset UI", function()
-        ui.mainFrame.Position = UDim2.new(0.5, -250, 0.5, -175)
-    end)
+    end, "🎭")
+    ui:addOneButton("settingsTab", "Reset UI", function()
+        ui.mainFrame.Position = UDim2.new(0.5, -275, 0.5, -175)
+    end, nil, "🔄")
+    ui:addOneColorPicker("settingsTab", "Accent Color", COLORS.ACCENT, function(color)
+        ui:notify("Color Changed", "Accent color has been updated", 2)
+    end, "🎨")
     
-    ui:addSection("creditsTab", "Credits")
-    ui:addInfo("creditsTab", "Nexus UI Library\nCreated for Roblox\n\nA comprehensive UI library for creating dynamic interfaces.")
-    ui:addSeparator("creditsTab", "Links")
-    ui:addSocialLink("creditsTab", "GitHub", "https://github.com")
-    ui:addSocialLink("creditsTab", "Discord", "https://discord.com")
+    ui:addOneSection("creditsTab", "Credits", "👑")
+    ui:addOneInfo("creditsTab", "OneX UI Library\nCreated for Roblox\n\nA comprehensive UI library for creating dynamic interfaces.", nil, "📚")
+    ui:addOneSeparator("creditsTab", "Links")
+    ui:addOneSocialLink("creditsTab", "GitHub", "https://github.com", "📂")
+    ui:addOneSocialLink("creditsTab", "Discord", "https://discord.com", "💬")
     
     return ui
 end
 
-return NexusUI
+return OneX
