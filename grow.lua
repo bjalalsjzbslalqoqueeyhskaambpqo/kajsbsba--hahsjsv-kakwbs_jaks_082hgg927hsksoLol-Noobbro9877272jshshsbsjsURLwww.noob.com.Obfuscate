@@ -3,7 +3,7 @@ local g=Instance.new("ScreenGui",p.PlayerGui)
 g.Name="AutoShopMenu"
 
 local m=Instance.new("Frame",g)
-m.Size=UDim2.new(0,220,0,220)
+m.Size=UDim2.new(0,240,0,320)
 m.Position=UDim2.new(0,10,0,10)
 m.BackgroundColor3=Color3.fromRGB(25,25,30)
 m.BorderSizePixel=0
@@ -42,18 +42,23 @@ local mbc=Instance.new("UICorner",mb)
 mbc.CornerRadius=UDim.new(0,4)
 
 local c=Instance.new("Frame",m)
-c.Size=UDim2.new(1,-10,1,-60)
+c.Size=UDim2.new(1,-10,1,-55)
 c.Position=UDim2.new(0,5,0,35)
 c.BackgroundTransparency=1
 c.ClipsDescendants=true
 
-local tb=Instance.new("TextButton",c)
-tb.Size=UDim2.new(0.48,0,0,35)
+local bg=Instance.new("Frame",c)
+bg.Size=UDim2.new(1,0,0,110)
+bg.Position=UDim2.new(0,0,0,0)
+bg.BackgroundTransparency=1
+
+local tb=Instance.new("TextButton",bg)
+tb.Size=UDim2.new(0.32,0,0,30)
 tb.Position=UDim2.new(0,0,0,5)
 tb.BackgroundColor3=Color3.fromRGB(0,120,50)
-tb.Text="Gears: ACTIVE"
+tb.Text="Gears: ON"
 tb.TextColor3=Color3.fromRGB(255,255,255)
-tb.TextSize=12
+tb.TextSize=10
 tb.Font=Enum.Font.GothamSemibold
 
 local tbc=Instance.new("UICorner",tb)
@@ -63,13 +68,13 @@ local tbs=Instance.new("UIStroke",tb)
 tbs.Color=Color3.fromRGB(0,150,70)
 tbs.Thickness=1
 
-local sb=Instance.new("TextButton",c)
-sb.Size=UDim2.new(0.48,0,0,35)
-sb.Position=UDim2.new(0.52,0,0,5)
+local sb=Instance.new("TextButton",bg)
+sb.Size=UDim2.new(0.32,0,0,30)
+sb.Position=UDim2.new(0.34,0,0,5)
 sb.BackgroundColor3=Color3.fromRGB(0,120,50)
-sb.Text="Seeds: ACTIVE"
+sb.Text="Seeds: ON"
 sb.TextColor3=Color3.fromRGB(255,255,255)
-sb.TextSize=12
+sb.TextSize=10
 sb.Font=Enum.Font.GothamSemibold
 
 local sbc=Instance.new("UICorner",sb)
@@ -79,18 +84,50 @@ local sbs=Instance.new("UIStroke",sb)
 sbs.Color=Color3.fromRGB(0,150,70)
 sbs.Thickness=1
 
-local el=Instance.new("TextLabel",c)
-el.Size=UDim2.new(1,0,0,20)
-el.Position=UDim2.new(0,5,0,50)
+local cb=Instance.new("TextButton",bg)
+cb.Size=UDim2.new(0.32,0,0,30)
+cb.Position=UDim2.new(0.68,0,0,5)
+cb.BackgroundColor3=Color3.fromRGB(50,50,60)
+cb.Text="Collect: OFF"
+cb.TextColor3=Color3.fromRGB(255,255,255)
+cb.TextSize=10
+cb.Font=Enum.Font.GothamSemibold
+
+local cbc=Instance.new("UICorner",cb)
+cbc.CornerRadius=UDim.new(0,6)
+
+local cbs=Instance.new("UIStroke",cb)
+cbs.Color=Color3.fromRGB(80,80,90)
+cbs.Thickness=1
+
+local ab=Instance.new("TextButton",bg)
+ab.Size=UDim2.new(1,0,0,30)
+ab.Position=UDim2.new(0,0,0,40)
+ab.BackgroundColor3=Color3.fromRGB(50,50,60)
+ab.Text="Auto Sell: OFF"
+ab.TextColor3=Color3.fromRGB(255,255,255)
+ab.TextSize=12
+ab.Font=Enum.Font.GothamSemibold
+
+local abc=Instance.new("UICorner",ab)
+abc.CornerRadius=UDim.new(0,6)
+
+local abs=Instance.new("UIStroke",ab)
+abs.Color=Color3.fromRGB(80,80,90)
+abs.Thickness=1
+
+local el=Instance.new("TextLabel",bg)
+el.Size=UDim2.new(1,0,0,18)
+el.Position=UDim2.new(0,0,0,77)
 el.BackgroundTransparency=1
 el.Text="Pet Eggs:"
 el.TextColor3=Color3.fromRGB(200,200,210)
-el.TextSize=12
+el.TextSize=11
 el.Font=Enum.Font.GothamSemibold
 
 local sf=Instance.new("ScrollingFrame",c)
-sf.Size=UDim2.new(1,-10,0,70)
-sf.Position=UDim2.new(0,5,0,75)
+sf.Size=UDim2.new(1,0,1,-130)
+sf.Position=UDim2.new(0,0,0,110)
 sf.BackgroundColor3=Color3.fromRGB(35,35,40)
 sf.BorderSizePixel=0
 sf.ScrollBarThickness=6
@@ -107,12 +144,12 @@ l.FillDirection=Enum.FillDirection.Vertical
 l.Padding=UDim.new(0,3)
 
 local cr=Instance.new("TextLabel",c)
-cr.Size=UDim2.new(1,0,0,18)
-cr.Position=UDim2.new(0,5,1,-15)
+cr.Size=UDim2.new(1,0,0,15)
+cr.Position=UDim2.new(0,0,1,-15)
 cr.BackgroundTransparency=1
 cr.Text="Credits: OneCreatorX"
 cr.TextColor3=Color3.fromRGB(150,150,160)
-cr.TextSize=10
+cr.TextSize=9
 cr.Font=Enum.Font.Gotham
 cr.TextXAlignment=Enum.TextXAlignment.Center
 
@@ -141,6 +178,8 @@ nt.TextWrapped=true
 
 local ea={}
 local mi=false
+local ac=false
+local as=false
 
 local function sn()
 n.Visible=true
@@ -151,13 +190,13 @@ end
 local function tm()
 mi=not mi
 if mi then
-m:TweenSize(UDim2.new(0,220,0,30),"Out","Quad",0.3)
+m:TweenSize(UDim2.new(0,240,0,30),"Out","Quad",0.3)
 mb.Text="+"
 task.wait(0.3)
 c.Visible=false
 else
 c.Visible=true
-m:TweenSize(UDim2.new(0,220,0,220),"Out","Quad",0.3)
+m:TweenSize(UDim2.new(0,240,0,320),"Out","Quad",0.3)
 mb.Text="-"
 end
 end
@@ -238,6 +277,49 @@ if v:IsA("Frame")and v:FindFirstChild("Frame")and v.Frame:FindFirstChild("Sheckl
 cb(v.Frame.Sheckles_Buy,v.Name)
 end
 end
+end)
+
+local plot=nil
+for _,f in pairs(workspace.Farm:GetChildren())do
+local d=f:FindFirstChild("Important")
+local o=d and d:FindFirstChild("Data") and d.Data:FindFirstChild("Owner")
+if o and o.Value==p.Name then plot=d break end
+end
+
+local function collect()
+while ac do
+for _,pl in pairs(plot.Plants_Physical:GetDescendants())do
+if pl:IsA("Model") and pl:FindFirstChild("Fruits")then
+for _,fr in pairs(pl.Fruits:GetChildren())do
+game.ReplicatedStorage:WaitForChild("ByteNetReliable"):FireServer(buffer.fromstring("\001\001\000\001"),{fr})
+end
+end
+end
+task.wait(1)
+end
+end
+
+local function autosell()
+while as do
+game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("Sell_Inventory"):FireServer()
+task.wait(2)
+end
+end
+
+cb.MouseButton1Click:Connect(function()
+ac=not ac
+cb.Text="Collect: "..(ac and "ON" or "OFF")
+cb.BackgroundColor3=ac and Color3.fromRGB(0,120,50)or Color3.fromRGB(50,50,60)
+cbs.Color=ac and Color3.fromRGB(0,150,70)or Color3.fromRGB(80,80,90)
+if ac then task.spawn(collect) end
+end)
+
+ab.MouseButton1Click:Connect(function()
+as=not as
+ab.Text="Auto Sell: "..(as and "ON" or "OFF")
+ab.BackgroundColor3=as and Color3.fromRGB(0,120,50)or Color3.fromRGB(50,50,60)
+abs.Color=as and Color3.fromRGB(0,150,70)or Color3.fromRGB(80,80,90)
+if as then task.spawn(autosell) end
 end)
 
 tb.MouseButton1Click:Connect(function()
