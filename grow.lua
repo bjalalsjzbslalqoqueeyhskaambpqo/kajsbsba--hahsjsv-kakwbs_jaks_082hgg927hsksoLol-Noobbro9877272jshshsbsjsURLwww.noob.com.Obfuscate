@@ -3,7 +3,7 @@ local g=Instance.new("ScreenGui",p.PlayerGui)
 g.Name="AutoShopMenu"
 
 local m=Instance.new("Frame",g)
-m.Size=UDim2.new(0,240,0,320)
+m.Size=UDim2.new(0,240,0,360)
 m.Position=UDim2.new(0,10,0,10)
 m.BackgroundColor3=Color3.fromRGB(25,25,30)
 m.BorderSizePixel=0
@@ -48,7 +48,7 @@ c.BackgroundTransparency=1
 c.ClipsDescendants=true
 
 local bg=Instance.new("Frame",c)
-bg.Size=UDim2.new(1,0,0,110)
+bg.Size=UDim2.new(1,0,0,150)
 bg.Position=UDim2.new(0,0,0,0)
 bg.BackgroundTransparency=1
 
@@ -116,9 +116,25 @@ local abs=Instance.new("UIStroke",ab)
 abs.Color=Color3.fromRGB(80,80,90)
 abs.Thickness=1
 
+local pb=Instance.new("TextButton",bg)
+pb.Size=UDim2.new(1,0,0,30)
+pb.Position=UDim2.new(0,0,0,75)
+pb.BackgroundColor3=Color3.fromRGB(50,50,60)
+pb.Text="Auto Plant: OFF"
+pb.TextColor3=Color3.fromRGB(255,255,255)
+pb.TextSize=12
+pb.Font=Enum.Font.GothamSemibold
+
+local pbc=Instance.new("UICorner",pb)
+pbc.CornerRadius=UDim.new(0,6)
+
+local pbs=Instance.new("UIStroke",pb)
+pbs.Color=Color3.fromRGB(80,80,90)
+pbs.Thickness=1
+
 local el=Instance.new("TextLabel",bg)
 el.Size=UDim2.new(1,0,0,18)
-el.Position=UDim2.new(0,0,0,77)
+el.Position=UDim2.new(0,0,0,112)
 el.BackgroundTransparency=1
 el.Text="Pet Eggs:"
 el.TextColor3=Color3.fromRGB(200,200,210)
@@ -126,8 +142,8 @@ el.TextSize=11
 el.Font=Enum.Font.GothamSemibold
 
 local sf=Instance.new("ScrollingFrame",c)
-sf.Size=UDim2.new(1,0,1,-130)
-sf.Position=UDim2.new(0,0,0,110)
+sf.Size=UDim2.new(1,0,1,-170)
+sf.Position=UDim2.new(0,0,0,150)
 sf.BackgroundColor3=Color3.fromRGB(35,35,40)
 sf.BorderSizePixel=0
 sf.ScrollBarThickness=6
@@ -180,6 +196,7 @@ local ea={}
 local mi=false
 local ac=false
 local as=false
+local ap=false
 
 local function sn()
 n.Visible=true
@@ -196,7 +213,7 @@ task.wait(0.3)
 c.Visible=false
 else
 c.Visible=true
-m:TweenSize(UDim2.new(0,240,0,320),"Out","Quad",0.3)
+m:TweenSize(UDim2.new(0,240,0,360),"Out","Quad",0.3)
 mb.Text="-"
 end
 end
@@ -306,6 +323,32 @@ task.wait(2)
 end
 end
 
+local function autoplant()
+local char=p.Character if not char then return end
+local tool=char:FindFirstChildOfClass("Tool") if not tool then return end
+local rawname=tool.Name
+local seedname=rawname:gsub(" Seed %[X%d+%]",""):gsub(" Seed","")
+
+for _,f in pairs(workspace.Farm:GetChildren())do
+local d=f:FindFirstChild("Important")
+local o=d and d:FindFirstChild("Data") and d.Data:FindFirstChild("Owner")
+if o and o.Value==p.Name then
+local plants=d:FindFirstChild("Plants_Physical")
+if plants then
+local plant=plants:FindFirstChild(seedname)
+if plant and plant.PrimaryPart then
+local pos=plant.PrimaryPart.Position
+while ap do
+local t=char:FindFirstChildOfClass("Tool")
+if not t then break end
+if not t.Name:find(seedname) then break end
+game.ReplicatedStorage.GameEvents.Plant_RE:FireServer(pos,seedname)
+task.wait(0.1)
+end
+end end break
+end end
+end
+
 cb.MouseButton1Click:Connect(function()
 ac=not ac
 cb.Text="Collect: "..(ac and "ON" or "OFF")
@@ -322,6 +365,13 @@ abs.Color=as and Color3.fromRGB(0,150,70)or Color3.fromRGB(80,80,90)
 if as then task.spawn(autosell) end
 end)
 
+pb.MouseButton1Click:Connect(function()
+ap=not ap
+pb.Text="Auto Plant: "..(ap and "ON" or "OFF")
+pb.BackgroundColor3=ap and Color3.fromRGB(0,120,50)or Color3.fromRGB(50,50,60)
+pbs.Color=ap and Color3.fromRGB(0,150,70)or Color3.fromRGB(80,80,90)
+end)
+
 tb.MouseButton1Click:Connect(function()
 task.spawn(sn)
 end)
@@ -334,6 +384,22 @@ mb.MouseButton1Click:Connect(tm)
 
 local e=require(game.ReplicatedStorage.Data.PetRegistry).PetEggs
 local r=game.ReplicatedStorage.GameEvents.BuyPetEgg
+
+p.CharacterAdded:Connect(function(char)
+char.ChildAdded:Connect(function(child)
+if child:IsA("Tool") and ap then
+task.spawn(autoplant)
+end
+end)
+end)
+
+if p.Character then
+p.Character.ChildAdded:Connect(function(child)
+if child:IsA("Tool") and ap then
+task.spawn(autoplant)
+end
+end)
+end
 
 for n in pairs(e)do
 local eb=Instance.new("TextButton",sf)
