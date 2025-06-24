@@ -226,6 +226,45 @@ local as=false
 local ap=false
 local selectedPlants={}
 local plantButtons={}
+local gearButtons={}
+local seedButtons={}
+local configFile="AutoShopConfig.json"
+
+local function saveConfig()
+local config={
+collect=ac,
+autoSell=as,
+autoPlant=ap,
+selectedPlants=selectedPlants,
+petEggs=ea,
+gears={},
+seeds={}
+}
+for name,state in pairs(gearButtons) do
+config.gears[name]=state
+end
+for name,state in pairs(seedButtons) do
+config.seeds[name]=state
+end
+writefile(configFile,game:GetService("HttpService"):JSONEncode(config))
+end
+
+local function loadConfig()
+if isfile(configFile) then
+local success,config=pcall(function()
+return game:GetService("HttpService"):JSONDecode(readfile(configFile))
+end)
+if success and config then
+ac=config.collect or false
+as=config.autoSell or false
+ap=config.autoPlant or false
+selectedPlants=config.selectedPlants or {}
+ea=config.petEggs or {}
+gearButtons=config.gears or {}
+seedButtons=config.seeds or {}
+end
+end
+end
 
 local function sn()
 n.Visible=true
@@ -273,20 +312,19 @@ for _,btn in pairs(plantButtons)do
 btn:Destroy()
 end
 plantButtons={}
-selectedPlants={}
 
 for _,name in pairs(plantNames)do
 local btn=Instance.new("TextButton",psf)
 btn.Size=UDim2.new(1,-4,0,16)
-btn.BackgroundColor3=Color3.fromRGB(50,50,60)
-btn.Text=name..": OFF"
+btn.BackgroundColor3=selectedPlants[name] and Color3.fromRGB(0,120,50) or Color3.fromRGB(50,50,60)
+btn.Text=name..": "..(selectedPlants[name] and "ON" or "OFF")
 btn.TextColor3=Color3.fromRGB(255,255,255)
 btn.TextSize=9
 btn.Font=Enum.Font.Gotham
 local btnc=Instance.new("UICorner",btn)
 btnc.CornerRadius=UDim.new(0,3)
 local btns=Instance.new("UIStroke",btn)
-btns.Color=Color3.fromRGB(80,80,90)
+btns.Color=selectedPlants[name] and Color3.fromRGB(0,150,70) or Color3.fromRGB(80,80,90)
 btns.Thickness=1
 plantButtons[name]=btn
 btn.MouseButton1Click:Connect(function()
@@ -300,6 +338,7 @@ btn.BackgroundColor3=Color3.fromRGB(50,50,60)
 btn.Text=name..": OFF"
 btns.Color=Color3.fromRGB(80,80,90)
 end
+saveConfig()
 end)
 end
 
@@ -320,13 +359,15 @@ if st then
 local b=Instance.new("TextButton")
 b.Size=UDim2.new(0,14,0,14)
 b.Position=UDim2.new(1,-16,0,2)
-b.BackgroundColor3=Color3.fromRGB(50,50,50)
+b.BackgroundColor3=gearButtons[i.Name] and Color3.fromRGB(0,200,0) or Color3.fromRGB(50,50,50)
 b.Text=""
 b.Parent=s
-local v=false
+local v=gearButtons[i.Name] or false
 b.MouseButton1Click:Connect(function()
 v=not v
+gearButtons[i.Name]=v
 b.BackgroundColor3=v and Color3.fromRGB(0,200,0)or Color3.fromRGB(50,50,50)
+saveConfig()
 end)
 task.spawn(function()
 while true do
@@ -342,7 +383,6 @@ task.spawn(function()
 local rs=game:GetService("ReplicatedStorage")
 local gui=p.PlayerGui.Seed_Shop.Frame.ScrollingFrame
 local r=rs.GameEvents.BuySeedStock
-local b={}
 local function cb(bt,n)
 local c=Instance.new("TextButton")
 c.Size=UDim2.new(0,20,0,20)
@@ -356,13 +396,13 @@ local mk=Instance.new("Frame",c)
 mk.Size=UDim2.new(1,-6,1,-6)
 mk.Position=UDim2.new(0,3,0,3)
 mk.BackgroundColor3=Color3.fromRGB(0,200,0)
-mk.Visible=false
+mk.Visible=seedButtons[n] or false
 c.MouseButton1Click:Connect(function()
-b[n]=not b[n]
-mk.Visible=b[n]
-if b[n] then
+seedButtons[n]=not seedButtons[n]
+mk.Visible=seedButtons[n]
+if seedButtons[n] then
 task.spawn(function()
-while b[n] do
+while seedButtons[n] do
 local f=gui:FindFirstChild(n)
 if not f then break end
 local s=f.Frame:FindFirstChild("Sheckles_Buy")
@@ -372,12 +412,13 @@ r:FireServer(n)
 else
 repeat task.wait(0.05)
 st=s and s:FindFirstChild("In_Stock")
-until(st and st.Visible)or not b[n]
+until(st and st.Visible)or not seedButtons[n]
 end
 task.wait()
 end
 end)
 end
+saveConfig()
 end)
 end
 for _,v in pairs(gui:GetChildren())do
@@ -447,27 +488,42 @@ end end break
 end end
 end
 
-cb.MouseButton1Click:Connect(function()
-ac=not ac
+local function updateCollectButton()
 cb.Text="Collect: "..(ac and "ON" or "OFF")
 cb.BackgroundColor3=ac and Color3.fromRGB(0,120,50)or Color3.fromRGB(50,50,60)
 cbs.Color=ac and Color3.fromRGB(0,150,70)or Color3.fromRGB(80,80,90)
+end
+
+local function updateSellButton()
+ab.Text="Auto Sell: "..(as and "ON" or "OFF")
+ab.BackgroundColor3=as and Color3.fromRGB(0,120,50)or Color3.fromRGB(50,50,60)
+abs.Color=as and Color3.fromRGB(0,150,70)or Color3.fromRGB(80,80,90)
+end
+
+local function updatePlantButton()
+pb.Text="Auto Plant: "..(ap and "ON" or "OFF")
+pb.BackgroundColor3=ap and Color3.fromRGB(0,120,50)or Color3.fromRGB(50,50,60)
+pbs.Color=ap and Color3.fromRGB(0,150,70)or Color3.fromRGB(80,80,90)
+end
+
+cb.MouseButton1Click:Connect(function()
+ac=not ac
+updateCollectButton()
 if ac then task.spawn(collect) end
+saveConfig()
 end)
 
 ab.MouseButton1Click:Connect(function()
 as=not as
-ab.Text="Auto Sell: "..(as and "ON" or "OFF")
-ab.BackgroundColor3=as and Color3.fromRGB(0,120,50)or Color3.fromRGB(50,50,60)
-abs.Color=as and Color3.fromRGB(0,150,70)or Color3.fromRGB(80,80,90)
+updateSellButton()
 if as then task.spawn(autosell) end
+saveConfig()
 end)
 
 pb.MouseButton1Click:Connect(function()
 ap=not ap
-pb.Text="Auto Plant: "..(ap and "ON" or "OFF")
-pb.BackgroundColor3=ap and Color3.fromRGB(0,120,50)or Color3.fromRGB(50,50,60)
-pbs.Color=ap and Color3.fromRGB(0,150,70)or Color3.fromRGB(80,80,90)
+updatePlantButton()
+saveConfig()
 end)
 
 tb.MouseButton1Click:Connect(function()
@@ -502,15 +558,15 @@ end
 for n in pairs(e)do
 local eb=Instance.new("TextButton",sf)
 eb.Size=UDim2.new(1,-8,0,22)
-eb.BackgroundColor3=Color3.fromRGB(50,50,60)
-eb.Text=n..": OFF"
+eb.BackgroundColor3=ea[n] and Color3.fromRGB(0,120,50) or Color3.fromRGB(50,50,60)
+eb.Text=n..": "..(ea[n] and "ON" or "OFF")
 eb.TextColor3=Color3.fromRGB(255,255,255)
 eb.TextSize=11
 eb.Font=Enum.Font.Gotham
 local ec=Instance.new("UICorner",eb)
 ec.CornerRadius=UDim.new(0,4)
 local es=Instance.new("UIStroke",eb)
-es.Color=Color3.fromRGB(80,80,90)
+es.Color=ea[n] and Color3.fromRGB(0,150,70) or Color3.fromRGB(80,80,90)
 es.Thickness=1
 eb.MouseButton1Click:Connect(function()
 ea[n]=not ea[n]
@@ -534,6 +590,7 @@ eb.BackgroundColor3=Color3.fromRGB(50,50,60)
 eb.Text=n..": OFF"
 es.Color=Color3.fromRGB(80,80,90)
 end
+saveConfig()
 end)
 end
 
@@ -542,4 +599,11 @@ l:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 sf.CanvasSize=UDim2.new(0,0,0,l.AbsoluteContentSize.Y+10)
 end)
 
+loadConfig()
+updateCollectButton()
+updateSellButton()
+updatePlantButton()
 createPlantButtons()
+
+if ac then task.spawn(collect) end
+if as then task.spawn(autosell) end
