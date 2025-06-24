@@ -464,20 +464,20 @@ if f then
 for _,v in pairs(f:GetChildren())do
 game.ReplicatedStorage.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"),{v})
 count+=1
-if count>=50 then break end
+if count>=200 then break end
 RS.Heartbeat:Wait()
 end
 else
 game.ReplicatedStorage.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"),{pl})
 count+=1
-if count>=50 then break end
+if count>=200 then break end
 RS.Heartbeat:Wait()
 end
 end
-if count>=50 then break end
+if count>=200 then break end
 end
 end
-task.wait(2)
+task.wait(5)
 end
 end
 
