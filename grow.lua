@@ -460,14 +460,16 @@ local f=pl:FindFirstChild("Fruits")
 if f then
 for _,v in pairs(f:GetChildren())do
 game.ReplicatedStorage.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"),{v})
+							task.wait(0.1)
 end
 else
 game.ReplicatedStorage.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"),{pl})
+						task.wait(0.1)
 end
 end
 end
 end
-task.wait(0.3)
+task.wait(2)
 end
 end
 local function autosell()
