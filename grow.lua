@@ -640,7 +640,7 @@ local function equipFruit()
 				break
 			end
 		end
-		task.wait()
+		game:GetService("RunService").Heartbeat:Wait()
 	end
 end
 
