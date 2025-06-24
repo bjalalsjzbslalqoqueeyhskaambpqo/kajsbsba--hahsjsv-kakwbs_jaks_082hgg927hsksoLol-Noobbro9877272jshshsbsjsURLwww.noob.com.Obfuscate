@@ -451,20 +451,22 @@ local d=f:FindFirstChild("Important")
 local o=d and d:FindFirstChild("Data") and d.Data:FindFirstChild("Owner")
 if o and o.Value==p.Name then plot=d break end
 end
+
+local RS=game:GetService("RunService")
 local function collect()
 while ac do
 if plot then
 for _,pl in pairs(plot.Plants_Physical:GetChildren())do
-if pl:IsA("Model") and selectedPlants[pl.Name] then
+if pl:IsA("Model")and selectedPlants[pl.Name]then
 local f=pl:FindFirstChild("Fruits")
 if f then
 for _,v in pairs(f:GetChildren())do
 game.ReplicatedStorage.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"),{v})
-							task.wait(0.1)
+RS.Heartbeat:Wait()
 end
 else
 game.ReplicatedStorage.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"),{pl})
-						task.wait(0.1)
+RS.Heartbeat:Wait()
 end
 end
 end
@@ -472,6 +474,7 @@ end
 task.wait(2)
 end
 end
+
 local function autosell()
 while as do
 game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("Sell_Inventory"):FireServer()
