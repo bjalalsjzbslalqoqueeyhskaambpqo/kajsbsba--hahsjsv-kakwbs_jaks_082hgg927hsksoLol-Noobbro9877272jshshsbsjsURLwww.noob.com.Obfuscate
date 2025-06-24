@@ -455,6 +455,7 @@ end
 local RS=game:GetService("RunService")
 local function collect()
 while ac do
+local count=0
 if plot then
 for _,pl in pairs(plot.Plants_Physical:GetChildren())do
 if pl:IsA("Model")and selectedPlants[pl.Name]then
@@ -462,18 +463,24 @@ local f=pl:FindFirstChild("Fruits")
 if f then
 for _,v in pairs(f:GetChildren())do
 game.ReplicatedStorage.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"),{v})
+count+=1
+if count>=20 then break end
 RS.Heartbeat:Wait()
 end
 else
 game.ReplicatedStorage.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"),{pl})
+count+=1
+if count>=20 then break end
 RS.Heartbeat:Wait()
 end
 end
+if count>=20 then break end
 end
 end
 task.wait(2)
 end
 end
+
 
 local function autosell()
 while as do
@@ -608,8 +615,8 @@ cl:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 c.CanvasSize=UDim2.new(0,0,0,cl.AbsoluteContentSize.Y+20)
 end)
 
-local ae=false
-
+local RS=game:GetService("RunService")
+local EV=game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("SummerHarvestRemoteEvent")
 local eb=Instance.new("TextButton",sec1)
 eb.Size=UDim2.new(0.48,0,0,20)
 eb.Position=UDim2.new(0,5,0,80)
@@ -618,56 +625,45 @@ eb.Text="🍓 Auto Event: OFF"
 eb.TextColor3=Color3.fromRGB(255,255,255)
 eb.TextSize=10
 eb.Font=Enum.Font.GothamSemibold
-
-local ebc=Instance.new("UICorner",eb)
-ebc.CornerRadius=UDim.new(0,6)
-
+Instance.new("UICorner",eb).CornerRadius=UDim.new(0,6)
 local ebs=Instance.new("UIStroke",eb)
 ebs.Color=Color3.fromRGB(80,80,90)
 ebs.Thickness=1
+local ae=false
 
-local function updateEventButton()
-	eb.Text="🍓 Auto Event: "..(ae and "ON" or "OFF")
+local function update()
+	eb.Text="🍓 Auto Event: "..(ae and "ON"or"OFF")
 	eb.BackgroundColor3=ae and Color3.fromRGB(0,120,50)or Color3.fromRGB(50,50,60)
 	ebs.Color=ae and Color3.fromRGB(0,150,70)or Color3.fromRGB(80,80,90)
 end
 
-local function equipFruit()
+local function submitLoop()
 	while ae do
-		for _,v in pairs(p.Backpack:GetChildren())do
-			if v:IsA("Tool") and v.Name:find("%[.+kg%]") then
-				v.Parent = p.Character
-				break
-			end
-		end
-		game:GetService("RunService").Heartbeat:Wait()
+		EV:FireServer("SubmitHeldPlant")
+		RS.Heartbeat:Wait()
 	end
 end
 
-p.CharacterAdded:Connect(function(char)
-	char.ChildAdded:Connect(function(tool)
-		if ae and tool:IsA("Tool") and tool.Name:find("%[.+kg%]") then
-			local args={"SubmitHeldPlant"}
-			game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("SummerHarvestRemoteEvent"):FireServer(unpack(args))
-		end
-	end)
-end)
-
-if p.Character then
-	p.Character.ChildAdded:Connect(function(tool)
-		if ae and tool:IsA("Tool") and tool.Name:find("%[.+kg%]") then
-			local args={"SubmitHeldPlant"}
-			game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("SummerHarvestRemoteEvent"):FireServer(unpack(args))
-		end
-	end)
+local function handleTool(tool)
+	if ae and tool:IsA("Tool")and tool.Name:find("%[.+kg%]")then
+		tool.Parent=p.Character
+	end
 end
 
+-- 🔁 Conexión única en flujo principal
+p.Backpack.ChildAdded:Connect(handleTool)
+
+-- ▶️ Botón ON/OFF
 eb.MouseButton1Click:Connect(function()
 	ae=not ae
-	updateEventButton()
-	if ae then task.spawn(equipFruit) end
+	update()
+	if ae then
+		for _,v in pairs(p.Backpack:GetChildren())do handleTool(v)end
+		task.spawn(submitLoop)
+	end
 	saveConfig()
 end)
+
 loadConfig()
 updateCollectButton()
 updateSellButton()
