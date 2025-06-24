@@ -1,3 +1,10 @@
+local vmod
+for _,m in ipairs(getloadedmodules())do
+ if m.Name=="VariantVisuals"then vmod=require(m)break end
+end
+if vmod then
+ vmod.SetVisuals=function()end
+end
 local p=game.Players.LocalPlayer
 local g=Instance.new("ScreenGui",p.PlayerGui)
 g.Name="AutoShopMenu"
