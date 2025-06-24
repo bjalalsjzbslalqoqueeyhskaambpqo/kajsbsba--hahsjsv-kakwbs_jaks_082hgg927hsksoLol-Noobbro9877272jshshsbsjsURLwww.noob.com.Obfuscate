@@ -3,7 +3,7 @@ local g=Instance.new("ScreenGui",p.PlayerGui)
 g.Name="AutoShopMenu"
 
 local m=Instance.new("Frame",g)
-m.Size=UDim2.new(0,240,0,360)
+m.Size=UDim2.new(0,240,0,420)
 m.Position=UDim2.new(0,10,0,10)
 m.BackgroundColor3=Color3.fromRGB(25,25,30)
 m.BorderSizePixel=0
@@ -132,9 +132,36 @@ local pbs=Instance.new("UIStroke",pb)
 pbs.Color=Color3.fromRGB(80,80,90)
 pbs.Thickness=1
 
+local pl=Instance.new("TextLabel",bg)
+pl.Size=UDim2.new(1,0,0,18)
+pl.Position=UDim2.new(0,0,0,112)
+pl.BackgroundTransparency=1
+pl.Text="Plants to Collect:"
+pl.TextColor3=Color3.fromRGB(200,200,210)
+pl.TextSize=11
+pl.Font=Enum.Font.GothamSemibold
+
+local psf=Instance.new("ScrollingFrame",bg)
+psf.Size=UDim2.new(1,0,0,50)
+psf.Position=UDim2.new(0,0,0,130)
+psf.BackgroundColor3=Color3.fromRGB(35,35,40)
+psf.BorderSizePixel=0
+psf.ScrollBarThickness=4
+
+local psfc=Instance.new("UICorner",psf)
+psfc.CornerRadius=UDim.new(0,4)
+
+local psfs=Instance.new("UIStroke",psf)
+psfs.Color=Color3.fromRGB(60,60,70)
+psfs.Thickness=1
+
+local psl=Instance.new("UIListLayout",psf)
+psl.FillDirection=Enum.FillDirection.Vertical
+psl.Padding=UDim.new(0,2)
+
 local el=Instance.new("TextLabel",bg)
 el.Size=UDim2.new(1,0,0,18)
-el.Position=UDim2.new(0,0,0,112)
+el.Position=UDim2.new(0,0,0,185)
 el.BackgroundTransparency=1
 el.Text="Pet Eggs:"
 el.TextColor3=Color3.fromRGB(200,200,210)
@@ -142,8 +169,8 @@ el.TextSize=11
 el.Font=Enum.Font.GothamSemibold
 
 local sf=Instance.new("ScrollingFrame",c)
-sf.Size=UDim2.new(1,0,1,-170)
-sf.Position=UDim2.new(0,0,0,150)
+sf.Size=UDim2.new(1,0,1,-225)
+sf.Position=UDim2.new(0,0,0,205)
 sf.BackgroundColor3=Color3.fromRGB(35,35,40)
 sf.BorderSizePixel=0
 sf.ScrollBarThickness=6
@@ -197,6 +224,8 @@ local mi=false
 local ac=false
 local as=false
 local ap=false
+local selectedPlants={}
+local plantButtons={}
 
 local function sn()
 n.Visible=true
@@ -213,9 +242,71 @@ task.wait(0.3)
 c.Visible=false
 else
 c.Visible=true
-m:TweenSize(UDim2.new(0,240,0,360),"Out","Quad",0.3)
+m:TweenSize(UDim2.new(0,240,0,420),"Out","Quad",0.3)
 mb.Text="-"
 end
+end
+
+local function getPlantNames()
+local plot=nil
+for _,f in pairs(workspace.Farm:GetChildren())do
+local d=f:FindFirstChild("Important")
+local o=d and d:FindFirstChild("Data") and d.Data:FindFirstChild("Owner")
+if o and o.Value==p.Name then plot=d break end
+end
+
+if not plot then return {} end
+local plantNames={}
+local seen={}
+for _,pl in pairs(plot.Plants_Physical:GetChildren())do
+if pl:IsA("Model") and not seen[pl.Name] then
+seen[pl.Name]=true
+table.insert(plantNames,pl.Name)
+end
+end
+return plantNames
+end
+
+local function createPlantButtons()
+local plantNames=getPlantNames()
+for _,btn in pairs(plantButtons)do
+btn:Destroy()
+end
+plantButtons={}
+selectedPlants={}
+
+for _,name in pairs(plantNames)do
+local btn=Instance.new("TextButton",psf)
+btn.Size=UDim2.new(1,-4,0,16)
+btn.BackgroundColor3=Color3.fromRGB(50,50,60)
+btn.Text=name..": OFF"
+btn.TextColor3=Color3.fromRGB(255,255,255)
+btn.TextSize=9
+btn.Font=Enum.Font.Gotham
+local btnc=Instance.new("UICorner",btn)
+btnc.CornerRadius=UDim.new(0,3)
+local btns=Instance.new("UIStroke",btn)
+btns.Color=Color3.fromRGB(80,80,90)
+btns.Thickness=1
+plantButtons[name]=btn
+btn.MouseButton1Click:Connect(function()
+selectedPlants[name]=not selectedPlants[name]
+if selectedPlants[name] then
+btn.BackgroundColor3=Color3.fromRGB(0,120,50)
+btn.Text=name..": ON"
+btns.Color=Color3.fromRGB(0,150,70)
+else
+btn.BackgroundColor3=Color3.fromRGB(50,50,60)
+btn.Text=name..": OFF"
+btns.Color=Color3.fromRGB(80,80,90)
+end
+end)
+end
+
+psf.CanvasSize=UDim2.new(0,0,0,psl.AbsoluteContentSize.Y+4)
+psl:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+psf.CanvasSize=UDim2.new(0,0,0,psl.AbsoluteContentSize.Y+4)
+end)
 end
 
 task.spawn(function()
@@ -305,8 +396,9 @@ end
 
 local function collect()
 while ac do
+if plot then
 for _,pl in pairs(plot.Plants_Physical:GetChildren())do
-if pl:IsA("Model")then
+if pl:IsA("Model") and selectedPlants[pl.Name] then
 local f=pl:FindFirstChild("Fruits")
 if f then
 for _,v in pairs(f:GetChildren())do
@@ -317,7 +409,8 @@ game.ReplicatedStorage.ByteNetReliable:FireServer(buffer.fromstring("\001\001\00
 end
 end
 end
-task.wait(1)
+end
+task.wait(0.3)
 end
 end
 
@@ -448,3 +541,5 @@ sf.CanvasSize=UDim2.new(0,0,0,l.AbsoluteContentSize.Y+10)
 l:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 sf.CanvasSize=UDim2.new(0,0,0,l.AbsoluteContentSize.Y+10)
 end)
+
+createPlantButtons()
