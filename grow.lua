@@ -470,11 +470,11 @@ end
 else
 game.ReplicatedStorage.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"),{pl})
 count+=1
-if count>=20 then break end
+if count>=70 then break end
 RS.Heartbeat:Wait()
 end
 end
-if count>=20 then break end
+if count>=70 then break end
 end
 end
 task.wait(2)
