@@ -664,6 +664,76 @@ eb.MouseButton1Click:Connect(function()
 	saveConfig()
 end)
 
+
+
+local p=game.Players.LocalPlayer
+local petsUI=p.PlayerGui.ActivePetUI.Frame.Main.ScrollingFrame
+local EV=game.ReplicatedStorage.GameEvents.ActivePetService
+
+local buttons={}
+
+for _,petFrame in pairs(petsUI:GetChildren())do
+	if petFrame.Name:match("^%b{}$") and petFrame:FindFirstChild("PetStats") then
+		local stats=petFrame.PetStats
+		local btn=Instance.new("TextButton",stats)
+		btn.Size=UDim2.new(1,-4,0,20)
+		btn.Position=UDim2.new(0,2,0,2)
+		btn.BackgroundColor3=Color3.fromRGB(50,50,60)
+		btn.TextColor3=Color3.fromRGB(255,255,255)
+		btn.TextSize=10
+		btn.Font=Enum.Font.GothamSemibold
+		local ec=Instance.new("UICorner",btn)
+		ec.CornerRadius=UDim.new(0,6)
+		local es=Instance.new("UIStroke",btn)
+		es.Color=Color3.fromRGB(80,80,90)
+		es.Thickness=1
+
+		local active=false
+		local id=petFrame.Name
+
+		local function updateBtn()
+			btn.Text="Auto Feed: "..(active and "ON" or "OFF")
+			btn.BackgroundColor3=active and Color3.fromRGB(0,120,50) or Color3.fromRGB(50,50,60)
+			es.Color=active and Color3.fromRGB(0,150,70) or Color3.fromRGB(80,80,90)
+		end
+
+		local function equipAll()
+			for _,tool in pairs(p.Backpack:GetChildren())do
+				if tool:IsA("Tool") and tool.Name:find("%[.+kg%]") then
+					tool.Parent=p.Character
+				end
+			end
+		end
+
+		local function feedLoop()
+			while active do
+				equipAll()
+				EV:FireServer("Feed",id)
+				game:GetService("RunService").Heartbeat:Wait()
+			end
+		end
+
+		p.Backpack.ChildAdded:Connect(function(tool)
+			if active and tool:IsA("Tool") and tool.Name:find("%[.+kg%]") then
+				tool.Parent=p.Character
+			end
+		end)
+
+		btn.MouseButton1Click:Connect(function()
+			active=not active
+			updateBtn()
+			if active then
+				equipAll()
+				task.spawn(feedLoop)
+			end
+		end)
+
+		updateBtn()
+		buttons[id]=btn
+	end
+end
+
+
 loadConfig()
 updateCollectButton()
 updateSellButton()
@@ -671,3 +741,5 @@ updatePlantButton()
 createPlantButtons()
 if ac then task.spawn(collect) end
 if as then task.spawn(autosell) end
+
+
