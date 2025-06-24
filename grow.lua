@@ -464,7 +464,7 @@ if f then
 for _,v in pairs(f:GetChildren())do
 game.ReplicatedStorage.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"),{v})
 count+=1
-if count>=20 then break end
+if count>=50 then break end
 RS.Heartbeat:Wait()
 end
 else
