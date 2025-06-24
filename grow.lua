@@ -473,7 +473,7 @@ end
 local function autosell()
 while as do
 game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("Sell_Inventory"):FireServer()
-task.wait(2)
+task.wait(0.5)
 end
 end
 local function autoplant()
@@ -601,6 +601,67 @@ end)
 c.CanvasSize=UDim2.new(0,0,0,cl.AbsoluteContentSize.Y+20)
 cl:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 c.CanvasSize=UDim2.new(0,0,0,cl.AbsoluteContentSize.Y+20)
+end)
+
+local ae=false
+
+local eb=Instance.new("TextButton",sec1)
+eb.Size=UDim2.new(0.48,0,0,20)
+eb.Position=UDim2.new(0,5,0,80)
+eb.BackgroundColor3=Color3.fromRGB(50,50,60)
+eb.Text="🍓 Auto Event: OFF"
+eb.TextColor3=Color3.fromRGB(255,255,255)
+eb.TextSize=10
+eb.Font=Enum.Font.GothamSemibold
+
+local ebc=Instance.new("UICorner",eb)
+ebc.CornerRadius=UDim.new(0,6)
+
+local ebs=Instance.new("UIStroke",eb)
+ebs.Color=Color3.fromRGB(80,80,90)
+ebs.Thickness=1
+
+local function updateEventButton()
+	eb.Text="🍓 Auto Event: "..(ae and "ON" or "OFF")
+	eb.BackgroundColor3=ae and Color3.fromRGB(0,120,50)or Color3.fromRGB(50,50,60)
+	ebs.Color=ae and Color3.fromRGB(0,150,70)or Color3.fromRGB(80,80,90)
+end
+
+local function equipFruit()
+	while ae do
+		for _,v in pairs(p.Backpack:GetChildren())do
+			if v:IsA("Tool") and v.Name:find("%[.+kg%]") then
+				v.Parent = p.Character
+				break
+			end
+		end
+		task.wait()
+	end
+end
+
+p.CharacterAdded:Connect(function(char)
+	char.ChildAdded:Connect(function(tool)
+		if ae and tool:IsA("Tool") and tool.Name:find("%[.+kg%]") then
+			local args={"SubmitHeldPlant"}
+			game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("SummerHarvestRemoteEvent"):FireServer(unpack(args))
+		end
+	end)
+end)
+
+if p.Character then
+	p.Character.ChildAdded:Connect(function(tool)
+		if ae and tool:IsA("Tool") and tool.Name:find("%[.+kg%]") then
+			local args={"SubmitHeldPlant"}
+			game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("SummerHarvestRemoteEvent"):FireServer(unpack(args))
+		end
+	end)
+end
+
+eb.MouseButton1Click:Connect(function()
+	ae=not ae
+	updateEventButton()
+	if ae then task.spawn(equipFruit) end
+	saveConfig()
 end)
 loadConfig()
 updateCollectButton()
