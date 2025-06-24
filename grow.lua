@@ -305,10 +305,15 @@ end
 
 local function collect()
 while ac do
-for _,pl in pairs(plot.Plants_Physical:GetDescendants())do
-if pl:IsA("Model") and pl:FindFirstChild("Fruits")then
-for _,fr in pairs(pl.Fruits:GetChildren())do
-game.ReplicatedStorage:WaitForChild("ByteNetReliable"):FireServer(buffer.fromstring("\001\001\000\001"),{fr})
+for _,pl in pairs(plot.Plants_Physical:GetChildren())do
+if pl:IsA("Model")then
+local f=pl:FindFirstChild("Fruits")
+if f then
+for _,v in pairs(f:GetChildren())do
+game.ReplicatedStorage.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"),{v})
+end
+else
+game.ReplicatedStorage.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"),{pl})
 end
 end
 end
