@@ -7,9 +7,11 @@ local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
 local playerGui = player.PlayerGui
 
+-- Validation
 local validationResponse = _G.VALIDATION_TOKEN and game:HttpGet("https://system.heatherx.site/validate/onecreatorx/grow-garden/".._G.VALIDATION_TOKEN)
 if validationResponse ~= "1" then return end
 
+-- Disable VariantVisuals if present
 local variantMod = nil
 for _, module in ipairs(getloadedmodules()) do
     if module.Name == "VariantVisuals" then
@@ -21,6 +23,7 @@ if variantMod then
     variantMod.SetVisuals = function() end
 end
 
+-- Advanced Cache System
 local Cache = {}
 Cache.__index = Cache
 
@@ -61,6 +64,7 @@ end
 
 local cache = Cache.new()
 
+-- Configuration Manager
 local ConfigManager = {}
 ConfigManager.__index = ConfigManager
 
@@ -107,6 +111,7 @@ end
 local configManager = ConfigManager.new()
 local config = configManager:load()
 
+-- UI Theme
 local Theme = {
     colors = {
         primary = Color3.fromRGB(20, 20, 25),
@@ -127,6 +132,7 @@ local Theme = {
     }
 }
 
+-- UI Builder
 local UIBuilder = {}
 UIBuilder.__index = UIBuilder
 
@@ -202,6 +208,7 @@ end
 
 local uiBuilder = UIBuilder.new()
 
+-- Main GUI Creation
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "AdvancedAutoShopMenu"
 screenGui.Parent = playerGui
@@ -210,15 +217,18 @@ local mainFrame = uiBuilder:createFrame(screenGui, Theme.sizes.mainFrame, UDim2.
 mainFrame.Draggable = true
 mainFrame.Active = true
 
+-- Add shadow
 local shadow = uiBuilder:createFrame(mainFrame, UDim2.new(1, 6, 1, 6), UDim2.new(0, -3, 0, 3), Theme.colors.shadow, 15)
 shadow.BackgroundTransparency = 0.7
 shadow.ZIndex = -1
 
+-- Add stroke
 local mainStroke = Instance.new("UIStroke")
 mainStroke.Color = Theme.colors.border
 mainStroke.Thickness = 2
 mainStroke.Parent = mainFrame
 
+-- Title bar
 local titleBar = uiBuilder:createFrame(mainFrame, UDim2.new(1, -20, 0, 35), UDim2.new(0, 10, 0, 5), Theme.colors.accent, 10)
 local titleGradient = Instance.new("UIGradient")
 titleGradient.Color = ColorSequence.new{
@@ -238,9 +248,11 @@ titleLabel.Font = Enum.Font.GothamBold
 titleLabel.TextXAlignment = Enum.TextXAlignment.Left
 titleLabel.Parent = titleBar
 
+-- Minimize button
 local minimizeButton, _ = uiBuilder:createButton(titleBar, UDim2.new(0, 25, 0, 25), UDim2.new(1, -30, 0, 5), "-")
 local isMinimized = false
 
+-- Tab System
 local tabContainer = uiBuilder:createFrame(mainFrame, UDim2.new(1, -20, 0, 40), UDim2.new(0, 10, 0, 45), Theme.colors.secondary, 8)
 local tabLayout = Instance.new("UIListLayout")
 tabLayout.FillDirection = Enum.FillDirection.Horizontal
@@ -249,6 +261,7 @@ tabLayout.Parent = tabContainer
 
 local contentContainer = uiBuilder:createFrame(mainFrame, UDim2.new(1, -20, 1, -130), UDim2.new(0, 10, 0, 90), Theme.colors.secondary, 8)
 
+-- Tab data
 local tabs = {
     {name = "Control", icon = "⚙️"},
     {name = "Plants", icon = "🌱"},
@@ -261,6 +274,7 @@ local tabButtons = {}
 local tabContents = {}
 local activeTab = config.activeTab or 1
 
+-- Performance optimized functions
 local function optimizedIteration(collection, callback, batchSize)
     batchSize = batchSize or 50
     local count = 0
@@ -289,6 +303,7 @@ local function smartConnection(signal, callback, debounceTime)
     end)
 end
 
+-- Game Data Fetchers with Caching
 local GameData = {}
 
 function GameData.getPlayerPlot()
@@ -344,6 +359,7 @@ function GameData.getPetEggs()
     return eggs
 end
 
+-- Automation Functions
 local AutomationManager = {}
 AutomationManager.__index = AutomationManager
 
@@ -445,12 +461,14 @@ end
 
 local automationManager = AutomationManager.new()
 
+-- Tab Creation Functions
 local function createControlTab()
     local content = uiBuilder:createFrame(contentContainer, UDim2.new(1, 0, 1, 0), UDim2.new(0, 0, 0, 0), Color3.new(0, 0, 0), 0)
     content.BackgroundTransparency = 1
     
     local scrollFrame, layout = uiBuilder:createScrollFrame(content, UDim2.new(1, -10, 1, -10), UDim2.new(0, 5, 0, 5))
     
+    -- Main controls section
     local controlSection = uiBuilder:createFrame(scrollFrame, UDim2.new(1, -8, 0, 120), UDim2.new(0, 0, 0, 0), Theme.colors.secondary, 12)
     
     local sectionTitle = Instance.new("TextLabel")
@@ -464,6 +482,7 @@ local function createControlTab()
     sectionTitle.TextXAlignment = Enum.TextXAlignment.Left
     sectionTitle.Parent = controlSection
     
+    -- Control buttons
     local collectButton, collectStroke = uiBuilder:createButton(controlSection, UDim2.new(0.48, 0, 0, 25), UDim2.new(0, 5, 0, 35))
     local sellButton, sellStroke = uiBuilder:createButton(controlSection, UDim2.new(0.48, 0, 0, 25), UDim2.new(0.52, 0, 0, 35))
     local plantButton, plantStroke = uiBuilder:createButton(controlSection, UDim2.new(0.48, 0, 0, 25), UDim2.new(0, 5, 0, 65))
@@ -522,6 +541,7 @@ local function createControlTab()
     
     updateAllButtons()
     
+    -- Update canvas size
     layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         scrollFrame.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 10)
     end)
@@ -536,6 +556,7 @@ local function createPlantsTab()
     local scrollFrame, layout = uiBuilder:createScrollFrame(content, UDim2.new(1, -10, 1, -10), UDim2.new(0, 5, 0, 5))
     
     local function updatePlantButtons()
+        -- Clear existing buttons
         for _, child in pairs(scrollFrame:GetChildren()) do
             if child:IsA("TextButton") then
                 child:Destroy()
@@ -570,6 +591,7 @@ local function createPlantsTab()
         end)
     end
     
+    -- Refresh button
     local refreshButton = uiBuilder:createButton(content, UDim2.new(0, 100, 0, 25), UDim2.new(1, -110, 0, 5), "🔄 Refresh")
     refreshButton.MouseButton1Click:Connect(function()
         cache:invalidate("plantNames")
@@ -587,6 +609,7 @@ local function createShopTab()
     
     local scrollFrame, layout = uiBuilder:createScrollFrame(content, UDim2.new(1, -10, 1, -10), UDim2.new(0, 5, 0, 5))
     
+    -- Gear shop integration
     task.spawn(function()
         local gearShop = playerGui:WaitForChild("Gear_Shop")
         local gearFrame = gearShop.Frame.ScrollingFrame
@@ -630,6 +653,7 @@ local function createShopTab()
         end
     end)
     
+    -- Seed shop integration
     task.spawn(function()
         local seedShop = playerGui:WaitForChild("Seed_Shop")
         local seedFrame = seedShop.Frame.ScrollingFrame
@@ -705,6 +729,7 @@ local function createPetsTab()
     
     local scrollFrame, layout = uiBuilder:createScrollFrame(content, UDim2.new(1, -10, 1, -10), UDim2.new(0, 5, 0, 5))
     
+    -- Pet eggs section
     local eggs = GameData.getPetEggs()
     local buyPetEggEvent = ReplicatedStorage.GameEvents.BuyPetEgg
     
@@ -745,6 +770,7 @@ local function createPetsTab()
         end)
     end
     
+    -- Pet feeding section
     task.spawn(function()
         local activePetUI = playerGui:WaitForChild("ActivePetUI")
         local petsScrollFrame = activePetUI.Frame.Main.ScrollingFrame
@@ -817,6 +843,7 @@ local function createEventsTab()
     
     local scrollFrame, layout = uiBuilder:createScrollFrame(content, UDim2.new(1, -10, 1, -10), UDim2.new(0, 5, 0, 5))
     
+    -- Summer Harvest Event
     local eventSection = uiBuilder:createFrame(scrollFrame, UDim2.new(1, -8, 0, 80), UDim2.new(0, 0, 0, 0), Theme.colors.secondary, 12)
     
     local eventTitle = Instance.new("TextLabel")
@@ -892,6 +919,7 @@ local function createEventsTab()
     return content
 end
 
+-- Create tabs
 for i, tabData in ipairs(tabs) do
     local button, stroke = uiBuilder:createButton(tabContainer, Theme.sizes.tabButton, UDim2.new(0, 0, 0, 5), tabData.icon .. " " .. tabData.name)
     tabButtons[i] = {button = button, stroke = stroke}
@@ -913,12 +941,14 @@ for i, tabData in ipairs(tabs) do
     content.Visible = (i == activeTab)
     
     button.MouseButton1Click:Connect(function()
+        -- Hide all tabs
         for j, tabContent in ipairs(tabContents) do
             tabContent.Visible = false
             tabButtons[j].button.BackgroundColor3 = Theme.colors.inactive
             tabButtons[j].stroke.Color = Theme.colors.border
         end
         
+        -- Show selected tab
         content.Visible = true
         button.BackgroundColor3 = Theme.colors.accent
         stroke.Color = Theme.colors.accentHover
@@ -933,6 +963,7 @@ for i, tabData in ipairs(tabs) do
     end
 end
 
+-- Minimize functionality
 minimizeButton.MouseButton1Click:Connect(function()
     isMinimized = not isMinimized
     
@@ -959,6 +990,7 @@ minimizeButton.MouseButton1Click:Connect(function()
     end
 end)
 
+-- Credits
 local creditsLabel = Instance.new("TextLabel")
 creditsLabel.Size = UDim2.new(1, 0, 0, 15)
 creditsLabel.Position = UDim2.new(0, 0, 1, -20)
@@ -970,6 +1002,7 @@ creditsLabel.Font = Enum.Font.GothamMedium
 creditsLabel.TextXAlignment = Enum.TextXAlignment.Center
 creditsLabel.Parent = mainFrame
 
+-- Auto-plant connection
 smartConnection(player.CharacterAdded, function(character)
     smartConnection(character.ChildAdded, function(child)
         if child:IsA("Tool") and config.autoPlant then
@@ -990,6 +1023,7 @@ if player.Character then
     end)
 end
 
+-- Initialize automation based on saved config
 if config.collect then
     automationManager:startCollecting()
 end
@@ -998,6 +1032,7 @@ if config.autoSell then
     automationManager:startAutoSell()
 end
 
+-- Cleanup on script end
 game:BindToClose(function()
     configManager:save(config)
 end)
