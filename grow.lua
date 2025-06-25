@@ -1,627 +1,677 @@
 local r=_G.VALIDATION_TOKEN and game:HttpGet("https://system.heatherx.site/validate/onecreatorx/grow-garden/".._G.VALIDATION_TOKEN)
 if r~="1"then return end
 
-local vmod
+local vm
 for _,m in ipairs(getloadedmodules())do
- if m.Name=="VariantVisuals"then vmod=require(m)break end
+ if m.Name=="VariantVisuals"then vm=require(m)break end
 end
-if vmod then vmod.SetVisuals=function()end end
+if vm then vm.SetVisuals=function()end end
 
 local p=game.Players.LocalPlayer
-local RS=game:GetService("RunService")
-local HS=game:GetService("HttpService")
-local TweenService=game:GetService("TweenService")
+local rs=game:GetService("RunService")
+local hs=game:GetService("HttpService")
+local ts=game:GetService("TweenService")
 
 local g=Instance.new("ScreenGui",p.PlayerGui)
-g.Name="EnhancedAutoShop"
+g.Name="CompactAutoShop"
 g.ResetOnSpawn=false
 
 local m=Instance.new("Frame",g)
-m.Size=UDim2.new(0,400,0,500)
-m.Position=UDim2.new(0,20,0,20)
+m.Size=UDim2.new(0.35,0,0.6,0)
+m.Position=UDim2.new(0.02,0,0.05,0)
 m.BackgroundColor3=Color3.fromRGB(15,15,20)
 m.BorderSizePixel=0
 m.Draggable=true
 m.Active=true
 
 local mc=Instance.new("UICorner",m)
-mc.CornerRadius=UDim.new(0,12)
+mc.CornerRadius=UDim.new(0,8)
 
-local shadow=Instance.new("Frame",m)
-shadow.Size=UDim2.new(1,8,1,8)
-shadow.Position=UDim2.new(0,-4,0,4)
-shadow.BackgroundColor3=Color3.fromRGB(0,0,0)
-shadow.BackgroundTransparency=0.6
-shadow.ZIndex=-1
-local shadowc=Instance.new("UICorner",shadow)
-shadowc.CornerRadius=UDim.new(0,12)
+local sh=Instance.new("Frame",m)
+sh.Size=UDim2.new(1,4,1,4)
+sh.Position=UDim2.new(0,-2,0,2)
+sh.BackgroundColor3=Color3.fromRGB(0,0,0)
+sh.BackgroundTransparency=0.7
+sh.ZIndex=-1
+local sc=Instance.new("UICorner",sh)
+sc.CornerRadius=UDim.new(0,8)
 
-local header=Instance.new("Frame",m)
-header.Size=UDim2.new(1,0,0,50)
-header.BackgroundColor3=Color3.fromRGB(25,25,35)
-local headerc=Instance.new("UICorner",header)
-headerc.CornerRadius=UDim.new(0,12)
+local hd=Instance.new("Frame",m)
+hd.Size=UDim2.new(1,0,0,35)
+hd.BackgroundColor3=Color3.fromRGB(25,25,35)
+local hc=Instance.new("UICorner",hd)
+hc.CornerRadius=UDim.new(0,8)
 
-local title=Instance.new("TextLabel",header)
-title.Size=UDim2.new(1,-60,1,0)
-title.Position=UDim2.new(0,15,0,0)
-title.BackgroundTransparency=1
-title.Text="🌟 Enhanced Auto Shop"
-title.TextColor3=Color3.fromRGB(255,255,255)
-title.TextSize=18
-title.Font=Enum.Font.GothamBold
-title.TextXAlignment=Enum.TextXAlignment.Left
+local tt=Instance.new("TextLabel",hd)
+tt.Size=UDim2.new(1,-50,1,0)
+tt.Position=UDim2.new(0,8,0,0)
+tt.BackgroundTransparency=1
+tt.Text="🌟 Auto Shop"
+tt.TextColor3=Color3.fromRGB(255,255,255)
+tt.TextSize=14
+tt.Font=Enum.Font.GothamBold
+tt.TextXAlignment=Enum.TextXAlignment.Left
 
-local status=Instance.new("TextLabel",header)
-status.Size=UDim2.new(0,80,0,20)
-status.Position=UDim2.new(1,-90,0,5)
-status.BackgroundColor3=Color3.fromRGB(0,150,50)
-status.Text="● ACTIVE"
-status.TextColor3=Color3.fromRGB(255,255,255)
-status.TextSize=10
-status.Font=Enum.Font.GothamBold
-local statusc=Instance.new("UICorner",status)
-statusc.CornerRadius=UDim.new(0,10)
+local st=Instance.new("TextLabel",hd)
+st.Size=UDim2.new(0,50,0,15)
+st.Position=UDim2.new(1,-55,0,3)
+st.BackgroundColor3=Color3.fromRGB(0,150,50)
+st.Text="● ON"
+st.TextColor3=Color3.fromRGB(255,255,255)
+st.TextSize=8
+st.Font=Enum.Font.GothamBold
+local stc=Instance.new("UICorner",st)
+stc.CornerRadius=UDim.new(0,8)
 
-local minimize=Instance.new("TextButton",header)
-minimize.Size=UDim2.new(0,30,0,30)
-minimize.Position=UDim2.new(1,-40,0,10)
-minimize.BackgroundColor3=Color3.fromRGB(60,60,70)
-minimize.Text="-"
-minimize.TextColor3=Color3.fromRGB(255,255,255)
-minimize.TextSize=16
-minimize.Font=Enum.Font.GothamBold
-local minc=Instance.new("UICorner",minimize)
-minc.CornerRadius=UDim.new(0,8)
+local mn=Instance.new("TextButton",hd)
+mn.Size=UDim2.new(0,25,0,25)
+mn.Position=UDim2.new(1,-30,0,5)
+mn.BackgroundColor3=Color3.fromRGB(60,60,70)
+mn.Text="-"
+mn.TextColor3=Color3.fromRGB(255,255,255)
+mn.TextSize=12
+mn.Font=Enum.Font.GothamBold
+local mnc=Instance.new("UICorner",mn)
+mnc.CornerRadius=UDim.new(0,6)
 
-local tabContainer=Instance.new("Frame",m)
-tabContainer.Size=UDim2.new(1,0,0,40)
-tabContainer.Position=UDim2.new(0,0,0,50)
-tabContainer.BackgroundColor3=Color3.fromRGB(20,20,25)
+local tc=Instance.new("Frame",m)
+tc.Size=UDim2.new(1,0,0,30)
+tc.Position=UDim2.new(0,0,0,35)
+tc.BackgroundColor3=Color3.fromRGB(20,20,25)
 
-local tabLayout=Instance.new("UIListLayout",tabContainer)
-tabLayout.FillDirection=Enum.FillDirection.Horizontal
-tabLayout.SortOrder=Enum.SortOrder.LayoutOrder
+local tl=Instance.new("UIListLayout",tc)
+tl.FillDirection=Enum.FillDirection.Horizontal
+tl.SortOrder=Enum.SortOrder.LayoutOrder
 
-local content=Instance.new("Frame",m)
-content.Size=UDim2.new(1,0,1,-90)
-content.Position=UDim2.new(0,0,0,90)
-content.BackgroundTransparency=1
+local ct=Instance.new("Frame",m)
+ct.Size=UDim2.new(1,0,1,-65)
+ct.Position=UDim2.new(0,0,0,65)
+ct.BackgroundTransparency=1
 
-local tabs={}
-local currentTab=nil
-local minimized=false
+local tb={}
+local at=nil
+local mi=false
 
-local config={
-collect=false,
-autoSell=false,
-autoPlant=false,
-autoEvent=false,
-selectedPlants={},
-petEggs={},
-gears={},
-seeds={},
-petFeeding={}
+local cf={
+co=false,
+as=false,
+ap=false,
+ae=false,
+sp={},
+pe={},
+gr={},
+sd={},
+pf={}
 }
 
-local configFile="EnhancedAutoShopConfig.json"
+local fl="CompactAutoShopConfig.json"
 
-local function saveConfig()
-writefile(configFile,HS:JSONEncode(config))
+local function sv()
+writefile(fl,hs:JSONEncode(cf))
 end
 
-local function loadConfig()
-if isfile(configFile) then
-local success,data=pcall(function()
-return HS:JSONDecode(readfile(configFile))
+local function ld()
+if isfile(fl) then
+local ok,dt=pcall(function()
+return hs:JSONDecode(readfile(fl))
 end)
-if success and data then
-for k,v in pairs(data) do
-config[k]=v
+if ok and dt then
+for k,v in pairs(dt) do
+cf[k]=v
 end
 end
 end
 end
 
-local function createTab(name,icon,order)
-local tab=Instance.new("TextButton",tabContainer)
-tab.Size=UDim2.new(0.25,0,1,0)
-tab.BackgroundColor3=Color3.fromRGB(30,30,40)
-tab.Text=icon.." "..name
-tab.TextColor3=Color3.fromRGB(180,180,190)
-tab.TextSize=12
-tab.Font=Enum.Font.GothamSemibold
-tab.LayoutOrder=order
-local tabc=Instance.new("UICorner",tab)
-tabc.CornerRadius=UDim.new(0,8)
+local function ct(nm,ic,od)
+local t=Instance.new("TextButton",tc)
+t.Size=UDim2.new(0.25,0,1,0)
+t.BackgroundColor3=Color3.fromRGB(30,30,40)
+t.Text=ic
+t.TextColor3=Color3.fromRGB(180,180,190)
+t.TextSize=10
+t.Font=Enum.Font.GothamSemibold
+t.LayoutOrder=od
+local tc=Instance.new("UICorner",t)
+tc.CornerRadius=UDim.new(0,6)
 
-local tabContent=Instance.new("ScrollingFrame",content)
-tabContent.Size=UDim2.new(1,0,1,0)
-tabContent.BackgroundTransparency=1
-tabContent.ScrollBarThickness=6
-tabContent.ScrollBarImageColor3=Color3.fromRGB(80,80,90)
-tabContent.Visible=false
-tabContent.CanvasSize=UDim2.new(0,0,0,0)
+local tc=Instance.new("ScrollingFrame",ct)
+tc.Size=UDim2.new(1,0,1,0)
+tc.BackgroundTransparency=1
+tc.ScrollBarThickness=4
+tc.ScrollBarImageColor3=Color3.fromRGB(80,80,90)
+tc.Visible=false
+tc.CanvasSize=UDim2.new(0,0,0,0)
 
-local layout=Instance.new("UIListLayout",tabContent)
-layout.Padding=UDim.new(0,10)
-layout.SortOrder=Enum.SortOrder.LayoutOrder
+local ly=Instance.new("UIListLayout",tc)
+ly.Padding=UDim.new(0,5)
+ly.SortOrder=Enum.SortOrder.LayoutOrder
 
-layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-tabContent.CanvasSize=UDim2.new(0,0,0,layout.AbsoluteContentSize.Y+20)
+ly:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+tc.CanvasSize=UDim2.new(0,0,0,ly.AbsoluteContentSize.Y+10)
 end)
 
-tabs[name]={button=tab,content=tabContent,layout=layout}
+tb[nm]={btn=t,cnt=tc,lay=ly}
 
-tab.MouseButton1Click:Connect(function()
-for _,t in pairs(tabs) do
-t.button.BackgroundColor3=Color3.fromRGB(30,30,40)
-t.button.TextColor3=Color3.fromRGB(180,180,190)
-t.content.Visible=false
+t.MouseButton1Click:Connect(function()
+for _,tb in pairs(tb) do
+tb.btn.BackgroundColor3=Color3.fromRGB(30,30,40)
+tb.btn.TextColor3=Color3.fromRGB(180,180,190)
+tb.cnt.Visible=false
 end
-tab.BackgroundColor3=Color3.fromRGB(50,50,65)
-tab.TextColor3=Color3.fromRGB(255,255,255)
-tabContent.Visible=true
-currentTab=name
+t.BackgroundColor3=Color3.fromRGB(50,50,65)
+t.TextColor3=Color3.fromRGB(255,255,255)
+tc.Visible=true
+at=nm
 end)
 
-return tabContent
-end
-
-local function createSection(parent,title,height)
-local section=Instance.new("Frame",parent)
-section.Size=UDim2.new(1,-20,0,height)
-section.BackgroundColor3=Color3.fromRGB(25,25,35)
-local sectionc=Instance.new("UICorner",section)
-sectionc.CornerRadius=UDim.new(0,10)
-
-local sectionTitle=Instance.new("TextLabel",section)
-sectionTitle.Size=UDim2.new(1,-20,0,25)
-sectionTitle.Position=UDim2.new(0,10,0,5)
-sectionTitle.BackgroundTransparency=1
-sectionTitle.Text=title
-sectionTitle.TextColor3=Color3.fromRGB(200,200,210)
-sectionTitle.TextSize=14
-sectionTitle.Font=Enum.Font.GothamBold
-sectionTitle.TextXAlignment=Enum.TextXAlignment.Left
-
-return section
+return tc
 end
 
-local function createToggleButton(parent,text,pos,size,callback)
-local btn=Instance.new("TextButton",parent)
-btn.Size=size
-btn.Position=pos
-btn.BackgroundColor3=Color3.fromRGB(50,50,60)
-btn.Text=text
-btn.TextColor3=Color3.fromRGB(255,255,255)
-btn.TextSize=11
-btn.Font=Enum.Font.GothamSemibold
-local btnc=Instance.new("UICorner",btn)
-btnc.CornerRadius=UDim.new(0,8)
-local btns=Instance.new("UIStroke",btn)
-btns.Color=Color3.fromRGB(80,80,90)
-btns.Thickness=1
+local function cs(pr,tl,ht)
+local s=Instance.new("Frame",pr)
+s.Size=UDim2.new(1,-10,0,ht)
+s.BackgroundColor3=Color3.fromRGB(25,25,35)
+local sc=Instance.new("UICorner",s)
+sc.CornerRadius=UDim.new(0,6)
 
-btn.MouseButton1Click:Connect(callback)
-return btn,btns
+local st=Instance.new("TextLabel",s)
+st.Size=UDim2.new(1,-10,0,20)
+st.Position=UDim2.new(0,5,0,3)
+st.BackgroundTransparency=1
+st.Text=tl
+st.TextColor3=Color3.fromRGB(200,200,210)
+st.TextSize=10
+st.Font=Enum.Font.GothamBold
+st.TextXAlignment=Enum.TextXAlignment.Left
+
+return s
 end
 
-local function updateButton(btn,stroke,active,onText,offText)
-btn.Text=active and onText or offText
-btn.BackgroundColor3=active and Color3.fromRGB(0,120,50) or Color3.fromRGB(50,50,60)
-stroke.Color=active and Color3.fromRGB(0,150,70) or Color3.fromRGB(80,80,90)
+local function cb(pr,tx,ps,sz,cb)
+local b=Instance.new("TextButton",pr)
+b.Size=sz
+b.Position=ps
+b.BackgroundColor3=Color3.fromRGB(50,50,60)
+b.Text=tx
+b.TextColor3=Color3.fromRGB(255,255,255)
+b.TextSize=9
+b.Font=Enum.Font.GothamSemibold
+local bc=Instance.new("UICorner",b)
+bc.CornerRadius=UDim.new(0,6)
+local bs=Instance.new("UIStroke",b)
+bs.Color=Color3.fromRGB(80,80,90)
+bs.Thickness=1
+
+b.MouseButton1Click:Connect(cb)
+return b,bs
 end
 
-local automationTab=createTab("Automation","⚙️",1)
-local shopTab=createTab("Shop","🛒",2)
-local plantsTab=createTab("Plants","🌱",3)
-local petsTab=createTab("Pets","🐾",4)
+local function ub(b,s,ac,on,of)
+b.Text=ac and on or of
+b.BackgroundColor3=ac and Color3.fromRGB(0,120,50) or Color3.fromRGB(50,50,60)
+s.Color=ac and Color3.fromRGB(0,150,70) or Color3.fromRGB(80,80,90)
+end
 
-local mainSection=createSection(automationTab,"🎮 Main Controls",120)
+local at=ct("Auto","⚙️",1)
+local st=ct("Shop","🛒",2)
+local pt=ct("Plant","🌱",3)
+local et=ct("Pet","🐾",4)
 
-local collectBtn,collectStroke=createToggleButton(mainSection,"📦 Collect: OFF",UDim2.new(0,10,0,35),UDim2.new(0.48,0,0,25),function()
-config.collect=not config.collect
-updateButton(collectBtn,collectStroke,config.collect,"📦 Collect: ON","📦 Collect: OFF")
-if config.collect then task.spawn(collectLoop) end
-saveConfig()
+local ms=cs(at,"🎮 Controls",80)
+
+local cb,cs=cb(ms,"📦 Collect: OFF",UDim2.new(0,5,0,25),UDim2.new(0.48,0,0,20),function()
+cf.co=not cf.co
+ub(cb,cs,cf.co,"📦 Collect: ON","📦 Collect: OFF")
+if cf.co then task.spawn(cl) end
+sv()
 end)
 
-local sellBtn,sellStroke=createToggleButton(mainSection,"💰 Auto Sell: OFF",UDim2.new(0.52,0,0,35),UDim2.new(0.48,0,0,25),function()
-config.autoSell=not config.autoSell
-updateButton(sellBtn,sellStroke,config.autoSell,"💰 Auto Sell: ON","💰 Auto Sell: OFF")
-if config.autoSell then task.spawn(autoSellLoop) end
-saveConfig()
+local sb,ss=cb(ms,"💰 Sell: OFF",UDim2.new(0.52,0,0,25),UDim2.new(0.48,0,0,20),function()
+cf.as=not cf.as
+ub(sb,ss,cf.as,"💰 Sell: ON","💰 Sell: OFF")
+if cf.as then task.spawn(sl) end
+sv()
 end)
 
-local plantBtn,plantStroke=createToggleButton(mainSection,"🌿 Auto Plant: OFF",UDim2.new(0,10,0,65),UDim2.new(0.48,0,0,25),function()
-config.autoPlant=not config.autoPlant
-updateButton(plantBtn,plantStroke,config.autoPlant,"🌿 Auto Plant: ON","🌿 Auto Plant: OFF")
-saveConfig()
+local pb,ps=cb(ms,"🌿 Plant: OFF",UDim2.new(0,5,0,50),UDim2.new(0.48,0,0,20),function()
+cf.ap=not cf.ap
+ub(pb,ps,cf.ap,"🌿 Plant: ON","🌿 Plant: OFF")
+sv()
 end)
 
-local eventBtn,eventStroke=createToggleButton(mainSection,"🍓 Auto Event: OFF",UDim2.new(0.52,0,0,65),UDim2.new(0.48,0,0,25),function()
-config.autoEvent=not config.autoEvent
-updateButton(eventBtn,eventStroke,config.autoEvent,"🍓 Auto Event: ON","🍓 Auto Event: OFF")
-if config.autoEvent then task.spawn(eventLoop) end
-saveConfig()
+local eb,es=cb(ms,"🍓 Event: OFF",UDim2.new(0.52,0,0,50),UDim2.new(0.48,0,0,20),function()
+cf.ae=not cf.ae
+ub(eb,es,cf.ae,"🍓 Event: ON","🍓 Event: OFF")
+if cf.ae then task.spawn(el) end
+sv()
 end)
 
-local statsSection=createSection(automationTab,"📊 Statistics",80)
-local statsText=Instance.new("TextLabel",statsSection)
-statsText.Size=UDim2.new(1,-20,1,-30)
-statsText.Position=UDim2.new(0,10,0,25)
-statsText.BackgroundTransparency=1
-statsText.Text="Items Collected: 0\nItems Sold: 0\nSeeds Planted: 0"
-statsText.TextColor3=Color3.fromRGB(180,180,190)
-statsText.TextSize=12
-statsText.Font=Enum.Font.GothamMedium
-statsText.TextXAlignment=Enum.TextXAlignment.Left
-statsText.TextYAlignment=Enum.TextYAlignment.Top
+local gs=cs(st,"⚙️ Gears",120)
+local gf=Instance.new("ScrollingFrame",gs)
+gf.Size=UDim2.new(1,-10,1,-25)
+gf.Position=UDim2.new(0,5,0,20)
+gf.BackgroundColor3=Color3.fromRGB(20,20,25)
+gf.ScrollBarThickness=4
+gf.ScrollBarImageColor3=Color3.fromRGB(60,60,70)
+local gfc=Instance.new("UICorner",gf)
+gfc.CornerRadius=UDim.new(0,6)
 
-local gearSection=createSection(shopTab,"⚙️ Auto Buy Gears",200)
-local gearScroll=Instance.new("ScrollingFrame",gearSection)
-gearScroll.Size=UDim2.new(1,-20,1,-35)
-gearScroll.Position=UDim2.new(0,10,0,30)
-gearScroll.BackgroundColor3=Color3.fromRGB(20,20,25)
-gearScroll.ScrollBarThickness=6
-gearScroll.ScrollBarImageColor3=Color3.fromRGB(60,60,70)
-local gearScrollc=Instance.new("UICorner",gearScroll)
-gearScrollc.CornerRadius=UDim.new(0,8)
-
-local gearLayout=Instance.new("UIListLayout",gearScroll)
-gearLayout.Padding=UDim.new(0,5)
-gearLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-gearScroll.CanvasSize=UDim2.new(0,0,0,gearLayout.AbsoluteContentSize.Y+10)
+local gl=Instance.new("UIListLayout",gf)
+gl.Padding=UDim.new(0,3)
+gl:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+gf.CanvasSize=UDim2.new(0,0,0,gl.AbsoluteContentSize.Y+5)
 end)
 
-local seedSection=createSection(shopTab,"🌱 Auto Buy Seeds",200)
-local seedScroll=Instance.new("ScrollingFrame",seedSection)
-seedScroll.Size=UDim2.new(1,-20,1,-35)
-seedScroll.Position=UDim2.new(0,10,0,30)
-seedScroll.BackgroundColor3=Color3.fromRGB(20,20,25)
-seedScroll.ScrollBarThickness=6
-seedScroll.ScrollBarImageColor3=Color3.fromRGB(60,60,70)
-local seedScrollc=Instance.new("UICorner",seedScroll)
-seedScrollc.CornerRadius=UDim.new(0,8)
+local ss=cs(st,"🌱 Seeds",120)
+local sf=Instance.new("ScrollingFrame",ss)
+sf.Size=UDim2.new(1,-10,1,-25)
+sf.Position=UDim2.new(0,5,0,20)
+sf.BackgroundColor3=Color3.fromRGB(20,20,25)
+sf.ScrollBarThickness=4
+sf.ScrollBarImageColor3=Color3.fromRGB(60,60,70)
+local sfc=Instance.new("UICorner",sf)
+sfc.CornerRadius=UDim.new(0,6)
 
-local seedLayout=Instance.new("UIListLayout",seedScroll)
-seedLayout.Padding=UDim.new(0,5)
-seedLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-seedScroll.CanvasSize=UDim2.new(0,0,0,seedLayout.AbsoluteContentSize.Y+10)
+local sl=Instance.new("UIListLayout",sf)
+sl.Padding=UDim.new(0,3)
+sl:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+sf.CanvasSize=UDim2.new(0,0,0,sl.AbsoluteContentSize.Y+5)
 end)
 
-local plantSection=createSection(plantsTab,"🌾 Plant Collection",300)
-local plantScroll=Instance.new("ScrollingFrame",plantSection)
-plantScroll.Size=UDim2.new(1,-20,1,-35)
-plantScroll.Position=UDim2.new(0,10,0,30)
-plantScroll.BackgroundColor3=Color3.fromRGB(20,20,25)
-plantScroll.ScrollBarThickness=6
-plantScroll.ScrollBarImageColor3=Color3.fromRGB(60,60,70)
-local plantScrollc=Instance.new("UICorner",plantScroll)
-plantScrollc.CornerRadius=UDim.new(0,8)
+local ps=cs(pt,"🌾 Plants",200)
+local pf=Instance.new("ScrollingFrame",ps)
+pf.Size=UDim2.new(1,-10,1,-25)
+pf.Position=UDim2.new(0,5,0,20)
+pf.BackgroundColor3=Color3.fromRGB(20,20,25)
+pf.ScrollBarThickness=4
+pf.ScrollBarImageColor3=Color3.fromRGB(60,60,70)
+local pfc=Instance.new("UICorner",pf)
+pfc.CornerRadius=UDim.new(0,6)
 
-local plantLayout=Instance.new("UIListLayout",plantScroll)
-plantLayout.Padding=UDim.new(0,5)
-plantLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-plantScroll.CanvasSize=UDim2.new(0,0,0,plantLayout.AbsoluteContentSize.Y+10)
+local pl=Instance.new("UIListLayout",pf)
+pl.Padding=UDim.new(0,3)
+pl:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+pf.CanvasSize=UDim2.new(0,0,0,pl.AbsoluteContentSize.Y+5)
 end)
 
-local petSection=createSection(petsTab,"🥚 Pet Eggs",200)
-local petScroll=Instance.new("ScrollingFrame",petSection)
-petScroll.Size=UDim2.new(1,-20,1,-35)
-petScroll.Position=UDim2.new(0,10,0,30)
-petScroll.BackgroundColor3=Color3.fromRGB(20,20,25)
-petScroll.ScrollBarThickness=6
-petScroll.ScrollBarImageColor3=Color3.fromRGB(60,60,70)
-local petScrollc=Instance.new("UICorner",petScroll)
-petScrollc.CornerRadius=UDim.new(0,8)
+local es=cs(et,"🥚 Eggs",120)
+local ef=Instance.new("ScrollingFrame",es)
+ef.Size=UDim2.new(1,-10,1,-25)
+ef.Position=UDim2.new(0,5,0,20)
+ef.BackgroundColor3=Color3.fromRGB(20,20,25)
+ef.ScrollBarThickness=4
+ef.ScrollBarImageColor3=Color3.fromRGB(60,60,70)
+local efc=Instance.new("UICorner",ef)
+efc.CornerRadius=UDim.new(0,6)
 
-local petLayout=Instance.new("UIListLayout",petScroll)
-petLayout.Padding=UDim.new(0,5)
-petLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-petScroll.CanvasSize=UDim2.new(0,0,0,petLayout.AbsoluteContentSize.Y+10)
+local el=Instance.new("UIListLayout",ef)
+el.Padding=UDim.new(0,3)
+el:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+ef.CanvasSize=UDim2.new(0,0,0,el.AbsoluteContentSize.Y+5)
 end)
 
-local feedSection=createSection(petsTab,"🍖 Auto Feed Pets",150)
+local fs=cs(et,"🍖 Feed",80)
 
-local plot=nil
+local pt=nil
 for _,f in pairs(workspace.Farm:GetChildren())do
 local d=f:FindFirstChild("Important")
 local o=d and d:FindFirstChild("Data") and d.Data:FindFirstChild("Owner")
-if o and o.Value==p.Name then plot=d break end
+if o and o.Value==p.Name then pt=d break end
 end
 
-local stats={collected=0,sold=0,planted=0}
+local st={co=0,so=0,pl=0}
 
-function collectLoop()
-while config.collect do
-local count=0
-if plot then
-for _,pl in pairs(plot.Plants_Physical:GetChildren())do
-if pl:IsA("Model") and config.selectedPlants[pl.Name] then
+function cl()
+while cf.co do
+local ct=0
+if pt then
+for _,pl in pairs(pt.Plants_Physical:GetChildren())do
+if pl:IsA("Model") and cf.sp[pl.Name] then
 local f=pl:FindFirstChild("Fruits")
 if f then
 for _,v in pairs(f:GetChildren())do
 game.ReplicatedStorage.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"),{v})
-count=count+1
-stats.collected=stats.collected+1
-if count>=50 then break end
-RS.Heartbeat:Wait()
+ct=ct+1
+st.co=st.co+1
+if ct>=30 then break end
+rs.Heartbeat:Wait()
 end
 else
 game.ReplicatedStorage.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"),{pl})
-count=count+1
-stats.collected=stats.collected+1
-if count>=50 then break end
-RS.Heartbeat:Wait()
+ct=ct+1
+st.co=st.co+1
+if ct>=30 then break end
+rs.Heartbeat:Wait()
 end
 end
-if count>=50 then break end
+if ct>=30 then break end
 end
 end
-statsText.Text="Items Collected: "..stats.collected.."\nItems Sold: "..stats.sold.."\nSeeds Planted: "..stats.planted
-task.wait(3)
+task.wait(2)
 end
 end
 
-function autoSellLoop()
-while config.autoSell do
+function sl()
+while cf.as do
 game.ReplicatedStorage.GameEvents.Sell_Inventory:FireServer()
-stats.sold=stats.sold+1
-statsText.Text="Items Collected: "..stats.collected.."\nItems Sold: "..stats.sold.."\nSeeds Planted: "..stats.planted
+st.so=st.so+1
 task.wait(1)
 end
 end
 
-function eventLoop()
-while config.autoEvent do
-local found=false
+function el()
+while cf.ae do
+local fd=false
 for _,v in pairs(workspace.Interaction.UpdateItems.SummerHarvestEvent.Sign:GetDescendants())do
 if v:IsA("TextLabel") and v.Text:find("Summer Harvest Ends:") then
-found=true
+fd=true
 break
 end
 end
-if found then
-for _,tool in pairs(p.Backpack:GetChildren())do
-if tool:IsA("Tool") and tool.Name:find("%[.+kg%]") then
-tool.Parent=p.Character
+if fd then
+for _,tl in pairs(p.Backpack:GetChildren())do
+if tl:IsA("Tool") and tl.Name:find("%[.+kg%]") then
+tl.Parent=p.Character
 end
 end
 game.ReplicatedStorage.GameEvents.SummerHarvestRemoteEvent:FireServer("SubmitHeldPlant")
 end
-RS.Heartbeat:Wait()
+rs.Heartbeat:Wait()
 end
 end
 
-local function createPlantButtons()
-for _,btn in pairs(plantScroll:GetChildren())do
-if btn:IsA("TextButton") then btn:Destroy() end
+local function cp()
+for _,b in pairs(pf:GetChildren())do
+if b:IsA("TextButton") then b:Destroy() end
 end
 
-if not plot then return end
+if not pt then return end
 
-local plantNames={}
-local seen={}
-for _,pl in pairs(plot.Plants_Physical:GetChildren())do
-if pl:IsA("Model") and not seen[pl.Name] then
-seen[pl.Name]=true
-table.insert(plantNames,pl.Name)
+local pn={}
+local sn={}
+for _,pl in pairs(pt.Plants_Physical:GetChildren())do
+if pl:IsA("Model") and not sn[pl.Name] then
+sn[pl.Name]=true
+table.insert(pn,pl.Name)
 end
 end
 
-for _,name in pairs(plantNames)do
-local btn=Instance.new("TextButton",plantScroll)
-btn.Size=UDim2.new(1,-10,0,30)
-btn.BackgroundColor3=config.selectedPlants[name] and Color3.fromRGB(0,120,50) or Color3.fromRGB(40,40,50)
-btn.Text="🌱 "..name..": "..(config.selectedPlants[name] and "ON" or "OFF")
-btn.TextColor3=Color3.fromRGB(255,255,255)
-btn.TextSize=12
-btn.Font=Enum.Font.GothamMedium
-btn.TextXAlignment=Enum.TextXAlignment.Left
-local btnc=Instance.new("UICorner",btn)
-btnc.CornerRadius=UDim.new(0,8)
-local btns=Instance.new("UIStroke",btn)
-btns.Color=config.selectedPlants[name] and Color3.fromRGB(0,150,70) or Color3.fromRGB(70,70,80)
-btns.Thickness=1
+for _,nm in pairs(pn)do
+local b=Instance.new("TextButton",pf)
+b.Size=UDim2.new(1,-5,0,25)
+b.BackgroundColor3=cf.sp[nm] and Color3.fromRGB(0,120,50) or Color3.fromRGB(40,40,50)
+b.Text="🌱 "..nm..": "..(cf.sp[nm] and "ON" or "OFF")
+b.TextColor3=Color3.fromRGB(255,255,255)
+b.TextSize=9
+b.Font=Enum.Font.GothamMedium
+b.TextXAlignment=Enum.TextXAlignment.Left
+local bc=Instance.new("UICorner",b)
+bc.CornerRadius=UDim.new(0,6)
+local bs=Instance.new("UIStroke",b)
+bs.Color=cf.sp[nm] and Color3.fromRGB(0,150,70) or Color3.fromRGB(70,70,80)
+bs.Thickness=1
 
-btn.MouseButton1Click:Connect(function()
-config.selectedPlants[name]=not config.selectedPlants[name]
-updateButton(btn,btns,config.selectedPlants[name],"🌱 "..name..": ON","🌱 "..name..": OFF")
-saveConfig()
+b.MouseButton1Click:Connect(function()
+cf.sp[nm]=not cf.sp[nm]
+ub(b,bs,cf.sp[nm],"🌱 "..nm..": ON","🌱 "..nm..": OFF")
+sv()
 end)
 end
 end
 
 task.spawn(function()
-local gearShop=p.PlayerGui:WaitForChild("Gear_Shop")
-local gearFrame=gearShop.Frame.ScrollingFrame
-local gearEvent=game.ReplicatedStorage.GameEvents.BuyGearStock
+local gs=p.PlayerGui:WaitForChild("Gear_Shop")
+local gf=gs.Frame.ScrollingFrame
+local ge=game.ReplicatedStorage.GameEvents.BuyGearStock
 
-for _,item in pairs(gearFrame:GetChildren())do
-if item:IsA("Frame") and item:FindFirstChild("Frame") then
-local frame2=item.Frame
-local buySection=frame2:FindFirstChild("Sheckles_Buy")
-local stockLabel=buySection and buySection:FindFirstChild("In_Stock")
-if stockLabel then
-local btn=Instance.new("TextButton",gearScroll)
-btn.Size=UDim2.new(1,-10,0,30)
-btn.BackgroundColor3=config.gears[item.Name] and Color3.fromRGB(0,120,50) or Color3.fromRGB(40,40,50)
-btn.Text="⚙️ "..item.Name..": "..(config.gears[item.Name] and "ON" or "OFF")
-btn.TextColor3=Color3.fromRGB(255,255,255)
-btn.TextSize=12
-btn.Font=Enum.Font.GothamMedium
-btn.TextXAlignment=Enum.TextXAlignment.Left
-local btnc=Instance.new("UICorner",btn)
-btnc.CornerRadius=UDim.new(0,8)
-local btns=Instance.new("UIStroke",btn)
-btns.Color=config.gears[item.Name] and Color3.fromRGB(0,150,70) or Color3.fromRGB(70,70,80)
-btns.Thickness=1
+for _,it in pairs(gf:GetChildren())do
+if it:IsA("Frame") and it:FindFirstChild("Frame") then
+local f2=it.Frame
+local bs=f2:FindFirstChild("Sheckles_Buy")
+local sl=bs and bs:FindFirstChild("In_Stock")
+if sl then
+local ob=Instance.new("TextButton")
+ob.Size=UDim2.new(0,12,0,12)
+ob.Position=UDim2.new(1,-14,0,2)
+ob.BackgroundColor3=cf.gr[it.Name] and Color3.fromRGB(0,200,0) or Color3.fromRGB(50,50,50)
+ob.Text=""
+ob.Parent=bs
+local oc=Instance.new("UICorner",ob)
+oc.CornerRadius=UDim.new(0,3)
 
-btn.MouseButton1Click:Connect(function()
-config.gears[item.Name]=not config.gears[item.Name]
-updateButton(btn,btns,config.gears[item.Name],"⚙️ "..item.Name..": ON","⚙️ "..item.Name..": OFF")
-saveConfig()
+ob.MouseButton1Click:Connect(function()
+cf.gr[it.Name]=not cf.gr[it.Name]
+ob.BackgroundColor3=cf.gr[it.Name] and Color3.fromRGB(0,200,0) or Color3.fromRGB(50,50,50)
+sv()
 end)
 
-task.spawn(function()
-while true do
-if config.gears[item.Name] and stockLabel.Visible then
-gearEvent:FireServer(item.Name)
-end
-task.wait(0.2)
-end
-end)
-end
-end
-end
-end)
+local nb=Instance.new("TextButton",gf)
+nb.Size=UDim2.new(1,-5,0,25)
+nb.BackgroundColor3=cf.gr[it.Name] and Color3.fromRGB(0,120,50) or Color3.fromRGB(40,40,50)
+nb.Text="⚙️ "..it.Name..": "..(cf.gr[it.Name] and "ON" or "OFF")
+nb.TextColor3=Color3.fromRGB(255,255,255)
+nb.TextSize=9
+nb.Font=Enum.Font.GothamMedium
+nb.TextXAlignment=Enum.TextXAlignment.Left
+local nc=Instance.new("UICorner",nb)
+nc.CornerRadius=UDim.new(0,6)
+local ns=Instance.new("UIStroke",nb)
+ns.Color=cf.gr[it.Name] and Color3.fromRGB(0,150,70) or Color3.fromRGB(70,70,80)
+ns.Thickness=1
 
-task.spawn(function()
-local seedShop=p.PlayerGui:WaitForChild("Seed_Shop")
-local seedFrame=seedShop.Frame.ScrollingFrame
-local seedEvent=game.ReplicatedStorage.GameEvents.BuySeedStock
-
-for _,item in pairs(seedFrame:GetChildren())do
-if item:IsA("Frame") and item:FindFirstChild("Frame") then
-local frame2=item.Frame
-local buySection=frame2:FindFirstChild("Sheckles_Buy")
-local stockLabel=buySection and buySection:FindFirstChild("In_Stock")
-if stockLabel then
-local btn=Instance.new("TextButton",seedScroll)
-btn.Size=UDim2.new(1,-10,0,30)
-btn.BackgroundColor3=config.seeds[item.Name] and Color3.fromRGB(0,120,50) or Color3.fromRGB(40,40,50)
-btn.Text="🌱 "..item.Name..": "..(config.seeds[item.Name] and "ON" or "OFF")
-btn.TextColor3=Color3.fromRGB(255,255,255)
-btn.TextSize=12
-btn.Font=Enum.Font.GothamMedium
-btn.TextXAlignment=Enum.TextXAlignment.Left
-local btnc=Instance.new("UICorner",btn)
-btnc.CornerRadius=UDim.new(0,8)
-local btns=Instance.new("UIStroke",btn)
-btns.Color=config.seeds[item.Name] and Color3.fromRGB(0,150,70) or Color3.fromRGB(70,70,80)
-btns.Thickness=1
-
-btn.MouseButton1Click:Connect(function()
-config.seeds[item.Name]=not config.seeds[item.Name]
-updateButton(btn,btns,config.seeds[item.Name],"🌱 "..item.Name..": ON","🌱 "..item.Name..": OFF")
-saveConfig()
+nb.MouseButton1Click:Connect(function()
+cf.gr[it.Name]=not cf.gr[it.Name]
+ub(nb,ns,cf.gr[it.Name],"⚙️ "..it.Name..": ON","⚙️ "..it.Name..": OFF")
+ob.BackgroundColor3=cf.gr[it.Name] and Color3.fromRGB(0,200,0) or Color3.fromRGB(50,50,50)
+sv()
 end)
 
 task.spawn(function()
 while true do
-if config.seeds[item.Name] and stockLabel.Visible then
-seedEvent:FireServer(item.Name)
+if cf.gr[it.Name] and sl.Visible then
+ge:FireServer(it.Name)
 end
-task.wait(0.2)
-end
-end)
-end
-end
+task.wait(0.15)
 end
 end)
+end
+end
+end
+end)
 
-local petEggs=require(game.ReplicatedStorage.Data.PetRegistry).PetEggs
-local petEvent=game.ReplicatedStorage.GameEvents.BuyPetEgg
-
-for eggName in pairs(petEggs)do
-local btn=Instance.new("TextButton",petScroll)
-btn.Size=UDim2.new(1,-10,0,30)
-btn.BackgroundColor3=config.petEggs[eggName] and Color3.fromRGB(0,120,50) or Color3.fromRGB(40,40,50)
-btn.Text="🥚 "..eggName..": "..(config.petEggs[eggName] and "ON" or "OFF")
-btn.TextColor3=Color3.fromRGB(255,255,255)
-btn.TextSize=12
-btn.Font=Enum.Font.GothamMedium
-btn.TextXAlignment=Enum.TextXAlignment.Left
-local btnc=Instance.new("UICorner",btn)
-btnc.CornerRadius=UDim.new(0,8)
-local btns=Instance.new("UIStroke",btn)
-btns.Color=config.petEggs[eggName] and Color3.fromRGB(0,150,70) or Color3.fromRGB(70,70,80)
-btns.Thickness=1
-
-btn.MouseButton1Click:Connect(function()
-config.petEggs[eggName]=not config.petEggs[eggName]
-updateButton(btn,btns,config.petEggs[eggName],"🥚 "..eggName..": ON","🥚 "..eggName..": OFF")
-if config.petEggs[eggName] then
 task.spawn(function()
-while config.petEggs[eggName] do
-local data=require(game.ReplicatedStorage.Modules.DataService):GetData()
-for i,v in pairs(data.PetEggStock.Stocks)do
-if config.petEggs[eggName] and petEggs[v.EggName] and v.EggName==eggName and v.Stock>0 then
-petEvent:FireServer(i)
+local ss=p.PlayerGui:WaitForChild("Seed_Shop")
+local sf=ss.Frame.ScrollingFrame
+local se=game.ReplicatedStorage.GameEvents.BuySeedStock
+
+for _,it in pairs(sf:GetChildren())do
+if it:IsA("Frame") and it:FindFirstChild("Frame") then
+local f2=it.Frame
+local bs=f2:FindFirstChild("Sheckles_Buy")
+local sl=bs and bs:FindFirstChild("In_Stock")
+if sl then
+local ob=Instance.new("TextButton")
+ob.Size=UDim2.new(0,16,0,16)
+ob.Position=UDim2.new(1,-20,0,3)
+ob.BackgroundColor3=Color3.new(1,1,1)
+ob.Text=""
+ob.Parent=bs
+ob.BorderSizePixel=1
+ob.AutoButtonColor=false
+local oc=Instance.new("UICorner",ob)
+oc.CornerRadius=UDim.new(0,3)
+local mk=Instance.new("Frame",ob)
+mk.Size=UDim2.new(1,-4,1,-4)
+mk.Position=UDim2.new(0,2,0,2)
+mk.BackgroundColor3=Color3.fromRGB(0,200,0)
+mk.Visible=cf.sd[it.Name] or false
+local mc=Instance.new("UICorner",mk)
+mc.CornerRadius=UDim.new(0,2)
+
+ob.MouseButton1Click:Connect(function()
+cf.sd[it.Name]=not cf.sd[it.Name]
+mk.Visible=cf.sd[it.Name]
+sv()
+end)
+
+local nb=Instance.new("TextButton",sf)
+nb.Size=UDim2.new(1,-5,0,25)
+nb.BackgroundColor3=cf.sd[it.Name] and Color3.fromRGB(0,120,50) or Color3.fromRGB(40,40,50)
+nb.Text="🌱 "..it.Name..": "..(cf.sd[it.Name] and "ON" or "OFF")
+nb.TextColor3=Color3.fromRGB(255,255,255)
+nb.TextSize=9
+nb.Font=Enum.Font.GothamMedium
+nb.TextXAlignment=Enum.TextXAlignment.Left
+local nc=Instance.new("UICorner",nb)
+nc.CornerRadius=UDim.new(0,6)
+local ns=Instance.new("UIStroke",nb)
+ns.Color=cf.sd[it.Name] and Color3.fromRGB(0,150,70) or Color3.fromRGB(70,70,80)
+ns.Thickness=1
+
+nb.MouseButton1Click:Connect(function()
+cf.sd[it.Name]=not cf.sd[it.Name]
+ub(nb,ns,cf.sd[it.Name],"🌱 "..it.Name..": ON","🌱 "..it.Name..": OFF")
+mk.Visible=cf.sd[it.Name]
+sv()
+end)
+
+task.spawn(function()
+while true do
+if cf.sd[it.Name] and sl.Visible then
+se:FireServer(it.Name)
+end
+task.wait(0.15)
+end
+end)
+end
+end
+end
+end)
+
+local pe=require(game.ReplicatedStorage.Data.PetRegistry).PetEggs
+local pv=game.ReplicatedStorage.GameEvents.BuyPetEgg
+
+for en in pairs(pe)do
+local b=Instance.new("TextButton",ef)
+b.Size=UDim2.new(1,-5,0,25)
+b.BackgroundColor3=cf.pe[en] and Color3.fromRGB(0,120,50) or Color3.fromRGB(40,40,50)
+b.Text="🥚 "..en..": "..(cf.pe[en] and "ON" or "OFF")
+b.TextColor3=Color3.fromRGB(255,255,255)
+b.TextSize=9
+b.Font=Enum.Font.GothamMedium
+b.TextXAlignment=Enum.TextXAlignment.Left
+local bc=Instance.new("UICorner",b)
+bc.CornerRadius=UDim.new(0,6)
+local bs=Instance.new("UIStroke",b)
+bs.Color=cf.pe[en] and Color3.fromRGB(0,150,70) or Color3.fromRGB(70,70,80)
+bs.Thickness=1
+
+b.MouseButton1Click:Connect(function()
+cf.pe[en]=not cf.pe[en]
+ub(b,bs,cf.pe[en],"🥚 "..en..": ON","🥚 "..en..": OFF")
+if cf.pe[en] then
+task.spawn(function()
+while cf.pe[en] do
+local dt=require(game.ReplicatedStorage.Modules.DataService):GetData()
+for i,v in pairs(dt.PetEggStock.Stocks)do
+if cf.pe[en] and pe[v.EggName] and v.EggName==en and v.Stock>0 then
+pv:FireServer(i)
 end
 end
 task.wait(0.1)
 end
 end)
 end
-saveConfig()
+sv()
 end)
 end
 
 task.spawn(function()
-local petsUI=p.PlayerGui:WaitForChild("ActivePetUI")
-local petsFrame=petsUI.Frame.Main.ScrollingFrame
-local feedEvent=game.ReplicatedStorage.GameEvents.ActivePetService
+local pu=p.PlayerGui:WaitForChild("ActivePetUI")
+local pf=pu.Frame.Main.ScrollingFrame
+local fe=game.ReplicatedStorage.GameEvents.ActivePetService
 
-for _,petFrame in pairs(petsFrame:GetChildren())do
-if petFrame.Name:match("^%b{}$") and petFrame:FindFirstChild("PetStats") then
-local stats=petFrame.PetStats
-local btn=Instance.new("TextButton",feedSection)
-btn.Size=UDim2.new(1,-20,0,25)
-btn.Position=UDim2.new(0,10,0,30+(#feedSection:GetChildren()-1)*30)
-btn.BackgroundColor3=config.petFeeding[petFrame.Name] and Color3.fromRGB(0,120,50) or Color3.fromRGB(40,40,50)
-btn.Text="🍖 Pet "..petFrame.Name:sub(2,-2)..": "..(config.petFeeding[petFrame.Name] and "ON" or "OFF")
-btn.TextColor3=Color3.fromRGB(255,255,255)
-btn.TextSize=11
-btn.Font=Enum.Font.GothamMedium
-btn.TextXAlignment=Enum.TextXAlignment.Left
-local btnc=Instance.new("UICorner",btn)
-btnc.CornerRadius=UDim.new(0,8)
-local btns=Instance.new("UIStroke",btn)
-btns.Color=config.petFeeding[petFrame.Name] and Color3.fromRGB(0,150,70) or Color3.fromRGB(70,70,80)
-btns.Thickness=1
+for _,pf in pairs(pf:GetChildren())do
+if pf.Name:match("^%b{}$") and pf:FindFirstChild("PetStats") then
+local st=pf.PetStats
+local b=Instance.new("TextButton",st)
+b.Size=UDim2.new(1,-4,0,15)
+b.Position=UDim2.new(0,2,0,2)
+b.BackgroundColor3=Color3.fromRGB(50,50,60)
+b.TextColor3=Color3.fromRGB(255,255,255)
+b.TextSize=8
+b.Font=Enum.Font.GothamSemibold
+local bc=Instance.new("UICorner",b)
+bc.CornerRadius=UDim.new(0,4)
+local bs=Instance.new("UIStroke",b)
+bs.Color=Color3.fromRGB(80,80,90)
+bs.Thickness=1
 
-btn.MouseButton1Click:Connect(function()
-config.petFeeding[petFrame.Name]=not config.petFeeding[petFrame.Name]
-updateButton(btn,btns,config.petFeeding[petFrame.Name],"🍖 Pet "..petFrame.Name:sub(2,-2)..": ON","🍖 Pet "..petFrame.Name:sub(2,-2)..": OFF")
-if config.petFeeding[petFrame.Name] then
+local ac=cf.pf[pf.Name] or false
+local id=pf.Name
+
+local function ub()
+b.Text="Feed: "..(ac and "ON" or "OFF")
+b.BackgroundColor3=ac and Color3.fromRGB(0,120,50) or Color3.fromRGB(50,50,60)
+bs.Color=ac and Color3.fromRGB(0,150,70) or Color3.fromRGB(80,80,90)
+end
+
+local function ea()
+for _,tl in pairs(p.Backpack:GetChildren())do
+if tl:IsA("Tool") and tl.Name:find("%[.+kg%]") then
+tl.Parent=p.Character
+end
+end
+end
+
+local function fl()
+while ac do
+ea()
+fe:FireServer("Feed",id)
+rs.Heartbeat:Wait()
+end
+end
+
+p.Backpack.ChildAdded:Connect(function(tl)
+if ac and tl:IsA("Tool") and tl.Name:find("%[.+kg%]") then
+tl.Parent=p.Character
+end
+end)
+
+b.MouseButton1Click:Connect(function()
+ac=not ac
+cf.pf[id]=ac
+ub()
+if ac then
+ea()
+task.spawn(fl)
+end
+sv()
+end)
+
+ub()
+end
+end
+end)
+
+p.CharacterAdded:Connect(function(ch)
+ch.ChildAdded:Connect(function(cd)
+if cd:IsA("Tool") and cf.ap then
+local rn=cd.Name
+local sn=rn:gsub(" Seed %[X%d+%]",""):gsub(" Seed","")
+if pt then
+local pl=pt:FindFirstChild("Plants_Physical")
+if pl then
+local pn=pl:FindFirstChild(sn)
+if pn and pn.PrimaryPart then
+local ps=pn.PrimaryPart.Position
 task.spawn(function()
-while config.petFeeding[petFrame.Name] do
-for _,tool in pairs(p.Backpack:GetChildren())do
-if tool:IsA("Tool") and tool.Name:find("%[.+kg%]") then
-tool.Parent=p.Character
-end
-end
-feedEvent:FireServer("Feed",petFrame.Name)
-RS.Heartbeat:Wait()
-end
-end)
-end
-saveConfig()
-end)
-end
-end
-end)
-
-p.CharacterAdded:Connect(function(char)
-char.ChildAdded:Connect(function(child)
-if child:IsA("Tool") and config.autoPlant then
-local rawname=child.Name
-local seedname=rawname:gsub(" Seed %[X%d+%]",""):gsub(" Seed","")
-if plot then
-local plants=plot:FindFirstChild("Plants_Physical")
-if plants then
-local plant=plants:FindFirstChild(seedname)
-if plant and plant.PrimaryPart then
-local pos=plant.PrimaryPart.Position
-task.spawn(function()
-while config.autoPlant and char:FindFirstChildOfClass("Tool") do
-local tool=char:FindFirstChildOfClass("Tool")
-if not tool or not tool.Name:find(seedname) then break end
-game.ReplicatedStorage.GameEvents.Plant_RE:FireServer(pos,seedname)
-stats.planted=stats.planted+1
+while cf.ap and ch:FindFirstChildOfClass("Tool") do
+local tl=ch:FindFirstChildOfClass("Tool")
+if not tl or not tl.Name:find(sn) then break end
+game.ReplicatedStorage.GameEvents.Plant_RE:FireServer(ps,sn)
+st.pl=st.pl+1
 task.wait(0.1)
 end
 end)
@@ -633,22 +683,22 @@ end)
 end)
 
 if p.Character then
-p.Character.ChildAdded:Connect(function(child)
-if child:IsA("Tool") and config.autoPlant then
-local rawname=child.Name
-local seedname=rawname:gsub(" Seed %[X%d+%]",""):gsub(" Seed","")
-if plot then
-local plants=plot:FindFirstChild("Plants_Physical")
-if plants then
-local plant=plants:FindFirstChild(seedname)
-if plant and plant.PrimaryPart then
-local pos=plant.PrimaryPart.Position
+p.Character.ChildAdded:Connect(function(cd)
+if cd:IsA("Tool") and cf.ap then
+local rn=cd.Name
+local sn=rn:gsub(" Seed %[X%d+%]",""):gsub(" Seed","")
+if pt then
+local pl=pt:FindFirstChild("Plants_Physical")
+if pl then
+local pn=pl:FindFirstChild(sn)
+if pn and pn.PrimaryPart then
+local ps=pn.PrimaryPart.Position
 task.spawn(function()
-while config.autoPlant and p.Character:FindFirstChildOfClass("Tool") do
-local tool=p.Character:FindFirstChildOfClass("Tool")
-if not tool or not tool.Name:find(seedname) then break end
-game.ReplicatedStorage.GameEvents.Plant_RE:FireServer(pos,seedname)
-stats.planted=stats.planted+1
+while cf.ap and p.Character:FindFirstChildOfClass("Tool") do
+local tl=p.Character:FindFirstChildOfClass("Tool")
+if not tl or not tl.Name:find(sn) then break end
+game.ReplicatedStorage.GameEvents.Plant_RE:FireServer(ps,sn)
+st.pl=st.pl+1
 task.wait(0.1)
 end
 end)
@@ -659,44 +709,44 @@ end
 end)
 end
 
-minimize.MouseButton1Click:Connect(function()
-minimized=not minimized
-if minimized then
-m:TweenSize(UDim2.new(0,400,0,50),"Out","Quad",0.3)
-minimize.Text="+"
-tabContainer.Visible=false
-content.Visible=false
+mn.MouseButton1Click:Connect(function()
+mi=not mi
+if mi then
+m:TweenSize(UDim2.new(0.35,0,0,35),"Out","Quad",0.3)
+mn.Text="+"
+tc.Visible=false
+ct.Visible=false
 else
-tabContainer.Visible=true
-content.Visible=true
-m:TweenSize(UDim2.new(0,400,0,500),"Out","Quad",0.3)
-minimize.Text="-"
+tc.Visible=true
+ct.Visible=true
+m:TweenSize(UDim2.new(0.35,0,0.6,0),"Out","Quad",0.3)
+mn.Text="-"
 end
 end)
 
-loadConfig()
-updateButton(collectBtn,collectStroke,config.collect,"📦 Collect: ON","📦 Collect: OFF")
-updateButton(sellBtn,sellStroke,config.autoSell,"💰 Auto Sell: ON","💰 Auto Sell: OFF")
-updateButton(plantBtn,plantStroke,config.autoPlant,"🌿 Auto Plant: ON","🌿 Auto Plant: OFF")
-updateButton(eventBtn,eventStroke,config.autoEvent,"🍓 Auto Event: ON","🍓 Auto Event: OFF")
+ld()
+ub(cb,cs,cf.co,"📦 Collect: ON","📦 Collect: OFF")
+ub(sb,ss,cf.as,"💰 Sell: ON","💰 Sell: OFF")
+ub(pb,ps,cf.ap,"🌿 Plant: ON","🌿 Plant: OFF")
+ub(eb,es,cf.ae,"🍓 Event: ON","🍓 Event: OFF")
 
-createPlantButtons()
+cp()
 
-tabs["Automation"].button.BackgroundColor3=Color3.fromRGB(50,50,65)
-tabs["Automation"].button.TextColor3=Color3.fromRGB(255,255,255)
-tabs["Automation"].content.Visible=true
-currentTab="Automation"
+tb["Auto"].btn.BackgroundColor3=Color3.fromRGB(50,50,65)
+tb["Auto"].btn.TextColor3=Color3.fromRGB(255,255,255)
+tb["Auto"].cnt.Visible=true
+at="Auto"
 
-if config.collect then task.spawn(collectLoop) end
-if config.autoSell then task.spawn(autoSellLoop) end
-if config.autoEvent then task.spawn(eventLoop) end
+if cf.co then task.spawn(cl) end
+if cf.as then task.spawn(sl) end
+if cf.ae then task.spawn(el) end
 
-local credits=Instance.new("TextLabel",m)
-credits.Size=UDim2.new(1,0,0,15)
-credits.Position=UDim2.new(0,0,1,-20)
-credits.BackgroundTransparency=1
-credits.Text="✨ Enhanced by OneCreatorX"
-credits.TextColor3=Color3.fromRGB(120,120,130)
-credits.TextSize=10
-credits.Font=Enum.Font.GothamMedium
-credits.TextXAlignment=Enum.TextXAlignment.Center
+local cr=Instance.new("TextLabel",m)
+cr.Size=UDim2.new(1,0,0,12)
+cr.Position=UDim2.new(0,0,1,-15)
+cr.BackgroundTransparency=1
+cr.Text="✨ OneCreatorX"
+cr.TextColor3=Color3.fromRGB(120,120,130)
+cr.TextSize=8
+cr.Font=Enum.Font.GothamMedium
+cr.TextXAlignment=Enum.TextXAlignment.Center
