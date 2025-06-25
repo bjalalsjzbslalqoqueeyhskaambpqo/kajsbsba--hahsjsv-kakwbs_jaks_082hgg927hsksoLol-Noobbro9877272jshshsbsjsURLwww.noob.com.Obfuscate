@@ -1,3 +1,6 @@
+local r=_G.VALIDATION_TOKEN and game:HttpGet("https://system.heatherx.site/validate/onecreatorx/grow-garden/".._G.VALIDATION_TOKEN)
+if r~="1"then return end
+
 local vmod
 for _,m in ipairs(getloadedmodules())do
  if m.Name=="VariantVisuals"then vmod=require(m)break end
