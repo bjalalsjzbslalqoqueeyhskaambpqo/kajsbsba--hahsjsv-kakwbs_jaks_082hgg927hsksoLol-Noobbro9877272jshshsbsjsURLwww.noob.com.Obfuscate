@@ -59,18 +59,18 @@ CfgMgr.__index = CfgMgr
 
 function CfgMgr.new()
     local self = setmetatable({
-        file = "AdvAutoShop.json",
+        file = "GrowGarden.json",
         def = {
             tab = 1,
             coll = false,
             sell = false,
             plnt = false,
-            evnt = false,
             selP = {},
             eggs = {},
             gear = {},
             seed = {},
-            feed = {}
+            feed = {},
+            collIdx = 1
         }
     }, CfgMgr)
     return self
@@ -190,7 +190,7 @@ end
 local uib = UIB.new()
 
 local sg = Instance.new("ScreenGui")
-sg.Name = "AdvAutoShop"
+sg.Name = "GrowGarden"
 sg.Parent = gui
 
 local main = uib:frame(sg, Theme.size.main, UDim2.new(0.5, -Theme.size.main.X.Offset/2, 0.5, -Theme.size.main.Y.Offset/2), Theme.col.prim, 15)
@@ -218,7 +218,7 @@ local tlbl = Instance.new("TextLabel")
 tlbl.Size = UDim2.new(1, -40, 1, 0)
 tlbl.Position = UDim2.new(0, 10, 0, 0)
 tlbl.BackgroundTransparency = 1
-tlbl.Text = "🛍️ Advanced Auto Shop"
+tlbl.Text = "🌱 Grow Garden"
 tlbl.TextColor3 = Theme.col.txt
 tlbl.TextSize = 14
 tlbl.Font = Enum.Font.GothamBold
@@ -240,28 +240,13 @@ local tabs = {
     {n = "Ctrl", i = "⚙️"},
     {n = "Plant", i = "🌱"},
     {n = "Shop", i = "🛒"},
-    {n = "Pets", i = "🐾"},
+    {n = "Eggs", i = "🥚"},
     {n = "Event", i = "🎉"}
 }
 
 local tBtns = {}
 local tConts = {}
 local actTab = cfg.tab or 1
-
-local function optIter(coll, cb, batch)
-    batch = batch or 25
-    local cnt = 0
-    
-    for k, v in pairs(coll) do
-        cb(k, v)
-        cnt = cnt + 1
-        
-        if cnt >= batch then
-            cnt = 0
-            RS.Heartbeat:Wait()
-        end
-    end
-end
 
 local function smartConn(sig, cb, deb)
     deb = deb or 0.05
@@ -349,29 +334,76 @@ function AutoMgr:startColl()
         while cfg.coll do
             local plot = GData.getPlot()
             if plot then
-                local cnt = 0
-                local max = 150
-                
-                optIter(plot.Plants_Physical:GetChildren(), function(_, p)
-                    if cnt >= max then return end
-                    if not p:IsA("Model") or not cfg.selP[p.Name] then return end
-                    
-                    local fr = p:FindFirstChild("Fruits")
-                    if fr then
-                        for _, f in pairs(fr:GetChildren()) do
-                            if cnt >= max then break end
-                            RepS.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"), {f})
-                            cnt = cnt + 1
-                            RS.Heartbeat:Wait()
-                        end
-                    else
-                        RepS.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"), {p})
-                        cnt = cnt + 1
-                        RS.Heartbeat:Wait()
+                local plants = {}
+                for _, p in pairs(plot.Plants_Physical:GetChildren()) do
+                    if p:IsA("Model") and cfg.selP[p.Name] then
+                        table.insert(plants, p)
                     end
-                end, 8)
+                end
+                
+                if #plants > 0 then
+                    local cnt = 0
+                    local max = 100
+                    local startIdx = cfg.collIdx or 1
+                    
+                    if startIdx > #plants then
+                        startIdx = 1
+                        cfg.collIdx = 1
+                    end
+                    
+                    for i = startIdx, #plants do
+                        if cnt >= max or not cfg.coll then break end
+                        
+                        local p = plants[i]
+                        if p and p.Parent then
+                            local fr = p:FindFirstChild("Fruits")
+                            if fr then
+                                for _, f in pairs(fr:GetChildren()) do
+                                    if cnt >= max then break end
+                                    RepS.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"), {f})
+                                    cnt = cnt + 1
+                                    RS.Heartbeat:Wait()
+                                end
+                            else
+                                RepS.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"), {p})
+                                cnt = cnt + 1
+                                RS.Heartbeat:Wait()
+                            end
+                        end
+                        
+                        cfg.collIdx = i + 1
+                        if cfg.collIdx > #plants then
+                            cfg.collIdx = 1
+                        end
+                    end
+                    
+                    if startIdx > 1 then
+                        for i = 1, math.min(startIdx - 1, max - cnt) do
+                            if cnt >= max or not cfg.coll then break end
+                            
+                            local p = plants[i]
+                            if p and p.Parent then
+                                local fr = p:FindFirstChild("Fruits")
+                                if fr then
+                                    for _, f in pairs(fr:GetChildren()) do
+                                        if cnt >= max then break end
+                                        RepS.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"), {f})
+                                        cnt = cnt + 1
+                                        RS.Heartbeat:Wait()
+                                    end
+                                else
+                                    RepS.ByteNetReliable:FireServer(buffer.fromstring("\001\001\000\001"), {p})
+                                    cnt = cnt + 1
+                                    RS.Heartbeat:Wait()
+                                end
+                            end
+                            
+                            cfg.collIdx = i + 1
+                        end
+                    end
+                end
             end
-            task.wait(3)
+            task.wait(2)
         end
         self.loop.coll = nil
     end)
@@ -446,11 +478,11 @@ function AutoMgr:startEvnt()
                 self:equipEvTools()
                 while lbl and cfg.evnt do
                     RepS.GameEvents.SummerHarvestRemoteEvent:FireServer("SubmitHeldPlant")
-                    task.wait(0.02)
+                    task.wait(0.01)
                     lbl = self:findEvLbl()
                 end
             end
-            task.wait(0.1)
+            task.wait(0.05)
         end
         
         cfg.coll = prevColl
@@ -500,7 +532,7 @@ local function createCtrl()
     
     local sf, lay = uib:scroll(cont, UDim2.new(1, -5, 1, -5), UDim2.new(0, 2, 0, 2))
     
-    local ctrlSec = uib:frame(sf, UDim2.new(1, -8, 0, 100), UDim2.new(0, 0, 0, 0), Theme.col.sec, 12)
+    local ctrlSec = uib:frame(sf, UDim2.new(1, -8, 0, 80), UDim2.new(0, 0, 0, 0), Theme.col.sec, 12)
     
     local secT = Instance.new("TextLabel")
     secT.Size = UDim2.new(1, -10, 0, 20)
@@ -515,8 +547,7 @@ local function createCtrl()
     
     local collB, collS = uib:btn(ctrlSec, UDim2.new(0.48, 0, 0, 22), UDim2.new(0, 5, 0, 28))
     local sellB, sellS = uib:btn(ctrlSec, UDim2.new(0.48, 0, 0, 22), UDim2.new(0.52, 0, 0, 28))
-    local plntB, plntS = uib:btn(ctrlSec, UDim2.new(0.48, 0, 0, 22), UDim2.new(0, 5, 0, 55))
-    local evntB, evntS = uib:btn(ctrlSec, UDim2.new(0.48, 0, 0, 22), UDim2.new(0.52, 0, 0, 55))
+    local plntB, plntS = uib:btn(ctrlSec, UDim2.new(0.98, 0, 0, 22), UDim2.new(0, 5, 0, 55))
     
     local function updBtn(btn, str, act, txt)
         btn.Text = txt .. (act and " ON" or " OFF")
@@ -528,7 +559,6 @@ local function createCtrl()
         updBtn(collB, collS, cfg.coll, "📦 Collect:")
         updBtn(sellB, sellS, cfg.sell, "💰 Sell:")
         updBtn(plntB, plntS, cfg.plnt, "🌿 Plant:")
-        updBtn(evntB, evntS, cfg.evnt, "🍓 Event:")
     end
     
     collB.MouseButton1Click:Connect(function()
@@ -560,19 +590,6 @@ local function createCtrl()
     plntB.MouseButton1Click:Connect(function()
         cfg.plnt = not cfg.plnt
         updAll()
-        cfgMgr:save(cfg)
-    end)
-    
-    evntB.MouseButton1Click:Connect(function()
-        cfg.evnt = not cfg.evnt
-        updAll()
-        
-        if cfg.evnt then
-            autoMgr:startEvnt()
-        else
-            autoMgr:stop("evnt")
-        end
-        
         cfgMgr:save(cfg)
     end)
     
@@ -641,12 +658,64 @@ local function createShop()
     
     local sf, lay = uib:scroll(cont, UDim2.new(1, -5, 1, -5), UDim2.new(0, 2, 0, 2))
     
+    local gearSec = uib:frame(sf, UDim2.new(1, -8, 0, 60), UDim2.new(0, 0, 0, 0), Theme.col.sec, 12)
+    
+    local gearT = Instance.new("TextLabel")
+    gearT.Size = UDim2.new(1, -10, 0, 20)
+    gearT.Position = UDim2.new(0, 5, 0, 5)
+    gearT.BackgroundTransparency = 1
+    gearT.Text = "⚙️ Gear Shop - Go to Gear Shop to enable auto-buy"
+    gearT.TextColor3 = Theme.col.txtS
+    gearT.TextSize = 11
+    gearT.Font = Enum.Font.GothamBold
+    gearT.TextXAlignment = Enum.TextXAlignment.Left
+    gearT.TextWrapped = true
+    gearT.Parent = gearSec
+    
+    local gearInfo = Instance.new("TextLabel")
+    gearInfo.Size = UDim2.new(1, -10, 0, 30)
+    gearInfo.Position = UDim2.new(0, 5, 0, 25)
+    gearInfo.BackgroundTransparency = 1
+    gearInfo.Text = "Small squares will appear on each gear item for auto-purchase selection."
+    gearInfo.TextColor3 = Theme.col.txtS
+    gearInfo.TextSize = 9
+    gearInfo.Font = Enum.Font.GothamMedium
+    gearInfo.TextXAlignment = Enum.TextXAlignment.Left
+    gearInfo.TextWrapped = true
+    gearInfo.Parent = gearSec
+    
+    local seedSec = uib:frame(sf, UDim2.new(1, -8, 0, 60), UDim2.new(0, 0, 0, 0), Theme.col.sec, 12)
+    
+    local seedT = Instance.new("TextLabel")
+    seedT.Size = UDim2.new(1, -10, 0, 20)
+    seedT.Position = UDim2.new(0, 5, 0, 5)
+    seedT.BackgroundTransparency = 1
+    seedT.Text = "🌱 Seed Shop - Go to Seed Shop to enable auto-buy"
+    seedT.TextColor3 = Theme.col.txtS
+    seedT.TextSize = 11
+    seedT.Font = Enum.Font.GothamBold
+    seedT.TextXAlignment = Enum.TextXAlignment.Left
+    seedT.TextWrapped = true
+    seedT.Parent = seedSec
+    
+    local seedInfo = Instance.new("TextLabel")
+    seedInfo.Size = UDim2.new(1, -10, 0, 30)
+    seedInfo.Position = UDim2.new(0, 5, 0, 25)
+    seedInfo.BackgroundTransparency = 1
+    seedInfo.Text = "Checkboxes will appear on each seed item for auto-purchase selection."
+    seedInfo.TextColor3 = Theme.col.txtS
+    seedInfo.TextSize = 9
+    seedInfo.Font = Enum.Font.GothamMedium
+    seedInfo.TextXAlignment = Enum.TextXAlignment.Left
+    seedInfo.TextWrapped = true
+    seedInfo.Parent = seedSec
+    
     task.spawn(function()
         local gShop = gui:WaitForChild("Gear_Shop")
         local gFrame = gShop.Frame.ScrollingFrame
         local buyGear = RepS.GameEvents.BuyGearStock
         
-        optIter(gFrame:GetChildren(), function(_, item)
+        for _, item in pairs(gFrame:GetChildren()) do
             local f2 = item:FindFirstChild("Frame")
             local sBuy = f2 and f2:FindFirstChild("Sheckles_Buy")
             local stock = sBuy and sBuy:FindFirstChild("In_Stock")
@@ -681,7 +750,7 @@ local function createShop()
                     end
                 end)
             end
-        end, 5)
+        end
     end)
     
     task.spawn(function()
@@ -689,7 +758,7 @@ local function createShop()
         local sFrame = sShop.Frame.ScrollingFrame
         local buySeed = RepS.GameEvents.BuySeedStock
         
-        optIter(sFrame:GetChildren(), function(_, item)
+        for _, item in pairs(sFrame:GetChildren()) do
             if item:IsA("Frame") and item:FindFirstChild("Frame") then
                 local sBuy = item.Frame:FindFirstChild("Sheckles_Buy")
                 if sBuy then
@@ -747,13 +816,17 @@ local function createShop()
                     end)
                 end
             end
-        end, 3)
+        end
+    end)
+    
+    lay:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        sf.CanvasSize = UDim2.new(0, 0, 0, lay.AbsoluteContentSize.Y + 10)
     end)
     
     return cont
 end
 
-local function createPets()
+local function createEggs()
     local cont = uib:frame(cCont, UDim2.new(1, 0, 1, 0), UDim2.new(0, 0, 0, 0), Color3.new(0, 0, 0), 0)
     cont.BackgroundTransparency = 1
     
@@ -785,11 +858,11 @@ local function createPets()
                         local dServ = require(RepS.Modules.DataService)
                         local data = dServ:GetData()
                         
-                        optIter(data.PetEggStock.Stocks, function(idx, stock)
+                        for idx, stock in pairs(data.PetEggStock.Stocks) do
                             if cfg.eggs[eggN] and eggs[stock.EggName] and stock.EggName == eggN and stock.Stock > 0 then
                                 buyEgg:FireServer(idx)
                             end
-                        end, 10)
+                        end
                         task.wait(0.08)
                     end
                 end)
@@ -804,7 +877,7 @@ local function createPets()
         local petSF = petUI.Frame.Main.ScrollingFrame
         local feedEv = RepS.GameEvents.ActivePetService
         
-        optIter(petSF:GetChildren(), function(_, petF)
+        for _, petF in pairs(petSF:GetChildren()) do
             if petF.Name:match("^%b{}$") and petF:FindFirstChild("PetStats") then
                 local stats = petF.PetStats
                 local btn, str = uib:btn(stats, UDim2.new(1, -4, 0, 18), UDim2.new(0, 2, 0, 2), "Feed: OFF")
@@ -819,11 +892,11 @@ local function createPets()
                 end
                 
                 local function equipTools()
-                    optIter(plr.Backpack:GetChildren(), function(_, tool)
+                    for _, tool in pairs(plr.Backpack:GetChildren()) do
                         if tool:IsA("Tool") and (tool.Name:find("%[.+kg%]") or tool.Name:find("Fruit") or tool.Name:find("Plant")) then
                             tool.Parent = plr.Character
                         end
-                    end, 15)
+                    end
                 end
                 
                 local function feedLoop()
@@ -855,7 +928,7 @@ local function createPets()
                 
                 updFeed()
             end
-        end, 3)
+        end
     end)
     
     lay:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
@@ -871,7 +944,7 @@ local function createEvnt()
     
     local sf, lay = uib:scroll(cont, UDim2.new(1, -5, 1, -5), UDim2.new(0, 2, 0, 2))
     
-    local evSec = uib:frame(sf, UDim2.new(1, -8, 0, 120), UDim2.new(0, 0, 0, 0), Theme.col.sec, 12)
+    local evSec = uib:frame(sf, UDim2.new(1, -8, 0, 140), UDim2.new(0, 0, 0, 0), Theme.col.sec, 12)
     
     local evT = Instance.new("TextLabel")
     evT.Size = UDim2.new(1, -10, 0, 20)
@@ -887,10 +960,10 @@ local function createEvnt()
     local evB, evS = uib:btn(evSec, UDim2.new(0.7, 0, 0, 25), UDim2.new(0, 5, 0, 30))
     
     local infoL = Instance.new("TextLabel")
-    infoL.Size = UDim2.new(1, -10, 0, 60)
+    infoL.Size = UDim2.new(1, -10, 0, 80)
     infoL.Position = UDim2.new(0, 5, 0, 60)
     infoL.BackgroundTransparency = 1
-    infoL.Text = "Auto-manages collect/sell states during event.\nEquips all fruits/plants automatically.\nFaster iteration for better efficiency."
+    infoL.Text = "Smart Event Management:\n• Auto-enables collect if OFF\n• Auto-disables sell during event\n• Equips all fruits/plants automatically\n• Restores previous states when done\n• Ultra-fast iteration for efficiency"
     infoL.TextColor3 = Theme.col.txtS
     infoL.TextSize = 10
     infoL.Font = Enum.Font.GothamMedium
@@ -938,7 +1011,7 @@ for i, tData in ipairs(tabs) do
     elseif i == 3 then
         cont = createShop()
     elseif i == 4 then
-        cont = createPets()
+        cont = createEggs()
     elseif i == 5 then
         cont = createEvnt()
     end
