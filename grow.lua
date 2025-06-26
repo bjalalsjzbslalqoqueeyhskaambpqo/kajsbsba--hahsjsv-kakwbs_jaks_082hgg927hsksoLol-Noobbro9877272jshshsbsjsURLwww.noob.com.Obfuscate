@@ -343,7 +343,7 @@ function AutoMgr:startColl()
                 
                 if #plants > 0 then
                     local cnt = 0
-                    local max = 100
+                    local max = 150
                     local startIdx = cfg.collIdx or 1
                     
                     if startIdx > #plants then
@@ -403,7 +403,7 @@ function AutoMgr:startColl()
                     end
                 end
             end
-            task.wait(2)
+            task.wait(0.5)
         end
         self.loop.coll = nil
     end)
