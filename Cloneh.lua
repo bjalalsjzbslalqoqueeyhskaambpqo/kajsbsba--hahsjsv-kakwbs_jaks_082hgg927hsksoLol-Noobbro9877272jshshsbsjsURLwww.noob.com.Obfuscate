@@ -406,9 +406,27 @@ local function cloneHouse(h)
     task.spawn(processAmbiance)
     task.spawn(processTextures)
     
-    pcall(function() 
-        return FR.buy_furniture(allFurnitureItems)
-    end)
+    pcall(function()
+	local buyFurnitureRemote
+
+	for _, obj in ipairs(getgc(true)) do
+		if type(obj) == "table" then
+			for k, v in pairs(obj) do
+				if k == "HousingAPI/BuyFurnitures" and typeof(v) == "Instance" and v:IsA("RemoteFunction") then
+					buyFurnitureRemote = v
+					break
+				end
+			end
+		end
+		if buyFurnitureRemote then break end
+	end
+
+	if buyFurnitureRemote then
+		return buyFurnitureRemote:InvokeServer(unpack(allFurnitureItems))
+	else
+		warn("❌ RemoteFunction de compra no encontrado.")
+	end
+end)
     
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "House Cloner",
