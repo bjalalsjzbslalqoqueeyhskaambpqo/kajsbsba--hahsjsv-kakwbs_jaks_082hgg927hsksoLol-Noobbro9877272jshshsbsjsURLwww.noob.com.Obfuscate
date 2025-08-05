@@ -1,4 +1,5 @@
 (function(t, s)
+        print("ajajj")
     if not t or not s then return end
     
     local function advancedEncrypt(data, key)
